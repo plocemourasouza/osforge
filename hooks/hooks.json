@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "$HOME/.cursor/hooks/protect-tests.sh"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "$HOME/.cursor/hooks/scan-secrets.sh"
+      }
+    ],
+    "stop": [
+      {
+        "command": "$HOME/.cursor/hooks/notify-done.sh"
+      }
+    ]
+  }
+}

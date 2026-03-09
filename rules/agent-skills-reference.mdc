@@ -1,0 +1,85 @@
+---
+description: Referência ao repositório local de 770+ Agent Skills — quando e como consultar, Tiers 1/2/3, busca e instalação em projetos
+globs: ["**/*.ts", "**/*.tsx", "**/*.md"]
+alwaysApply: true
+---
+
+# Repositório Local de Agent Skills
+
+Existe um repositório consolidado com 770+ Agent Skills em `~/Development/agent-skills-consolidado/`.
+
+Skills são referências de melhores práticas extraídas de repositórios oficiais (Anthropic, Vercel, Supabase, Trail of Bits, Cloudflare, Expo, Sentry) e da comunidade.
+
+**Quando consultar**: Ao enfrentar um problema complexo em domínio específico (segurança, performance React, otimização PostgreSQL, fuzzing, etc.), verifique se existe uma skill relevante antes de improvisar uma solução.
+
+---
+
+## Tier 1 — Skills Essenciais (dominar e aplicar sempre)
+
+| Pasta | Foco | Skills Principais |
+|-------|------|-------------------|
+| `01-anthropic/` | Documents, design, dev | `frontend-design`, `docx`, `pdf`, `xlsx`, `pptx`, `mcp-builder`, `webapp-testing` |
+| `02-superpowers/` | Workflow completo com TDD | `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `subagent-driven-development` |
+| `04-vercel/` | React/Next.js performance | `react-best-practices` (57 regras em 8 categorias), `web-design-guidelines` (100+ regras), `composition-patterns` |
+| `08-supabase/` | PostgreSQL optimization | `supabase-postgres-best-practices` |
+| `07-trailofbits/` | Segurança & auditoria | `static-analysis`, `insecure-defaults`, `sharp-edges`, `audit-context-building` |
+
+## Tier 2 — Skills Seletivas (conforme necessidade do projeto)
+
+| Pasta | Foco | Quando Usar |
+|-------|------|-------------|
+| `05-context-engineering/` | Context engineering | Otimizar uso de contexto em agents, multi-agent patterns |
+| `10-cloudflare/` | Cloudflare platform | Workers, R2, Durable Objects, Agents SDK |
+| `11-sentry/` | Dev workflow | Code review, commit conventions, PR workflow |
+| `03-claude-mem/` | Memória persistente | Claude Code com sessões longas |
+
+## Tier 3 — Cherry-Pick (buscar conforme demanda)
+
+| Pasta | Foco | Destaques |
+|-------|------|-----------|
+| `06-antigravity/` | 634 skills universais | `typescript-expert`, `prisma-patterns`, `docker-expert`, `architecture`, `senior-architect` |
+| `09-expo/` | Mobile | `expo-app-design`, `expo-deployment` |
+| `12-curadoria/` | Awesome lists | Referências para Stripe, Hugging Face, HashiCorp, WordPress |
+
+---
+
+## Instalar Skills num Projeto
+
+```bash
+# Skill específica
+cp -R ~/Development/agent-skills-consolidado/<pasta>/<skill> .claude/skills/
+
+# Tier 1 completo (recomendado para novos projetos)
+bash ~/Development/agent-skills-consolidado/install-tier1.sh /caminho/do/projeto
+
+# Buscar skill por termo
+python3 ~/Development/agent-skills-consolidado/buscar-skill.py <termo>
+python3 ~/Development/agent-skills-consolidado/buscar-skill.py --cat security
+python3 ~/Development/agent-skills-consolidado/buscar-skill.py --install prisma
+```
+
+## Índice Completo
+
+- **JSON (programático):** `~/Development/agent-skills-consolidado/INDICE-SKILLS.json`
+- **Markdown (legível):** `~/Development/agent-skills-consolidado/INDICE-SKILLS.md`
+- **Síntese detalhada:** `~/Development/agent-skills-consolidado/SINTESE-REPOSITORIOS.md`
+
+---
+
+## Sistema Spec Unificado (spec:*)
+
+O workflow de especificação e implementação de features é executado via commands `spec:*` disponíveis globalmente:
+
+| Command | Fase | Artefato gerado |
+|---|---|---|
+| `/spec:constitution` | Pré-projeto | `.specs/memory/constitution.md` |
+| `/spec:discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
+| `/spec:specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
+| `/spec:design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
+| `/spec:tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
+| `/spec:implement` | Phase 4 — Implement+Validate | (análise + validação) |
+| `/spec:clarify` | Auxiliar | Resolve ambiguidades em spec.md |
+| `/spec:checklist` | Auxiliar | Critérios de aceite da feature |
+| `/spec:measure` | Phase 5 — Measure | `.specs/features/[f]/metrics.md` |
+
+A especificação de comportamento completa está na SKILL `tlc-spec-driven` (em `~/.claude/SKILLS.md` ou `~/.cursor/skills/tlc-spec-driven/SKILL.md`).

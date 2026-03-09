@@ -1,0 +1,35 @@
+---
+description: Enforce TypeScript strict mode and compiler-driven error detection in all projects
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: true
+---
+
+# TypeScript Strict Mode
+
+## Configuração Obrigatória
+Todo projeto TypeScript DEVE ter em tsconfig.json:
+- `"strict": true`
+- `"noUncheckedIndexedAccess": true`
+- `"noImplicitReturns": true`
+- `"noFallthroughCasesInSwitch": true`
+- `"forceConsistentCasingInFileNames": true`
+
+Se encontrar um projeto sem strict mode, ALERTE o usuário e sugira correção.
+
+## Rationale para Agentes
+Agentes não detectam erros de runtime. O compilador TypeScript com strict mode
+transfere a detecção de erros para build time, onde o agente PODE ler os logs
+de erro no terminal e aplicar correções.
+
+## Proibições
+- NUNCA use `any` para silenciar erros — use `unknown` + narrowing
+- NUNCA use `@ts-ignore` sem justificativa escrita
+- NUNCA desative strict mode para resolver um erro
+- NUNCA use non-null assertion `!` sem verificação prévia
+
+## Padrões Preferidos
+- Use type guards: `if ('key' in obj)`, `typeof x === 'string'`
+- Use assertion functions para validação de runtime
+- Use discriminated unions para state machines
+- Use `satisfies` para type-checking sem widening
+- Use Zod para validação de dados externos (API, forms)

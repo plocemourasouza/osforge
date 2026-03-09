@@ -1,0 +1,26 @@
+{
+  "bash_blocked": [
+    "rm -rf /",
+    "rm -rf ~",
+    "DROP DATABASE",
+    "DROP SCHEMA",
+    "TRUNCATE TABLE",
+    "git push.*--force.*main",
+    "git push.*--force.*master",
+    "chmod 777",
+    "curl.*| sh",
+    "curl.*| bash",
+    "wget.*| sh",
+    "mkfs.",
+    "dd if=.*of=/dev/"
+  ],
+  "file_protected": [
+    ".env",
+    ".env.local",
+    ".env.production",
+    ".env.staging",
+    "package-lock.json",
+    "bun.lockb",
+    "yarn.lock"
+  ]
+}

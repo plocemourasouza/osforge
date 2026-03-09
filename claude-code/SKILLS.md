@@ -1,0 +1,531 @@
+# Skills & Knowledge Base
+Reference skills for Claude Code. Apply automatically based on context.
+
+---
+
+## Skill 1: TDD Workflow (RED-GREEN-REFACTOR)
+**Trigger:** Any feature, bugfix, or behavior change.
+
+**Iron Law:** `NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST`
+Wrote code before the test? **Delete it. Start over.**
+
+### Cycle
+1. **RED** — Write ONE test for smallest behavior. Run it. Confirm it FAILS.
+2. **GREEN** — Write MINIMUM code to pass. Nothing more.
+3. **REFACTOR** — Clean up while green. Extract, rename, deduplicate.
+4. **COMMIT** — `test: add test for X` → `feat: implement X`
+
+### Right Size
+- ❌ Too big: "User authentication system"
+- ✅ Right: "Login returns JWT on valid credentials"
+
+### Exceptions (ask first)
+Throwaway prototypes, generated code (Prisma Client, shadcn), config files, pure UI styling.
+
+### Test Protection (TDD Enforcement)
+When tests FAIL, fix PRODUCTION CODE — NEVER modify tests to make them pass.
+- NEVER alter assertions to match wrong output
+- NEVER delete or `.skip` failing tests
+- NEVER change expected values to match actual
+- Only exception: genuine test bug or explicitly requested requirement change
+
+### Stack Patterns
+```typescript
+// Vitest: Write test FIRST
+describe('PaymentService', () => {
+  it('should reject expired cards', async () => {
+    const result = await service.charge({ cardExp: '01/20', amount: 100 })
+    expect(result.success).toBe(false)
+    expect(result.error).toBe('CARD_EXPIRED')
+  })
+})
+// THEN implement PaymentService.charge()
+```
+
+---
+
+## Skill 2: Verification Before Completion
+**Trigger:** Before any completion claim, commit, or PR.
+
+**Iron Law:** `NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE`
+
+### Gate Function
+1. IDENTIFY → What command proves this claim?
+2. RUN → Execute full command (fresh, not cached)
+3. READ → Full output, check exit code
+4. VERIFY → Does output confirm claim?
+5. ONLY THEN → Make the claim WITH evidence
+
+### Evidence Table
+| Claim | Requires | NOT Sufficient |
+|-------|----------|----------------|
+| "Tests pass" | Test output: 0 failures | Previous run, "should pass" |
+| "Build succeeds" | Build command: exit 0 | "looks good" |
+| "Bug fixed" | Test original symptom: passes | Code changed, assumed fixed |
+| "No regressions" | Full suite: all pass | Only new tests pass |
+| "Types correct" | `tsc --noEmit`: exit 0 | No red squiggles |
+
+### Correct Format
+```
+✅ Verified:
+- `bun run lint` → 0 errors, 0 warnings
+- `bun run test` → 14 tests passed, 0 failed
+- `bun tsc --noEmit` → exit 0
+```
+
+---
+
+## Skill 3: Security Best Practices
+**Trigger:** Server Actions, API routes, auth, env handling, database queries, code review, deployment.
+
+### Operating Modes
+1. **Passive (while coding):** Inject security patterns naturally as you write code
+2. **Active (during review):** Detect vulnerabilities in existing code
+3. **Full report (on demand):** Comprehensive security audit
+
+### Core Rules (Fail-Secure)
+- **Fail-secure, not fail-open:** `SECRET = env['KEY']` (crashes if missing) NOT `env.get('KEY') or 'default'`
+- Auth at entry of every Server Action and API route
+- Zod validation on ALL external input
+- Authorization: verify user owns resource (not just authenticated)
+- Generic errors to client, detailed errors to server logs only
+
+### Framework-Specific
+**Next.js:** Server Actions for mutations (built-in CSRF). Route Handlers need manual CSRF. Validate `redirect()` targets. Never expose internal IDs in URLs without authorization check.
+
+**React:** No `dangerouslySetInnerHTML` without sanitization. No sensitive data in state/context. Use `httpOnly` cookies for tokens (never localStorage).
+
+**TypeScript:** Enable strict mode. No `any` for user input. Use discriminated unions for auth states. Zod schemas for runtime validation.
+
+**Supabase/Database:** RLS on all multi-tenant tables. Separate policies per operation. `$queryRaw` (never `$queryRawUnsafe`). Parameterized queries only. Tenant filter in every query.
+
+### Env & Secrets
+- No defaults for secrets; `.env` in `.gitignore`; no secrets in client-side code; validate all env vars at startup
+
+### Rationalizations to Reject
+| Excuse | Response |
+|--------|----------|
+| "Just a dev default" | If it reaches production, it's a vulnerability |
+| "Prod overrides it" | Prove with code trace |
+| "Behind auth" | Defense in depth |
+| "Fix before release" | Fix now |
+
+---
+
+## Skill 4: Coding Guidelines (Karpathy Rules)
+**Trigger:** Always active — foundational coding discipline.
+
+### Think Before Coding
+- Surface all tradeoffs BEFORE implementation
+- When unclear, ASK — don't assume
+- Identify the simplest solution that meets requirements
+- Define success criteria upfront
+
+### Simplicity First
+- No speculative features (YAGNI)
+- No premature abstractions
+- If a function has one caller, don't abstract it
+- Prefer duplication over wrong abstraction
+- Delete dead code immediately
+
+### Surgical Changes
+- Touch ONLY what's needed for the current task
+- One logical change per commit
+- Don't "improve" unrelated code while fixing a bug
+- If you see something unrelated to fix, note it — don't fix it now
+
+### Goal-Driven Execution
+- Define what "done" looks like before starting
+- Loop: implement → verify → adjust until criteria met
+- NEVER declare done without verification evidence (→ Skill 2)
+
+---
+
+## Skill 5: Product-Driven Spec Development (PDD + Spec-Driven)
+**Trigger:** New features, complex tasks, multi-step implementations, "why build this", product validation.
+
+### 6-Phase Process (PDD-enhanced)
+0. **Discover** — User problem, hypothesis, success metrics, MVP scope
+1. **Specify** — Requirements, constraints, acceptance criteria
+2. **Design** — Architecture decisions, component structure, data flow
+3. **Tasks** — Break into atomic units, prioritize by user impact
+4. **Implement** — Execute tasks with verification at each step
+5. **Measure** — Post-deploy metrics, feedback loop, iterate/pivot/abandon
+
+### PDD Principle
+Before coding, ask: Does this solve the USER's problem or a TECHNICAL problem? Is there a simpler solution delivering 80% of the value? What metric proves this worked?
+
+### Discover Phase (before Specify)
+For user-facing features, create `.specs/features/[feature]/discovery.md`:
+- Who suffers and what happens (with evidence, not assumptions)
+- Hypothesis: "We believe [solution] will [result] for [persona] because [evidence]"
+- Success metrics with baseline, target, measurement method, and timeline
+- MVP scope: smallest experiment that validates hypothesis
+- Alternatives considered and why discarded
+
+### Impact-First Prioritization (in Tasks phase)
+Priority = (User Impact × Confidence) / Technical Effort. Anti-pattern: don't prioritize by what's technically interesting — prioritize by value delivered.
+
+### Measure Phase (after Deploy)
+Post-deploy checklist: feature flag/canary, error monitoring, analytics events, metrics dashboard, scheduled review date. Never declare a feature "delivered" without metrics configured. Features without evidence of impact are candidates for removal.
+
+### Persistent Memory
+Use `.specs/` directory for cross-session continuity:
+```
+.specs/
+├── project/
+│   ├── PROJECT.md, ROADMAP.md, STATE.md, DECISIONS.md
+└── features/
+    └── [feature]/
+        ├── discovery.md  # Problem, hypothesis, metrics (PDD)
+        ├── spec.md       # Requirements + acceptance criteria
+        ├── design.md     # Technical design
+        ├── tasks.md      # Atomic task list with status
+        └── stories/      # User stories with product context
+```
+
+### User Stories (PDD-enhanced)
+Stories MUST include: Product Context (problem observed with evidence, hypothesis, alternatives discarded, risk if not done), Success Metrics (baseline, target, how to measure, timeline), Acceptance Criteria (technical), and Completeness Criteria (includes metrics configured + review scheduled).
+
+### Decision Log (ADR)
+Record architectural decisions: Context → Options → Decision → Consequences. Every decision with trade-offs must be logged in DECISIONS.md.
+
+### Context Budget (70% Rule)
+Above 70% of context window, the model silently degrades: ignores tools, hallucinates more, drops rules adherence, stops mid-task. No error — just progressive degradation.
+
+**Saturation signs:** generic/repetitive responses, skipped verifications, abrupt stops, rules ignored, shortcuts in defined processes.
+
+**Mandatory action:** STOP current task → save state to STATE.md (task, last checkpoint, next step, modified files, test status) → compact or new session → resume with minimal context (STATE.md + specific task only).
+
+**Prevention:** one feature per session, unload context after completing each phase, sub-agents for isolated tasks, split tasks needing 3+ specs.
+
+**Budget (200k window):** 🟢 <80k (40%) comfortable | 🟡 80-120k (40-60%) caution | 🔴 120-140k (60-70%) save state | ⛔ >140k (70%+) STOP NOW.
+
+**Compression mode (🟡/🔴 zones):** concise responses without preambles, show diffs only, don’t repeat established context, prioritize action over inline documentation.
+
+**Story loading by phase:** Discover/Specify = full story | Design = criteria + edge cases + deps | Implement = criteria + happy path + edge cases | Measure = metrics + completeness only. Reduces ~725 → ~350 tokens per story in implementation phases.
+
+---
+
+## Skill 6: React & Next.js Performance
+**Trigger:** Writing/reviewing React components, Next.js pages, data fetching, bundle optimization.
+
+### CRITICAL — Waterfalls
+- `Promise.all()` for independent fetches
+- Move `await` into branches where actually used
+- Suspense boundaries for progressive streaming
+
+### CRITICAL — Bundle
+- Direct imports (never barrel files)
+- `next/dynamic` for heavy components with `ssr: false`
+- Analytics/logging after hydration in `useEffect`
+
+### HIGH — Server-Side
+- Auth in all Server Actions
+- `React.cache()` for per-request deduplication
+- Minimize data serialized to client components
+
+### MEDIUM — Re-renders
+- Derive state with `useMemo`, not `useEffect` + `useState`
+- Functional `setState` for stable callbacks
+- `memo()` for expensive children
+
+---
+
+## Skill 7: PostgreSQL & Supabase Optimization
+**Trigger:** Complex queries, migrations, slow queries, RLS, indexes.
+
+### Core Rules
+- `EXPLAIN ANALYZE` before approving complex queries
+- `select` only needed fields (never `findMany()` without select)
+- Avoid N+1 (use `include` with `select`)
+
+### Indexing
+- Multi-tenant: tenant_id first in composite indexes
+- Partial indexes for active-only filters; always index foreign keys
+
+### RLS
+- All multi-tenant tables need RLS enabled
+- Separate policies per operation (SELECT, INSERT, UPDATE, DELETE)
+- Use `auth.jwt()` / `auth.uid()` — never trust client params
+
+### Connections
+- App: port 6543 (pooled via PgBouncer); Migrations: port 5432 (direct)
+
+### Raw SQL When
+Aggregations, JSON/JSONB ops, full-text search, pivot tables, window functions, recursive CTEs. Always `$queryRaw`.
+
+---
+
+## Skill 8: Frontend UI System (shadcn Ecosystem)
+**Trigger:** Building UI, landing pages, dashboards, forms, maps, animations.
+
+### Component Sources (priority)
+1. **shadcn/ui** — Core primitives. `bunx shadcn@latest add <component>`. Use Shadcn MCP first.
+2. **Magic UI** — 150+ animations. `bunx shadcn@latest add "https://magicui.design/r/<component>"`. Dir: `components/magicui/`
+3. **Aceternity UI** — 100+ premium effects. `bunx shadcn@latest add @aceternity/<component>`. Dir: `components/aceternity/`
+4. **mapcn** — Maps (MapLibre, no API key). `bunx shadcn@latest add "https://mapcn.dev/r/map"`. Dir: `components/ui/map/`
+
+### Decision Matrix
+| Need | Source |
+|------|--------|
+| Forms, tables, nav | shadcn/ui |
+| Text animation | Magic UI |
+| Background effect | Aceternity or Magic UI |
+| 3D / hover | Aceternity |
+| Maps | mapcn |
+
+### Rules
+- Magic UI / Aceternity: always `"use client"` (Framer Motion)
+- Heavy animations: `next/dynamic({ ssr: false })`
+- Animated components are leaf nodes — never wrap RSC inside them
+- Theme: always CSS variables, never hardcode colors
+
+### Visual Verification
+After implementing visual components, ALWAYS verify:
+- Layout matches design/spec
+- Responsiveness: mobile (375px), tablet (768px), desktop (1280px+)
+- States: loading, empty, error, success
+- Accessibility: tab navigation, screen reader labels, contrast
+NEVER declare a component "working" without visual evidence.
+
+---
+
+## Skill 9: Git Workflow
+**Trigger:** Creating branches, parallel work, merges, version control for agent development.
+
+### Branch Naming
+`feature/`, `bugfix/`, `hotfix/`, `chore/`, `refactor/` + kebab-case description
+
+### Conventional Commits (mandatory)
+Format: `type(scope): description` — max 72 chars, lowercase, no period.
+Types: feat, fix, refactor, docs, style, test, chore, perf, ci.
+Breaking changes: `feat!:` or `BREAKING CHANGE:` footer.
+
+### Git Worktrees for Parallel Agents
+When multiple independent features need parallel implementation:
+```bash
+git worktree add ../project-feature-auth feature/auth
+git worktree add ../project-feature-dashboard feature/dashboard
+# Each agent works in its own isolated directory
+# After: merge sequentially, resolve conflicts, test
+git worktree remove ../project-feature-auth
+```
+Use worktrees (not branches) for parallel agents — branches share working directory and cause conflicts.
+
+### Pre-Commit
+- `tsc --noEmit` passes; `lint` passes; no `console.log` debug; no secrets in staging
+
+---
+
+## Skill 10: Predictive Failure Analysis
+**Trigger:** After implementation + tests pass. "What could go wrong?", "predict failures", "production readiness", "pre-deploy".
+
+Finds failures that tests DON'T catch — pattern matching against common production failure modes.
+
+### Categories
+1. **Race Conditions:** Double-click submit, async state out of order, missing debounce, useEffect without cleanup/abort
+2. **Data Edge Cases:** Unicode in text fields, float precision, empty arrays, null in nested objects, timezone mismatches, monetary rounding
+3. **Network:** Unhandled timeouts, retry without backoff, stale cache post-deploy, CORS prod vs dev, missing rate limiting
+4. **State Management:** Memory leaks (useEffect no cleanup), stale closures, hydration mismatch, form state lost on back button
+5. **Security in Production:** CSRF on Route Handlers, XSS via dangerouslySetInnerHTML, exposed stack traces, tokens in URL params
+6. **UX Under Stress:** 10k+ items without virtualization, large uploads without progress, slow 3G experience, accessibility without mouse
+
+### Output
+For each issue: Severity (🔴🟠🟡🔵) × Probability + File:Line + Scenario + Impact + Suggested fix.
+Only report issues with evidence in actual code. No theoretical problems.
+
+---
+
+## Skill 11: Core Web Vitals
+**Trigger:** Performance optimization, LCP/INP/CLS issues, Lighthouse audits.
+
+- **LCP** ≤ 2.5s: Optimize images (WebP/AVIF, sizes, priority), preload critical resources, minimize render-blocking CSS/JS
+- **INP** ≤ 200ms: Break long tasks, use `requestIdleCallback`, debounce handlers, avoid synchronous layout
+- **CLS** ≤ 0.1: Set explicit dimensions on images/videos, reserve space for dynamic content, avoid injecting content above viewport
+
+Quick Wins: `<Image>` with `priority` for above-fold, `next/font` (no FOUT), `loading="lazy"` below-fold, preconnect to third-party origins.
+
+---
+
+## Skill 12: Accessibility (WCAG 2.1)
+**Trigger:** UI implementation, component creation, code review, accessibility audit.
+
+- Semantic HTML (`<nav>`, `<main>`, `<article>`, `<button>` not `<div onClick>`)
+- All images: meaningful `alt` or `aria-hidden="true"` if decorative
+- Form inputs: associated `<label>` elements
+- Focus management: visible focus indicators, logical tab order
+- Color contrast: 4.5:1 normal text, 3:1 large text
+- Keyboard navigation: all interactive elements reachable and operable
+- Testing: tab through flow, VoiceOver, `npx axe-cli` or Lighthouse a11y
+
+---
+
+## Skill 13: SEO
+**Trigger:** Page creation, metadata, sitemap, structured data, crawlability.
+
+- Unique `<title>` and `<meta name="description">` per page
+- Open Graph + Twitter Card meta tags; canonical URLs
+- `robots.txt` and `sitemap.xml`; structured data (JSON-LD)
+- Semantic heading hierarchy (one `<h1>` per page)
+- Next.js: `generateMetadata()`, `generateStaticParams()`, `next-sitemap`
+
+---
+
+## Skill 14: Doc Sanitization
+**Trigger:** `/clean-docs`, docs accumulating, docs >30 days old.
+
+### Permanent Docs (always maintain)
+README.md, tasks/todo.md, tasks/lessons.md, docs/architecture.md, docs/features.md
+
+### Temporary Docs (consolidate/remove after 30 days)
+specs/*.md, plans/*.md, notes/*.md
+
+### Process
+1. Inventory → 2. Analyze → 3. Propose → 4. **Confirm (never delete without approval)** → 5. Execute → 6. Report
+
+---
+
+## Skill 15: Agent Skills Search
+**Trigger:** Need specialized skills, best practices, or domain patterns.
+
+```bash
+python3 ~/Development/osforge/scripts/buscar-skill.py <term>
+python3 ~/Development/osforge/scripts/buscar-skill.py --cat security
+python3 ~/Development/osforge/scripts/buscar-skill.py --stats
+```
+
+Tiers: **Tier 1:** Anthropic, Superpowers, Vercel, Trail of Bits, Supabase. **Tier 2:** Context Engineering, Cloudflare, Sentry. **Tier 3:** Antigravity (634 skills), Expo, Curadoria.
+
+---
+
+## Skill 16: Prisma Expert
+**Trigger:** Complex schema (>10 models), migration strategies, query performance, relation patterns, multi-tenant data isolation.
+
+Covers: multi-tenant schema isolation, polymorphic relations (union pattern), soft delete, safe production migrations (additive-only, two-phase drops), N+1 prevention with eager loading, cursor-based pagination, interactive transactions with isolation levels, Prisma + Supabase integration (directUrl vs pooled).
+
+---
+
+## Skill 17: Next.js + Supabase Auth
+**Trigger:** Auth middleware, multi-org RBAC, session management, token refresh, RLS-by-tenant, OAuth flows.
+
+Covers: middleware auth guard with `createServerClient`, server-side `requireAuth()` helper, multi-org RBAC with role hierarchy, RLS policies for tenant isolation, token refresh via SSR cookies (never localStorage), OAuth with PKCE flow. Rule: always use `getUser()` not `getSession()` for auth checks.
+
+---
+
+## Skill 18: E2E Testing (Playwright)
+**Trigger:** Cross-page flow testing, checkout flows, onboarding, visual regression, Playwright setup.
+
+Covers: Playwright config for Next.js with Bun, Page Object Model pattern, auth state fixtures (login via API not UI), multi-step flow testing, visual regression with `toHaveScreenshot`, API mocking with `page.route`. Best practice: `getByRole`/`getByLabel` only, never CSS selectors.
+
+---
+
+## Skill 19: Stripe Integration
+**Trigger:** Checkout, subscription billing, webhooks, pricing page, payment forms, refund logic.
+
+Covers: Stripe Checkout sessions for subscriptions, webhook handler with signature verification, subscription sync to DB via `upsert`, customer portal for self-service billing, idempotent webhook processing. Rules: NEVER handle raw card data, always verify webhook signatures, use metadata to link Stripe ↔ user.
+
+---
+
+## Skill 20: Bun Development
+**Trigger:** Bun-specific APIs (Bun.file, Bun.serve, Bun.$), workspace config, Bun test patterns, runtime edge cases.
+
+Covers: Bun.file (fast I/O), Bun.serve (native HTTP), Bun.$ (shell tagged templates), bun:sqlite (built-in), workspace config, `bun test` patterns with mock. Gotchas: binary lockfile, native addon compatibility, snapshot format differences.
+
+---
+
+## Skill 21: MCP Builder
+**Trigger:** Creating MCP servers for internal services, exposing APIs as MCP tools/resources, MCP architecture.
+
+Covers: MCP server with `@modelcontextprotocol/sdk`, tool definitions with Zod schemas, resource endpoints, stdio and SSE transports, registration in Claude Code and Cursor configs, testing with InMemoryTransport. Principles: atomic tools, typed inputs, safe (read-only default), paginated responses.
+
+---
+
+## Skill 22: i18n & Localization
+**Trigger:** Multi-language support, locale routing, translation management, date/currency formatting.
+
+Covers: `next-intl` setup with App Router, middleware locale routing, translation files with ICU MessageFormat (plurals, interpolation), `useFormatter` for dates/currency, locale-prefixed routing. Best practice: never hardcode user-facing strings, use `namespace.context.element` key pattern.
+
+---
+
+## Skill 23: GDPR / LGPD Data Handling
+**Trigger:** Consent management, data subject rights, privacy policies, data retention, audit logging, LGPD compliance.
+
+Covers: LGPD vs GDPR mapping, consent management schema (purpose-based), data export (right to access), account deletion (right to erasure), audit logging middleware, data retention cron jobs. Requirements: DPO/Encarregado designation, breach notification process, cookie consent banner.
+
+---
+
+## Skill 24: Insecure Defaults Detection
+**Trigger:** Security hardening, env variable audit, config review, pre-deployment security scan.
+
+Covers: fail-open detection patterns — permissive env fallbacks (`|| '*'`), open CORS, missing rate limiting, tables without RLS, Server Actions without auth, missing security headers. Scan pattern: search for `|| '*'`, `|| true`, `cors()` without args, tables without RLS. Source: Trail of Bits methodology.
+
+---
+
+## Skill 25: Differential Review
+**Trigger:** PR security review, git diff analysis for auth/payments/permissions changes.
+
+Covers: 4-step process (scope → analyze high-risk → git history context → structured output), file risk categorization (auth=🔴, api=🟡), security-focused diff checks, CI integration for missing security tests. Red flags: `@ts-ignore` near auth, `as any` in permissions, removed security tests.
+
+---
+
+## Skill 26: Dispatching Parallel Agents
+**Trigger:** 2+ independent tasks without shared state, large multi-file refactoring, parallelizable work units.
+
+Covers: decision matrix (when to parallelize vs sequence), task specification format (self-contained with goal/files/context/acceptance), execution pattern with context embedding, merge strategy (integration test → import resolution → type check), anti-patterns (shared migrations, implicit ordering, >5 parallel tasks).
+
+---
+
+## Skill 27: Claude API & Agent SDK (TypeScript)
+**Trigger:** Code importing `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent-sdk`, building AI-powered features, tool use, streaming, structured outputs, programmatic agents.
+
+Covers: Claude API (Messages, streaming, tool runner with `betaZodTool` + Zod, structured outputs via `output_config`, batches at 50% cost, files API), Agent SDK (subagents programáticos, hooks PostToolUse, MCP integration, permission modes, session forking), current models (Opus 4.6, Sonnet 4.6, Haiku 4.5) with IDs e pricing, adaptive thinking config, effort parameter. 11 reference files on-demand (80KB). Source: `anthropics/skills/claude-api`.
+
+---
+
+## Skill 28: Claude CI/CD Actions
+**Trigger:** Setting up @claude in PRs/issues, automated PR review, CI/CD integration with Claude, GitHub Actions workflow, flaky test detection.
+
+Covers: `anthropics/claude-code-action@v1` setup, interactive mode (@claude mentions), automated PR review workflow, structured output for CI analysis (flaky test detection), MCP integration in Actions, plugin installation in workflows, CI log access tools (`mcp__github_ci__*`). Rules: never hardcode API key, use `--max-turns` to cap costs, Sonnet 4.6 for reviews.
+
+---
+
+## Skill 29: Smart Model Dispatch
+**Trigger:** Feature implementation with multiple subtasks, spawning subagents, parallel task dispatch, cost optimization, or when task complexity varies across work units.
+
+Covers: 3-tier routing (Opus for planning/security/architecture, Sonnet for implementation/debugging/review, Haiku for boilerplate/i18n/tests/docs), per-agent model mapping (planner→opus, debugger→sonnet, docs→haiku), dispatch patterns for feature/bugfix/audit workflows, parallel dispatch with mixed models, cost estimation reference (~65% savings vs all-opus), escalation rules (haiku→sonnet→opus on failure).
+
+---
+
+## Skill 30: Context7 Docs-First
+**Trigger:** Questions about Next.js, Supabase, Prisma, Stripe, Playwright, Bun, shadcn/ui, Vercel, or any version-sensitive library. Also trigger on "docs", "latest", "current version", or API integration tasks.
+
+Covers: Workflow resolve-library-id → query-docs → respond from source of truth. Quick reference table with Context7 IDs for all stack libraries (/vercel/next.js, /supabase/supabase, /prisma/prisma, /stripe/stripe-node, /microsoft/playwright, /shadcn-ui/ui, /oven-sh/bun, /colinhacks/zod). Rules: max 3 calls per question, prefer official sources, report gaps honestly. Requires Context7 MCP server.
+
+---
+
+## Skill 31: Smart Hooks (Python)
+**Trigger:** Setting up quality gates, safety rails, or developer experience hooks for Claude Code. Also trigger when configuring pre-commit checks, blocking dangerous commands, or adding audit logging to a project.
+
+Covers: 4 production-grade Python hooks — pre_tool_use.py (blocks dangerous bash commands + protected file writes + audit log), post_tool_use.py (TypeScript quality gates: console.log, any type, @ts-ignore, export default), pre_compact.py (conversation backup before context compaction), session_end.py (session logging + macOS notification). Design: command hooks (not prompt — zero token cost), fail-open, <100ms each, configurable via JSON.
+
+---
+
+## TypeScript Strict Mode (Global Rule)
+**Always active for all TypeScript files.**
+
+Every project MUST have `"strict": true` in tsconfig.json plus: `noUncheckedIndexedAccess`, `noImplicitReturns`, `noFallthroughCasesInSwitch`, `forceConsistentCasingInFileNames`.
+
+Prohibitions: No `any` (use `unknown` + narrowing), no `@ts-ignore` without justification, no disabling strict mode, no `enum` (use `as const`), no `export default` (use named exports).
+
+## Code Style (Global Rule)
+**Always active.**
+
+### Product Thinking (PDD)
+Before implementing any feature, ask: Does this solve the USER's problem or a TECHNICAL problem? Is there a simpler solution delivering 80% of the value? How will the user perceive this change? What metric proves this worked? Product trade-offs > technical elegance.
+
+### Conventions
+Naming: Components PascalCase, hooks camelCase with `use` prefix, types PascalCase (no `I` prefix), constants UPPER_SNAKE_CASE.
+Imports: React/Next → external libs → @/ aliases → relative → types. Always use path aliases.
+Next.js: Server Components by default, `"use client"` only when needed, Server Actions for mutations.
+No `console.log` in production, no `var`, no `enum`, no `export default`.

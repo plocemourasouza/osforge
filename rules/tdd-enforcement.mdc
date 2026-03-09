@@ -1,0 +1,26 @@
+---
+description: Enforce that test files are not modified when fixing failing tests — modify production code instead
+globs: ["**/*.test.*", "**/*.spec.*", "**/__tests__/**"]
+alwaysApply: true
+---
+
+# TDD Test Protection
+
+## Regra Fundamental
+Quando testes FALHAM, a ação correta é CORRIGIR O CÓDIGO DE PRODUÇÃO,
+NUNCA modificar os testes para que passem.
+
+## Proibições Absolutas
+- NUNCA altere assertions para corresponder ao output errado
+- NUNCA delete testes que falham
+- NUNCA adicione .skip ou .todo a testes existentes que falharam
+- NUNCA mude expected values para match actual values
+
+## Exceções (requer justificativa explícita)
+- O teste tem um bug genuíno (assertion errada desde a criação)
+- Os requirements mudaram e o usuário EXPLICITAMENTE pediu para atualizar testes
+- Refatoração que muda interface pública (e o usuário confirmou)
+
+## Hook de Auditoria
+Modificações em arquivos de teste são LOGADAS automaticamente pelo hook
+afterFileEdit em /tmp/cursor-hooks.log para auditoria.

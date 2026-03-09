@@ -1,0 +1,57 @@
+---
+description: Code style conventions for all TypeScript/React projects — naming, imports, structure, product thinking
+globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
+alwaysApply: true
+---
+
+# Code Style
+
+## Product Thinking (PDD)
+Antes de implementar qualquer feature, pergunte:
+- Isso resolve o problema do USUÁRIO ou um problema TÉCNICO?
+- Existe uma solução mais simples que entrega 80% do valor?
+- Como o usuário vai perceber essa mudança?
+- Se ninguém usar esse feature, foi tempo bem gasto?
+- Qual é a métrica que prova que isso funcionou?
+
+Trade-offs de produto > elegância técnica. Código perfeito que resolve o problema errado é desperdício.
+
+## Naming
+- Componentes React: PascalCase (`UserProfile.tsx`)
+- Hooks: camelCase com prefixo use (`useAuth.ts`)
+- Utilitários/funções: camelCase (`formatCurrency.ts`)
+- Tipos/Interfaces: PascalCase, sem prefixo I (`UserProfile`, não `IUserProfile`)
+- Constantes: UPPER_SNAKE_CASE (`MAX_RETRY_COUNT`)
+- Arquivos de componente: PascalCase. Demais: kebab-case ou camelCase.
+
+## Imports
+Ordem: 1) React/Next 2) Libs externas 3) @/ aliases 4) Relativos 5) Tipos
+Sempre use path aliases (`@/components/...`) em vez de relativos profundos (`../../../`).
+
+## Estrutura de Arquivos
+- Um componente por arquivo
+- Coloque tipos junto ao arquivo que os usa (não em arquivo separado de types)
+- Exporte apenas o necessário (evite `export *`)
+
+## Padrões Next.js 15+
+- Use Server Components por padrão
+- Marque "use client" apenas quando necessário (hooks, eventos, browser APIs)
+- Use Server Actions para mutations
+- Route Handlers apenas para webhooks e APIs externas
+
+## Observabilidade
+- Logs estruturados: `{ action, tenantId, userId, duration, error }` — nunca strings soltas
+- Nunca logar PII (emails, tokens, senhas) — mesmo em dev
+- Erros: log completo server-side, mensagem genérica para o client
+- Métricas de duração em operações críticas (DB queries, API calls)
+
+## Operações de Arquivo
+- Sempre ler antes de editar (confirmar estado atual)
+- Usar caminhos absolutos — nunca relativos em scripts ou automações
+- Preferir operações em batch quando possível (múltiplas edições > uma por vez)
+
+## Proibições
+- Não use `console.log` em produção — use logger estruturado
+- Não use `var` — apenas `const` e `let`
+- Não use `enum` — use `as const` com tipo derivado
+- Não use `export default` para componentes — use named exports

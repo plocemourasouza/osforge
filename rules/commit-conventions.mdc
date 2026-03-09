@@ -1,0 +1,40 @@
+---
+description: Git commit and branching conventions — Conventional Commits, branch naming, PR workflow
+globs: []
+alwaysApply: true
+---
+
+# Git Conventions
+
+## Conventional Commits (obrigatório)
+Formato: `tipo(escopo): descrição`
+
+Tipos permitidos:
+- feat: nova funcionalidade
+- fix: correção de bug
+- refactor: refatoração sem mudança de comportamento
+- docs: apenas documentação
+- style: formatação, semicolons, etc (não altera lógica)
+- test: adição ou correção de testes
+- chore: manutenção, deps, configs
+- perf: melhoria de performance
+- ci: CI/CD
+
+Regras:
+- Descrição em minúsculas, sem ponto final
+- Máximo 72 caracteres na primeira linha
+- Body opcional separado por linha em branco
+- Breaking changes: `feat!:` ou footer `BREAKING CHANGE:`
+
+## Branches
+Formato: `tipo/descricao-curta`
+- feature/user-authentication
+- bugfix/login-redirect-loop
+- hotfix/critical-payment-error
+- chore/update-dependencies
+
+## Workflow
+1. Sempre crie branch a partir de main/develop
+2. Commits pequenos e frequentes (1 mudança lógica por commit)
+3. Squash merge para main quando PR aprovado
+4. Delete branch após merge
