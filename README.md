@@ -1,8 +1,8 @@
 # 🔨 OSForge
 
-**Curated agent skills, agents, rules, and hooks for AI-powered development.**
+**Curated agent skills, agents, rules, hooks, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade package of 31 skills, 7 specialized agents, 4 always-on rules, and Python hooks — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
+OSForge is a production-grade package of 31 skills, 7 specialized agents, 4 always-on rules, Python hooks, and **121 on-demand AI specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -12,9 +12,11 @@ OSForge is a production-grade package of 31 skills, 7 specialized agents, 4 alwa
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 31 skills in ~6.7K tokens (3.35% of 200K context window). Skills load on-demand, not upfront.
-2. **Stack-specific patterns** — Every skill is tailored for Next.js App Router + Prisma + Supabase + shadcn/ui. No generic filler.
+1. **Context efficiency** — Skills and agents load on-demand, not upfront. Zero idle token cost.
+2. **Stack-specific patterns** — Every skill is tailored for Next.js App Router + Prisma + Supabase + shadcn/ui.
 3. **Quality gates built-in** — TDD enforcement, security auditing, insecure defaults detection, and Python hooks that catch issues before they ship.
+
+---
 
 ## Quick Start
 
@@ -32,6 +34,8 @@ cp osforge/claude-code/SKILLS.md ~/.cursor/SKILLS.md
 # (Optional) Install hooks in your project
 cp -r osforge/skills/smart-hooks/scripts/*.py your-project/.claude/hooks/
 ```
+
+---
 
 ## What's Inside
 
@@ -71,6 +75,7 @@ cp -r osforge/skills/smart-hooks/scripts/*.py your-project/.claude/hooks/
 | 30 | Context7 Docs-First | Meta |
 | 31 | Smart Hooks (Python) | DX |
 
+
 ### 7 Agents
 
 | Agent | Role |
@@ -97,6 +102,54 @@ cp -r osforge/skills/smart-hooks/scripts/*.py your-project/.claude/hooks/
 - `pre_compact.py` — Conversation backup before context compaction
 - `session_end.py` — Session logging + macOS notification
 
+---
+
+## 🏢 The Agency — 121 AI Specialists (on-demand)
+
+OSForge includes **The Agency**: a curated library of 121 specialized AI agents covering every business and technical function. Each specialist loads only when activated — zero idle context cost.
+
+### 10 Divisions
+
+| Division | Specialists | When to use |
+|---|---|---|
+| 💻 **Engineering** | 23 | Código, arquitetura, segurança, DevOps, SRE, documentação |
+| 🎨 **Design** | 8 | UI/UX, sistemas de design, identidade visual, pesquisa com usuários |
+| 📢 **Marketing** | 26 | Conteúdo, SEO, redes sociais, growth hacking, ASO |
+| 💰 **Paid Media** | 7 | Google/Meta Ads, PPC, tracking, auditoria de contas |
+| 📊 **Product** | 5 | Roadmap, sprint, pesquisa de mercado, síntese de feedback |
+| 🎬 **Project Management** | 6 | Planejamento, Jira/Git workflows, rastreamento de experimentos |
+| 💼 **Sales** | 8 | Prospecção, discovery, qualificação, propostas, pipeline |
+| 🛟 **Support & Ops** | 6 | Atendimento, analytics, compliance, resumos executivos |
+| 🧪 **Testing** | 8 | QA, API testing, WCAG, performance, validação de entregáveis |
+| 🎯 **Specialized** | 24 | Orquestração de agentes, compliance, blockchain, MCP builder |
+
+### How to activate a specialist
+
+```
+# Step 1 — Find the right division
+"Leia skills/agency/SKILL.md"
+
+# Step 2 — Browse the division's agents
+"Leia skills/agency/engineering/SKILL.md"
+
+# Step 3 — Activate the specialist
+"Ative o Security Engineer"
+```
+
+### High-risk agents (⚠️ checkpoint required)
+
+Four agents can execute autonomous actions with real-world impact. They have a mandatory human approval checkpoint built into their `.md` file — they will always present a plan and wait for explicit confirmation before acting:
+
+- `specialized/accounts-payable-agent.md` — autonomous payments (crypto, fiat, stablecoins)
+- `marketing/marketing-carousel-growth-engine.md` — autonomous social media publishing
+- `specialized/report-distribution-agent.md` — automated email/report distribution
+- `specialized/agentic-identity-trust.md` — inter-agent trust configuration
+
+> Source: [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) (MIT) — game-development division excluded.
+
+
+---
+
 ## Architecture
 
 ```
@@ -106,17 +159,23 @@ osforge/
 │   ├── agents/            # 7 agent definitions (.md)
 │   └── rules/             # 4 always-on rules (.mdc)
 ├── skills/                # 37 SKILL.md files (loaded on-demand)
+│   ├── agency/            # 121 AI specialists across 10 divisions
+│   │   ├── SKILL.md       # Router — identifica divisão e agente
+│   │   ├── engineering/   # SKILL.md + 23 agents
+│   │   ├── design/        # SKILL.md + 8 agents
+│   │   ├── marketing/     # SKILL.md + 26 agents
+│   │   ├── paid-media/    # SKILL.md + 7 agents
+│   │   ├── product/       # SKILL.md + 5 agents
+│   │   ├── project-management/ # SKILL.md + 6 agents
+│   │   ├── sales/         # SKILL.md + 8 agents
+│   │   ├── support/       # SKILL.md + 6 agents
+│   │   ├── testing/       # SKILL.md + 8 agents
+│   │   └── specialized/   # SKILL.md + 24 agents
 │   ├── claude-api-typescript/
-│   │   ├── SKILL.md
-│   │   ├── typescript/    # Claude API + Agent SDK reference files
-│   │   └── shared/        # Models, error codes, tool-use concepts
 │   ├── smart-hooks/
-│   │   ├── SKILL.md
-│   │   └── scripts/       # Python hooks + config
 │   ├── prisma-expert/
 │   ├── stripe-integration/
-│   ├── ... (37 total)
-│   └── skill-creator/     # Skill eval system (3 agents, 9 scripts)
+│   └── ... (37 total)
 └── _skills/               # Source repositories index (770 skills)
 ```
 
@@ -126,11 +185,14 @@ osforge/
 |---|---|---|
 | SKILLS.md (31 triggers + 4 rules) | ~6,709 | Always |
 | Agent definitions (7) | ~958 | On invoke |
+| Agency router (SKILL.md) | ~2,000 | On invoke |
+| Agency division index (1 of 10) | ~1,500 | On invoke |
+| Agency specialist (1 of 121) | ~2,000–4,000 | On invoke |
 | SKILL.md files (37) | ~15,000 | On invoke |
 | Reference files (claude-api) | ~20,000 | On invoke |
 | Python hooks | 0 | Runtime (no tokens) |
-| **Total potential** | **~42,667** | |
-| **Context usage** | **3.35%** | of 200K window |
+
+---
 
 ## Stack Compatibility
 
@@ -147,6 +209,8 @@ OSForge is optimized for:
 - **Payments:** Stripe
 - **Testing:** Playwright + Bun test
 - **AI Tools:** Claude Code, Cursor
+
+---
 
 ## MCP Servers (Recommended)
 
@@ -169,6 +233,8 @@ OSForge works best with these MCP servers configured:
 }
 ```
 
+---
+
 ## Origins
 
 OSForge was built by curating and consolidating 770+ agent skills from 12 sources:
@@ -179,9 +245,12 @@ OSForge was built by curating and consolidating 770+ agent skills from 12 source
 - Vercel (React/Next.js performance)
 - Supabase (Postgres optimization)
 - Context Engineering principles
-- And 6 other community sources
+- msitarzewski/agency-agents (121 specialists — The Agency)
+- And 5 other community sources
 
-Each skill was evaluated for stack relevance, token efficiency, and superiority over alternatives. Only the best patterns made it in.
+Each skill was evaluated for stack relevance, token efficiency, and superiority over alternatives.
+
+---
 
 ## License
 
