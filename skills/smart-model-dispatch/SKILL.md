@@ -146,3 +146,33 @@ The Agent tool accepts a `model` parameter that routes to the specified tier.
 4. **Batch Haiku tasks** — Group multiple Haiku tasks (i18n + tests + docs) into a single subagent call.
 5. **Escalate on failure** — If Haiku produces low-quality output, retry with Sonnet. If Sonnet fails, escalate to Opus.
 6. **Context size matters** — Opus has 200K (1M beta). For tasks requiring >100K context, prefer Opus for better long-context performance.
+
+## Local Models Track (via llmfit-advisor)
+
+O OSForge suporta um **track local** via Ollama como alternativa ao track API, especialmente para tarefas Haiku-eligible, dados sensíveis ou clientes sem budget de API.
+
+Para identificar quais modelos rodam no hardware disponível, use a skill `llmfit-advisor`:
+```
+Leia skills/llmfit-advisor/SKILL.md
+```
+
+### Quando usar local vs API
+
+| Critério | Local (Ollama) | API (Claude) |
+|---|---|---|
+| Dados sensíveis (LGPD, contábil, jurídico) | ✅ preferir | ⚠️ evitar |
+| Tarefas Haiku-eligible em alto volume | ✅ econômico | 💰 acumula custo |
+| Raciocínio profundo / arquitetura | ❌ sem equivalente | ✅ Opus |
+| Ambiente offline / cliente sem API | ✅ único caminho | ❌ indisponível |
+| Contexto >32K tokens | ⚠️ limitado | ✅ 200K |
+| Latência crítica em produção | ⚠️ depende do HW | ✅ consistente |
+
+### Modelos locais equivalentes por tier
+
+| Claude API | Equivalente local (use-case: coding) | Equivalente local (use-case: chat) |
+|---|---|---|
+| Haiku (mecânico) | `qwen2.5-coder:7b` / `phi4-mini` | `gemma2:9b` / `mistral:7b` |
+| Sonnet (implementação) | `qwen2.5-coder:14b` / `llama3.1:8b` | `llama3.3:70b` (se HW suportar) |
+| Opus (raciocínio) | `deepseek-r1:32b` (parcial) | Sem equivalente completo |
+
+> Para saber qual modelo cabe no hardware real: `llmfit recommend --json --use-case coding --limit 3`

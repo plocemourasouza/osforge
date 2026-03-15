@@ -529,3 +529,10 @@ Naming: Components PascalCase, hooks camelCase with `use` prefix, types PascalCa
 Imports: React/Next → external libs → @/ aliases → relative → types. Always use path aliases.
 Next.js: Server Components by default, `"use client"` only when needed, Server Actions for mutations.
 No `console.log` in production, no `var`, no `enum`, no `export default`.
+
+
+---
+
+## Skill 32: llmfit Advisor (Local LLM Hardware Fit)
+**Trigger:** Detecta hardware e recomenda LLMs locais. TRIGGER quando: usuário pergunta quais modelos rodam localmente, quer configurar Ollama/LM Studio, menciona rodar modelos offline, precisa de alternativa local por custo ou privacidade LGPD, dados sensíveis que não podem ir para API externa (Tressen, Red Caveat), ou quando smart-model-dispatch identifica tarefa Haiku-eligible com alto volume.
+Requires: `llmfit` binary (`brew install llmfit` ou `cargo install llmfit`). Commands: `llmfit --json system` (hardware), `llmfit recommend --json --use-case coding --limit 3` (recomendações). Output JSON com score, fit_level (Perfect/Good/Marginal/TooTight), best_quant, estimated_tps, run_mode (GPU/CPU+GPU/CPU). Integra com smart-model-dispatch: tarefas Haiku-eligible + dados sensíveis → modelo local preferível. Mapping HF→Ollama incluso. Casos OSForge: Tressen/Red Caveat (privacidade obrigatória), OSystems clientes PME (hardware limitado), tasks repetitivas de desenvolvimento (economia de API).

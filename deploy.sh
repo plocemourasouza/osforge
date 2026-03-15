@@ -245,3 +245,15 @@ echo ""
 echo "═══════════════════════════════════════════════════"
 echo " ✅ Deploy finalizado"
 echo "═══════════════════════════════════════════════════"
+
+# ── Verificar dependências opcionais ─────────────────────────────────────
+echo ''
+echo '🔍 Verificando dependências opcionais...'
+if command -v llmfit &>/dev/null; then
+  LLMFIT_VER=$(llmfit --version 2>/dev/null | head -1 || echo 'instalado')
+  echo "  ✅ llmfit: $LLMFIT_VER"
+else
+  echo '  ⚠️  llmfit não encontrado — skill llmfit-advisor não estará disponível'
+  echo '     Instalar: brew tap AlexsJones/llmfit && brew install llmfit'
+  echo '     Ou via Rust: cargo install llmfit'
+fi
