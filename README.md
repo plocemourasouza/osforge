@@ -1,10 +1,12 @@
 # 🔨 OSForge
 
-**Curated agent skills, agents, rules, hooks, and a full AI specialist library for AI-powered development.**
+**Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade package of 31 skills, 7 specialized agents, 4 always-on rules, Python hooks, and **121 on-demand AI specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **32 on-demand skills**, **11 specialized agents**, **8 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
+
+📖 **[Full usage guide → USAGE.md](USAGE.md)**
 
 ---
 
@@ -12,34 +14,27 @@ OSForge is a production-grade package of 31 skills, 7 specialized agents, 4 alwa
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — Skills and agents load on-demand, not upfront. Zero idle token cost.
+1. **Context efficiency** — 32 skills in ~6.9K base tokens (3.4% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Every skill is tailored for Next.js App Router + Prisma + Supabase + shadcn/ui.
-3. **Quality gates built-in** — TDD enforcement, security auditing, insecure defaults detection, and Python hooks that catch issues before they ship.
+3. **Quality gates built-in** — TDD enforcement, security auditing, insecure defaults detection, and Python hooks that run at zero token cost.
 
 ---
 
 ## Quick Start
 
 ```bash
-# Clone
 git clone https://github.com/plocemourasouza/osforge.git
-
-# Copy to Claude Code
-cp osforge/claude-code/SKILLS.md ~/.claude/SKILLS.md
-cp -r osforge/claude-code/agents/ ~/.claude/agents/
-
-# Copy to Cursor
-cp osforge/claude-code/SKILLS.md ~/.cursor/SKILLS.md
-
-# (Optional) Install hooks in your project
-cp -r osforge/skills/smart-hooks/scripts/*.py your-project/.claude/hooks/
+cd osforge
+./deploy.sh
 ```
+
+The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automatically. See [USAGE.md](USAGE.md) for manual setup and options.
 
 ---
 
 ## What's Inside
 
-### 31 Skills
+### 32 Skills (on-demand)
 
 | # | Skill | Category |
 |---|---|---|
@@ -50,7 +45,7 @@ cp -r osforge/skills/smart-hooks/scripts/*.py your-project/.claude/hooks/
 | 5 | Product-Driven Spec Development (PDD) | Core |
 | 6 | React & Next.js Performance | Performance |
 | 7 | PostgreSQL & Supabase Optimization | Performance |
-| 8 | Frontend UI System (shadcn) | Frontend |
+| 8 | Frontend UI System (shadcn/ui) | Frontend |
 | 9 | Git Workflow | Core |
 | 10 | Predictive Failure Analysis | Meta |
 | 11 | Core Web Vitals | Performance |
@@ -74,93 +69,108 @@ cp -r osforge/skills/smart-hooks/scripts/*.py your-project/.claude/hooks/
 | 29 | Smart Model Dispatch | Optimization |
 | 30 | Context7 Docs-First | Meta |
 | 31 | Smart Hooks (Python) | DX |
+| 32 | llmfit Advisor (Local LLM Hardware Fit) | Optimization |
 
-
-### 7 Agents
+### 11 Agents (on-demand)
 
 | Agent | Role |
 |---|---|
 | **planner** | Architecture, decomposition, story creation (★ Synkra-enhanced) |
 | **debugger** | 10-step autonomous debugging |
 | **code-reviewer** | Code quality + YAML-structured review output |
+| **code-refactorer** | Refactoring patterns and clean code |
 | **security-auditor** | Trail of Bits methodology |
 | **frontend-engineer** | shadcn/ui + Server Components specialist |
 | **backend-engineer** | Prisma + Supabase + Server Actions |
 | **validator** | Spec critique + acceptance verification |
+| **system-architect** | System design and ADRs |
+| **product-strategy-advisor** | Product strategy and roadmap |
+| **git-commit-helper** | Conventional commits and release notes |
 
-### 4 Always-On Rules
+### 8 Always-On Rules (Cursor)
 
 - **TypeScript Strict Mode** — `strict: true` + `noUncheckedIndexedAccess` + no `any`
 - **Code Style** — Product thinking (PDD), naming conventions, import order
 - **Commit Conventions** — Conventional commits enforced
 - **TDD Enforcement** — No production code without failing test first
+- **Next.js Patterns** — App Router best practices, Server vs Client Components
+- **Product Thinking** — User-first decisions before technical decisions
+- **Security Mindset** — Zero-trust by default, fail-safe patterns
+- **Agent Skills Reference** — How to load and use OSForge skills
+
+### 9 Spec Commands (Claude Code)
+
+Slash commands for spec-driven development (`/spec:*`):
+
+| Command | Purpose |
+|---|---|
+| `/spec:discover` | Explore problem space and gather requirements |
+| `/spec:specify` | Write formal specification |
+| `/spec:design` | Technical design and ADR |
+| `/spec:tasks` | Break down into implementable tasks |
+| `/spec:implement` | Execute implementation with guardrails |
+| `/spec:clarify` | Clarification loop for ambiguous specs |
+| `/spec:checklist` | Pre-ship quality checklist |
+| `/spec:constitution` | Define project principles and constraints |
+| `/spec:measure` | Define and track success metrics |
 
 ### Python Hooks (zero token cost)
 
-- `pre_tool_use.py` — Blocks dangerous commands, protects `.env` files, audit logging
-- `post_tool_use.py` — TypeScript quality gates (console.log, any, @ts-ignore)
-- `pre_compact.py` — Conversation backup before context compaction
-- `session_end.py` — Session logging + macOS notification
+| Hook | Trigger | Purpose |
+|---|---|---|
+| `pre_tool_use.py` | Before any tool call | Blocks dangerous commands, protects `.env`, audit log |
+| `post_tool_use.py` | After Write/Edit | TypeScript quality gates: `console.log`, `any`, `@ts-ignore` |
+| `pre_compact.py` | Before context compaction | Conversation backup |
+| `session_end.py` | Session end | Session logging + macOS notification |
 
 ---
 
 ## 🏢 The Agency — 121 AI Specialists (on-demand)
 
-OSForge includes **The Agency**: a curated library of 121 specialized AI agents covering every business and technical function. Each specialist loads only when activated — zero idle context cost.
+A curated library of 121 AI specialists covering every business and technical function. Each loads only when needed — zero idle context cost.
 
-### 10 Divisions
-
-| Division | Specialists | When to use |
+| Division | Agents | When to use |
 |---|---|---|
-| 💻 **Engineering** | 23 | Código, arquitetura, segurança, DevOps, SRE, documentação |
-| 🎨 **Design** | 8 | UI/UX, sistemas de design, identidade visual, pesquisa com usuários |
-| 📢 **Marketing** | 26 | Conteúdo, SEO, redes sociais, growth hacking, ASO |
-| 💰 **Paid Media** | 7 | Google/Meta Ads, PPC, tracking, auditoria de contas |
-| 📊 **Product** | 5 | Roadmap, sprint, pesquisa de mercado, síntese de feedback |
-| 🎬 **Project Management** | 6 | Planejamento, Jira/Git workflows, rastreamento de experimentos |
-| 💼 **Sales** | 8 | Prospecção, discovery, qualificação, propostas, pipeline |
-| 🛟 **Support & Ops** | 6 | Atendimento, analytics, compliance, resumos executivos |
-| 🧪 **Testing** | 8 | QA, API testing, WCAG, performance, validação de entregáveis |
-| 🎯 **Specialized** | 24 | Orquestração de agentes, compliance, blockchain, MCP builder |
+| 💻 Engineering | 23 | Código, arquitetura, segurança, DevOps, SRE, documentação |
+| 🎨 Design | 8 | UI/UX, sistemas de design, identidade visual, pesquisa com usuários |
+| 📢 Marketing | 26 | Conteúdo, SEO, redes sociais, growth hacking, ASO |
+| 💰 Paid Media | 7 | Google/Meta Ads, PPC, tracking, auditoria de contas |
+| 📊 Product | 5 | Roadmap, sprint, pesquisa de mercado, síntese de feedback |
+| 🎬 Project Management | 6 | Planejamento, Jira/Git workflows, rastreamento de experimentos |
+| 💼 Sales | 8 | Prospecção, discovery, qualificação, propostas, pipeline |
+| 🛟 Support & Ops | 6 | Atendimento, analytics, compliance, resumos executivos |
+| 🧪 Testing | 8 | QA, API testing, WCAG, performance, validação de entregáveis |
+| 🎯 Specialized | 24 | Orquestração, compliance SOC2/ISO, blockchain, MCP builder |
 
-### How to activate a specialist
-
-```
-# Step 1 — Find the right division
-"Leia skills/agency/SKILL.md"
-
-# Step 2 — Browse the division's agents
-"Leia skills/agency/engineering/SKILL.md"
-
-# Step 3 — Activate the specialist
-"Ative o Security Engineer"
-```
-
-### High-risk agents (⚠️ checkpoint required)
-
-Four agents can execute autonomous actions with real-world impact. They have a mandatory human approval checkpoint built into their `.md` file — they will always present a plan and wait for explicit confirmation before acting:
-
-- `specialized/accounts-payable-agent.md` — autonomous payments (crypto, fiat, stablecoins)
-- `marketing/marketing-carousel-growth-engine.md` — autonomous social media publishing
-- `specialized/report-distribution-agent.md` — automated email/report distribution
-- `specialized/agentic-identity-trust.md` — inter-agent trust configuration
-
-> Source: [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) (MIT) — game-development division excluded.
-
+> ⚠️ Four agents require mandatory human approval before any autonomous action. See [USAGE.md](USAGE.md#high-risk-agents).
 
 ---
 
+## 🔍 llmfit Advisor — Local LLM Hardware Fit
+
+Detects your hardware (RAM, CPU, GPU/VRAM) and recommends which local LLMs will actually run well on your machine — with optimal quantization, speed estimates, and fit scoring across 497 models from 133 providers.
+
+**Requires:** `brew install llmfit` or `cargo install llmfit`
+
+Key use cases: LGPD-sensitive data (Tressen/Red Caveat), OSystems clients without API budget, and high-volume repetitive dev tasks where local models eliminate API costs.
+
+> Source: [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) (MIT)
+
+---
 ## Architecture
 
 ```
 osforge/
 ├── claude-code/
-│   ├── SKILLS.md          # Condensed skill triggers (~6.7K tokens)
-│   ├── agents/            # 7 agent definitions (.md)
-│   └── rules/             # 4 always-on rules (.mdc)
-├── skills/                # 37 SKILL.md files (loaded on-demand)
-│   ├── agency/            # 121 AI specialists across 10 divisions
-│   │   ├── SKILL.md       # Router — identifica divisão e agente
+│   ├── CLAUDE.md          # Entry point for Claude Code sessions
+│   ├── SKILLS.md          # 32 skill triggers (~6.9K base tokens)
+│   └── agents/            # 11 agent definitions (.md)
+├── agents/                # Agent source files
+├── rules/                 # 8 always-on rules (.mdc) for Cursor
+├── commands/              # 9 spec:* slash commands for Claude Code
+├── skills/                # On-demand skill library
+│   ├── agency/            # 121 AI specialists — The Agency
+│   │   ├── SKILL.md       # Router — identifies division and agent
 │   │   ├── engineering/   # SKILL.md + 23 agents
 │   │   ├── design/        # SKILL.md + 8 agents
 │   │   ├── marketing/     # SKILL.md + 26 agents
@@ -171,53 +181,58 @@ osforge/
 │   │   ├── support/       # SKILL.md + 6 agents
 │   │   ├── testing/       # SKILL.md + 8 agents
 │   │   └── specialized/   # SKILL.md + 24 agents
-│   ├── claude-api-typescript/
-│   ├── smart-hooks/
+│   ├── llmfit-advisor/    # Local LLM hardware fit advisor
+│   ├── smart-model-dispatch/  # Claude API tier routing
+│   ├── smart-hooks/       # Python hooks source
+│   ├── claude-api-typescript/ # Claude API + Agent SDK reference
 │   ├── prisma-expert/
 │   ├── stripe-integration/
-│   └── ... (37 total)
-└── _skills/               # Source repositories index (770 skills)
+│   └── ... (32 total)
+├── hooks/                 # Python hooks + shell scripts + config
+├── mcp/                   # MCP server configs (claude-code.json, cursor.json)
+├── scripts/               # Utility scripts
+├── docs/                  # Internal documentation
+├── deploy.sh              # One-command sync to ~/.claude/ and ~/.cursor/
+└── _skills/               # Source repositories index (770+ skills curated)
 ```
 
 ### Token Budget
 
 | Component | Tokens | Loaded |
 |---|---|---|
-| SKILLS.md (31 triggers + 4 rules) | ~6,709 | Always |
-| Agent definitions (7) | ~958 | On invoke |
+| SKILLS.md (32 triggers + 8 rules) | ~6,900 | Always |
+| Agent definitions (11) | ~1,200 | On invoke |
 | Agency router (SKILL.md) | ~2,000 | On invoke |
 | Agency division index (1 of 10) | ~1,500 | On invoke |
 | Agency specialist (1 of 121) | ~2,000–4,000 | On invoke |
-| SKILL.md files (37) | ~15,000 | On invoke |
-| Reference files (claude-api) | ~20,000 | On invoke |
-| Python hooks | 0 | Runtime (no tokens) |
+| Individual SKILL.md files | ~500–3,000 each | On invoke |
+| Python hooks | 0 | Runtime only |
+| **Base context usage** | **~6,900** | **3.4% of 200K** |
 
 ---
 
 ## Stack Compatibility
 
-OSForge is optimized for:
-
-- **Framework:** Next.js 14+ (App Router)
-- **Language:** TypeScript (strict mode)
-- **ORM:** Prisma
-- **Database:** PostgreSQL via Supabase
-- **Auth:** Supabase Auth (SSR)
-- **UI:** shadcn/ui + Tailwind CSS
-- **Runtime:** Bun
-- **Deployment:** Vercel
-- **Payments:** Stripe
-- **Testing:** Playwright + Bun test
-- **AI Tools:** Claude Code, Cursor
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15+ (App Router) |
+| Language | TypeScript (strict mode) |
+| ORM | Prisma |
+| Database | PostgreSQL via Supabase |
+| Auth | Supabase Auth (SSR) |
+| UI | shadcn/ui + Tailwind CSS |
+| Runtime | Bun |
+| Deployment | Vercel |
+| Payments | Stripe |
+| Testing | Playwright + Bun test |
+| AI Tools | Claude Code, Cursor |
 
 ---
 
 ## MCP Servers (Recommended)
 
-OSForge works best with these MCP servers configured:
-
 ```jsonc
-// .mcp.json
+// .mcp.json (project) or ~/.claude.json (global)
 {
   "mcpServers": {
     "context7": {
@@ -228,27 +243,31 @@ OSForge works best with these MCP servers configured:
       "command": "npx",
       "args": ["-y", "@supabase/mcp-server-supabase@latest", "--read-only"],
       "env": { "SUPABASE_ACCESS_TOKEN": "your-token" }
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
     }
   }
 }
 ```
 
+See `mcp/claude-code.json` and `mcp/cursor.json` for full configs.
+
 ---
 
 ## Origins
 
-OSForge was built by curating and consolidating 770+ agent skills from 12 sources:
+OSForge was built by curating 770+ agent skills from 12 sources:
 
-- Anthropic (official skills + claude-api)
-- Superpowers (SDD workflow)
-- Trail of Bits (security methodology)
-- Vercel (React/Next.js performance)
-- Supabase (Postgres optimization)
-- Context Engineering principles
-- msitarzewski/agency-agents (121 specialists — The Agency)
-- And 5 other community sources
-
-Each skill was evaluated for stack relevance, token efficiency, and superiority over alternatives.
+- **Anthropic** — Official skills + Claude API SDK
+- **Trail of Bits** — Security auditing methodology
+- **Vercel** — React/Next.js performance patterns
+- **Supabase** — PostgreSQL optimization
+- **Superpowers** — Spec-driven development workflow
+- **AlexsJones/llmfit** — Local LLM hardware fit advisor
+- **msitarzewski/agency-agents** — 121 AI specialists (The Agency)
+- Context Engineering principles and 5 other community sources
 
 ---
 
