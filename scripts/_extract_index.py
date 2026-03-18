@@ -7,7 +7,7 @@ import json
 import re
 from pathlib import Path
 
-BASE = Path(os.path.expanduser("~/Development/agent-skills-consolidado"))
+BASE = Path(os.path.expanduser("~/Development/osforge"))
 
 SOURCE_LABELS = {
     "01-anthropic": {"label": "Anthropic (Oficial)", "emoji": "🟣", "url": "https://github.com/anthropics/skills"},

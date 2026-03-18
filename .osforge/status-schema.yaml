@@ -1,0 +1,139 @@
+# OSForge Status Schema
+# Localização: .osforge/status.yaml
+# Gerenciado pelo Orchestrator Agent
+
+# Exemplo de arquivo status.yaml preenchido:
+#
+# project: "subscription-module"
+# description: "Módulo de assinaturas com Stripe"
+# triage: standard
+# status: active
+# created: "2026-03-17T14:00:00Z"
+# updated: "2026-03-17T16:30:00Z"
+#
+# plan:
+#   approved: true
+#   approved_at: "2026-03-17T14:15:00Z"
+#
+# phases:
+#   - name: "Spec"
+#     status: complete
+#     skill: "skills/planning/spec-builder"
+#     artifact: "docs/specs/subscription-module.md"
+#     started: "2026-03-17T14:15:00Z"
+#     completed: "2026-03-17T14:45:00Z"
+#
+#   - name: "Schema + RLS"
+#     status: complete
+#     skill: "skills/planning/arch-builder"
+#     artifact: "docs/specs/arch-decisions-subscription.md"
+#     started: "2026-03-17T14:50:00Z"
+#     completed: "2026-03-17T15:20:00Z"
+#
+#   - name: "Stories"
+#     status: complete
+#     skill: "skills/planning/epic-decomposer"
+#     artifact: "docs/specs/stories/subscription/"
+#     started: "2026-03-17T15:25:00Z"
+#     completed: "2026-03-17T15:50:00Z"
+#
+#   - name: "Story 1: Webhook handler"
+#     status: in-progress
+#     skill: "skills/planning/story-executor"
+#     artifact: null
+#     started: "2026-03-17T16:00:00Z"
+#     completed: null
+#
+#   - name: "Story 2: CRUD planos"
+#     status: pending
+#     skill: "skills/planning/story-executor"
+#     artifact: null
+#
+#   - name: "Final Review"
+#     status: pending
+#     skill: "skills/quality/adversarial-review"
+#     artifact: null
+#
+# corrections: []
+
+# --- Schema Definition ---
+
+schema:
+  project:
+    type: string
+    required: true
+    description: Nome kebab-case do projeto/feature
+
+  description:
+    type: string
+    required: true
+    description: Descrição curta da demanda
+
+  triage:
+    type: enum
+    values: [quick, standard, complex]
+    required: true
+
+  status:
+    type: enum
+    values: [active, paused, complete, cancelled]
+    required: true
+
+  created:
+    type: datetime
+    required: true
+
+  updated:
+    type: datetime
+    required: true
+
+  plan:
+    type: object
+    properties:
+      approved:
+        type: boolean
+      approved_at:
+        type: datetime
+
+  phases:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          required: true
+        status:
+          type: enum
+          values: [pending, in-progress, complete, skipped, cancelled, blocked]
+          required: true
+        skill:
+          type: string
+          description: Path do skill usado
+        artifact:
+          type: string
+          nullable: true
+          description: Path relativo do artefato produzido
+        started:
+          type: datetime
+          nullable: true
+        completed:
+          type: datetime
+          nullable: true
+
+  corrections:
+    type: array
+    description: Histórico de course corrections
+    items:
+      type: object
+      properties:
+        date:
+          type: datetime
+        reason:
+          type: string
+        impact:
+          type: string
+        phases_affected:
+          type: array
+          items:
+            type: string

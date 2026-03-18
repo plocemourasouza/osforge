@@ -22,7 +22,7 @@ import sys
 import os
 from pathlib import Path
 
-BASE = Path(__file__).parent
+BASE = Path(__file__).parent.parent  # osforge root
 INDEX = BASE / "INDICE-SKILLS.json"
 
 # Colors

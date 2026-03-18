@@ -178,7 +178,7 @@ deploy_claude() {
   log "Verificar drift MCPs:"
   python3 - <<'PYEOF'
 import json, os
-with open(os.path.expanduser("~/Development/agent-skills-consolidado/mcp/claude-code.json")) as f:
+with open(os.path.expanduser("~/Development/osforge/mcp/claude-code.json")) as f:
     repo_mcps = set(json.load(f).get("mcpServers", {}).keys())
 with open(os.path.expanduser("~/.claude.json")) as f:
     live_mcps = set(json.load(f).get("mcpServers", {}).keys())
