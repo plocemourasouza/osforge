@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **50 on-demand skills**, **12 specialized agents**, **10 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **51 on-demand skills**, **12 specialized agents**, **11 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -14,7 +14,7 @@ OSForge is a production-grade AI development framework with **50 on-demand skill
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 50 skills in ~9.5K base tokens (3.4% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 51 skills in ~9.5K base tokens (3.4% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Every skill is tailored for Next.js App Router + Prisma + Supabase + shadcn/ui.
 3. **Quality gates built-in** — TDD enforcement, security auditing, insecure defaults detection, and Python hooks that run at zero token cost.
 
@@ -34,7 +34,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 
 ## What's Inside
 
-### 50 Skills (on-demand)
+### 51 Skills (on-demand)
 
 | # | Skill | Category |
 |---|---|---|
@@ -88,6 +88,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | 48 | AutoRefine Skill (Autonomous Skill Iteration) | Meta |
 | 49 | Phase Discussion (Pre-planning Context Capture) | Planning |
 | 50 | UI Audit (6-pillar Visual Quality Review) | Quality |
+| 51 | UI Design Intelligence (Styles, Palettes, Typography, UX, Charts) | Frontend |
 
 ### 12 Agents (on-demand)
 
@@ -106,7 +107,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | **product-strategy-advisor** | Product strategy and roadmap |
 | **git-commit-helper** | Conventional commits and release notes |
 
-### 10 Always-On Rules (Cursor)
+### 11 Always-On Rules (Cursor)
 
 - **TypeScript Strict Mode** — `strict: true` + `noUncheckedIndexedAccess` + no `any`
 - **Code Style** — Product thinking (PDD), naming conventions, import order
@@ -118,6 +119,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 - **Agent Skills Reference** — How to load and use OSForge skills
 - **Orchestrator Awareness** — Always check .osforge/status.yaml for work in progress; route complex demands through Orchestrator
 - **Artifact Chain** — Every planning artifact must have frontmatter with type, status, depends_on; never advance phase without checkpoint approval
+- **Intelligent Routing** — Silent domain detection + automatic agent selection on every message
 
 ### 9 Spec Commands (Claude Code)
 
@@ -185,7 +187,7 @@ osforge/
 ├── .osforge/              # Project status tracking (status.yaml)
 ├── claude-code/
 │   ├── CLAUDE.md          # Entry point for Claude Code sessions
-│   ├── SKILLS.md          # 50 skill triggers (~9.5K base tokens)
+│   ├── SKILLS.md          # 51 skill triggers (~9.5K base tokens)
 │   └── agents/            # 12 agent definitions (.md)
 ├── agents/                # Agent source files
 ├── rules/                 # 10 always-on rules (.mdc + .md) for Cursor
@@ -212,7 +214,8 @@ osforge/
 │   ├── planning/           # 6 planning skills (spec, prd, arch, epics, story, phase-discussion)
 │   ├── quality/            # 6 quality skills (adversarial, code-review, edge-case, elicitation, readiness, ui-audit)
 │   ├── context/            # 4 context skills (distillator, project-context, doc-shard, editorial)
-│   └── ... (50 total)
+│   ├── ui-design-intelligence/ # Style catalog, palettes, typography, UX, charts
+│   └── ... (51 total)
 ├── hooks/                 # Python hooks + shell scripts + config
 ├── mcp/                   # MCP server configs (claude-code.json, cursor.json)
 ├── scripts/               # Utility scripts
@@ -225,7 +228,7 @@ osforge/
 
 | Component | Tokens | Loaded |
 |---|---|---|
-| SKILLS.md (50 triggers + 10 rules) | ~9,500 | Always |
+| SKILLS.md (51 triggers + 11 rules) | ~9,500 | Always |
 | Agent definitions (12) | ~1,300 | On invoke |
 | Agency router (SKILL.md) | ~2,000 | On invoke |
 | Agency division index (1 of 10) | ~1,500 | On invoke |

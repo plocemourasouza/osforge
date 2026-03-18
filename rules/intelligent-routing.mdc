@@ -1,0 +1,79 @@
+---
+description: Detecção silenciosa de domínio e seleção automática de agente especialista para qualquer request. Aplica-se a toda mensagem antes de responder — sem exigir que o usuário conheça a arquitetura de agentes do OSForge.
+globs: ["**/*.ts", "**/*.tsx", "**/*.md", "**/*.prisma"]
+alwaysApply: true
+---
+
+# Rule: Intelligent Routing
+
+Antes de responder a QUALQUER request de desenvolvimento, executar análise silenciosa:
+
+## 1. Classificar o request
+
+| Tipo | Exemplos |
+|---|---|
+| QUESTION | "Como funciona X?", "O que é Y?" |
+| QUICK_FIX | 1 arquivo, zero ambiguidade, pattern conhecido |
+| FEATURE | Nova funcionalidade, múltiplos arquivos |
+| BUG | Erro, falha, comportamento inesperado |
+| REVIEW | Revisar código, auditar, checar qualidade |
+| DESIGN | UI, UX, layout, componente visual |
+| UNCLEAR | Request vago — pedir clarificação primeiro |
+
+Para QUESTION e UNCLEAR: responder diretamente sem routing. Para os demais: continuar.
+
+## 2. Detectar domínios
+
+Analisar keywords e contexto do request:
+
+| Keyword/Contexto | Domínio |
+|---|---|
+| componente, page, layout, UI, tela, modal, form, dashboard | FRONTEND |
+| API, route, Server Action, banco, schema, query, Prisma | BACKEND |
+| auth, JWT, RLS, permissão, senha, token, CSRF, SQL injection | SECURITY |
+| teste, test, spec, playwright, coverage, mock | TESTING |
+| deploy, CI, GitHub Actions, Vercel, env, pipeline | DEVOPS |
+| performance, lento, otimização, bundle, cache, N+1 | PERFORMANCE |
+| bug, erro, exception, stack trace, crash, 500 | DEBUG |
+| refatorar, limpar, organizar, simplificar | REFACTOR |
+
+## 3. Selecionar agente(s)
+
+Com base nos domínios detectados:
+
+| Domínio(s) | Agente(s) |
+|---|---|
+| FRONTEND | `frontend-engineer` |
+| BACKEND | `backend-engineer` |
+| SECURITY | `security-auditor` |
+| FRONTEND + SECURITY | `frontend-engineer` + `security-auditor` |
+| FRONTEND + BACKEND | `frontend-engineer` + `backend-engineer` |
+| DEBUG (qualquer domínio) | `debugger` |
+| REVIEW | `code-reviewer` |
+| REFACTOR | `code-refactorer` |
+| PERFORMANCE + BACKEND | `backend-engineer` (foco em otimização) |
+| 3+ domínios ou FEATURE complexa | → Acionar Orchestrator |
+
+## 4. Comunicar e agir
+
+Para requests QUICK_FIX com 1 domínio: agir direto, sem anunciar.
+
+Para FEATURE, BUG, REVIEW com domínio claro: informar concisamente no início:
+```
+🤖 Aplicando expertise de `@frontend-engineer` + `@security-auditor`...
+```
+Depois responder com a persona do(s) agente(s) selecionado(s).
+
+Para 3+ domínios ou FEATURE complexa: sugerir Orchestrator:
+```
+🤖 Detectado: Frontend + Backend + Auth — demanda multi-domínio.
+Sugestão: ativar o Orchestrator para planejamento estruturado.
+Prefere prosseguir direto ou estruturar o plano?
+```
+
+## Regras
+
+- Nunca bloquear o usuário — routing é sugestão inteligente, não barreira
+- Override explícito do usuário ("use o backend-engineer") sempre prevalece
+- Para requests ambíguos: fazer UMA pergunta de clarificação antes de rotear
+- Não anunciar routing para respostas simples (QUESTION, QUICK_FIX trivial)

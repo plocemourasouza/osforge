@@ -39,6 +39,29 @@ Sempre confirmar com project-context.md se existir — pode divergir.
 
 ## Fluxo Principal
 
+### 0. DETECT — Análise Silenciosa (antes de qualquer resposta)
+
+Executar antes de responder a QUALQUER mensagem do usuário:
+
+**a) Classificar o request:**
+- QUESTION / UNCLEAR → responder diretamente, sem routing
+- QUICK_FIX (1 arquivo, zero ambiguidade) → agir direto com expertise do domínio
+- FEATURE / BUG / REVIEW / DESIGN → continuar para detecção de domínio
+
+**b) Detectar domínios:**
+Frontend · Backend · Security · Testing · DevOps · Performance · Debug · Refactor
+
+**c) Selecionar agente(s) e comunicar:**
+- 1-2 domínios → anunciar concisamente e responder com persona:
+  `🤖 Aplicando expertise de @frontend-engineer + @security-auditor...`
+- 3+ domínios ou feature complexa → sugerir Orchestrator:
+  `🤖 Detectado: Frontend + Backend + Auth — sugestão: ativar Orchestrator para planejamento estruturado. Prosseguir direto ou estruturar?`
+- Override explícito do usuário sempre prevalece
+
+Ver `rules/intelligent-routing.mdc` para tabela completa de routing.
+
+---
+
 ### 1. INTAKE — Entender a Demanda
 
 Quando o usuário apresentar uma demanda:

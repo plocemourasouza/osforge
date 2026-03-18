@@ -76,6 +76,66 @@ bun run build
 bun prisma generate && bun tsc --noEmit
 ```
 
+---
+
+## Project-level Validation Scripts
+
+Para projetos que precisam de verificações sistemáticas além do pipeline do Claude Code,
+o OSForge fornece um template de script invocável diretamente.
+
+### Instalar no projeto
+
+```bash
+cp ~/.claude/hooks/validate.py .scripts/validate.py
+chmod +x .scripts/validate.py
+```
+
+### Executar
+
+```bash
+# Checklist rápido durante desenvolvimento
+python3 .scripts/validate.py --quick
+
+# Verificação completa antes de deploy
+python3 .scripts/validate.py --full
+
+# Verificar domínio específico
+python3 .scripts/validate.py --domain types
+python3 .scripts/validate.py --domain tests
+python3 .scripts/validate.py --domain build
+python3 .scripts/validate.py --domain security
+```
+
+### Personalizar para o projeto
+
+O script lê `.scripts/validate.config.json` se existir:
+
+```json
+{
+  "commands": {
+    "types": "bun tsc --noEmit",
+    "lint": "bun run lint",
+    "tests": "bun run test",
+    "build": "bun run build",
+    "prisma": "bun prisma validate"
+  },
+  "quick": ["types", "lint"],
+  "full": ["types", "lint", "tests", "build"],
+  "pre_deploy": ["types", "lint", "tests", "build", "prisma"]
+}
+```
+
+O template base está em `hooks/validate.py` no repositório OSForge.
+
+### Integração com o Orchestrator
+
+O Orchestrator pode invocar o script no step de ROUTE ao completar cada fase:
+```
+"Fase N concluída. Executando validação..."
+→ python3 .scripts/validate.py --quick
+→ Reportar resultado antes de avançar para a próxima fase
+```
+
 ## Correct Completion Format
 
 ```

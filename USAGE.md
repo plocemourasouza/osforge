@@ -72,7 +72,7 @@ cargo install llmfit
 **Cursor (`~/.cursor/`)**
 - Copies `SKILLS.md`
 - Syncs agents to `~/.cursor/agents/`
-- Copies 10 rules (`.mdc` + `.md`) to `~/.cursor/rules/`
+- Copies 11 rules (`.mdc` + `.md`) to `~/.cursor/rules/`
 - Copies hook scripts
 
 **Dependency check**
@@ -148,7 +148,6 @@ Just describe what you need. Claude identifies and applies the skill automatical
 - `mcp-builder` — Build MCP servers
 - `skill-creator` — Create and evaluate new skills
 - `autorefine-skill` — Autonomous iterative skill refinement (modify→evaluate→keep/discard loop)
-- `dispatching-parallel-agents` — Wave execution: dependency-aware parallel agents grouped in ordered waves
 - `smart-hooks` — Python quality hooks
 
 **API**
@@ -186,9 +185,10 @@ Just describe what you need. Claude identifies and applies the skill automatical
 - `context/doc-shard` — Splits large markdown docs into organized shards
 - `context/editorial-review` — Editorial review: prose (copy-editing) or structure (reorganization)
 
-**Frontend**
+**Frontend / Design**
 - `accessibility` — WCAG 2.1, aria, screen readers
 - `seo` — Meta tags, structured data, sitemap
+- `ui-design-intelligence` — Design system spec agnóstico de stack: 67 estilos visuais, paletas por indústria, 57 pares tipográficos, 99 diretrizes UX, 25 tipos de chart
 
 **Optimization**
 - `predictive-failure` — Early risk analysis
@@ -255,7 +255,7 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 
 ## 5. Always-On Rules (Cursor)
 
-The 10 rules are automatically active in all Cursor sessions. No activation needed.
+The 11 rules are automatically active in all Cursor sessions. No activation needed.
 
 | Rule | Effect |
 |---|---|
@@ -269,6 +269,7 @@ The 10 rules are automatically active in all Cursor sessions. No activation need
 | `agent-skills-reference` | How to load and use OSForge skills |
 | `orchestrator-awareness` | Check `.osforge/status.yaml` for WIP; route complex demands through Orchestrator |
 | `artifact-chain` | Planning artifacts need frontmatter (`type`, `status`, `depends_on`); never skip checkpoints |
+| `intelligent-routing` | Silent domain detection + automatic agent selection on every message |
 
 ---
 
