@@ -288,12 +288,13 @@ See `mcp/claude-code.json` and `mcp/cursor.json` for full configs.
 
 ## Origins
 
-OSForge was built by evaluating **975+ agent skills, commands, and patterns across 17 sources**, curating the most relevant for the Next.js + TypeScript + Prisma + Supabase + Bun stack:
+OSForge was built by evaluating **1050+ agent skills, commands, and patterns across 19 sources**, curating the most relevant for the Next.js + TypeScript + Prisma + Supabase + Bun stack:
 
 | Source | Repository | Focus |
 |---|---|---|
 | **Anthropic** | [anthropics/skills](https://github.com/anthropics/skills) ⭐ 63.9k | Official skills: docx, pdf, pptx, xlsx, mcp-builder, frontend-design |
 | **Antigravity** | [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) ⭐ 7.4k | 634+ universal skills (curated subset) |
+| **Antigravity Kit** | [vudovn/antigravity-kit](https://github.com/vudovn/antigravity-kit) ⭐ 4.2k | Intelligent routing, agent flow architecture, project validation scripts |
 | **autoresearch** | [karpathy/autoresearch](https://github.com/karpathy/autoresearch) ⭐ 39k | Autonomous research loop pattern (modify→evaluate→keep/discard→repeat) — inspired `autorefine-skill` |
 | **BMAD-METHOD** | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) ⭐ 35.4k | Orchestration patterns: intake, triage, multi-phase planning, quality gates, artifact chains |
 | **claude-mem** | [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) ⭐ 23.3k | Persistent memory for Claude Code |
@@ -308,9 +309,10 @@ OSForge was built by evaluating **975+ agent skills, commands, and patterns acro
 | **Superpowers (obra)** | [obra/superpowers](https://github.com/obra/superpowers) ⭐ 45.3k | TDD workflow, spec-driven development, subagents |
 | **The Agency** | [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) ⭐ 31k | 121 AI specialists across 10 business divisions |
 | **Trail of Bits** | [trailofbits/skills](https://github.com/trailofbits/skills) ⭐ 2.4k | Enterprise security auditing methodology |
+| **UI-UX Pro Max** | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) ⭐ 39k | Design intelligence database: 67 styles, 161 palettes, 57 font pairs, 99 UX guidelines, 25 chart types |
 | **Vercel Labs** | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) ⭐ 19.1k | React, Next.js performance, Core Web Vitals |
 
-> **Breakdown:** 769 SKILL.md/agent files indexed from 13 repositories · 121 Agency specialists · 33 GSD commands · ~50 BMAD orchestration patterns · 2 tool patterns (llmfit + autoresearch)
+> **Breakdown:** 769 SKILL.md/agent files indexed from 13 repositories · 121 Agency specialists · 33 GSD commands · ~50 BMAD orchestration patterns · 67 Antigravity Kit templates · 5 UI-UX Pro Max reference databases · 2 tool patterns (llmfit + autoresearch)
 
 ---
 
