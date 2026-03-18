@@ -282,7 +282,7 @@ See `mcp/claude-code.json` and `mcp/cursor.json` for full configs.
 
 ## Origins
 
-OSForge was built by curating 770+ agent skills from 14 sources, evaluated for stack relevance, token efficiency, and quality:
+OSForge was built by curating 770+ agent skills from 15 sources, evaluated for stack relevance, token efficiency, and quality:
 
 | Source | Repository | Focus |
 |---|---|---|
@@ -299,6 +299,7 @@ OSForge was built by curating 770+ agent skills from 14 sources, evaluated for s
 | **Sentry** | [getsentry/skills](https://github.com/getsentry/skills) ⭐ 173 | Code review, PR workflow |
 | **The Agency** | [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) ⭐ 31k | 121 AI specialists across 10 business divisions |
 | **llmfit** | [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) ⭐ 6.5k | Hardware-aware local LLM recommendations |
+| **BMAD-METHOD** | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) ⭐ 35.4k | Orchestration patterns: intake, triage, multi-phase planning, quality gates, artifact chains |
 | **Curated lists** | [VoltAgent](https://github.com/VoltAgent/awesome-agent-skills) / [travisvn](https://github.com/travisvn/awesome-claude-skills) | Awesome lists used for discovery and curation |
 
 ---
