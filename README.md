@@ -285,7 +285,7 @@ See `mcp/claude-code.json` and `mcp/cursor.json` for full configs.
 
 ## Origins
 
-OSForge was built by curating 770+ agent skills from 17 sources, evaluated for stack relevance, token efficiency, and quality:
+OSForge was built by evaluating **975+ agent skills, commands, and patterns across 17 sources**, curating the most relevant for the Next.js + TypeScript + Prisma + Supabase + Bun stack:
 
 | Source | Repository | Focus |
 |---|---|---|
@@ -306,6 +306,8 @@ OSForge was built by curating 770+ agent skills from 17 sources, evaluated for s
 | **The Agency** | [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) ⭐ 31k | 121 AI specialists across 10 business divisions |
 | **Trail of Bits** | [trailofbits/skills](https://github.com/trailofbits/skills) ⭐ 2.4k | Enterprise security auditing methodology |
 | **Vercel Labs** | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) ⭐ 19.1k | React, Next.js performance, Core Web Vitals |
+
+> **Breakdown:** 769 SKILL.md/agent files indexed from 13 repositories · 121 Agency specialists · 33 GSD commands · ~50 BMAD orchestration patterns · 2 tool patterns (llmfit + autoresearch)
 
 ---
 
