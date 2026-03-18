@@ -536,3 +536,12 @@ No `console.log` in production, no `var`, no `enum`, no `export default`.
 ## Skill 32: llmfit Advisor (Local LLM Hardware Fit)
 **Trigger:** Detecta hardware e recomenda LLMs locais. TRIGGER quando: usuário pergunta quais modelos rodam localmente, quer configurar Ollama/LM Studio, menciona rodar modelos offline, precisa de alternativa local por custo ou privacidade LGPD, dados sensíveis que não podem ir para API externa (Tressen, Red Caveat), ou quando smart-model-dispatch identifica tarefa Haiku-eligible com alto volume.
 Requires: `llmfit` binary (`brew install llmfit` ou `cargo install llmfit`). Commands: `llmfit --json system` (hardware), `llmfit recommend --json --use-case coding --limit 3` (recomendações). Output JSON com score, fit_level (Perfect/Good/Marginal/TooTight), best_quant, estimated_tps, run_mode (GPU/CPU+GPU/CPU). Integra com smart-model-dispatch: tarefas Haiku-eligible + dados sensíveis → modelo local preferível. Mapping HF→Ollama incluso. Casos OSForge: Tressen/Red Caveat (privacidade obrigatória), OSystems clientes PME (hardware limitado), tasks repetitivas de desenvolvimento (economia de API).
+
+---
+
+## Skill 33: The Agency — Biblioteca de Especialistas de IA
+**Trigger:** Precisar de um especialista em qualquer área não coberta pelas skills técnicas acima. Inclui: engenharia (segurança, SRE, DevOps, mobile, blockchain), design (UI/UX, sistemas de design, identidade, prompts de imagem), marketing (SEO, conteúdo, redes sociais, growth, ASO), mídia paga (Google/Meta Ads, PPC, analytics), produto (roadmap, priorização, pesquisa de mercado), gestão de projetos (planejamento, Jira, scrum), vendas (outbound, discovery, MEDDPICC, pipeline), suporte (atendimento, compliance, operações), qualidade (QA, testes de API, WCAG, performance), e especialistas avançados (orquestração de agentes, SOC2/ISO, supply chain, MCP builder).
+
+**Load:** `Leia skills/agency/SKILL.md`
+
+121 especialistas em 10 divisões. Carregamento hierárquico: router → índice da divisão → agente. Zero custo de contexto até ser ativado.
