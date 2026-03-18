@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **32 on-demand skills**, **11 specialized agents**, **8 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **47 on-demand skills**, **12 specialized agents**, **10 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -14,7 +14,7 @@ OSForge is a production-grade AI development framework with **32 on-demand skill
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 32 skills in ~6.9K base tokens (3.4% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 47 skills in ~9.5K base tokens (3.4% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Every skill is tailored for Next.js App Router + Prisma + Supabase + shadcn/ui.
 3. **Quality gates built-in** — TDD enforcement, security auditing, insecure defaults detection, and Python hooks that run at zero token cost.
 
@@ -34,7 +34,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 
 ## What's Inside
 
-### 32 Skills (on-demand)
+### 47 Skills (on-demand)
 
 | # | Skill | Category |
 |---|---|---|
@@ -70,11 +70,27 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | 30 | Context7 Docs-First | Meta |
 | 31 | Smart Hooks (Python) | DX |
 | 32 | llmfit Advisor (Local LLM Hardware Fit) | Optimization |
+| 33 | The Agency (121 AI Specialists) | Meta |
+| 34 | Spec Builder (Collaborative) | Planning |
+| 35 | PRD Builder (Collaborative) | Planning |
+| 36 | Architecture Builder (ADR) | Planning |
+| 37 | Epic Decomposer | Planning |
+| 38 | Story Executor | Planning |
+| 39 | Adversarial Review | Quality |
+| 40 | Code Review (OSForge Stack) | Quality |
+| 41 | Edge Case Hunter | Quality |
+| 42 | Elicitation Engine | Quality |
+| 43 | Readiness Gate | Quality |
+| 44 | Context Distillator | Context |
+| 45 | Project Context Generator | Context |
+| 46 | Doc Shard | Context |
+| 47 | Editorial Review | Context |
 
-### 11 Agents (on-demand)
+### 12 Agents (on-demand)
 
 | Agent | Role |
 |---|---|
+| **orchestrator** | Intake, triage, planning, routing, tracking, course correction (always-active meta-agent) |
 | **planner** | Architecture, decomposition, story creation (★ Synkra-enhanced) |
 | **debugger** | 10-step autonomous debugging |
 | **code-reviewer** | Code quality + YAML-structured review output |
@@ -87,7 +103,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | **product-strategy-advisor** | Product strategy and roadmap |
 | **git-commit-helper** | Conventional commits and release notes |
 
-### 8 Always-On Rules (Cursor)
+### 10 Always-On Rules (Cursor)
 
 - **TypeScript Strict Mode** — `strict: true` + `noUncheckedIndexedAccess` + no `any`
 - **Code Style** — Product thinking (PDD), naming conventions, import order
@@ -97,6 +113,8 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 - **Product Thinking** — User-first decisions before technical decisions
 - **Security Mindset** — Zero-trust by default, fail-safe patterns
 - **Agent Skills Reference** — How to load and use OSForge skills
+- **Orchestrator Awareness** — Always check .osforge/status.yaml for work in progress; route complex demands through Orchestrator
+- **Artifact Chain** — Every planning artifact must have frontmatter with type, status, depends_on; never advance phase without checkpoint approval
 
 ### 9 Spec Commands (Claude Code)
 
@@ -161,12 +179,13 @@ Key use cases: LGPD-sensitive data (Tressen/Red Caveat), OSystems clients withou
 
 ```
 osforge/
+├── .osforge/              # Project status tracking (status.yaml)
 ├── claude-code/
 │   ├── CLAUDE.md          # Entry point for Claude Code sessions
-│   ├── SKILLS.md          # 32 skill triggers (~6.9K base tokens)
-│   └── agents/            # 11 agent definitions (.md)
+│   ├── SKILLS.md          # 47 skill triggers (~9.5K base tokens)
+│   └── agents/            # 12 agent definitions (.md)
 ├── agents/                # Agent source files
-├── rules/                 # 8 always-on rules (.mdc) for Cursor
+├── rules/                 # 10 always-on rules (.mdc + .md) for Cursor
 ├── commands/              # 9 spec:* slash commands for Claude Code
 ├── skills/                # On-demand skill library
 │   ├── agency/            # 121 AI specialists — The Agency
@@ -187,7 +206,10 @@ osforge/
 │   ├── claude-api-typescript/ # Claude API + Agent SDK reference
 │   ├── prisma-expert/
 │   ├── stripe-integration/
-│   └── ... (32 total)
+│   ├── planning/           # 5 planning skills (spec, prd, arch, epics, story)
+│   ├── quality/            # 5 quality skills (adversarial, code-review, edge-case, elicitation, readiness)
+│   ├── context/            # 4 context skills (distillator, project-context, doc-shard, editorial)
+│   └── ... (47 total)
 ├── hooks/                 # Python hooks + shell scripts + config
 ├── mcp/                   # MCP server configs (claude-code.json, cursor.json)
 ├── scripts/               # Utility scripts
@@ -200,14 +222,16 @@ osforge/
 
 | Component | Tokens | Loaded |
 |---|---|---|
-| SKILLS.md (32 triggers + 8 rules) | ~6,900 | Always |
-| Agent definitions (11) | ~1,200 | On invoke |
+| SKILLS.md (47 triggers + 10 rules) | ~9,500 | Always |
+| Agent definitions (12) | ~1,300 | On invoke |
 | Agency router (SKILL.md) | ~2,000 | On invoke |
 | Agency division index (1 of 10) | ~1,500 | On invoke |
 | Agency specialist (1 of 121) | ~2,000–4,000 | On invoke |
 | Individual SKILL.md files | ~500–3,000 each | On invoke |
 | Python hooks | 0 | Runtime only |
-| **Base context usage** | **~6,900** | **3.4% of 200K** |
+| Orchestrator AGENT.md | ~3,500 | On invoke |
+| Planning/Quality/Context skills | ~500–2,000 each | On invoke |
+| **Base context usage** | **~9,500** | **4.7% of 200K** |
 
 ---
 

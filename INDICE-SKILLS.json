@@ -8268,5 +8268,145 @@
     "source_url": "",
     "local_path": "skills/verification-before-completion",
     "skill_dir": "verification-before-completion"
+  },
+  {
+    "name": "spec-builder",
+    "description": "Collaborative technical specification facilitation. Produces tech-spec with testable ACs, ordered tasks, and risks. Stack-aware.",
+    "category": "🔄 Workflow / Process",
+    "local_path": "skills/planning/spec-builder",
+    "skill_dir": "spec-builder",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "prd-builder",
+    "description": "Collaborative Product Requirements Document facilitation. Guides problem definition, users, requirements, metrics, and MVP scope.",
+    "category": "🔄 Workflow / Process",
+    "local_path": "skills/planning/prd-builder",
+    "skill_dir": "prd-builder",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "arch-builder",
+    "description": "Architectural decision facilitation with ADRs. Stack-aware for Next.js/Prisma/Supabase. Evaluates options with explicit trade-offs.",
+    "category": "🏗️ Architecture",
+    "local_path": "skills/planning/arch-builder",
+    "skill_dir": "arch-builder",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "epic-decomposer",
+    "description": "Decomposes specs, PRDs or requirements into implementable epics and stories with testable ACs, file paths, and dependency mapping.",
+    "category": "🔄 Workflow / Process",
+    "local_path": "skills/planning/epic-decomposer",
+    "skill_dir": "epic-decomposer",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "story-executor",
+    "description": "Executes story implementation following tasks and ACs. Coordinates invocation of correct OSForge execution skills in order.",
+    "category": "🔄 Workflow / Process",
+    "local_path": "skills/planning/story-executor",
+    "skill_dir": "story-executor",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "adversarial-review",
+    "description": "Cynical adversarial review of any artifact: code, specs, PRDs, schemas, configs. Finds what is wrong AND what is missing.",
+    "category": "🧪 Testing",
+    "local_path": "skills/quality/adversarial-review",
+    "skill_dir": "adversarial-review",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "osforge-code-review",
+    "description": "Structured code review with checklist adapted to OSForge stack. Integrates adversarial-review and edge-case-hunter automatically.",
+    "category": "🧪 Testing",
+    "local_path": "skills/quality/code-review",
+    "skill_dir": "code-review",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "edge-case-hunter",
+    "description": "Exhaustive edge case hunting through systematic path enumeration: null, empty, boundary, concurrent, timing, encoding, overflow, auth bypass.",
+    "category": "🧪 Testing",
+    "local_path": "skills/quality/edge-case-hunter",
+    "skill_dir": "edge-case-hunter",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "elicitation-engine",
+    "description": "Iterative output refinement using structured elicitation techniques: 5 Whys, Assumption Surfacing, Scenario Planning, Pre-Mortem, Socratic Questioning.",
+    "category": "🔄 Workflow / Process",
+    "local_path": "skills/quality/elicitation-engine",
+    "skill_dir": "elicitation-engine",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "readiness-gate",
+    "description": "Pre-implementation quality gate. Validates PRD, Architecture and Epics alignment and completeness before sprint loop. GO/NO-GO.",
+    "category": "🧪 Testing",
+    "local_path": "skills/quality/readiness-gate",
+    "skill_dir": "readiness-gate",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "context-distillator",
+    "description": "Lossless document compression for LLM-optimized consumption. Preserves 100% factual information eliminating textual overhead. Target: 40-60%.",
+    "category": "📝 Documentation / Writing",
+    "local_path": "skills/context/context-distillator",
+    "skill_dir": "context-distillator",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "project-context-generator",
+    "description": "Analyzes existing codebase and generates project-context.md — the project constitution that feeds all other skills and agents.",
+    "category": "🔄 Workflow / Process",
+    "local_path": "skills/context/project-context-generator",
+    "skill_dir": "project-context-generator",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "doc-shard",
+    "description": "Splits large markdown documents into smaller organized files with index. Preserves cross-references and generates table of contents.",
+    "category": "📝 Documentation / Writing",
+    "local_path": "skills/context/doc-shard",
+    "skill_dir": "doc-shard",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "editorial-review",
+    "description": "Editorial review of technical documents in 2 modes: prose (clinical copy-editing) and structure (reorganization and simplification).",
+    "category": "📝 Documentation / Writing",
+    "local_path": "skills/context/editorial-review",
+    "skill_dir": "editorial-review",
+    "source": "OSForge (Orchestrator)",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge"
   }
 ]

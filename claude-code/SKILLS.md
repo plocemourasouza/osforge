@@ -545,3 +545,102 @@ Requires: `llmfit` binary (`brew install llmfit` ou `cargo install llmfit`). Com
 **Load:** `Leia skills/agency/SKILL.md`
 
 121 especialistas em 10 divisões. Carregamento hierárquico: router → índice da divisão → agente. Zero custo de contexto até ser ativado.
+
+
+---
+
+## Skill 34: Spec Builder (Collaborative)
+**Trigger:** "spec", "especificar", "definir feature", "tech spec", ou quando o Orchestrator assigna fase Spec.
+
+Facilitação colaborativa de especificação técnica. Produz tech-spec com acceptance criteria testáveis, tasks ordenadas por dependência, e riscos. Stack-aware — respeita project-context.md. Checkpoint [A] Approve / [E] Edit / [S] Simplify antes de avançar. Output: `docs/specs/{feature}.md` com frontmatter de rastreamento. Não gera — FACILITA com o usuário.
+
+---
+
+## Skill 35: PRD Builder (Collaborative)
+**Trigger:** "prd", "requisitos", "requirements", "product requirements", ou quando Orchestrator assigna fase PRD (triage COMPLEX).
+
+Facilitação colaborativa de Product Requirements Document. Guia definição de problema, usuários, requisitos funcionais/não-funcionais, métricas de sucesso e escopo MVP. Checkpoint por seção. Output: `docs/prd/{feature}.md` com frontmatter. Nível COMPLEX — para projetos com ambiguidade significativa.
+
+---
+
+## Skill 36: Architecture Builder (ADR)
+**Trigger:** "arquitetura", "architecture", "decisões técnicas", "ADR", schema changes, ou quando Orchestrator assigna fase Architecture.
+
+Facilitação de decisões arquiteturais com ADRs (Architecture Decision Records). Stack-aware — otimiza para Next.js/Prisma/Supabase. Avalia opções com trade-offs explícitos, gera migration paths para Prisma, valida RLS policies para Supabase. Output: `docs/specs/arch-decisions-{feature}.md`. FACILITA decisão — não decide sozinho.
+
+---
+
+## Skill 37: Epic Decomposer
+**Trigger:** "épicos", "stories", "decompor", "breakdown", ou quando Orchestrator assigna fase Stories/Épicos.
+
+Decompõe specs, PRDs ou requisitos em épicos e stories implementáveis. Cada story com ACs testáveis, tasks com file paths, dependências mapeadas e estimativa qualitativa. Output: `docs/specs/stories/{feature}/` com index + story files. Referencia artefatos anteriores (spec, arch-decisions).
+
+---
+
+## Skill 38: Story Executor
+**Trigger:** "executar story", "implementar story", "dev story", ou quando Orchestrator assigna fase de implementação dentro do sprint loop.
+
+Coordena implementação de uma story seguindo suas tasks e ACs. Invoca skills de execução corretos do OSForge (prisma-expert, nextjs-supabase-auth, tdd-workflow, etc.) na ordem das tasks. Verifica ACs ao completar. Atualiza status.yaml. Fluxo: load story → execute tasks in order → verify ACs → report.
+
+---
+
+## Skill 39: Adversarial Review
+**Trigger:** "adversarial", "revisão cínica", "critica isso", "o que está errado?", ou automaticamente na fase Final Review do Orchestrator.
+
+Revisão cínica e adversarial de qualquer artefato: código, specs, PRDs, schemas, configs. Persona: Senior Paranóico. Encontra o que está errado E o que está faltando. Metodologia: assumptions → dependencies → failure modes → security → perf → edge cases → missing requirements. Severity P0-P3. Recomendações concretas.
+
+---
+
+## Skill 40: Code Review (OSForge)
+**Trigger:** "code review", "revisar código", "review PR", ou automaticamente na fase Review do sprint loop.
+
+Review estruturado de código adaptado ao stack OSForge (Next.js/Prisma/Supabase/shadcn). Checklist: TypeScript strict, Server Components, RLS, error handling, ACs coverage, performance. Integra adversarial-review + edge-case-hunter automaticamente. Output: lista de findings com severity + suggestions.
+
+---
+
+## Skill 41: Edge Case Hunter
+**Trigger:** "edge cases", "boundary conditions", "o que pode dar errado?", ou invocado automaticamente por code-review e adversarial-review.
+
+Caça exaustiva de edge cases por enumeração sistemática de caminhos: null/undefined, empty, boundary, concurrent, timing, encoding, overflow, auth bypass, state transitions. Method-driven, não attitude-driven (ortogonal ao adversarial-review). Reporta APENAS paths sem handling adequado.
+
+---
+
+## Skill 42: Elicitation Engine
+**Trigger:** "elicitar", "refinar output", "melhorar spec", ou invocável dentro de outros skills para melhorar qualquer artefato.
+
+Refinamento iterativo de outputs usando técnicas de elicitação estruturadas: 5 Whys, Assumption Surfacing, Scenario Planning, Pre-Mortem, Socratic Questioning. Carrega methods.csv com catálogo de técnicas. Pode ser standalone ou composable dentro de spec-builder, prd-builder, arch-builder.
+
+---
+
+## Skill 43: Readiness Gate
+**Trigger:** "readiness check", "pronto para implementar?", "quality gate", ou automaticamente antes do sprint loop em triage COMPLEX.
+
+Quality gate pré-implementação. Valida alinhamento e completude entre PRD ↔ Architecture ↔ Épicos antes de iniciar coding. Checklist: cobertura de requisitos, consistência de decisões, stories com ACs testáveis, dependências resolvidas, riscos mitigados. GO / NO-GO com justificativa.
+
+---
+
+## Skill 44: Context Distillator
+**Trigger:** "distill", "comprimir contexto", "compress", ou quando documento excede tamanho ideal para LLM.
+
+Compressão lossless de documentos para consumo otimizado por LLMs. Preserva 100% da informação factual eliminando overhead textual (hedging, repetição, filler). Não é sumarização (lossy) — é compressão lossless. Carrega compression-rules.md com padrões de compressão. Target: 40-60% do original.
+
+---
+
+## Skill 45: Project Context Generator
+**Trigger:** "project context", "gerar contexto", "constituição do projeto", ou no início de qualquer projeto novo.
+
+Analisa codebase existente e gera project-context.md — a "constituição" do projeto que alimenta todos os outros skills e agents. Escaneia: package.json, tsconfig, prisma/schema, .env, estrutura de diretórios. Output: stack confirmado, convenções, padrões, constraints. Fonte de verdade para o Orchestrator.
+
+---
+
+## Skill 46: Doc Shard
+**Trigger:** "shard doc", "dividir documento", "split markdown", ou quando documento excede context window.
+
+Divide documentos markdown grandes em arquivos menores organizados com index. Preserva referências cruzadas, gera table of contents no index, e mantém frontmatter consistente. Útil para specs longas, PRDs extensos, ou documentação que precisa ser carregada parcialmente.
+
+---
+
+## Skill 47: Editorial Review
+**Trigger:** "editorial review", "review prose", "review structure", "revisar documento", ou na fase final de qualquer documento.
+
+Revisão editorial de documentos técnicos em 2 modos: **prose** (copy-editing clínico — clareza, concisão, gramática, tom) e **structure** (reorganização — flow lógico, headings, redundância, gaps). Pode rodar ambos em sequência. Output: documento revisado com tracked changes.
