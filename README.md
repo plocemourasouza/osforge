@@ -283,26 +283,26 @@ See `mcp/claude-code.json` and `mcp/cursor.json` for full configs.
 
 ## Origins
 
-OSForge was built by curating 770+ agent skills from 15 sources, evaluated for stack relevance, token efficiency, and quality:
+OSForge was built by curating 770+ agent skills from 16 sources, evaluated for stack relevance, token efficiency, and quality:
 
 | Source | Repository | Focus |
 |---|---|---|
 | **Anthropic** | [anthropics/skills](https://github.com/anthropics/skills) ⭐ 63.9k | Official skills: docx, pdf, pptx, xlsx, mcp-builder, frontend-design |
-| **Superpowers (obra)** | [obra/superpowers](https://github.com/obra/superpowers) ⭐ 45.3k | TDD workflow, spec-driven development, subagents |
-| **claude-mem** | [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) ⭐ 23.3k | Persistent memory for Claude Code |
-| **Vercel Labs** | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) ⭐ 19.1k | React, Next.js performance, Core Web Vitals |
-| **Context Engineering** | [muratcankoylan/Agent-Skills-for-Context-Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering) ⭐ 8.1k | Context engineering patterns |
 | **Antigravity** | [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) ⭐ 7.4k | 634+ universal skills (curated subset) |
-| **Trail of Bits** | [trailofbits/skills](https://github.com/trailofbits/skills) ⭐ 2.4k | Enterprise security auditing methodology |
-| **Supabase** | [supabase/agent-skills](https://github.com/supabase/agent-skills) ⭐ 1.1k | PostgreSQL optimization, Supabase patterns |
-| **Expo** | [expo/skills](https://github.com/expo/skills) ⭐ 878 | Mobile Expo / React Native |
-| **Cloudflare** | [cloudflare/skills](https://github.com/cloudflare/skills) ⭐ 233 | Workers, Agents SDK, Durable Objects |
-| **Sentry** | [getsentry/skills](https://github.com/getsentry/skills) ⭐ 173 | Code review, PR workflow |
-| **The Agency** | [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) ⭐ 31k | 121 AI specialists across 10 business divisions |
-| **llmfit** | [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) ⭐ 6.5k | Hardware-aware local LLM recommendations |
-| **BMAD-METHOD** | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) ⭐ 35.4k | Orchestration patterns: intake, triage, multi-phase planning, quality gates, artifact chains |
 | **autoresearch** | [karpathy/autoresearch](https://github.com/karpathy/autoresearch) ⭐ 39k | Autonomous research loop pattern (modify→evaluate→keep/discard→repeat) — inspired `autorefine-skill` |
+| **BMAD-METHOD** | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) ⭐ 35.4k | Orchestration patterns: intake, triage, multi-phase planning, quality gates, artifact chains |
+| **claude-mem** | [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) ⭐ 23.3k | Persistent memory for Claude Code |
+| **Cloudflare** | [cloudflare/skills](https://github.com/cloudflare/skills) ⭐ 233 | Workers, Agents SDK, Durable Objects |
+| **Context Engineering** | [muratcankoylan/Agent-Skills-for-Context-Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering) ⭐ 8.1k | Context engineering patterns |
 | **Curated lists** | [VoltAgent](https://github.com/VoltAgent/awesome-agent-skills) / [travisvn](https://github.com/travisvn/awesome-claude-skills) | Awesome lists used for discovery and curation |
+| **Expo** | [expo/skills](https://github.com/expo/skills) ⭐ 878 | Mobile Expo / React Native |
+| **llmfit** | [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) ⭐ 6.5k | Hardware-aware local LLM recommendations |
+| **Sentry** | [getsentry/skills](https://github.com/getsentry/skills) ⭐ 173 | Code review, PR workflow |
+| **Supabase** | [supabase/agent-skills](https://github.com/supabase/agent-skills) ⭐ 1.1k | PostgreSQL optimization, Supabase patterns |
+| **Superpowers (obra)** | [obra/superpowers](https://github.com/obra/superpowers) ⭐ 45.3k | TDD workflow, spec-driven development, subagents |
+| **The Agency** | [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) ⭐ 31k | 121 AI specialists across 10 business divisions |
+| **Trail of Bits** | [trailofbits/skills](https://github.com/trailofbits/skills) ⭐ 2.4k | Enterprise security auditing methodology |
+| **Vercel Labs** | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) ⭐ 19.1k | React, Next.js performance, Core Web Vitals |
 
 ---
 
