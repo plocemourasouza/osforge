@@ -148,6 +148,7 @@ Just describe what you need. Claude identifies and applies the skill automatical
 - `mcp-builder` — Build MCP servers
 - `skill-creator` — Create and evaluate new skills
 - `autorefine-skill` — Autonomous iterative skill refinement (modify→evaluate→keep/discard loop)
+- `dispatching-parallel-agents` — Wave execution: dependency-aware parallel agents grouped in ordered waves
 - `smart-hooks` — Python quality hooks
 
 **API**
@@ -164,11 +165,12 @@ Just describe what you need. Claude identifies and applies the skill automatical
 - `tlc-spec-driven` — Full spec-driven development
 
 **Planning** (Orchestrator skills)
+- `planning/phase-discussion` — Capture implementation decisions by phase type BEFORE planning (produces CONTEXT.md)
 - `planning/spec-builder` — Collaborative tech-spec facilitation with testable ACs
 - `planning/prd-builder` — Collaborative PRD facilitation (problem, users, metrics, MVP)
 - `planning/arch-builder` — Architecture decisions with ADRs, stack-aware
 - `planning/epic-decomposer` — Decompose specs/PRDs into epics and stories
-- `planning/story-executor` — Execute story implementation coordinating OSForge skills
+- `planning/story-executor` — Execute story implementation coordinating OSForge skills (XML task format)
 
 **Quality** (Orchestrator skills)
 - `quality/adversarial-review` — Cynical adversarial review of any artifact
@@ -176,6 +178,7 @@ Just describe what you need. Claude identifies and applies the skill automatical
 - `quality/edge-case-hunter` — Systematic edge case enumeration
 - `quality/elicitation-engine` — Iterative output refinement with structured techniques
 - `quality/readiness-gate` — Pre-implementation quality gate (GO/NO-GO)
+- `quality/ui-audit` — 6-pillar retroactive visual quality audit of implemented frontend code
 
 **Context** (Orchestrator skills)
 - `context/context-distillator` — Lossless document compression for LLMs
@@ -227,13 +230,15 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 **With Orchestrator (recommended):**
 ```
 1. orchestrator     → Intake, triage (QUICK/STANDARD/COMPLEX), generates plan
-2. spec-builder     → Collaborative tech-spec with ACs (STANDARD+)
-3. arch-builder     → Architecture decisions + ADR (if schema/API changes)
-4. epic-decomposer  → Decompose into stories with tasks (STANDARD+)
-5. readiness-gate   → Quality gate before coding (COMPLEX)
-6. story-executor   → Implements each story using OSForge skills
-7. code-review      → Review with adversarial-review + edge-case-hunter
-8. orchestrator     → Tracks progress in .osforge/status.yaml
+2. phase-discussion → Capture decisions per phase (STANDARD+) → produces CONTEXT.md
+3. spec-builder     → Collaborative tech-spec with ACs (reads CONTEXT.md)
+4. arch-builder     → Architecture decisions + ADR (if schema/API changes)
+5. epic-decomposer  → Decompose into stories with XML-format tasks (STANDARD+)
+6. readiness-gate   → Quality gate before coding (COMPLEX)
+7. story-executor   → Implements each story; waves via dispatching-parallel-agents
+8. code-review      → Review with adversarial-review + edge-case-hunter
+9. ui-audit         → 6-pillar visual audit for UI phases
+10. orchestrator    → Tracks progress in .osforge/status.yaml + STATE.md
 ```
 
 **Without Orchestrator (direct):**
@@ -356,7 +361,11 @@ INTAKE → TRIAGE → PLAN → [APPROVE] → ROUTE → TRACK → [CORRECT]
 
 ### Project tracking
 
-The Orchestrator maintains `.osforge/status.yaml` in the project root:
+The Orchestrator maintains two state files in the project root:
+
+**`.osforge/status.yaml`** — phases, artefacts and pipeline state (structured, machine-readable).
+
+**`.osforge/STATE.md`** — cross-session memory: architectural decisions, active blockers, and exact resumption point. Always read at session start; always updated at session end.
 
 ```yaml
 project: "subscription-module"

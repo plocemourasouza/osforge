@@ -18,6 +18,38 @@ respeitando project-context e patterns existentes do codebase.
 - **story file** — Story com ACs e tasks (obrigatório)
 - **project-context.md** — Stack e regras (carregar se existir)
 - **Architecture** — Decisões técnicas relevantes
+- **`.osforge/phases/{N}-CONTEXT.md`** — Decisões do usuário para a fase (carregar se existir)
+
+## Formato XML de Tasks
+
+Antes de executar, estruturar cada task no formato XML canônico.
+Isso torna a execução precisa, verificável e auditável:
+
+```xml
+<task type="auto">
+  <n>Criar endpoint de autenticação</n>
+  <files>src/app/api/auth/login/route.ts</files>
+  <action>
+    Usar jose para JWT (não jsonwebtoken — problemas de CommonJS).
+    Validar credenciais contra tabela users via Prisma.
+    Retornar cookie httpOnly em caso de sucesso.
+    Retornar 401 com mensagem genérica em caso de falha.
+  </action>
+  <verify>curl -X POST localhost:3000/api/auth/login retorna 200 + Set-Cookie</verify>
+  <done>Credenciais válidas retornam cookie; inválidas retornam 401</done>
+</task>
+```
+
+Campos obrigatórios:
+- `<n>` — nome da task (1 frase)
+- `<files>` — arquivo(s) a criar/modificar (um por linha se múltiplos)
+- `<action>` — instruções específicas de implementação com decisões técnicas explícitas
+- `<verify>` — como verificar a task concluída (comando, comportamento esperado)
+- `<done>` — critério de conclusão em linguagem natural
+
+Atributo `type`:
+- `auto` — pode ser executado sem confirmação
+- `review` — requer revisão do usuário antes de prosseguir
 
 ## Processo
 

@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **48 on-demand skills**, **12 specialized agents**, **10 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **50 on-demand skills**, **12 specialized agents**, **10 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -14,7 +14,7 @@ OSForge is a production-grade AI development framework with **48 on-demand skill
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 48 skills in ~9.5K base tokens (3.4% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 50 skills in ~9.5K base tokens (3.4% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Every skill is tailored for Next.js App Router + Prisma + Supabase + shadcn/ui.
 3. **Quality gates built-in** — TDD enforcement, security auditing, insecure defaults detection, and Python hooks that run at zero token cost.
 
@@ -34,7 +34,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 
 ## What's Inside
 
-### 48 Skills (on-demand)
+### 50 Skills (on-demand)
 
 | # | Skill | Category |
 |---|---|---|
@@ -86,6 +86,8 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | 46 | Doc Shard | Context |
 | 47 | Editorial Review | Context |
 | 48 | AutoRefine Skill (Autonomous Skill Iteration) | Meta |
+| 49 | Phase Discussion (Pre-planning Context Capture) | Planning |
+| 50 | UI Audit (6-pillar Visual Quality Review) | Quality |
 
 ### 12 Agents (on-demand)
 
@@ -183,7 +185,7 @@ osforge/
 ├── .osforge/              # Project status tracking (status.yaml)
 ├── claude-code/
 │   ├── CLAUDE.md          # Entry point for Claude Code sessions
-│   ├── SKILLS.md          # 47 skill triggers (~9.5K base tokens)
+│   ├── SKILLS.md          # 50 skill triggers (~9.5K base tokens)
 │   └── agents/            # 12 agent definitions (.md)
 ├── agents/                # Agent source files
 ├── rules/                 # 10 always-on rules (.mdc + .md) for Cursor
@@ -207,10 +209,10 @@ osforge/
 │   ├── claude-api-typescript/ # Claude API + Agent SDK reference
 │   ├── prisma-expert/
 │   ├── stripe-integration/
-│   ├── planning/           # 5 planning skills (spec, prd, arch, epics, story)
-│   ├── quality/            # 5 quality skills (adversarial, code-review, edge-case, elicitation, readiness)
+│   ├── planning/           # 6 planning skills (spec, prd, arch, epics, story, phase-discussion)
+│   ├── quality/            # 6 quality skills (adversarial, code-review, edge-case, elicitation, readiness, ui-audit)
 │   ├── context/            # 4 context skills (distillator, project-context, doc-shard, editorial)
-│   └── ... (47 total)
+│   └── ... (50 total)
 ├── hooks/                 # Python hooks + shell scripts + config
 ├── mcp/                   # MCP server configs (claude-code.json, cursor.json)
 ├── scripts/               # Utility scripts
@@ -223,7 +225,7 @@ osforge/
 
 | Component | Tokens | Loaded |
 |---|---|---|
-| SKILLS.md (47 triggers + 10 rules) | ~9,500 | Always |
+| SKILLS.md (50 triggers + 10 rules) | ~9,500 | Always |
 | Agent definitions (12) | ~1,300 | On invoke |
 | Agency router (SKILL.md) | ~2,000 | On invoke |
 | Agency division index (1 of 10) | ~1,500 | On invoke |
@@ -283,7 +285,7 @@ See `mcp/claude-code.json` and `mcp/cursor.json` for full configs.
 
 ## Origins
 
-OSForge was built by curating 770+ agent skills from 16 sources, evaluated for stack relevance, token efficiency, and quality:
+OSForge was built by curating 770+ agent skills from 17 sources, evaluated for stack relevance, token efficiency, and quality:
 
 | Source | Repository | Focus |
 |---|---|---|
@@ -296,6 +298,7 @@ OSForge was built by curating 770+ agent skills from 16 sources, evaluated for s
 | **Context Engineering** | [muratcankoylan/Agent-Skills-for-Context-Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering) ⭐ 8.1k | Context engineering patterns |
 | **Curated lists** | [VoltAgent](https://github.com/VoltAgent/awesome-agent-skills) / [travisvn](https://github.com/travisvn/awesome-claude-skills) | Awesome lists used for discovery and curation |
 | **Expo** | [expo/skills](https://github.com/expo/skills) ⭐ 878 | Mobile Expo / React Native |
+| **GSD (get-shit-done)** | [gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done) ⭐ 34.3k | Phase discussion, wave execution, UI audit, STATE.md cross-session memory |
 | **llmfit** | [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) ⭐ 6.5k | Hardware-aware local LLM recommendations |
 | **Sentry** | [getsentry/skills](https://github.com/getsentry/skills) ⭐ 173 | Code review, PR workflow |
 | **Supabase** | [supabase/agent-skills](https://github.com/supabase/agent-skills) ⭐ 1.1k | PostgreSQL optimization, Supabase patterns |

@@ -118,13 +118,46 @@ Após aprovação do plano:
 
 ### 5. TRACK — Manter Estado
 
-O arquivo `.osforge/status.yaml` é a fonte de verdade.
+Dois arquivos de estado complementares:
+
+**`.osforge/status.yaml`** — fonte de verdade de fases e artefatos.
 Ver `../.osforge/status-schema.yaml` para o formato.
 
+**`.osforge/STATE.md`** — memória cross-session de decisões e bloqueios.
+Criar/atualizar a cada sessão relevante.
+
+```markdown
+---
+project: "{nome}"
+last_updated: {data}
+---
+
+# Project State
+
+## Decisões Tomadas
+- {data}: {decisão arquitetural e sua justificativa}
+- {data}: {decisão de produto e seu impacto}
+
+## Bloqueadores Ativos
+- [ ] {bloqueador}: {descrição} — esperando: {o que é necessário}
+
+## Bloqueadores Resolvidos
+- [x] {bloqueador antigo}: resolvido em {data} — {como}
+
+## Posição Atual
+Fase: {N} — {título}
+Próximo passo: {ação concreta}
+Sessão anterior encerrou em: {ponto exato}
+
+## Notas Livres
+{observações que não cabem em outro lugar}
+```
+
 **Regras de tracking:**
-- Atualizar status a cada mudança de fase
+- Atualizar `status.yaml` a cada mudança de fase
+- Atualizar `STATE.md` ao encerrar qualquer sessão com work in progress
+- Ao iniciar nova sessão: ler AMBOS antes de qualquer ação
 - Registrar artefatos produzidos com caminhos relativos
-- Manter timestamp de última atualização
 - Nunca apagar entries — marcar como `skipped` ou `cancelled` se necessário
 
 ### 6. CORRECT — Lidar com Mudanças
@@ -164,6 +197,7 @@ dificuldade encontrada durante uso do software:
 ### Triage STANDARD
 | Fase | Skill |
 |------|-------|
+| Phase context | `skills/planning/phase-discussion` (antes de spec) |
 | Spec | `skills/planning/spec-builder` |
 | Architecture check | `skills/planning/arch-builder` (se schema/API changes) |
 | Stories | `skills/planning/epic-decomposer` |
@@ -176,6 +210,7 @@ dificuldade encontrada durante uso do software:
 |------|-------|
 | PRD | `skills/planning/prd-builder` |
 | Architecture | `skills/planning/arch-builder` |
+| Phase context | `skills/planning/phase-discussion` (antes de cada fase) |
 | Épicos + Stories | `skills/planning/epic-decomposer` |
 | Readiness gate | `skills/quality/readiness-gate` |
 | Sprint loop | `skills/planning/story-executor` → skills de execução |
@@ -191,3 +226,4 @@ dificuldade encontrada durante uso do software:
 | Refinar output | `skills/quality/elicitation-engine` |
 | Revisar doc | `skills/context/editorial-review` |
 | Especialista de área | `skills/agency/` (The Agency) |
+| Auditoria visual de UI | `skills/quality/ui-audit` |
