@@ -2,6 +2,8 @@
 
 Complete installation, configuration, and day-to-day usage instructions.
 
+> **Looking for real-world scenarios?** See [docs/EXAMPLES.md](docs/EXAMPLES.md) for 10 practical usage examples covering quick fixes, full feature flows, UI design, security audits, LGPD-safe processing, and more.
+
 ---
 
 ## Table of Contents

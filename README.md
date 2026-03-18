@@ -6,7 +6,7 @@ OSForge is a production-grade AI development framework with **51 on-demand skill
 
 > *"Forging the development environment for AI-powered teams."*
 
-📖 **[Full usage guide → USAGE.md](USAGE.md)**
+📖 **[Full usage guide → USAGE.md](USAGE.md)** · 💡 **[10 usage examples → docs/EXAMPLES.md](docs/EXAMPLES.md)**
 
 ---
 
