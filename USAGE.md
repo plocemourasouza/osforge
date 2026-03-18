@@ -12,12 +12,13 @@ Complete installation, configuration, and day-to-day usage instructions.
 4. [Specialized Agents](#4-specialized-agents)
 5. [Always-On Rules (Cursor)](#5-always-on-rules-cursor)
 6. [Spec Commands](#6-spec-commands)
-7. [Python Hooks](#7-python-hooks)
-8. [The Agency — 121 Specialists](#8-the-agency--121-specialists)
-9. [llmfit Advisor — Local LLMs](#9-llmfit-advisor--local-llms)
-10. [Smart Model Dispatch](#10-smart-model-dispatch)
-11. [Recommended MCPs](#11-recommended-mcps)
-12. [High-Risk Agents](#12-high-risk-agents)
+7. [Orchestrator — Intelligent Workflow](#7-orchestrator--intelligent-workflow)
+8. [Python Hooks](#8-python-hooks)
+9. [The Agency — 121 Specialists](#9-the-agency--121-specialists)
+10. [llmfit Advisor — Local LLMs](#10-llmfit-advisor--local-llms)
+11. [Smart Model Dispatch](#11-smart-model-dispatch)
+12. [Recommended MCPs](#12-recommended-mcps)
+13. [High-Risk Agents](#13-high-risk-agents)
 
 ---
 
@@ -63,7 +64,7 @@ cargo install llmfit
 
 **Claude Code (`~/.claude/`)**
 - Copies `CLAUDE.md` and `SKILLS.md`
-- Syncs 11 agents to `~/.claude/agents/`
+- Syncs 12 agents to `~/.claude/agents/`
 - Copies 9 `spec:*` commands to `~/.claude/commands/`
 - Installs Python hooks to `~/.claude/hooks/`
 - Non-destructive MCP merge into `~/.claude.json`
@@ -71,7 +72,7 @@ cargo install llmfit
 **Cursor (`~/.cursor/`)**
 - Copies `SKILLS.md`
 - Syncs agents to `~/.cursor/agents/`
-- Copies 8 `.mdc` rules to `~/.cursor/rules/`
+- Copies 10 rules (`.mdc` + `.md`) to `~/.cursor/rules/`
 - Copies hook scripts
 
 **Dependency check**
@@ -97,7 +98,7 @@ cp -r rules/ ~/.cursor/rules/
 
 ## 3. Skills — day-to-day usage
 
-Skills load on-demand — only when you need them. `SKILLS.md` keeps condensed triggers in the base context (~6.9K tokens). Each skill's full `SKILL.md` is only read when activated.
+Skills load on-demand — only when you need them. `SKILLS.md` keeps condensed triggers in the base context (~9.5K tokens). Each skill's full `SKILL.md` is only read when activated.
 
 ### How to activate a skill
 
@@ -161,6 +162,26 @@ Just describe what you need. Claude identifies and applies the skill automatical
 - `technical-design-doc-creator` — ADRs, design docs
 - `tlc-spec-driven` — Full spec-driven development
 
+**Planning** (Orchestrator skills)
+- `planning/spec-builder` — Collaborative tech-spec facilitation with testable ACs
+- `planning/prd-builder` — Collaborative PRD facilitation (problem, users, metrics, MVP)
+- `planning/arch-builder` — Architecture decisions with ADRs, stack-aware
+- `planning/epic-decomposer` — Decompose specs/PRDs into epics and stories
+- `planning/story-executor` — Execute story implementation coordinating OSForge skills
+
+**Quality** (Orchestrator skills)
+- `quality/adversarial-review` — Cynical adversarial review of any artifact
+- `quality/code-review` — Structured code review adapted to OSForge stack
+- `quality/edge-case-hunter` — Systematic edge case enumeration
+- `quality/elicitation-engine` — Iterative output refinement with structured techniques
+- `quality/readiness-gate` — Pre-implementation quality gate (GO/NO-GO)
+
+**Context** (Orchestrator skills)
+- `context/context-distillator` — Lossless document compression for LLMs
+- `context/project-context-generator` — Generates project-context.md from codebase
+- `context/doc-shard` — Splits large markdown docs into organized shards
+- `context/editorial-review` — Editorial review: prose (copy-editing) or structure (reorganization)
+
 **Frontend**
 - `accessibility` — WCAG 2.1, aria, screen readers
 - `seo` — Meta tags, structured data, sitemap
@@ -187,6 +208,7 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 
 | Agent | When to use |
 |---|---|
+| `orchestrator` | **Start here** — intake, triage, multi-phase planning, routing, tracking, course correction |
 | `planner` | Start of any feature — decomposition, architecture, stories |
 | `system-architect` | System design, ADRs, architecture decisions |
 | `backend-engineer` | Prisma schema, Server Actions, APIs, Supabase |
@@ -201,6 +223,19 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 
 ### Combined usage pattern (full feature)
 
+**With Orchestrator (recommended):**
+```
+1. orchestrator     → Intake, triage (QUICK/STANDARD/COMPLEX), generates plan
+2. spec-builder     → Collaborative tech-spec with ACs (STANDARD+)
+3. arch-builder     → Architecture decisions + ADR (if schema/API changes)
+4. epic-decomposer  → Decompose into stories with tasks (STANDARD+)
+5. readiness-gate   → Quality gate before coding (COMPLEX)
+6. story-executor   → Implements each story using OSForge skills
+7. code-review      → Review with adversarial-review + edge-case-hunter
+8. orchestrator     → Tracks progress in .osforge/status.yaml
+```
+
+**Without Orchestrator (direct):**
 ```
 1. planner          → Decomposes into stories and defines architecture
 2. validator        → Critiques the plan, identifies gaps
@@ -214,7 +249,7 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 
 ## 5. Always-On Rules (Cursor)
 
-The 8 `.mdc` rules are automatically active in all Cursor sessions. No activation needed.
+The 10 rules are automatically active in all Cursor sessions. No activation needed.
 
 | Rule | Effect |
 |---|---|
@@ -226,6 +261,8 @@ The 8 `.mdc` rules are automatically active in all Cursor sessions. No activatio
 | `product-thinking` | User decision before technical decision |
 | `security-mindset` | Zero-trust, fail-safe, no hardcoded secrets |
 | `agent-skills-reference` | How to load and use OSForge skills |
+| `orchestrator-awareness` | Check `.osforge/status.yaml` for WIP; route complex demands through Orchestrator |
+| `artifact-chain` | Planning artifacts need frontmatter (`type`, `status`, `depends_on`); never skip checkpoints |
 
 ---
 
@@ -272,7 +309,85 @@ The 8 `.mdc` rules are automatically active in all Cursor sessions. No activatio
 
 ---
 
-## 7. Python Hooks
+
+## 7. Orchestrator — Intelligent Workflow
+
+The Orchestrator is OSForge's meta-agent — the "brain" that understands demands, plans solutions, and coordinates execution across all other skills and agents.
+
+### When to use
+
+The Orchestrator activates automatically when you describe a project, feature, problem, or any development demand. You can also activate it explicitly:
+
+```
+"Read agents/orchestrator/AGENT.md"
+"Use the orchestrator to plan this feature"
+```
+
+### Triage levels
+
+| Level | When | Example |
+|---|---|---|
+| **QUICK** | 1-3 files, zero ambiguity, known pattern | "Add dark mode toggle", "Fix the 404 on /pricing" |
+| **STANDARD** | Multi-file, known domain, may need schema changes | "Add Stripe subscription module", "Implement team invites" |
+| **COMPLEX** | New system, ambiguous requirements, multiple stakeholders | "Build a B2B marketplace", "Migrate auth to SSO" |
+
+### Workflow phases
+
+```
+INTAKE → TRIAGE → PLAN → [APPROVE] → ROUTE → TRACK → [CORRECT]
+```
+
+1. **INTAKE** — Understands the demand, checks for work in progress (`.osforge/status.yaml`), loads `project-context.md`, asks clarifying questions (max 5)
+2. **TRIAGE** — Classifies as QUICK/STANDARD/COMPLEX with justification. User can override.
+3. **PLAN** — Generates multi-phase plan from templates (`plan-templates/{level}.md`). Presents for approval.
+4. **APPROVE** — User chooses: **[A]** Approve / **[E]** Edit / **[S]** Simplify
+5. **ROUTE** — Executes phase by phase, invoking the right skills. Checkpoint after each phase.
+6. **TRACK** — Maintains `.osforge/status.yaml` as source of truth for project state.
+7. **CORRECT** — Handles mid-flight changes: analyzes impact, proposes adjusted plan, requests approval.
+
+### Skill mapping by triage
+
+**QUICK:** spec-builder → execute → code-review
+
+**STANDARD:** spec-builder → arch-builder (if needed) → epic-decomposer → story-executor loop → code-review → adversarial-review + edge-case-hunter
+
+**COMPLEX:** prd-builder → arch-builder → epic-decomposer → readiness-gate → story-executor sprint loop → code-review → adversarial-review + edge-case-hunter
+
+### Project tracking
+
+The Orchestrator maintains `.osforge/status.yaml` in the project root:
+
+```yaml
+project: "subscription-module"
+triage: standard
+status: active
+phases:
+  - name: "Spec"
+    status: complete
+    skill: "skills/planning/spec-builder"
+    artifact: "docs/specs/subscription-module.md"
+  - name: "Stories"
+    status: in-progress
+    skill: "skills/planning/epic-decomposer"
+    artifact: null
+corrections: []
+```
+
+When resuming a session, the Orchestrator detects existing work and offers to continue.
+
+### Utility skills (any triage)
+
+| Need | Skill |
+|---|---|
+| Compress large context | `context/context-distillator` |
+| Generate project constitution | `context/project-context-generator` |
+| Split large document | `context/doc-shard` |
+| Refine any output | `quality/elicitation-engine` |
+| Review document prose/structure | `context/editorial-review` |
+
+---
+
+## 8. Python Hooks
 
 Hooks run as external processes — **zero token cost**. Configured via `hooks/hooks-claude-code.json`.
 
@@ -318,7 +433,7 @@ hooks/notify-done.sh      # macOS notification on task completion
 
 ---
 
-## 8. The Agency — 121 Specialists
+## 9. The Agency — 121 Specialists
 
 A library of 121 AI agents covering all business and technical functions. Built on a 3-layer structure for efficient loading.
 
@@ -374,7 +489,7 @@ Step 3 — Activate the agent
 
 ---
 
-## 9. llmfit Advisor — Local LLMs
+## 10. llmfit Advisor — Local LLMs
 
 Detects the machine's actual hardware and recommends which local models will run well, with optimal quantization and speed estimates.
 
@@ -468,7 +583,7 @@ ollama list   # view installed models
 
 ---
 
-## 10. Smart Model Dispatch
+## 11. Smart Model Dispatch
 
 Routes tasks to the optimal model tier — saving ~65% cost vs using Opus for everything.
 
@@ -499,7 +614,7 @@ Routes tasks to the optimal model tier — saving ~65% cost vs using Opus for ev
 
 ---
 
-## 11. Recommended MCPs
+## 12. Recommended MCPs
 
 ### Claude Code (global — `~/.claude.json`)
 
@@ -536,7 +651,7 @@ See `mcp/cursor.json` in the repository.
 
 ---
 
-## 12. High-Risk Agents
+## 13. High-Risk Agents
 
 Four agents from The Agency can execute autonomous actions with real-world impact. Each has a **mandatory checkpoint block** embedded in its `.md` — they will never act without presenting a plan and waiting for explicit approval.
 
