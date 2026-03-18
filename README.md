@@ -301,6 +301,7 @@ OSForge was built by curating 770+ agent skills from 15 sources, evaluated for s
 | **The Agency** | [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) ⭐ 31k | 121 AI specialists across 10 business divisions |
 | **llmfit** | [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) ⭐ 6.5k | Hardware-aware local LLM recommendations |
 | **BMAD-METHOD** | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) ⭐ 35.4k | Orchestration patterns: intake, triage, multi-phase planning, quality gates, artifact chains |
+| **autoresearch** | [karpathy/autoresearch](https://github.com/karpathy/autoresearch) ⭐ 39k | Autonomous research loop pattern (modify→evaluate→keep/discard→repeat) — inspired `autorefine-skill` |
 | **Curated lists** | [VoltAgent](https://github.com/VoltAgent/awesome-agent-skills) / [travisvn](https://github.com/travisvn/awesome-claude-skills) | Awesome lists used for discovery and curation |
 
 ---
