@@ -147,6 +147,7 @@ Just describe what you need. Claude identifies and applies the skill automatical
 - `context7-docs-first` — Up-to-date docs via Context7 MCP
 - `mcp-builder` — Build MCP servers
 - `skill-creator` — Create and evaluate new skills
+- `autorefine-skill` — Autonomous iterative skill refinement (modify→evaluate→keep/discard loop)
 - `smart-hooks` — Python quality hooks
 
 **API**

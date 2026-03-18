@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **47 on-demand skills**, **12 specialized agents**, **10 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **48 on-demand skills**, **12 specialized agents**, **10 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -14,7 +14,7 @@ OSForge is a production-grade AI development framework with **47 on-demand skill
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 47 skills in ~9.5K base tokens (3.4% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 48 skills in ~9.5K base tokens (3.4% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Every skill is tailored for Next.js App Router + Prisma + Supabase + shadcn/ui.
 3. **Quality gates built-in** — TDD enforcement, security auditing, insecure defaults detection, and Python hooks that run at zero token cost.
 
@@ -34,7 +34,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 
 ## What's Inside
 
-### 47 Skills (on-demand)
+### 48 Skills (on-demand)
 
 | # | Skill | Category |
 |---|---|---|
@@ -85,6 +85,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | 45 | Project Context Generator | Context |
 | 46 | Doc Shard | Context |
 | 47 | Editorial Review | Context |
+| 48 | AutoRefine Skill (Autonomous Skill Iteration) | Meta |
 
 ### 12 Agents (on-demand)
 
@@ -170,7 +171,7 @@ Detects your hardware (RAM, CPU, GPU/VRAM) and recommends which local LLMs will 
 
 **Requires:** `brew install llmfit` or `cargo install llmfit`
 
-Key use cases: LGPD-sensitive data (Tressen/Red Caveat), OSystems clients without API budget, and high-volume repetitive dev tasks where local models eliminate API costs.
+Key use cases: LGPD-sensitive data (Essent/Rede Essent Jus), OSystems clients without API budget, and high-volume repetitive dev tasks where local models eliminate API costs.
 
 > Source: [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) (MIT)
 
