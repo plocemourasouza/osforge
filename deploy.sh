@@ -143,17 +143,36 @@ deploy_claude() {
   echo "🔵 Deploy → Claude Code (~/.claude/)"
 
   echo ""
-  log "Agentes (11):"
+  log "Agentes:"
   copy_dir "$REPO/agents" "$CLAUDE/agents"
+  # Orchestrator tem subdiretório próprio — copiar o AGENT.md para agents/
+  if [ -f "$REPO/agents/orchestrator/AGENT.md" ]; then
+    if $DRY_RUN; then skip "cp orchestrator/AGENT.md → agents/orchestrator.md"
+    else
+      cp "$REPO/agents/orchestrator/AGENT.md" "$CLAUDE/agents/orchestrator.md"
+      ok "orchestrator.md"
+    fi
+  fi
+
+  echo ""
+  log "Skills (on-demand):"
+  if $DRY_RUN; then skip "rsync skills/ → ~/.claude/skills/"
+  else
+    mkdir -p "$CLAUDE/skills"
+    rsync -a --delete "$REPO/skills/" "$CLAUDE/skills/"
+    count=$(find "$CLAUDE/skills" -name 'SKILL.md' | wc -l | tr -d ' ')
+    ok "$count skills sincronizadas"
+  fi
 
   echo ""
   log "Commands spec:* (9):"
   copy_dir "$REPO/commands" "$CLAUDE/commands"
 
   echo ""
-  log "Hook scripts:"
+  log "Hook scripts e Python hooks:"
   mkdir -p "$CLAUDE/hooks"
-  for f in "$REPO/hooks/"*.sh; do
+  for f in "$REPO/hooks/"*.sh "$REPO/hooks/"*.py; do
+    [ -f "$f" ] || continue
     if $DRY_RUN; then skip "cp $(basename $f) + chmod +x"; continue; fi
     cp "$f" "$CLAUDE/hooks/"
     chmod +x "$CLAUDE/hooks/$(basename $f)"
@@ -202,11 +221,28 @@ deploy_cursor() {
   echo "🟣 Deploy → Cursor (~/.cursor/)"
 
   echo ""
-  log "Agentes (11):"
+  log "Agentes:"
   copy_dir "$REPO/agents" "$CURSOR/agents"
+  if [ -f "$REPO/agents/orchestrator/AGENT.md" ]; then
+    if $DRY_RUN; then skip "cp orchestrator/AGENT.md → agents/orchestrator.md"
+    else
+      cp "$REPO/agents/orchestrator/AGENT.md" "$CURSOR/agents/orchestrator.md"
+      ok "orchestrator.md"
+    fi
+  fi
 
   echo ""
-  log "Rules .mdc (8):"
+  log "Skills (on-demand):"
+  if $DRY_RUN; then skip "rsync skills/ → ~/.cursor/skills/"
+  else
+    mkdir -p "$CURSOR/skills"
+    rsync -a --delete "$REPO/skills/" "$CURSOR/skills/"
+    count=$(find "$CURSOR/skills" -name 'SKILL.md' | wc -l | tr -d ' ')
+    ok "$count skills sincronizadas"
+  fi
+
+  echo ""
+  log "Rules:"
   copy_dir "$REPO/rules" "$CURSOR/rules"
 
   echo ""
