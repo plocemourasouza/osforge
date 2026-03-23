@@ -28,14 +28,26 @@ Analisar keywords e contexto do request:
 
 | Keyword/Contexto | Domínio |
 |---|---|
-| componente, page, layout, UI, tela, modal, form, dashboard | FRONTEND |
-| API, route, Server Action, banco, schema, query, Prisma | BACKEND |
-| auth, JWT, RLS, permissão, senha, token, CSRF, SQL injection | SECURITY |
-| teste, test, spec, playwright, coverage, mock | TESTING |
-| deploy, CI, GitHub Actions, Vercel, env, pipeline | DEVOPS |
-| performance, lento, otimização, bundle, cache, N+1 | PERFORMANCE |
-| bug, erro, exception, stack trace, crash, 500 | DEBUG |
-| refatorar, limpar, organizar, simplificar | REFACTOR |
+| componente, page, layout, UI, tela, modal, form, dashboard, tailwind, shadcn | FRONTEND |
+| API, route, Server Action, banco, schema, query, Prisma, endpoint | BACKEND |
+| auth, JWT, RLS, permissão, senha, token, CSRF, SQL injection, pentest | SECURITY |
+| teste, test, spec, playwright, coverage, mock, TDD, E2E | TESTING |
+| deploy, CI, GitHub Actions, Vercel, env, pipeline, Docker, infra | DEVOPS |
+| performance, lento, otimização, bundle, cache, N+1, Lighthouse, profiling | PERFORMANCE |
+| bug, erro, exception, stack trace, crash, 500, debug | DEBUG |
+| refatorar, limpar, organizar, simplificar, legacy | REFACTOR |
+| mobile, React Native, Flutter, iOS, Android, touch, app mobile | MOBILE |
+| game, jogo, sprite, game loop, Unity, Godot, multiplayer, 2D, 3D | GAME |
+| database, banco de dados, schema design, indexing, migration, ORM | DATABASE |
+| SEO, ranking, meta tags, sitemap, E-E-A-T, search engine | SEO |
+| documentação, docs, README, manual, changelog, ADR | DOCS |
+| REST, GraphQL, tRPC, API design, rate limit, versioning | API_DESIGN |
+| novo projeto, scaffolding, template, boilerplate, criar app | SCAFFOLDING |
+| Rust, cargo, ownership, borrowing | RUST |
+| Python, FastAPI, Django, Flask, pip | PYTHON |
+| bash, shell, Linux, terminal, PowerShell, Windows | INFRA |
+| brainstorm, ideia, explorar problema, ideação | IDEATION |
+| GEO, AI search, LLM visibility, Perplexity, ChatGPT ranking | GEO |
 
 ## 3. Selecionar agente(s)
 
@@ -46,12 +58,30 @@ Com base nos domínios detectados:
 | FRONTEND | `frontend-engineer` |
 | BACKEND | `backend-engineer` |
 | SECURITY | `security-auditor` |
-| FRONTEND + SECURITY | `frontend-engineer` + `security-auditor` |
-| FRONTEND + BACKEND | `frontend-engineer` + `backend-engineer` |
-| DEBUG (qualquer domínio) | `debugger` |
+| SECURITY (ofensivo/pentest) | `penetration-tester` |
+| TESTING | `test-engineer` ou `qa-automation-engineer` |
+| DEVOPS | `devops-engineer` |
+| PERFORMANCE | `performance-optimizer` |
+| DEBUG | `debugger` |
 | REVIEW | `code-reviewer` |
 | REFACTOR | `code-refactorer` |
-| PERFORMANCE + BACKEND | `backend-engineer` (foco em otimização) |
+| REFACTOR (legacy) | `code-archaeologist` |
+| MOBILE | `mobile-developer` |
+| GAME | `game-developer` |
+| DATABASE | `database-architect` |
+| SEO / GEO | `seo-specialist` |
+| DOCS | `documentation-writer` |
+| SCAFFOLDING | usa `skills/app-builder` (sem agente dedicado) |
+| IDEATION | usa `skills/brainstorming` (sem agente dedicado) |
+| API_DESIGN | `backend-engineer` + `skills/api-patterns` |
+| FRONTEND + SECURITY | `frontend-engineer` + `security-auditor` |
+| FRONTEND + BACKEND | `frontend-engineer` + `backend-engineer` |
+| BACKEND + DATABASE | `backend-engineer` + `database-architect` |
+| SECURITY + TESTING | `security-auditor` + `penetration-tester` |
+| Explorar codebase desconhecido | `explorer-agent` |
+| Planejamento de produto | `product-manager` ou `product-owner` |
+| Planejamento de projeto | `project-planner` |
+| Arquitetura de sistema | `system-architect` |
 | 3+ domínios ou FEATURE complexa | → Acionar Orchestrator |
 
 ## 4. Comunicar e agir

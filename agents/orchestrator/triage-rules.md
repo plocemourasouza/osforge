@@ -17,6 +17,9 @@
 - "adicionar campo", "mudar cor", "renomear"
 - "refatorar função", "extrair componente"
 - "adicionar validação em X"
+- "rodar lint", "formatar código", "atualizar dependência"
+- "melhorar SEO da página X", "corrigir meta tags"
+- "escrever documentação de X", "criar README"
 
 **Pipeline:** spec → implement → review
 **Artefatos:** tech-spec.md apenas
@@ -38,6 +41,11 @@
 - "criar feature de", "adicionar módulo de"
 - "implementar fluxo de", "integrar com"
 - "novo CRUD de", "adicionar autenticação em"
+- "criar API de", "endpoint para", "GraphQL schema para"
+- "app mobile para", "tela mobile de"
+- "game com", "jogo de", "multiplayer"
+- "deploy com Docker", "configurar CI/CD"
+- "otimizar performance de", "profiling de"
 
 **Pipeline:** spec → arch-check (se schema) → stories → implement loop → review
 **Artefatos:** spec.md, stories/
@@ -60,6 +68,10 @@
 - "migrar de X para Y", "redesenhar módulo"
 - "sistema completo com", "quero que tenha"
 - Descrições longas com múltiplas features interconectadas
+- "criar jogo completo", "app mobile do zero", "SaaS de"
+- "novo projeto com" (→ usar `skills/app-builder` para scaffolding)
+- "arquitetura de microsserviços", "redesign completo"
+- "plataforma multi-tenant", "marketplace"
 
 **Pipeline:** prd → architecture → epics → readiness-gate → sprint loop
 **Artefatos:** prd.md, architecture.md, epics/, sprint-status.yaml
@@ -82,3 +94,28 @@ Quando a classificação não é clara:
 3. **Override do usuário** sempre prevalece:
    "Quero tratar como QUICK" → respeitar, mesmo que tecnicamente seja STANDARD
    "Faz o planejamento completo" → COMPLEX independente da classificação
+
+---
+
+## Skills Especializados por Tipo de Projeto
+
+Quando a demanda envolve um domínio específico, carregar os skills correspondentes:
+
+| Tipo de Projeto | Skills Primários | Agente Principal |
+|---|---|---|
+| App web Next.js | `nextjs-react-expert`, `frontend-ui-system`, `tailwind-patterns` | `frontend-engineer` |
+| API/Backend | `api-patterns`, `nodejs-best-practices`, `database-design` | `backend-engineer` |
+| App mobile | `mobile-design`, `app-builder` (react-native/flutter template) | `mobile-developer` |
+| Game | `game-development` + sub-skills relevantes | `game-developer` |
+| Segurança/Audit | `security-best-practices`, `red-team-tactics`, `vulnerability-scanner` | `security-auditor` + `penetration-tester` |
+| Performance | `performance-profiling`, `react-performance`, `core-web-vitals` | `performance-optimizer` |
+| DevOps/Deploy | `deployment-procedures`, `server-management`, `claude-ci-actions` | `devops-engineer` |
+| SEO/GEO | `seo-fundamentals`, `seo`, `genai-optimization` | `seo-specialist` |
+| Documentação | `documentation-templates`, `docs-writer`, `technical-design-doc-creator` | `documentation-writer` |
+| Legacy/Refactor | `clean-code`, `coding-guidelines` | `code-archaeologist` + `code-refactorer` |
+| Rust | `rust-pro` | (sem agente dedicado, usar expertise inline) |
+| Python | `python-patterns` | (sem agente dedicado, usar expertise inline) |
+| Scaffolding | `app-builder` (13 templates disponíveis) | (workflow do app-builder) |
+| Brainstorm | `brainstorming` | (workflow socrático) |
+| Testing | `tdd-workflow`, `testing-patterns`, `e2e-testing-patterns`, `webapp-testing` | `test-engineer` + `qa-automation-engineer` |
+| Database | `database-design`, `prisma-expert`, `postgres-optimization` | `database-architect` |

@@ -644,3 +644,227 @@ Divide documentos markdown grandes em arquivos menores organizados com index. Pr
 **Trigger:** "editorial review", "review prose", "review structure", "revisar documento", ou na fase final de qualquer documento.
 
 Revisão editorial de documentos técnicos em 2 modos: **prose** (copy-editing clínico — clareza, concisão, gramática, tom) e **structure** (reorganização — flow lógico, headings, redundância, gaps). Pode rodar ambos em sequência. Output: documento revisado com tracked changes.
+
+---
+
+## Skill 48: App Builder
+**Trigger:** Scaffolding, new project, project template, boilerplate, "create new app", application orchestration.
+
+Application building orchestrator. Analyzes user requests, determines project type, selects tech stack, and coordinates agents for full-stack application creation from natural language.
+
+---
+
+## Skill 49: API Patterns
+**Trigger:** REST, GraphQL, tRPC, API design, endpoint design, rate limiting, API versioning.
+
+API design principles and decision-making. REST vs GraphQL vs tRPC selection, response formats, versioning, pagination, authentication patterns, rate limiting, and documentation.
+
+---
+
+## Skill 50: Game Development
+**Trigger:** Game, game loop, sprites, 2D/3D, multiplayer, game engine.
+
+Game development orchestrator providing core principles and routing to platform-specific sub-skills (web, mobile, PC, VR/AR) and dimensional specialties (2D, 3D).
+
+---
+
+## Skill 51: Red Team Tactics
+**Trigger:** Red team, offensive security, attack simulation, MITRE ATT&CK.
+
+Red team tactics based on MITRE ATT&CK framework. Attack phases, reconnaissance, initial access, privilege escalation, defense evasion, lateral movement, and reporting principles.
+
+---
+
+## Skill 52: Tailwind Patterns
+**Trigger:** Tailwind, utility classes, responsive design, Tailwind v4.
+
+Tailwind CSS v4 principles. CSS-first configuration, container queries, modern responsive patterns, color systems, typography, animations, and component extraction.
+
+---
+
+## Skill 53: Systematic Debugging
+**Trigger:** Debug methodology, root cause analysis, systematic troubleshooting.
+
+4-phase systematic debugging methodology: reproduce → isolate → understand → fix. Evidence-based verification and root cause analysis to prevent random guessing.
+
+---
+
+## Skill 54: Mobile Design
+**Trigger:** Mobile app design, touch targets, responsive mobile, iOS/Android design.
+
+Mobile-first design thinking for iOS and Android. Touch interaction patterns, performance optimization, platform conventions, navigation, typography, and offline capabilities.
+
+---
+
+## Skill 55: Rust Pro
+**Trigger:** Rust, cargo, ownership, borrowing, lifetimes, async Rust.
+
+Master Rust 1.75+ with modern async patterns, advanced type system features, and production-ready systems programming. Ownership, lifetimes, async design, and ecosystem expertise.
+
+---
+
+## Skill 56: Python Patterns
+**Trigger:** Python, FastAPI, Django, Flask, pip, poetry, Python architecture.
+
+Python development principles and decision-making. Framework selection (FastAPI, Django, Flask), async patterns, type hints, project structure, and thinking-based approaches.
+
+---
+
+## Skill 57: Brainstorming
+**Trigger:** Brainstorm, ideation, problem exploration, Socratic questioning.
+
+Brainstorming and communication protocol using Socratic questioning. MANDATORY for complex requests, new features, and unclear requirements. Includes progress reporting and structured elicitation.
+
+---
+
+## Skill 58: Web Design Guidelines
+**Trigger:** Web design review, UI accessibility audit, design compliance.
+
+Web Interface Guidelines review and compliance checking. Audit UI code for accessibility, design principles, and best practices against established web standards.
+
+---
+
+## Skill 59: Clean Code
+**Trigger:** Clean code, code standards, naming conventions, readability.
+
+Pragmatic coding standards emphasizing conciseness, directness, and solution-focus. SRP, DRY, KISS, YAGNI principles, naming conventions, and avoiding over-engineering.
+
+---
+
+## Skill 60: Bash Linux
+**Trigger:** Bash, shell script, Linux commands, terminal, CLI scripting.
+
+Bash/Linux terminal patterns for macOS and Linux. Critical commands, piping, error handling, scripting best practices, and file operations.
+
+---
+
+## Skill 61: PowerShell Windows
+**Trigger:** PowerShell, Windows scripting, Windows administration.
+
+PowerShell Windows patterns. Operator syntax, error handling, safe scripting, cmdlet usage, and Windows-specific gotchas.
+
+---
+
+## Skill 62: Frontend Design
+**Trigger:** Design system, color theory, typography, animation, UX psychology, visual design.
+
+Design thinking and decision-making for web UI. Color systems, typography, visual effects, animation, motion graphics, and component design patterns.
+
+---
+
+## Skill 63: Performance Profiling
+**Trigger:** Performance profiling, Lighthouse, Web Vitals profiling, bundle analysis.
+
+Performance profiling principles. Measurement, Core Web Vitals analysis, bottleneck identification, and optimization strategies.
+
+---
+
+## Skill 64: Node.js Best Practices
+**Trigger:** Node.js, Express patterns, async Node, Node architecture.
+
+Node.js development principles and decision-making. Framework selection, async patterns, security, architecture patterns, and thinking-based approaches.
+
+---
+
+## Skill 65: Architecture
+**Trigger:** System architecture, design patterns, architectural decisions, scalability patterns.
+
+Architectural decision-making framework. Requirements analysis, trade-off evaluation, pattern selection, ADR documentation, and design principles.
+
+---
+
+## Skill 66: GEO Fundamentals
+**Trigger:** GEO, AI search optimization, LLM visibility, ChatGPT/Perplexity ranking.
+
+Generative Engine Optimization for AI-powered search engines (ChatGPT, Claude, Perplexity). Citation strategies, content structure, and visibility optimization.
+
+---
+
+## Skill 67: Database Design
+**Trigger:** Database design, schema design, database selection, ORM choice, indexing strategy, migrations.
+
+Database design principles and decision-making. Schema design, database selection (PostgreSQL, Neon, Turso, SQLite), ORM selection, indexing, optimization, and safe migrations.
+
+---
+
+## Skill 68: Deployment Procedures
+**Trigger:** Deployment, release process, rollback, blue-green, canary deployment.
+
+Deployment principles for safe production releases. Platform selection, deployment strategies, rollback procedures, verification steps, and operational safety.
+
+---
+
+## Skill 69: Server Management
+**Trigger:** Server management, process management, monitoring, health checks, scaling.
+
+Server management principles. Process management tools, monitoring strategy, scaling decisions, observability, and operational thinking.
+
+---
+
+## Skill 70: Documentation Templates
+**Trigger:** Documentation template, README template, API docs template, changelog, ADR.
+
+Documentation templates and structure guidelines. README, API documentation, code comments, changelog, ADR format, and AI-friendly documentation.
+
+---
+
+## Skill 71: Vulnerability Scanner
+**Trigger:** Vulnerability scan, security scan, OWASP checklist, dependency audit.
+
+Vulnerability analysis principles. OWASP 2025 framework, supply chain security, attack surface mapping, risk prioritization, and security expert mindset.
+
+---
+
+## Skill 72: Next.js React Expert
+**Trigger:** Next.js performance, React optimization, waterfall elimination, bundle optimization, SSR/SSG.
+
+React and Next.js performance optimization from Vercel Engineering. 57 optimization rules prioritized by impact. Eliminate waterfalls, optimize bundles, reduce JavaScript, and server-side strategies.
+
+---
+
+## Skill 73: Lint and Validate
+**Trigger:** Linting, code validation, ESLint, Prettier, quality checks.
+
+Automatic quality control and static analysis. Linting, formatting, type checking, and security audits for Node.js, Python, and other ecosystems.
+
+---
+
+## Skill 74: Code Review Checklist
+**Trigger:** Code review checklist, review guidelines, PR review.
+
+Code review guidelines covering correctness, security, performance, testing, style, and maintainability. Structured checklist for quality assurance.
+
+---
+
+## Skill 75: Behavioral Modes
+**Trigger:** Agent mode, brainstorm mode, implement mode, debug mode, review mode, teach mode.
+
+AI behavioral modes for adaptive problem-solving. Brainstorm, implement, debug, review, teach, ship, and orchestrate modes with specific behaviors and outputs.
+
+---
+
+## Skill 76: Plan Writing
+**Trigger:** Task planning, plan breakdown, structured planning, implementation plan.
+
+Structured task planning framework. Small focused tasks, clear verification criteria, dependency identification, and logical ordering for multi-step work.
+
+---
+
+## Skill 77: SEO Fundamentals
+**Trigger:** SEO basics, E-E-A-T, search ranking, meta tags, structured data.
+
+SEO fundamentals covering E-E-A-T framework, Core Web Vitals, on-page optimization, meta tags, structured data, and search ranking principles.
+
+---
+
+## Skill 78: Testing Patterns
+**Trigger:** Testing pyramid, test patterns, AAA pattern, unit testing, integration testing.
+
+Testing patterns and principles. Testing pyramid, unit testing, integration testing, E2E testing, mocking strategies, and test organization.
+
+---
+
+## Skill 79: Web App Testing
+**Trigger:** Web app testing, E2E testing, Playwright testing, visual regression.
+
+Web application testing principles. Deep audit approaches, Playwright-based testing, accessibility testing, visual regression, and discovery-driven testing.

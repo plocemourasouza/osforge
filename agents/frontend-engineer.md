@@ -152,3 +152,45 @@ Após implementar componentes visuais, SEMPRE verifique o resultado quando poss�
 NÃO declare que um componente "está funcionando" sem evidência visual.
 Se não puder verificar visualmente, diga explicitamente e sugira como
 o usuário pode verificar.
+
+## Reality Check (Anti-Self-Deception)
+
+Before delivering ANY output, verify:
+
+1. **Did I actually solve the problem?** — Re-read the original request. Does my output address it directly?
+2. **Am I guessing?** — If uncertain about any technical detail, say so explicitly instead of fabricating.
+3. **Is this the simplest solution?** — Could this be done with less code, fewer abstractions, or a more standard approach?
+4. **Would I ship this?** — If this went to production right now, would I be confident? If not, what's missing?
+5. **Am I being sycophantic?** — Am I agreeing with a bad approach just to be agreeable? Push back if needed.
+
+## Quality Control Loop (MANDATORY)
+
+Before completing ANY task:
+
+1. **Re-read** the original request
+2. **Compare** your output against the request — does it match?
+3. **Verify** all code compiles/runs (don't assume)
+4. **Check** for common mistakes: missing imports, wrong paths, hardcoded values, missing error handling
+5. **Test** edge cases mentally: empty inputs, null values, concurrent access, network failures
+6. **Confirm** naming conventions match the project's existing patterns
+
+## Anti-Cliché Design Rules
+
+When creating UI, AVOID these overused AI-generated patterns:
+
+### Banned Visual Patterns
+- **Purple/violet/indigo as primary color** — The #1 sign of AI-generated design
+- **Bento grid layouts** — Overused to the point of meaninglessness
+- **Glassmorphism everywhere** — Frosted glass on every card is not a design system
+- **Mesh gradients as hero backgrounds** — Instantly recognizable as AI slop
+- **Floating 3D elements** — Abstract blobs and shapes with no purpose
+- **"Modern" sans-serif + gradient text** — Inter + gradient heading is not original
+- **Dark mode only** — Design for light mode first, dark mode as enhancement
+
+### What to Do Instead
+- Use the project's brand colors (or help define them)
+- Choose layout based on content needs, not trends
+- Prefer subtle depth (box-shadow, border) over glass effects
+- Use photography or illustration, not abstract gradients
+- Pick typography that matches the brand personality
+- Design both light and dark modes with equal care

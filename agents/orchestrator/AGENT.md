@@ -49,7 +49,7 @@ Executar antes de responder a QUALQUER mensagem do usuário:
 - FEATURE / BUG / REVIEW / DESIGN → continuar para detecção de domínio
 
 **b) Detectar domínios:**
-Frontend · Backend · Security · Testing · DevOps · Performance · Debug · Refactor
+Frontend · Backend · Security · Testing · DevOps · Performance · Debug · Refactor · Mobile · Game · Database · SEO · Docs · API Design · Scaffolding · Rust · Python · Infra
 
 **c) Selecionar agente(s) e comunicar:**
 - 1-2 domínios → anunciar concisamente e responder com persona:
@@ -214,17 +214,17 @@ dificuldade encontrada durante uso do software:
 | Fase | Skill |
 |------|-------|
 | Spec | `skills/planning/spec-builder` |
-| Implement | Skills de execução existentes (nextjs, prisma, etc.) |
-| Review | `skills/quality/code-review` |
+| Implement | Skills de execução por domínio (ver tabela abaixo) |
+| Review | `skills/quality/code-review` ou `skills/code-review-checklist` |
 
 ### Triage STANDARD
 | Fase | Skill |
 |------|-------|
 | Phase context | `skills/planning/phase-discussion` (antes de spec) |
 | Spec | `skills/planning/spec-builder` |
-| Architecture check | `skills/planning/arch-builder` (se schema/API changes) |
+| Architecture check | `skills/planning/arch-builder` ou `skills/architecture` (se schema/API changes) |
 | Stories | `skills/planning/epic-decomposer` |
-| Implement (loop) | `skills/planning/story-executor` → skills de execução |
+| Implement (loop) | `skills/planning/story-executor` → skills de execução por domínio |
 | Review (loop) | `skills/quality/code-review` |
 | Final review | `skills/quality/adversarial-review` + `skills/quality/edge-case-hunter` |
 
@@ -232,15 +232,119 @@ dificuldade encontrada durante uso do software:
 | Fase | Skill |
 |------|-------|
 | PRD | `skills/planning/prd-builder` |
-| Architecture | `skills/planning/arch-builder` |
+| Architecture | `skills/planning/arch-builder` + `skills/architecture` |
 | Phase context | `skills/planning/phase-discussion` (antes de cada fase) |
 | Épicos + Stories | `skills/planning/epic-decomposer` |
 | Readiness gate | `skills/quality/readiness-gate` |
-| Sprint loop | `skills/planning/story-executor` → skills de execução |
+| Sprint loop | `skills/planning/story-executor` → skills de execução por domínio |
 | Review (loop) | `skills/quality/code-review` |
 | Final review | `skills/quality/adversarial-review` + `skills/quality/edge-case-hunter` |
 
-### Utilitários (qualquer triage)
+---
+
+## Skills por Domínio
+
+### Frontend & UI
+| Necessidade | Skill |
+|-------------|-------|
+| Componentes React/Next.js | `skills/nextjs-react-expert` |
+| Performance React | `skills/react-performance` |
+| Design system, cores, tipografia, animação | `skills/frontend-design` |
+| shadcn/ui + Tailwind | `skills/frontend-ui-system` |
+| Tailwind v4 patterns | `skills/tailwind-patterns` |
+| UI design avançado | `skills/ui-design-intelligence` |
+| Web design & acessibilidade | `skills/web-design-guidelines` |
+| Layout com AI | `skills/openui-genui-layout` |
+| Core Web Vitals | `skills/core-web-vitals` |
+| i18n | `skills/i18n-localization` |
+
+### Backend & Database
+| Necessidade | Skill |
+|-------------|-------|
+| Prisma | `skills/prisma-expert` |
+| PostgreSQL otimização | `skills/postgres-optimization` |
+| Auth Supabase | `skills/nextjs-supabase-auth` |
+| Stripe | `skills/stripe-integration` |
+| API design (REST/GraphQL/tRPC) | `skills/api-patterns` |
+| Database design & schema | `skills/database-design` |
+| Node.js patterns | `skills/nodejs-best-practices` |
+
+### Mobile & Game
+| Necessidade | Skill |
+|-------------|-------|
+| Mobile design (iOS/Android) | `skills/mobile-design` |
+| Game development | `skills/game-development` |
+| Game sub-skills | `skills/game-development/{2d,3d,multiplayer,vr-ar,...}` |
+
+### Segurança
+| Necessidade | Skill |
+|-------------|-------|
+| Security best practices | `skills/security-best-practices` |
+| Threat modeling | `skills/security-threat-model` |
+| Red team / segurança ofensiva | `skills/red-team-tactics` |
+| Vulnerability scanning | `skills/vulnerability-scanner` |
+| Insecure defaults | `skills/insecure-defaults` |
+| GDPR/LGPD | `skills/gdpr-data-handling` |
+
+### Testing & Quality
+| Necessidade | Skill |
+|-------------|-------|
+| TDD workflow | `skills/tdd-workflow` |
+| Testing patterns (unit, integration) | `skills/testing-patterns` |
+| E2E Playwright | `skills/e2e-testing-patterns` |
+| Web app testing | `skills/webapp-testing` |
+| Lint & validate | `skills/lint-and-validate` |
+| Code review checklist | `skills/code-review-checklist` |
+| Adversarial review | `skills/quality/adversarial-review` |
+| Edge case hunter | `skills/quality/edge-case-hunter` |
+| UI audit | `skills/quality/ui-audit` |
+
+### DevOps & Deploy
+| Necessidade | Skill |
+|-------------|-------|
+| Vercel deploy | `skills/vercel-deploy` |
+| Deployment procedures | `skills/deployment-procedures` |
+| Server management | `skills/server-management` |
+| CI com Claude | `skills/claude-ci-actions` |
+
+### Linguagens Específicas
+| Necessidade | Skill |
+|-------------|-------|
+| Rust | `skills/rust-pro` |
+| Python / FastAPI / Django | `skills/python-patterns` |
+| Bash / Linux | `skills/bash-linux` |
+| PowerShell / Windows | `skills/powershell-windows` |
+| Bun runtime | `skills/bun-development` |
+
+### Planejamento & Ideação
+| Necessidade | Skill |
+|-------------|-------|
+| Brainstorming / ideação | `skills/brainstorming` |
+| Plan writing | `skills/plan-writing` |
+| Spec builder | `skills/planning/spec-builder` |
+| PRD builder | `skills/planning/prd-builder` |
+| Arch builder | `skills/planning/arch-builder` |
+| Architecture patterns | `skills/architecture` |
+| Epic decomposer | `skills/planning/epic-decomposer` |
+| Story executor | `skills/planning/story-executor` |
+
+### Documentação & SEO
+| Necessidade | Skill |
+|-------------|-------|
+| Documentation templates | `skills/documentation-templates` |
+| Docs writer | `skills/docs-writer` |
+| Technical design doc | `skills/technical-design-doc-creator` |
+| SEO fundamentals | `skills/seo-fundamentals` |
+| SEO avançado | `skills/seo` |
+| GEO (AI search optimization) | `skills/genai-optimization` |
+
+### Scaffolding & Projeto Novo
+| Necessidade | Skill |
+|-------------|-------|
+| App builder (13 templates) | `skills/app-builder` |
+| Templates: Next.js, FastAPI, Flutter, Electron, etc. | `skills/app-builder/references/` |
+
+### Meta & Utilitários
 | Necessidade | Skill |
 |-------------|-------|
 | Comprimir contexto grande | `skills/context/context-distillator` |
@@ -248,5 +352,67 @@ dificuldade encontrada durante uso do software:
 | Dividir doc grande | `skills/context/doc-shard` |
 | Refinar output | `skills/quality/elicitation-engine` |
 | Revisar doc | `skills/context/editorial-review` |
-| Especialista de área | `skills/agency/` (The Agency) |
-| Auditoria visual de UI | `skills/quality/ui-audit` |
+| Doc sanitization | `skills/doc-sanitization` |
+| Especialista de área | `skills/agency/` (The Agency — 121+ roles) |
+| Performance profiling | `skills/performance-profiling` |
+| Behavioral modes (agent personas) | `skills/behavioral-modes` |
+| Smart model dispatch | `skills/smart-model-dispatch` |
+| Parallel agents | `skills/dispatching-parallel-agents` |
+| MCP builder | `skills/mcp-builder` |
+| Claude API TypeScript | `skills/claude-api-typescript` |
+| Skill creator | `skills/skill-creator` |
+| Clean code standards | `skills/clean-code` |
+| Coding guidelines | `skills/coding-guidelines` |
+| Verification before completion | `skills/verification-before-completion` |
+| Differential review | `skills/differential-review` |
+| Predictive failure | `skills/predictive-failure` |
+
+---
+
+## Agentes Disponíveis (26 total)
+
+### Engenharia & Código
+| Agente | Papel |
+|--------|-------|
+| `frontend-engineer` | React, Next.js, shadcn/ui, Server Components |
+| `backend-engineer` | Prisma, Supabase, Server Actions, APIs |
+| `database-architect` | Schema design, indexing, migrations, ORM |
+| `mobile-developer` | React Native, Flutter, mobile-first |
+| `game-developer` | Game mechanics, engines, plataformas |
+| `devops-engineer` | CI/CD, Docker, infra, pipelines |
+| `performance-optimizer` | Core Web Vitals, profiling, otimização |
+
+### Qualidade & Segurança
+| Agente | Papel |
+|--------|-------|
+| `code-reviewer` | Review estruturado com YAML output |
+| `code-refactorer` | Clean code, refactoring patterns |
+| `security-auditor` | Trail of Bits methodology, audit |
+| `penetration-tester` | Segurança ofensiva, red team |
+| `test-engineer` | Estratégias de teste, TDD |
+| `qa-automation-engineer` | E2E, Playwright, CI pipelines |
+
+### Planejamento & Produto
+| Agente | Papel |
+|--------|-------|
+| `planner` | Decomposição técnica, planejamento |
+| `system-architect` | Design de sistema, ADRs |
+| `project-planner` | Discovery, task planning, roadmap |
+| `product-manager` | Requisitos, user stories |
+| `product-owner` | Estratégia, backlog, MVP |
+| `product-strategy-advisor` | Estratégia de produto, roadmap |
+
+### Investigação & Suporte
+| Agente | Papel |
+|--------|-------|
+| `debugger` | Debugging autônomo em 10 passos |
+| `explorer-agent` | Análise de codebase, onboarding |
+| `code-archaeologist` | Legacy code, arqueologia de código |
+| `validator` | Spec critique, acceptance verification |
+
+### Documentação & SEO
+| Agente | Papel |
+|--------|-------|
+| `documentation-writer` | Manuais, docs técnicos |
+| `seo-specialist` | SEO, E-E-A-T, ranking |
+| `git-commit-helper` | Conventional commits, release notes |
