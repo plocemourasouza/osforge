@@ -2,11 +2,11 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **51 on-demand skills**, **12 specialized agents**, **11 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **79 on-demand skills**, **26 specialized agents**, **11 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
-📖 **[Full usage guide → USAGE.md](USAGE.md)** · 💡 **[10 usage examples → docs/EXAMPLES.md](docs/EXAMPLES.md)**
+📖 **[Full usage guide → USAGE.md](USAGE.md)** · 💡 **[10 usage examples → docs/EXAMPLES.md](docs/EXAMPLES.md)** · 🗺️ **[Architecture map → osforge-architecture.html](osforge-architecture.html)**
 
 ---
 
@@ -14,9 +14,9 @@ OSForge is a production-grade AI development framework with **51 on-demand skill
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 51 skills in ~9.5K base tokens (3.4% of 200K window). Everything else loads on-demand.
-2. **Stack-specific patterns** — Every skill is tailored for Next.js App Router + Prisma + Supabase + shadcn/ui.
-3. **Quality gates built-in** — TDD enforcement, security auditing, insecure defaults detection, and Python hooks that run at zero token cost.
+1. **Context efficiency** — 79 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
+2. **Stack-specific patterns** — Core skills tailored for Next.js App Router + Prisma + Supabase + shadcn/ui, with expanded coverage for mobile, game dev, Rust, Python, and cross-platform.
+3. **Quality gates built-in** — TDD enforcement, security auditing, red team tactics, insecure defaults detection, Reality Check + Quality Control Loop in every agent, and Python hooks at zero token cost.
 
 ---
 
@@ -34,8 +34,9 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 
 ## What's Inside
 
-### 51 Skills (on-demand)
+### 79 Skills (on-demand)
 
+#### Core & Workflow
 | # | Skill | Category |
 |---|---|---|
 | 1 | TDD Workflow (RED-GREEN-REFACTOR) | Core |
@@ -43,68 +44,172 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | 3 | Security Best Practices | Security |
 | 4 | Coding Guidelines (Karpathy Rules) | Core |
 | 5 | Product-Driven Spec Development (PDD) | Core |
-| 6 | React & Next.js Performance | Performance |
-| 7 | PostgreSQL & Supabase Optimization | Performance |
-| 8 | Frontend UI System (shadcn/ui) | Frontend |
-| 9 | Git Workflow | Core |
-| 10 | Predictive Failure Analysis | Meta |
-| 11 | Core Web Vitals | Performance |
-| 12 | Accessibility (WCAG 2.1) | Frontend |
-| 13 | SEO | Frontend |
-| 14 | Doc Sanitization | Docs |
-| 15 | Agent Skills Search | Meta |
-| 16 | Prisma Expert | Stack |
-| 17 | Next.js + Supabase Auth | Stack |
-| 18 | E2E Testing (Playwright) | Testing |
-| 19 | Stripe Integration | Stack |
-| 20 | Bun Development | Stack |
-| 21 | MCP Builder | Meta |
-| 22 | i18n & Localization | Stack |
-| 23 | GDPR / LGPD Data Handling | Compliance |
-| 24 | Insecure Defaults Detection | Security |
-| 25 | Differential Review | Security |
-| 26 | Dispatching Parallel Agents | Meta |
-| 27 | Claude API & Agent SDK (TypeScript) | API |
-| 28 | Claude CI/CD Actions | CI/CD |
-| 29 | Smart Model Dispatch | Optimization |
-| 30 | Context7 Docs-First | Meta |
-| 31 | Smart Hooks (Python) | DX |
-| 32 | llmfit Advisor (Local LLM Hardware Fit) | Optimization |
-| 33 | The Agency (121 AI Specialists) | Meta |
-| 34 | Spec Builder (Collaborative) | Planning |
-| 35 | PRD Builder (Collaborative) | Planning |
-| 36 | Architecture Builder (ADR) | Planning |
-| 37 | Epic Decomposer | Planning |
-| 38 | Story Executor | Planning |
-| 39 | Adversarial Review | Quality |
-| 40 | Code Review (OSForge Stack) | Quality |
-| 41 | Edge Case Hunter | Quality |
-| 42 | Elicitation Engine | Quality |
-| 43 | Readiness Gate | Quality |
-| 44 | Context Distillator | Context |
-| 45 | Project Context Generator | Context |
-| 46 | Doc Shard | Context |
-| 47 | Editorial Review | Context |
-| 48 | AutoRefine Skill (Autonomous Skill Iteration) | Meta |
-| 49 | Phase Discussion (Pre-planning Context Capture) | Planning |
-| 50 | UI Audit (6-pillar Visual Quality Review) | Quality |
-| 51 | UI Design Intelligence (Styles, Palettes, Typography, UX, Charts) | Frontend |
+| 6 | Git Workflow | Core |
+| 7 | Clean Code Standards | Core |
+| 8 | Best Practices | Core |
 
-### 12 Agents (on-demand)
+#### Frontend & UI
+| # | Skill | Category |
+|---|---|---|
+| 9 | React & Next.js Performance | Performance |
+| 10 | Next.js React Expert (9 optimization modules) | Performance |
+| 11 | Frontend UI System (shadcn/ui) | Frontend |
+| 12 | Frontend Design (colors, typography, animation, UX) | Frontend |
+| 13 | Tailwind Patterns (v4) | Frontend |
+| 14 | UI Design Intelligence (Styles, Palettes, Typography, UX, Charts) | Frontend |
+| 15 | Web Design Guidelines (accessibility, UX rules) | Frontend |
+| 16 | Core Web Vitals | Performance |
+| 17 | Accessibility (WCAG 2.1) | Frontend |
+| 18 | OpenUI/GenUI Layout | Frontend |
+| 19 | i18n & Localization | Frontend |
+| 20 | SEO | Frontend |
+| 21 | SEO Fundamentals (E-E-A-T, structured data) | SEO |
 
+#### Backend & Database
+| # | Skill | Category |
+|---|---|---|
+| 22 | Prisma Expert | Stack |
+| 23 | PostgreSQL & Supabase Optimization | Performance |
+| 24 | Next.js + Supabase Auth | Stack |
+| 25 | Stripe Integration | Stack |
+| 26 | API Patterns (REST/GraphQL/tRPC + 10 reference modules) | Backend |
+| 27 | Database Design (schema, indexing, ORM + 6 reference modules) | Backend |
+| 28 | Node.js Best Practices | Backend |
+| 29 | Bun Development | Stack |
+| 30 | Server Management | Backend |
+
+#### Mobile & Game
+| # | Skill | Category |
+|---|---|---|
+| 31 | Mobile Design (touch psychology, platform-specific + references) | Mobile |
+| 32 | Game Development (orchestrator + 10 sub-skills) | Game |
+| 33 | App Builder (13 project templates) | Scaffolding |
+
+#### Security & Compliance
+| # | Skill | Category |
+|---|---|---|
+| 34 | Red Team Tactics (MITRE ATT&CK) | Security |
+| 35 | Vulnerability Scanner (OWASP checklists) | Security |
+| 36 | Insecure Defaults Detection | Security |
+| 37 | Security Threat Model | Security |
+| 38 | GDPR / LGPD Data Handling | Compliance |
+
+#### Testing & Quality
+| # | Skill | Category |
+|---|---|---|
+| 39 | E2E Testing (Playwright) | Testing |
+| 40 | Testing Patterns (pyramid, unit, integration) | Testing |
+| 41 | Web App Testing (Playwright, visual regression) | Testing |
+| 42 | Lint and Validate (ESLint, Prettier) | Testing |
+| 43 | Code Review Checklist | Quality |
+| 44 | Adversarial Review | Quality |
+| 45 | Code Review (OSForge Stack) | Quality |
+| 46 | Edge Case Hunter | Quality |
+| 47 | Elicitation Engine | Quality |
+| 48 | Readiness Gate | Quality |
+| 49 | UI Audit (6-pillar Visual Quality Review) | Quality |
+| 50 | Differential Review | Quality |
+
+#### Planning & Ideation
+| # | Skill | Category |
+|---|---|---|
+| 51 | Brainstorming (Socratic questioning) | Planning |
+| 52 | Plan Writing (structured planning) | Planning |
+| 53 | Spec Builder (Collaborative) | Planning |
+| 54 | PRD Builder (Collaborative) | Planning |
+| 55 | Architecture Builder (ADR) | Planning |
+| 56 | Architecture Patterns (system design + 5 reference modules) | Planning |
+| 57 | Epic Decomposer | Planning |
+| 58 | Story Executor | Planning |
+| 59 | Phase Discussion (Pre-planning Context Capture) | Planning |
+| 60 | Behavioral Modes (agent personas) | Planning |
+
+#### Languages & Runtime
+| # | Skill | Category |
+|---|---|---|
+| 61 | Rust Pro (ownership, async, cargo) | Language |
+| 62 | Python Patterns (FastAPI, Django, Flask) | Language |
+| 63 | Bash Linux (shell scripting) | Language |
+| 64 | PowerShell Windows | Language |
+
+#### DevOps & Deploy
+| # | Skill | Category |
+|---|---|---|
+| 65 | Deployment Procedures (blue-green, canary, rollback) | DevOps |
+| 66 | Vercel Deploy | DevOps |
+| 67 | Claude CI/CD Actions | DevOps |
+
+#### Documentation & SEO
+| # | Skill | Category |
+|---|---|---|
+| 68 | Documentation Templates (README, API docs, ADR) | Docs |
+| 69 | Docs Writer | Docs |
+| 70 | Technical Design Doc Creator | Docs |
+| 71 | Doc Sanitization | Docs |
+| 72 | GEO / GenAI Optimization (AI search visibility) | SEO |
+
+#### Meta & Context
+| # | Skill | Category |
+|---|---|---|
+| 73 | Systematic Debugging (4-phase methodology) | Meta |
+| 74 | Performance Profiling (Lighthouse, bundle analysis) | Meta |
+| 75 | Predictive Failure Analysis | Meta |
+| 76 | Smart Model Dispatch | Optimization |
+| 77 | llmfit Advisor (Local LLM Hardware Fit) | Optimization |
+| 78 | Context Distillator | Context |
+| 79 | Project Context Generator | Context |
+
+> **Plus:** Doc Shard, Editorial Review, Agent Skills Search, Dispatching Parallel Agents, MCP Builder, Claude API & Agent SDK (TypeScript), Context7 Docs-First, Smart Hooks (Python), AutoRefine Skill, Skill Creator, The Agency (121 AI Specialists)
+
+### 26 Agents (on-demand)
+
+All agents include **Reality Check** (anti-self-deception) and **Quality Control Loop** (mandatory self-verification) sections.
+
+#### Engineering & Code
 | Agent | Role |
 |---|---|
-| **orchestrator** | Intake, triage, planning, routing, tracking, course correction (always-active meta-agent) |
-| **planner** | Architecture, decomposition, story creation (★ Synkra-enhanced) |
-| **debugger** | 10-step autonomous debugging |
+| **frontend-engineer** | shadcn/ui + Server Components specialist. Anti-cliché design rules. |
+| **backend-engineer** | Prisma + Supabase + Server Actions |
+| **database-architect** | Schema design, indexing, migrations, ORM selection |
+| **mobile-developer** | React Native + Flutter, mobile-first design |
+| **game-developer** | Game mechanics, engines, 2D/3D/multiplayer/VR-AR |
+| **devops-engineer** | CI/CD, Docker, infra, pipelines, zero-downtime deploys |
+| **performance-optimizer** | Core Web Vitals, profiling, bundle optimization |
+
+#### Quality & Security
+| Agent | Role |
+|---|---|
 | **code-reviewer** | Code quality + YAML-structured review output |
 | **code-refactorer** | Refactoring patterns and clean code |
-| **security-auditor** | Trail of Bits methodology |
-| **frontend-engineer** | shadcn/ui + Server Components specialist |
-| **backend-engineer** | Prisma + Supabase + Server Actions |
-| **validator** | Spec critique + acceptance verification |
+| **security-auditor** | Trail of Bits methodology (defensive) |
+| **penetration-tester** | Offensive security, red team, MITRE ATT&CK |
+| **test-engineer** | Testing strategies, TDD, test pyramid design |
+| **qa-automation-engineer** | E2E with Playwright, CI pipelines, visual regression |
+
+#### Planning & Product
+| Agent | Role |
+|---|---|
+| **orchestrator** | Intake, triage (21 domains), planning, routing to 26 agents, tracking (always-active meta-agent) |
+| **planner** | Architecture, decomposition, story creation (★ Synkra-enhanced) |
 | **system-architect** | System design and ADRs |
+| **project-planner** | Discovery, task planning, roadmap |
+| **product-manager** | Requirements, user stories, prioritization |
+| **product-owner** | Strategy, backlog, MVP definition |
 | **product-strategy-advisor** | Product strategy and roadmap |
+
+#### Investigation & Support
+| Agent | Role |
+|---|---|
+| **debugger** | 10-step autonomous debugging |
+| **explorer-agent** | Codebase analysis, onboarding, dependency mapping |
+| **code-archaeologist** | Legacy code archaeology, understanding and modernizing old systems |
+| **validator** | Spec critique + acceptance verification |
+
+#### Documentation & SEO
+| Agent | Role |
+|---|---|
+| **documentation-writer** | Technical docs, manuals, READMEs |
+| **seo-specialist** | SEO, E-E-A-T, structured data, ranking optimization |
 | **git-commit-helper** | Conventional commits and release notes |
 
 ### 11 Always-On Rules (Cursor)
@@ -187,39 +292,44 @@ osforge/
 ├── .osforge/              # Project status tracking (status.yaml)
 ├── claude-code/
 │   ├── CLAUDE.md          # Entry point for Claude Code sessions
-│   ├── SKILLS.md          # 51 skill triggers (~9.5K base tokens)
-│   └── agents/            # 12 agent definitions (.md)
-├── agents/                # Agent source files
-├── rules/                 # 10 always-on rules (.mdc + .md) for Cursor
+│   ├── SKILLS.md          # 79 skill triggers (~12K base tokens)
+│   └── agents/            # 26 agent definitions (.md)
+├── agents/                # 26 agent source files (with Reality Check + Quality Control Loop)
+│   ├── orchestrator/      # Meta-agent: AGENT.md + triage-rules + plan-templates
+│   ├── frontend-engineer.md  # + Anti-Cliché Design Rules
+│   ├── mobile-developer.md   # React Native + Flutter
+│   ├── game-developer.md     # Game mechanics, multi-platform
+│   ├── penetration-tester.md # Offensive security, red team
+│   ├── code-archaeologist.md # Legacy code archaeology
+│   ├── explorer-agent.md     # Codebase analysis, onboarding
+│   └── ... (26 total)
+├── rules/                 # 11 always-on rules (.mdc + .md) for Cursor
+│   └── intelligent-routing.mdc  # 21 domains, 28 agent routing combinations
 ├── commands/              # 9 spec:* slash commands for Claude Code
-├── skills/                # On-demand skill library
-│   ├── agency/            # 121 AI specialists — The Agency
-│   │   ├── SKILL.md       # Router — identifies division and agent
-│   │   ├── engineering/   # SKILL.md + 23 agents
-│   │   ├── design/        # SKILL.md + 8 agents
-│   │   ├── marketing/     # SKILL.md + 26 agents
-│   │   ├── paid-media/    # SKILL.md + 7 agents
-│   │   ├── product/       # SKILL.md + 5 agents
-│   │   ├── project-management/ # SKILL.md + 6 agents
-│   │   ├── sales/         # SKILL.md + 8 agents
-│   │   ├── support/       # SKILL.md + 6 agents
-│   │   ├── testing/       # SKILL.md + 8 agents
-│   │   └── specialized/   # SKILL.md + 24 agents
-│   ├── llmfit-advisor/    # Local LLM hardware fit advisor
-│   ├── smart-model-dispatch/  # Claude API tier routing
-│   ├── smart-hooks/       # Python hooks source
-│   ├── claude-api-typescript/ # Claude API + Agent SDK reference
-│   ├── prisma-expert/
-│   ├── stripe-integration/
-│   ├── planning/           # 6 planning skills (spec, prd, arch, epics, story, phase-discussion)
-│   ├── quality/            # 6 quality skills (adversarial, code-review, edge-case, elicitation, readiness, ui-audit)
-│   ├── context/            # 4 context skills (distillator, project-context, doc-shard, editorial)
-│   ├── ui-design-intelligence/ # Style catalog, palettes, typography, UX, charts
-│   └── ... (51 total)
+├── skills/                # On-demand skill library (110 SKILL.md files)
+│   ├── agency/            # 121 AI specialists — The Agency (10 divisions)
+│   ├── app-builder/       # 13 project templates (Next.js, FastAPI, Flutter, Electron...)
+│   ├── api-patterns/      # REST/GraphQL/tRPC + 10 reference modules
+│   ├── game-development/  # Orchestrator + 10 sub-skills (2D, 3D, multiplayer, VR/AR...)
+│   ├── mobile-design/     # Touch psychology, platform-specific + references
+│   ├── frontend-design/   # Colors, typography, animation, UX + 7 references
+│   ├── architecture/      # System design patterns + 5 reference modules
+│   ├── database-design/   # Schema, indexing, ORM + 6 reference modules
+│   ├── nextjs-react-expert/ # 9 performance optimization modules
+│   ├── red-team-tactics/  # MITRE ATT&CK offensive security
+│   ├── vulnerability-scanner/ # OWASP checklists
+│   ├── rust-pro/          # Ownership, async, cargo
+│   ├── python-patterns/   # FastAPI, Django, Flask
+│   ├── brainstorming/     # Socratic questioning + dynamic questioning
+│   ├── planning/          # 6 planning skills (spec, prd, arch, epics, story, phase)
+│   ├── quality/           # 6 quality skills (adversarial, code-review, edge-case, elicitation, readiness, ui-audit)
+│   ├── context/           # 4 context skills (distillator, project-context, doc-shard, editorial)
+│   └── ... (110 SKILL.md files total)
 ├── hooks/                 # Python hooks + shell scripts + config
 ├── mcp/                   # MCP server configs (claude-code.json, cursor.json)
 ├── scripts/               # Utility scripts
 ├── docs/                  # Internal documentation
+├── osforge-architecture.html  # Interactive visual architecture map
 ├── deploy.sh              # One-command sync to ~/.claude/ and ~/.cursor/
 └── _skills/               # Source repositories index (770+ skills curated)
 ```
@@ -228,16 +338,17 @@ osforge/
 
 | Component | Tokens | Loaded |
 |---|---|---|
-| SKILLS.md (51 triggers + 11 rules) | ~9,500 | Always |
-| Agent definitions (12) | ~1,300 | On invoke |
+| SKILLS.md (79 triggers + 11 rules) | ~12,000 | Always |
+| Agent definitions (26) | ~1,500–3,000 | On invoke |
 | Agency router (SKILL.md) | ~2,000 | On invoke |
 | Agency division index (1 of 10) | ~1,500 | On invoke |
 | Agency specialist (1 of 121) | ~2,000–4,000 | On invoke |
 | Individual SKILL.md files | ~500–3,000 each | On invoke |
+| Complex skills with references | ~3,000–8,000 each | On invoke |
 | Python hooks | 0 | Runtime only |
-| Orchestrator AGENT.md | ~3,500 | On invoke |
+| Orchestrator AGENT.md (full routing tables) | ~5,500 | On invoke |
 | Planning/Quality/Context skills | ~500–2,000 each | On invoke |
-| **Base context usage** | **~9,500** | **4.7% of 200K** |
+| **Base context usage** | **~12,000** | **6% of 200K** |
 
 ---
 
@@ -288,13 +399,13 @@ See `mcp/claude-code.json` and `mcp/cursor.json` for full configs.
 
 ## Origins
 
-OSForge was built by evaluating **1050+ agent skills, commands, and patterns across 19 sources**, curating the most relevant for the Next.js + TypeScript + Prisma + Supabase + Bun stack:
+OSForge was built by evaluating **1050+ agent skills, commands, and patterns across 19 sources**, curating and adapting the most relevant into a unified framework:
 
 | Source | Repository | Focus |
 |---|---|---|
 | **Anthropic** | [anthropics/skills](https://github.com/anthropics/skills) ⭐ 63.9k | Official skills: docx, pdf, pptx, xlsx, mcp-builder, frontend-design |
 | **Antigravity** | [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) ⭐ 7.4k | 634+ universal skills (curated subset) |
-| **Antigravity Kit** | [vudovn/antigravity-kit](https://github.com/vudovn/antigravity-kit) ⭐ 4.2k | Intelligent routing, agent flow architecture, project validation scripts |
+| **Antigravity Kit** | [vudovn/antigravity-kit](https://github.com/vudovn/antigravity-kit) ⭐ 4.2k | 32 skills adapted (app-builder, api-patterns, game-dev, mobile-design, red-team, rust, python, etc.) + 15 agents + Reality Check/Quality Control Loop patterns |
 | **autoresearch** | [karpathy/autoresearch](https://github.com/karpathy/autoresearch) ⭐ 39k | Autonomous research loop pattern (modify→evaluate→keep/discard→repeat) — inspired `autorefine-skill` |
 | **BMAD-METHOD** | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) ⭐ 35.4k | Orchestration patterns: intake, triage, multi-phase planning, quality gates, artifact chains |
 | **claude-mem** | [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) ⭐ 23.3k | Persistent memory for Claude Code |
@@ -312,7 +423,7 @@ OSForge was built by evaluating **1050+ agent skills, commands, and patterns acr
 | **UI-UX Pro Max** | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) ⭐ 39k | Design intelligence database: 67 styles, 161 palettes, 57 font pairs, 99 UX guidelines, 25 chart types |
 | **Vercel Labs** | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) ⭐ 19.1k | React, Next.js performance, Core Web Vitals |
 
-> **Breakdown:** 769 SKILL.md/agent files indexed from 13 repositories · 121 Agency specialists · 33 GSD commands · ~50 BMAD orchestration patterns · 67 Antigravity Kit templates · 5 UI-UX Pro Max reference databases · 2 tool patterns (llmfit + autoresearch)
+> **Breakdown:** 110 SKILL.md files · 26 specialized agents · 121 Agency specialists · 79 trigger entries · 21 detectable domains · 13 project templates · 10 game sub-skills · 9 Next.js optimization modules · 33 GSD commands · ~50 BMAD orchestration patterns · 5 UI-UX Pro Max reference databases · 2 tool patterns (llmfit + autoresearch)
 
 ---
 
