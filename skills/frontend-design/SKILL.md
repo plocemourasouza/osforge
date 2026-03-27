@@ -387,6 +387,34 @@ For deeper guidance on specific areas:
 
 ---
 
+## Convergência Distribucional (Meta-Awareness)
+
+> LLMs convergem para designs genéricos porque tokens de alta probabilidade dominam o sampling.
+> Fontes "seguras", paletas "universais" e layouts "que funcionam para tudo" são overrepresented
+> nos dados de treinamento. Esta skill existe para **quebrar essa convergência**. Cada design DEVE
+> ser uma expressão única do contexto — não uma variação do centro estatístico.
+
+### Anti-Convergência de Segunda Ordem
+
+Ao escapar dos defaults óbvios (Inter, roxo, bento grid), o modelo tende a convergir para
+um NOVO set de defaults: Space Grotesk, deep cyan, glassmorphism padrão. Isso é **convergência
+de segunda ordem** — igualmente genérico, apenas menos óbvio.
+
+**Regra:** Se você já usou uma fonte/cor/layout em uma geração anterior NESTA SESSÃO,
+não repita. Cada output deve ser esteticamente distinto do anterior.
+
+### Complexity Matching (OBRIGATÓRIO)
+
+A complexidade do código DEVE espelhar a visão estética:
+- **Maximalist designs** → código elaborado, animações extensas, efeitos em camada
+- **Minimalist designs** → restraint extremo, precisão em spacing/tipografia, detalhes sutis
+- **NUNCA:** design minimalista com código complexo desnecessário, ou design ambicioso com código lazy
+- Elegância vem de executar a visão com precisão, não de intensidade
+
+> **Inspiração teórica:** [Anthropic Blog — Improving Frontend Design Through Skills](https://claude.com/blog/improving-frontend-design-through-skills)
+
+---
+
 ## Post-Design Workflow
 
 After implementing your design, run the audit:

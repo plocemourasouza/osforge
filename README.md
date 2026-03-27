@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **79 on-demand skills**, **26 specialized agents**, **11 always-on rules**, **9 spec commands**, **Python hooks**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **80 on-demand skills**, **26 specialized agents**, **12 always-on rules**, **9 spec commands**, **Python hooks**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -14,7 +14,7 @@ OSForge is a production-grade AI development framework with **79 on-demand skill
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 79 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 80 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Core skills tailored for Next.js App Router + Prisma + Supabase + shadcn/ui, with expanded coverage for mobile, game dev, Rust, Python, and cross-platform.
 3. **Quality gates built-in** — TDD enforcement, security auditing, red team tactics, insecure defaults detection, Reality Check + Quality Control Loop in every agent, and Python hooks at zero token cost.
 
@@ -55,6 +55,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | 10 | Next.js React Expert (9 optimization modules) | Performance |
 | 11 | Frontend UI System (shadcn/ui) | Frontend |
 | 12 | Frontend Design (colors, typography, animation, UX) | Frontend |
+| 12b | Aesthetic Boost (anti-AI-slop, convergence breaking, complexity matching) | Frontend |
 | 13 | Tailwind Patterns (v4) | Frontend |
 | 14 | UI Design Intelligence (Styles, Palettes, Typography, UX, Charts) | Frontend |
 | 15 | Web Design Guidelines (accessibility, UX rules) | Frontend |
@@ -356,7 +357,7 @@ osforge/
 
 | Component | Tokens | Loaded |
 |---|---|---|
-| SKILLS.md (79 triggers + 11 rules) | ~12,000 | Always |
+| SKILLS.md (80 triggers + 12 rules) | ~12,000 | Always |
 | Agent definitions (26) | ~1,500–3,000 | On invoke |
 | Agency router (SKILL.md) | ~2,000 | On invoke |
 | Agency division index (1 of 10) | ~1,500 | On invoke |
@@ -423,6 +424,7 @@ OSForge was built by evaluating **1050+ agent skills, commands, and patterns acr
 | Source | Repository | Focus |
 |---|---|---|
 | **Anthropic** | [anthropics/skills](https://github.com/anthropics/skills) ⭐ 63.9k | Official skills: docx, pdf, pptx, xlsx, mcp-builder, frontend-design |
+| **Anthropic (Plugin)** | [anthropics/claude-code/plugins/frontend-design](https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design) ⭐ 66.5k | Anti-convergence aesthetics, aesthetic-boost inspiration, complexity matching (277K+ installs) |
 | **Antigravity** | [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) ⭐ 7.4k | 634+ universal skills (curated subset) |
 | **Antigravity Kit** | [vudovn/antigravity-kit](https://github.com/vudovn/antigravity-kit) ⭐ 4.2k | 32 skills adapted (app-builder, api-patterns, game-dev, mobile-design, red-team, rust, python, etc.) + 15 agents + Reality Check/Quality Control Loop patterns |
 | **autoresearch** | [karpathy/autoresearch](https://github.com/karpathy/autoresearch) ⭐ 39k | Autonomous research loop pattern (modify→evaluate→keep/discard→repeat) — inspired `autorefine-skill` |
@@ -443,7 +445,7 @@ OSForge was built by evaluating **1050+ agent skills, commands, and patterns acr
 | **UI-UX Pro Max** | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) ⭐ 39k | Design intelligence database: 67 styles, 161 palettes, 57 font pairs, 99 UX guidelines, 25 chart types |
 | **Vercel Labs** | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) ⭐ 19.1k | React, Next.js performance, Core Web Vitals |
 
-> **Breakdown:** 110 SKILL.md files · 26 specialized agents · 121 Agency specialists · 32 marketing execution workflows · 79 trigger entries · 21 detectable domains · 13 project templates · 10 game sub-skills · 9 Next.js optimization modules · 33 GSD commands · ~50 BMAD orchestration patterns · 5 UI-UX Pro Max reference databases · 2 tool patterns (llmfit + autoresearch)
+> **Breakdown:** 111 SKILL.md files · 26 specialized agents · 121 Agency specialists · 32 marketing execution workflows · 80 trigger entries · 12 always-on rules · 21 detectable domains · 13 project templates · 10 game sub-skills · 9 Next.js optimization modules · 33 GSD commands · ~50 BMAD orchestration patterns · 5 UI-UX Pro Max reference databases · 2 tool patterns (llmfit + autoresearch)
 
 ---
 

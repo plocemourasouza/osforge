@@ -1,0 +1,22 @@
+---
+description: Anti-AI-slop directive — prevents generic "distributional convergence" aesthetics in all frontend output
+globs: ["**/*.tsx", "**/*.jsx", "**/*.html", "**/*.css", "**/*.vue", "**/*.svelte"]
+alwaysApply: true
+---
+
+# Anti-AI-Slop Rule
+
+> LLMs convergem para designs genéricos porque tokens de alta probabilidade dominam o sampling.
+> Esta rule existe para quebrar essa convergência em TODO output frontend.
+
+## Ao gerar QUALQUER código frontend:
+
+1. **NUNCA** use Inter, Roboto, Arial, Open Sans, Lato ou system fonts como escolha primária de tipografia
+2. **NUNCA** use gradientes roxos em fundo branco — é o clichê mais reconhecível de "AI slop"
+3. **NUNCA** replique o layout "Vercel template" (hero split left/right, bento grid, cards uniformes)
+4. **NUNCA** repita a mesma escolha estética de uma geração anterior na mesma sessão
+5. **SEMPRE** commita com uma direção estética intencional antes de codificar
+6. **SEMPRE** use CSS variables para tokens de design (cores, spacing, fontes)
+7. Se o projeto tem brand assets definidos (logo, paleta, fontes) → use-os como fundação
+8. Se não tem → crie uma direção original e consistente que sirva o contexto específico
+9. **Complexity matching:** design maximalista = código elaborado; design minimalista = restraint e precisão
