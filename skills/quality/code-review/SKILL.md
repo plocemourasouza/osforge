@@ -1,12 +1,17 @@
 ---
 name: code-review
-description: >
-  Review estruturado de código com checklist adaptado ao stack OSForge.
-  Integra adversarial-review e edge-case-hunter automaticamente.
-  Use com "code review", "revisar código", "review PR".
-trigger: code review|revisar código|review PR|CR
-model-tier: sonnet
+description: "Review estruturado de código com checklist adaptado ao stack OSForge. ACIONE quando: code review, revisar código, review PR, CR. Integra adversarial-review e edge-case-hunter automaticamente. Keywords: code review, revisar código, review PR, CR, pull request, diff, changes, revisar mudanças."
+model: sonnet
+context: fork
+agent: general-purpose
+allowed-tools: Read, Bash, Glob, Grep
+metadata:
+  version: '1.1'
 ---
+
+## Contexto do review
+!`git log --oneline -10 2>/dev/null || echo "Git não disponível ou não inicializado"`
+!`git diff --stat HEAD 2>/dev/null | tail -5 || echo "Diff não disponível"`
 
 # Code Review
 
@@ -91,3 +96,13 @@ performance e manutenibilidade. Respeita project-context.md.
 
 Se CHANGES_REQUESTED: listar cada issue com correção sugerida.
 Se APPROVED: pode incluir sugestões opcionais para melhorar.
+
+
+## Gotchas
+
+- **Aprovar sem verificar ACs da story**: se existe uma story associada, SEMPRE verificar cada AC contra o código. Muitos PRs passam no review técnico mas falham silenciosamente nos critérios de aceitação de negócio.
+- **Focar só em style issues**: review de code style (imports, naming) é Baixa prioridade. Issues de segurança, lógica de negócio incorreta e N+1 queries são Alta prioridade. Não investir 80% do review em problemas de formatação.
+- **Não invocar edge-case-hunter**: para diffs >20 linhas, edge-case-hunter é mandatório — ele encontra casos que o review manual rotineiramente perde (valores null, strings vazias, concorrência, limites de paginação).
+- **APPROVED com "sugestões opcionais" que são críticas**: se um issue é crítico para segurança ou correção, deve ser CHANGES_REQUESTED, não APPROVED com nota. A distinção importa para o PR workflow.
+- **Não checar impacto de mudanças de schema**: toda mudança em `prisma/schema.prisma` exige verificação de: (1) migration gerada, (2) RLS policies impactadas, (3) queries que podem quebrar com o novo schema.
+- **Ignorar `bun tsc --noEmit`**: sempre mencionar se o type-check passa. TypeScript errors silenciados com `@ts-ignore` ou `any` são red flags que devem aparecer no relatório de review.

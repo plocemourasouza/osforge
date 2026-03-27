@@ -1,9 +1,11 @@
 ---
 name: smart-model-dispatch
-description: "Automatically routes tasks to optimal Claude models (opus/sonnet/haiku) based on complexity, cost, and task type. TRIGGER when: implementing features with multiple subtasks, dispatching parallel agents, planning sprints with mixed complexity, or when the user mentions cost optimization, model routing, or smart dispatch. Also trigger when spawning subagents via Agent tool — each subagent should specify its optimal model."
+description: "Roteador de modelos Claude. ACIONE quando: spawning de subagents via Agent tool, implementando feature com múltiplas subtasks de complexidade mista, otimizando custo de API, planejando sprint com tarefas paralelas. Keywords: model routing, opus sonnet haiku, cost optimization, smart dispatch, parallel agents, which model, model selection. Trigger on any mention of 'which model', 'use opus', 'use haiku', 'cost', 'dispatch agents'."
+model: sonnet
+allowed-tools: Read, Bash, Glob
 metadata:
   author: osforge
-  version: '1.0'
+  version: '1.1'
   inspired_by: andersonlimadev/smart-dispatch
 ---
 
@@ -176,3 +178,14 @@ Leia skills/llmfit-advisor/SKILL.md
 | Opus (raciocínio) | `deepseek-r1:32b` (parcial) | Sem equivalente completo |
 
 > Para saber qual modelo cabe no hardware real: `llmfit recommend --json --use-case coding --limit 3`
+
+---
+
+## Gotchas
+
+- **Haiku com ambiguidade**: nunca use Haiku em tasks com requisitos vagos ou ambíguos — Haiku não lida bem com ambiguidade. Se os requisitos não estiverem 100% claros, use Sonnet ou clarifique antes de despachar.
+- **Não agrupe tarefas Haiku**: chame Haiku uma vez com todas as tarefas mecânicas em batch em vez de múltiplas chamadas individuais. Múltiplas chamadas isoladas acumulam overhead de context loading.
+- **Opus para review é desperdício**: Code review e debugging têm boa qualidade com Sonnet. Reservar Opus só para planejamento arquitetural, threat modeling e decisões com alta ambiguidade. Usar Opus para review = 3x o custo sem ganho proporcional.
+- **Não escalar cedo demais**: se Sonnet produziu resultado insatisfatório, verifique se o problema é de clareza do prompt antes de escalar para Opus. Prompts vagos geram resultados ruins em qualquer tier.
+- **Não downgrade em security**: security-auditor e threat modeling SEMPRE usam Opus, sem exceção — erros de segurança têm custo muito maior que o custo de API.
+- **Batch Haiku tasks**: agrupar todas as tarefas mecânicas (i18n + test stubs + docs + boilerplate) em um único subagent Haiku em vez de N subagents separados.

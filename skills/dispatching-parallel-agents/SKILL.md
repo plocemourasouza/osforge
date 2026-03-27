@@ -1,9 +1,11 @@
 ---
 name: dispatching-parallel-agents
-description: Orchestrate parallel subagent tasks for independent workloads. Trigger when facing 2+ independent tasks without shared state, large refactoring across multiple files, or when task decomposition reveals parallelizable work units. Also use for wave execution — grouping tasks into dependency-ordered waves where each wave runs in parallel and the next wave waits for the previous to complete.
+description: "Orquestra tasks paralelas em subagents independentes. ACIONE quando: 2+ tasks sem estado compartilhado, refatoração em múltiplos arquivos não relacionados, decomposição revela trabalho paralelizável, wave execution com dependências parciais. Keywords: parallel, wave, dispatch, parallel agents, multiple tasks, independent, subagents."
+model: sonnet
+allowed-tools: Read, Bash, Glob, Grep
 metadata:
   author: osforge
-  version: '1.1'
+  version: '1.2'
   source: Superpowers (obra)
   inspired_by: gsd-build/get-shit-done (wave execution pattern)
 ---
@@ -167,3 +169,14 @@ Each wave's agents start with a clean 200K context window. Pass only what they n
 
 This keeps each agent fast and focused — no accumulated context degradation.
 
+
+---
+
+## Gotchas
+
+- **Tasks que modificam o mesmo arquivo em paralelo**: se duas tasks precisam editar `prisma/schema.prisma` ou o mesmo componente, NÃO as paralelize — coloque-as sequenciais ou coordene via sections não sobrepostas. Conflito de merge é garantido.
+- **Não fornecer tipos/interfaces compartilhadas**: cada agente paralelo recebe contexto mínimo. Se Tasks B e C dependem de um tipo criado por Task A, passe esse tipo explicitamente no prompt de B e C — eles não compartilham contexto entre si.
+- **Mais de 5 tasks paralelas**: overhead de coordenação supera o benefício acima de 5 tasks simultâneas. Se precisar de mais, agrupe em waves de no máximo 5.
+- **Dependência implícita**: "tarefa de seed data" parece independente mas depende de migrations completas. Mapeie dependências antes de paralelizar — cada wave deve documentar dependências explicitamente.
+- **Não verificar integração pós-merge**: agents paralelos podem produzir interfaces incompatíveis entre si. Sempre rodar `bun tsc --noEmit` e integration tests após merge das tasks paralelas.
+- **Wave 1 com schema**: se Wave 1 tem tasks em `prisma/schema.prisma`, cada agent deve trabalhar apenas no seu bloco de models sem tocar os blocos alheios — ou fazer o schema sempre sequencial.

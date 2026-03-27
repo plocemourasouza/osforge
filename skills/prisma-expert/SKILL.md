@@ -1,10 +1,22 @@
 ---
 name: prisma-expert
-description: Advanced Prisma ORM patterns for schema design, migrations, query optimization, and relations. Trigger on complex schema changes (>10 models), migration strategies, query performance issues, relation patterns (many-to-many, polymorphic), multi-tenant data isolation, or Prisma-specific debugging.
+description: "Padrões avançados de Prisma ORM. ACIONE quando: mudanças de schema com >3 models, estratégias de migration, queries lentas ou N+1, relações many-to-many ou polimórficas, isolamento multi-tenant, debugging de Prisma. Keywords: prisma, schema, migration, query, relation, database, orm, model, seed, index, RLS."
+model: sonnet
+allowed-tools: Read, Bash, Glob, Grep
+hooks:
+  PreToolUse:
+    - matcher: Bash
+      hooks:
+        - type: prompt
+          prompt: "Se o comando contiver 'prisma migrate deploy' em ambiente que não seja dev local, confirme com o usuário antes de executar."
 metadata:
   author: osforge
-  version: '1.0'
+  version: '1.1'
 ---
+
+## Contexto do projeto
+!`[ -f prisma/schema.prisma ] && echo "Schema encontrado: $(wc -l < prisma/schema.prisma) linhas, $(grep -c '^model' prisma/schema.prisma) models" || echo "prisma/schema.prisma não encontrado"`
+!`[ -f .env ] && grep -c 'DATABASE_URL' .env > /dev/null 2>&1 && echo "DATABASE_URL configurada" || echo "DATABASE_URL não encontrada no .env"`
 
 # Prisma Expert
 
@@ -152,3 +164,13 @@ const result = await prisma.$transaction(async (tx) => {
 ## References
 - [postgres-optimization](../postgres-optimization/SKILL.md) — DB-level optimization
 - [security-best-practices](../security-best-practices/SKILL.md) — RLS + auth patterns
+
+## Gotchas
+
+- **`migrate dev` vs `migrate deploy`**: `migrate dev` gera migration + aplica. `migrate deploy` só aplica (para CI/prod). Nunca rodar `migrate dev` em produção — ele pode resetar dados.
+- **Renomear coluna causa DROP + ADD**: Prisma não detecta rename — gera `DROP COLUMN` + `ADD COLUMN`, zerando os dados. Para renomear: (1) adicionar nova coluna, (2) migrar dados via script, (3) remover antiga em release separada.
+- **`include` vs `select` na mesma query**: não misturar `include` e `select` no mesmo nível — Prisma não permite. Escolha um: `select` para controle granular, `include` para relations completas.
+- **RLS não aplica via service role**: quando usando Supabase com `service_role`, o Prisma bypassa RLS completamente. Sempre validar `organizationId` no nível da Server Action antes de qualquer query Prisma.
+- **Offset pagination em tabelas grandes**: `skip: page * 20` vai ficando progressivamente mais lento conforme a tabela cresce. Para tabelas >10K registros, sempre usar cursor-based pagination com `cursor: { id: lastId }`.
+- **`$queryRaw` precisa de template literal**: `prisma.$queryRaw(sql)` é vulnerável a SQL injection. Sempre usar template literal tagged: `` prisma.$queryRaw`SELECT * FROM "User" WHERE id = ${id}` ``.
+- **Migrations sem `--create-only` em prod**: sempre gerar a migration com `--create-only`, revisar o SQL gerado, e só então aplicar. Nunca deixar o Prisma aplicar migration automaticamente em produção.

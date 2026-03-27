@@ -1,19 +1,12 @@
 ---
 name: ui-design-intelligence
-description: >
-  Biblioteca de inteligência de design agnóstica de stack. ACIONE quando o usuário
-  pedir para criar, planejar ou melhorar qualquer UI com intenção visual clara —
-  especialmente quando mencionar estilo, atmosfera, identidade, tom visual, paleta,
-  tipografia, ou tipo de produto (SaaS, fintech, healthcare, e-commerce, etc.).
-  Produz um design system spec completo (estilo + cores + tipografia + UX + charts)
-  adaptado ao stack alvo. Integra com openui-genui-layout (estrutura), ui-audit
-  (verificação) e phase-discussion (decisões de fase).
-  Use com: "estilo visual", "identidade", "paleta", "tipografia", "design system",
-  "tom visual", "landing page", "dashboard analytics", qualquer menção de produto
-  + indústria (fintech, healthcare, saas, e-commerce, beauty, gaming, education).
-trigger: estilo visual|paleta|tipografia|design system|tom visual|identidade visual|landing page|fintech|healthcare|e-commerce|saas dashboard
-model-tier: sonnet
-inspired_by: nextlevelbuilder/ui-ux-pro-max-skill
+description: "Spec de design system adaptado ao produto e indústria. ACIONE quando: usuário menciona estilo visual, identidade, paleta, tipografia, tom visual, tipo de produto ou indústria (fintech, healthcare, saas, e-commerce, etc). Produz design system spec completo. Keywords: estilo visual, identidade visual, paleta, tipografia, design system, tom visual, landing page, fintech, healthcare, e-commerce, saas dashboard, aesthetic, brand, cores, fontes."
+model: sonnet
+context: fork
+agent: general-purpose
+allowed-tools: Read, Glob
+metadata:
+  inspired_by: nextlevelbuilder/ui-ux-pro-max-skill
 ---
 
 # UI Design Intelligence
@@ -137,3 +130,13 @@ Ao final, informar como o design system se conecta:
 - `references/typography-pairs.md` — 57 combinações tipográficas curadas
 - `references/ux-guidelines.md` — 99 diretrizes UX com anti-patterns
 - `references/chart-types.md` — 25 tipos de chart para dashboards e analytics
+
+
+## Gotchas
+
+- **Gerar design system sem coletar inputs**: nunca inferir o estilo apenas pelo nome do projeto. Sempre perguntar o tipo de produto, indústria e keywords de estilo antes de gerar — mesmo que pareça óbvio. "ContaFácil" pode querer ser sério e corporativo ou acessível e colorido.
+- **Aplicar spec genérico de "SaaS"**: SaaS é uma categoria enorme — fintech SaaS, healthcare SaaS e gaming SaaS têm expectativas visuais completamente diferentes. Sempre refinar pela indústria/nicho, não só pelo modelo de negócio.
+- **Não fazer handoff para `openui-genui-layout`**: o spec gerado aqui deve ser explicitamente passado como input para `openui-genui-layout` antes de qualquer geração de UI. Sem isso, os componentes gerados não vão seguir o design system.
+- **Cores hard-coded no código**: o spec usa tokens CSS variables (`--primary`, `--background`, etc). Se o desenvolvedor implementar com valores hex diretos (`#2563EB`), o dark mode e theming dinâmico quebram. Sempre mapear para CSS variables do shadcn.
+- **Tipografia sem `@import` correto**: ao usar Google Fonts, verificar que o `@import` está no `globals.css` antes de referenciar a família. Fontes não carregadas fazem fallback silencioso para o sistema.
+- **Spec desatualizado após mudança de direção**: se o usuário mudar de "fintech premium" para "produto acessível para pequenos negócios" durante o desenvolvimento, o design system precisa ser regerado — não remendado. Specs parcialmente atualizados causam inconsistência visual.

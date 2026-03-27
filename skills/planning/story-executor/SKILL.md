@@ -1,12 +1,15 @@
 ---
 name: story-executor
-description: >
-  Executa implementação de uma story seguindo suas tasks e ACs.
-  Coordena invocação dos skills de execução corretos do OSForge.
-  Use com "executar story", "implementar story", "dev story".
-trigger: executar story|implementar story|dev story|run story
-model-tier: sonnet
+description: "Executa implementação de uma story seguindo suas tasks e ACs. ACIONE quando: executar story, implementar story, dev story, run story. Coordena invocação dos skills de execução corretos do OSForge. Keywords: executar story, implementar story, dev story, run story, execute story, implement story."
+model: sonnet
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+metadata:
+  version: '1.1'
 ---
+
+## Contexto do projeto
+!`[ -f project-context.md ] && echo "project-context.md encontrado ($(wc -l < project-context.md) linhas)" || echo "project-context.md não encontrado — padrões do codebase não disponíveis"`
+!`[ -f .osforge/STATUS.md ] && tail -5 .osforge/STATUS.md || echo "STATUS.md não encontrado"`
 
 # Story Executor
 
@@ -103,3 +106,13 @@ Todos ACs verificados. Pronto para code review."
 - Se encontrar blocker técnico → HALT e informar o usuário com detalhes
 - Se encontrar ambiguidade no AC → HALT e perguntar, não assumir
 - Respeitar TODAS as regras de project-context.md (naming, patterns, etc.)
+
+
+## Gotchas
+
+- **Parar em "progresso significativo"**: o executor NÃO para por ter feito progresso — só para quando TODOS os ACs estiverem satisfeitos ou em HALT condition (blocker técnico ou ambiguidade de AC). "Implementei 3 das 5 tasks" não é critério de parada.
+- **Assumir ambiguidade de AC em vez de perguntar**: se um AC for ambíguo ("deve funcionar corretamente"), HALT imediatamente e perguntar ao usuário o que "corretamente" significa neste contexto. Assumir e implementar errado custa mais do que pausar 2 minutos.
+- **Não marcar tasks no arquivo da story**: sempre atualizar o arquivo de story (`- [x]`) ao concluir cada task. Isso cria rastreabilidade e permite retomar de onde parou em caso de HALT.
+- **Não carregar project-context.md**: o `project-context.md` contém padrões críticos do codebase (naming conventions, patterns de import, padrões de Server Action, etc). Implementar sem carregar produz código que não segue as convenções do projeto.
+- **Ignorar CONTEXT.md da fase**: se existir `.osforge/phases/{N}-CONTEXT.md`, SEMPRE carregar antes de implementar. Ele contém decisões explícitas do usuário sobre como a feature deve se comportar — ignorar garante retrabalho.
+- **Não rodar self-check de ACs**: após completar todas as tasks, verificar cada AC contra o código produzido. Muitos ACs falham silenciosamente quando tasks individuais parecem completas mas não cobrem o critério de aceitação completo.

@@ -1,9 +1,11 @@
 ---
 name: autorefine-skill
-description: "Refinamento autônomo iterativo de skills do OSForge usando o loop modify→evaluate→keep/discard→repeat inspirado no autoresearch (Karpathy). ACIONE quando o usuário pedir para 'melhorar uma skill', 'otimizar uma skill', 'fazer a skill funcionar melhor', 'iterar sobre uma skill', 'autorefine', ou quando uma skill existente estiver produzindo outputs inconsistentes ou abaixo do esperado. Também acione quando o usuário quiser testar variações de uma skill com budget fixo de iterações."
+description: "Refinamento autônomo iterativo de skills do OSForge. ACIONE quando: usuário pede 'melhorar uma skill', 'otimizar a skill X', 'a skill Y não está funcionando bem', 'iterar sobre skill', 'autorefine'. Também acionar quando uma skill existente produz outputs inconsistentes ou abaixo do esperado. Keywords: melhorar skill, refinar skill, otimizar skill, autorefine, iteração de skill, skill inconsistente, skill não dispara."
+model: sonnet
+allowed-tools: Read, Write, Bash, Glob
 metadata:
   author: osforge
-  version: '1.0'
+  version: '1.1'
   inspired_by: karpathy/autoresearch
 ---
 
@@ -174,3 +176,13 @@ refine(skills): autorefine <nome-da-skill> — N iterações, val +X%
 ```
 
 Aguarde aprovação explícita antes de commitar.
+
+
+## Gotchas
+
+- **Modificar muita coisa por iteração**: o loop funciona com hipóteses pequenas e testáveis. Reescrever o SKILL.md inteiro em uma iteração é o erro mais comum — torna impossível saber o que causou melhoria ou regressão.
+- **Não fazer snapshot antes**: se esquecer o `cp -r skills/<nome> skills/<nome>-snapshot-...` antes de começar, não há como reverter para a versão original. O snapshot é obrigatório — não é opcional.
+- **Critério de sucesso vago**: "ficar melhor" não é um critério. O critério precisa ser binário e verificável: "sempre inclui bloco TypeScript com tipos explícitos" ou "nunca gera código sem schema Zod". Critérios vagos produzem iterações inconsistentes.
+- **Avaliar com Haiku**: a avaliação de qualidade (KEEP/DISCARD) deve usar Sonnet, não Haiku — Haiku não tem julgamento qualitativo suficiente para avaliar a diferença entre versões de skill. Só a geração de modificações usa Haiku.
+- **Não commitar versão refinada sem aprovação**: sempre apresentar o relatório final e aguardar aprovação explícita antes de commitar. O commit da versão refinada é o artefato final — não uma ação intermediária automática.
+- **Usar sem prompts de teste reais**: prompts de teste genéricos ("faça um componente") não revelam falhas específicas da skill. Sempre coletar ou gerar 2-3 prompts que representam casos de uso reais do usuário antes de iniciar o loop.

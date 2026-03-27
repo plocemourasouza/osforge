@@ -1,15 +1,17 @@
 ---
 name: ui-audit
-description: >
-  Auditoria retroativa de 6 pilares de qualidade visual em código frontend
-  já implementado. ACIONE após qualquer fase de UI/UX, quando o usuário
-  disser "a tela ficou estranha", "não está como eu queria", "revisar o UI",
-  "auditar o frontend", "verificar o visual", "checar acessibilidade visual".
-  Complementa o openui-genui-layout (que planeja ANTES) auditando DEPOIS.
-  Produz relatório estruturado com issues priorizados e planos de correção.
-trigger: auditar ui|revisar ui|audit ui|ui review|verificar visual|checar frontend|não ficou como imaginei
-model-tier: sonnet
+description: "Auditoria retroativa de qualidade visual em código frontend já implementado. ACIONE após qualquer fase de UI/UX, ou quando: 'a tela ficou estranha', 'não está como eu queria', 'revisar o UI', 'auditar o frontend', 'verificar o visual', 'checar acessibilidade visual'. Keywords: auditar ui, revisar ui, audit ui, ui review, verificar visual, checar frontend, não ficou como imaginei, visual ruim."
+model: sonnet
+context: fork
+agent: general-purpose
+allowed-tools: Read, Glob, Grep
+metadata:
+  version: '1.1'
 ---
+
+## Contexto da fase
+!`ls .osforge/phases/ 2>/dev/null | grep CONTEXT | head -5 || echo "Nenhum CONTEXT.md de fase encontrado — auditoria sem referência de decisões do usuário"`
+!`find src app -name "*.tsx" -newer package.json 2>/dev/null | head -10 || echo "Componentes recentes não detectados automaticamente"`
 
 # UI Audit
 
@@ -172,3 +174,13 @@ Salvar em `.osforge/phases/{N}-UI-AUDIT.md`.
 - **`story-executor`** → executa as correções identificadas pelo audit
 
 O fluxo ideal é: `phase-discussion` → `openui-genui-layout` → implementação → `ui-audit`.
+
+
+## Gotchas
+
+- **Auditar sem CONTEXT.md**: o Pilar 6 (Alinhamento com Decisões) é inauditável sem o CONTEXT.md da fase. Se ele não existir, o audit produz um relatório incompleto — mencionar isso explicitamente no resumo executivo.
+- **Marcar tudo como "Atenção" por precaução**: ser conservador demais polui o relatório com falsos positivos e faz o usuário ignorar os issues reais. Só marcar ❌ quando há uma violação clara e verificável, não por suspeita.
+- **Não priorizar issues**: um relatório com 20 items sem priorização é inútil. Sempre separar em Alto (bloqueia ship), Médio (degradação de experiência) e Baixo (cosmético). O usuário precisa saber onde focar.
+- **Focar só em código sem ver o resultado visual**: se possível, sempre pedir uma screenshot ou acessar a rota em dev para ver o resultado real — issues de spacing, tipografia e hierarquia são muito mais fáceis de detectar visualmente do que lendo código TSX.
+- **Não reconhecer o que foi bem feito**: relatórios puramente negativos desmotivam e dão a impressão errada sobre o estado geral. A seção "O que ficou bom" é obrigatória — não opcional.
+- **Propor correções sem estimar esforço**: sempre incluir estimativa S/M/L para cada grupo de correções. O usuário precisa decidir o que corrigir antes do ship vs o que vai para backlog.

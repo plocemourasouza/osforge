@@ -1,11 +1,12 @@
 ---
 name: adversarial-review
-description: >
-  Revisão cínica e adversarial de qualquer artefato: código, specs, PRDs,
-  schemas, configs. Encontra o que está errado E o que está faltando.
-  Use com "adversarial", "revisão cínica", "critica isso".
-trigger: adversarial|revisão cínica|review cínico|critica
-model-tier: sonnet
+description: "Revisão cínica e adversarial de qualquer artefato. ACIONE quando: revisar spec antes de implementar, validar PRD, criticar schema, revisar código com ceticismo máximo. Keywords: adversarial, revisão cínica, review cínico, critica isso, critique, o que está errado, encontre problemas, worst case."
+model: opus
+context: fork
+agent: general-purpose
+allowed-tools: Read, Glob, Grep
+metadata:
+  version: '1.1'
 ---
 
 # Adversarial Review
@@ -79,3 +80,13 @@ Encontrar **MÍNIMO 10 issues** para corrigir ou melhorar.
 ## Halt Conditions
 - HALT se zero findings → suspeito, re-analisar com mais ceticismo
 - HALT se conteúdo vazio ou ilegível
+
+
+## Gotchas
+
+- **Findings óbvios demais**: se todos os 10 findings são "falta comentário" ou "nome de variável ruim", o review falhou. O adversarial-review existe para encontrar problemas de LÓGICA, SEGURANÇA e COMPLETUDE — não style issues que o linter já pega.
+- **Parar com menos de 10 findings**: a instrução é encontrar MÍNIMO 10 issues. Se chegou a 7 e parece que não tem mais, revisar com mais ceticismo — o problema está na profundidade da análise, não no artefato.
+- **"Zero findings" como resultado**: esse output é suspeito por definição. Re-analisar focando em: fluxos alternativos não cobertos, assumptions implícitas, race conditions, error states, e o que foi OMITIDO (não apenas o que foi escrito incorretamente).
+- **Não separar por prioridade**: todos os issues têm peso diferente. Sem separar Crítico/Importante/Melhoria, o receptor não sabe onde focar. A priorização é obrigatória — não opcional.
+- **Ser adversarial no tom, não no conteúdo**: o objetivo é encontrar problemas reais, não soar agressivo. Tom deve ser "revisor exigente e experiente", não "troll". Precisão e especificidade > sarcasmo.
+- **Não sugerir correções**: cada finding deve ter uma sugestão de correção acionável. "Isso está errado" sem "aqui está como corrigir" não agrega valor ao receptor.

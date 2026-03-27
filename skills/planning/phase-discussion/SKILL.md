@@ -1,15 +1,19 @@
 ---
 name: phase-discussion
-description: >
-  Captura decisões de implementação de uma fase ANTES do planejamento técnico,
-  eliminando zonas cinzentas que causam retrabalho. ACIONE antes de planejar
-  qualquer fase com UI, API, sistema de conteúdo ou reorganização de dados.
-  Use com "discutir fase", "discuss phase", "decisões da fase", "contexto da fase",
-  "antes de planejar", "o que decidir antes", "fase N". Produz CONTEXT.md que
-  alimenta o spec-builder, arch-builder e story-executor.
-trigger: discutir fase|discuss phase|decisões da fase|contexto da fase|antes de planejar|fase \d
-model-tier: sonnet
+description: "Captura decisões de implementação de uma fase ANTES do planejamento técnico. ACIONE antes de planejar qualquer fase com UI, API, sistema de conteúdo ou reorganização de dados. Keywords: discutir fase, discuss phase, decisões da fase, contexto da fase, antes de planejar, o que decidir antes, fase N, phase discussion."
+model: sonnet
+allowed-tools: Read, Write, Glob
+hooks:
+  Stop:
+    - hooks:
+        - type: prompt
+          prompt: "Verifique se o CONTEXT.md foi salvo em .osforge/phases/ antes de encerrar."
+metadata:
+  version: '1.1'
 ---
+
+## Contexto do projeto
+!`ls .osforge/phases/ 2>/dev/null && echo "Phases existentes:" && ls .osforge/phases/ || echo "Nenhum CONTEXT.md de fase anterior encontrado"`
 
 # Phase Discussion
 
@@ -145,3 +149,12 @@ antes de planejar esta fase."
 - Manter foco nas PREFERÊNCIAS do usuário, não nas soluções técnicas
 - Se o usuário disser "qualquer coisa serve" → registrar o padrão razoável como decisão
 - Máximo de 15 minutos de discussão — se estiver passando disso, agrupar as perguntas restantes
+
+
+## Gotchas
+
+- **Assumir decisões em vez de perguntar**: o papel desta skill é PERGUNTAR, não DECIDIR. Mesmo que a opção "óbvia" pareça clara, sempre apresentar as alternativas e deixar o usuário escolher — decisões assumidas são a principal causa de retrabalho.
+- **Entrar em detalhes de implementação**: fase-discussion captura PREFERÊNCIAS do usuário, não escolhas técnicas. "Qual banco de dados?" não é uma pergunta desta fase — "lista ou grid para exibir os itens?" é. Detalhes de implementação vão para arch-builder.
+- **Não salvar o CONTEXT.md**: se a discussão acontece mas o CONTEXT.md não é salvo em `.osforge/phases/`, spec-builder e story-executor não terão acesso às decisões. Sempre gerar e salvar o arquivo, mesmo que a discussão tenha sido curta.
+- **Fazer perguntas em sequência sem batch**: sessões longas de perguntas uma por vez cansam o usuário. Agrupar até 3 perguntas relacionadas em uma resposta (`--batch` implícito). Se o usuário já respondeu várias zonas cinzentas espontaneamente, não repetir o que já foi decidido.
+- **Usar CONTEXT.md de fase anterior**: sempre criar um CONTEXT.md novo por fase com nome incluindo o número da fase (`2-CONTEXT.md`). Reusar o arquivo de uma fase anterior sobrescreve decisões que podem ser diferentes.

@@ -1,12 +1,15 @@
 ---
 name: spec-builder
-description: >
-  Facilitação colaborativa de especificação técnica. Produz tech-spec com
-  acceptance criteria testáveis, tasks ordenadas por dependência, e riscos.
-  Use com "spec", "especificar", "definir feature", "tech spec".
-trigger: spec|especifica|definir feature|tech spec
-model-tier: sonnet
+description: "Facilitação colaborativa de tech spec com ACs testáveis. ACIONE quando: especificar uma feature, definir o que construir, escrever spec técnica, detalhar requisitos antes de implementar. Keywords: spec, especificar, definir feature, tech spec, acceptance criteria, escrever spec, o que construir, requisitos, ACs."
+model: sonnet
+allowed-tools: Read, Write, Glob, Grep
+metadata:
+  version: '1.1'
 ---
+
+## Contexto do projeto
+!`[ -f project-context.md ] && head -30 project-context.md || echo "project-context.md não encontrado"`
+!`ls docs/specs/ 2>/dev/null | head -5 && echo "Specs existentes encontradas" || echo "Nenhuma spec anterior encontrada em docs/specs/"`
 
 # Spec Builder
 
@@ -89,3 +92,13 @@ Apresentar spec completa ao usuário.
 - **[R] Refinar** — invocar `skills/quality/elicitation-engine` na spec
 
 Não avançar sem aprovação explícita.
+
+
+## Gotchas
+
+- **Gerar spec sem clarificar ambiguidades**: nunca avançar para a spec se a demanda tem termos vagos ("notificações", "integração", "relatório"). Perguntar sempre ANTES — spec escrita sobre base ambígua vai ser reescrita.
+- **ACs não testáveis**: "o sistema deve ser rápido" não é AC. Todo AC deve seguir Given/When/Then e ser verificável por um humano ou teste automatizado. Se não dá para escrever um teste para o AC, ele está errado.
+- **Tasks sem file path**: cada task deve ter um arquivo específico para criar/modificar. "Implementar o backend" não é uma task — "Criar `app/api/projects/route.ts` com GET + POST handlers" é.
+- **Spec acima de 1600 tokens**: specs longas não são lidas completamente pelos agentes de implementação. Se a spec está ficando grande, propor ao usuário split em múltiplas specs por épico antes de continuar.
+- **Ignorar CONTEXT.md da fase**: se existe `.osforge/phases/{N}-CONTEXT.md`, as decisões ali são insumo obrigatório para os ACs. Spec gerada sem CONTEXT.md vai contradizer decisões que o usuário já tomou.
+- **Avançar sem CHECKPOINT**: a spec só está "pronta" após aprovação explícita do usuário (`[A] Aprovar`). Passar direto para implementação sem checkpoint é contornar o processo de validação — que existe justamente para evitar retrabalho.
