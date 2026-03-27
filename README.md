@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **79 on-demand skills**, **26 specialized agents**, **11 always-on rules**, **9 spec commands**, **Python hooks**, and **121 business specialists** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **79 on-demand skills**, **26 specialized agents**, **11 always-on rules**, **9 spec commands**, **Python hooks**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -261,16 +261,34 @@ A curated library of 121 AI specialists covering every business and technical fu
 |---|---|---|
 | 💻 Engineering | 23 | Código, arquitetura, segurança, DevOps, SRE, documentação |
 | 🎨 Design | 8 | UI/UX, sistemas de design, identidade visual, pesquisa com usuários |
-| 📢 Marketing | 26 | Conteúdo, SEO, redes sociais, growth hacking, ASO |
-| 💰 Paid Media | 7 | Google/Meta Ads, PPC, tracking, auditoria de contas |
+| 📢 Marketing | 26 | Conteúdo, SEO, redes sociais, growth hacking, ASO + **25 workflows de execução** |
+| 💰 Paid Media | 7 | Google/Meta Ads, PPC, tracking, auditoria de contas + **4 workflows de execução** |
 | 📊 Product | 5 | Roadmap, sprint, pesquisa de mercado, síntese de feedback |
 | 🎬 Project Management | 6 | Planejamento, Jira/Git workflows, rastreamento de experimentos |
-| 💼 Sales | 8 | Prospecção, discovery, qualificação, propostas, pipeline |
+| 💼 Sales | 8 | Prospecção, discovery, qualificação, propostas, pipeline + **3 workflows de execução** |
 | 🛟 Support & Ops | 6 | Atendimento, analytics, compliance, resumos executivos |
 | 🧪 Testing | 8 | QA, API testing, WCAG, performance, validação de entregáveis |
 | 🎯 Specialized | 24 | Orquestração, compliance SOC2/ISO, blockchain, MCP builder |
 
 > ⚠️ Four agents require mandatory human approval before any autonomous action. See [USAGE.md](USAGE.md#high-risk-agents).
+
+### 32 Marketing Execution Workflows (on-demand)
+
+Integrated from [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT). Each workflow provides a step-by-step execution framework that pairs with The Agency's agent personas.
+
+**Architecture:** Agent (persona: *who I am*) + Workflow (execution: *what I do*).
+
+| Category | Workflows | Location |
+|---|---|---|
+| CRO | page-cro, signup-flow-cro, onboarding-cro, form-cro, popup-cro, paywall-upgrade-cro | `skills/agency/marketing/workflows/` |
+| Content & Copy | copywriting, copy-editing, content-strategy, email-sequence, lead-magnets, social-content | `skills/agency/marketing/workflows/` |
+| SEO & Discovery | seo-audit, ai-seo, programmatic-seo, site-architecture, schema-markup, competitor-alternatives | `skills/agency/marketing/workflows/` |
+| Growth & Retention | churn-prevention, free-tool-strategy, referral-program | `skills/agency/marketing/workflows/` |
+| Strategy | marketing-ideas, marketing-psychology, launch-strategy, pricing-strategy | `skills/agency/marketing/workflows/` |
+| Paid Media | paid-ads, ad-creative, analytics-tracking, ab-test-setup | `skills/agency/paid-media/workflows/` |
+| Sales | cold-email, sales-enablement, revops | `skills/agency/sales/workflows/` |
+
+All workflows reference `.osforge/marketing-context.md` as the shared context source. Full agent↔workflow mapping in `skills/agency/marketing/workflows/ROUTING.md`.
 
 ---
 
@@ -307,7 +325,7 @@ osforge/
 │   └── intelligent-routing.mdc  # 21 domains, 28 agent routing combinations
 ├── commands/              # 9 spec:* slash commands for Claude Code
 ├── skills/                # On-demand skill library (110 SKILL.md files)
-│   ├── agency/            # 121 AI specialists — The Agency (10 divisions)
+│   ├── agency/            # 121 AI specialists — The Agency (10 divisions) + 32 marketing workflows
 │   ├── app-builder/       # 13 project templates (Next.js, FastAPI, Flutter, Electron...)
 │   ├── api-patterns/      # REST/GraphQL/tRPC + 10 reference modules
 │   ├── game-development/  # Orchestrator + 10 sub-skills (2D, 3D, multiplayer, VR/AR...)
@@ -343,6 +361,7 @@ osforge/
 | Agency router (SKILL.md) | ~2,000 | On invoke |
 | Agency division index (1 of 10) | ~1,500 | On invoke |
 | Agency specialist (1 of 121) | ~2,000–4,000 | On invoke |
+| Marketing workflow (1 of 32) | ~1,500–3,500 | On invoke |
 | Individual SKILL.md files | ~500–3,000 each | On invoke |
 | Complex skills with references | ~3,000–8,000 each | On invoke |
 | Python hooks | 0 | Runtime only |
@@ -399,7 +418,7 @@ See `mcp/claude-code.json` and `mcp/cursor.json` for full configs.
 
 ## Origins
 
-OSForge was built by evaluating **1050+ agent skills, commands, and patterns across 19 sources**, curating and adapting the most relevant into a unified framework:
+OSForge was built by evaluating **1050+ agent skills, commands, and patterns across 20 sources**, curating and adapting the most relevant into a unified framework:
 
 | Source | Repository | Focus |
 |---|---|---|
@@ -415,6 +434,7 @@ OSForge was built by evaluating **1050+ agent skills, commands, and patterns acr
 | **Expo** | [expo/skills](https://github.com/expo/skills) ⭐ 878 | Mobile Expo / React Native |
 | **GSD (get-shit-done)** | [gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done) ⭐ 34.3k | Phase discussion, wave execution, UI audit, STATE.md cross-session memory |
 | **llmfit** | [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) ⭐ 6.5k | Hardware-aware local LLM recommendations |
+| **Marketing Skills** | [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) ⭐ 16.8k | 32 marketing execution workflows: CRO, copywriting, SEO, paid ads, sales enablement, RevOps |
 | **Sentry** | [getsentry/skills](https://github.com/getsentry/skills) ⭐ 173 | Code review, PR workflow |
 | **Supabase** | [supabase/agent-skills](https://github.com/supabase/agent-skills) ⭐ 1.1k | PostgreSQL optimization, Supabase patterns |
 | **Superpowers (obra)** | [obra/superpowers](https://github.com/obra/superpowers) ⭐ 45.3k | TDD workflow, spec-driven development, subagents |
@@ -423,7 +443,7 @@ OSForge was built by evaluating **1050+ agent skills, commands, and patterns acr
 | **UI-UX Pro Max** | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) ⭐ 39k | Design intelligence database: 67 styles, 161 palettes, 57 font pairs, 99 UX guidelines, 25 chart types |
 | **Vercel Labs** | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) ⭐ 19.1k | React, Next.js performance, Core Web Vitals |
 
-> **Breakdown:** 110 SKILL.md files · 26 specialized agents · 121 Agency specialists · 79 trigger entries · 21 detectable domains · 13 project templates · 10 game sub-skills · 9 Next.js optimization modules · 33 GSD commands · ~50 BMAD orchestration patterns · 5 UI-UX Pro Max reference databases · 2 tool patterns (llmfit + autoresearch)
+> **Breakdown:** 110 SKILL.md files · 26 specialized agents · 121 Agency specialists · 32 marketing execution workflows · 79 trigger entries · 21 detectable domains · 13 project templates · 10 game sub-skills · 9 Next.js optimization modules · 33 GSD commands · ~50 BMAD orchestration patterns · 5 UI-UX Pro Max reference databases · 2 tool patterns (llmfit + autoresearch)
 
 ---
 

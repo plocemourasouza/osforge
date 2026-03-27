@@ -8408,5 +8408,335 @@
     "source": "OSForge (Orchestrator)",
     "source_emoji": "🔵",
     "source_url": "https://github.com/plocemourasouza/osforge"
+  },
+  {
+    "name": "workflow-page-cro",
+    "description": "Otimizar conversões em qualquer página de marketing — homepage, landing pages, pricing, features. Análise de value proposition, headlines, CTAs, prova social e layout.",
+    "category": "📢 Marketing / CRO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/page-cro.md",
+    "skill_dir": "marketing-workflows/page-cro"
+  },
+  {
+    "name": "workflow-signup-flow-cro",
+    "description": "Otimizar fluxo de cadastro, registro e ativação de trial. Reduzir fricção no signup.",
+    "category": "📢 Marketing / CRO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/signup-flow-cro.md",
+    "skill_dir": "marketing-workflows/signup-flow-cro"
+  },
+  {
+    "name": "workflow-onboarding-cro",
+    "description": "Otimizar ativação pós-cadastro, first-run experience e time-to-value.",
+    "category": "📢 Marketing / CRO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/onboarding-cro.md",
+    "skill_dir": "marketing-workflows/onboarding-cro"
+  },
+  {
+    "name": "workflow-form-cro",
+    "description": "Otimizar formulários de captura de leads e contato (exceto signup).",
+    "category": "📢 Marketing / CRO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/form-cro.md",
+    "skill_dir": "marketing-workflows/form-cro"
+  },
+  {
+    "name": "workflow-popup-cro",
+    "description": "Criar e otimizar popups, modais, overlays e slide-ins para conversão.",
+    "category": "📢 Marketing / CRO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/popup-cro.md",
+    "skill_dir": "marketing-workflows/popup-cro"
+  },
+  {
+    "name": "workflow-paywall-upgrade-cro",
+    "description": "Criar e otimizar paywalls, telas de upgrade e feature gates in-app.",
+    "category": "📢 Marketing / CRO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/paywall-upgrade-cro.md",
+    "skill_dir": "marketing-workflows/paywall-upgrade-cro"
+  },
+  {
+    "name": "workflow-copywriting",
+    "description": "Escrever copy de marketing para páginas — headlines, CTAs, value propositions, hero sections.",
+    "category": "📢 Marketing / Conteúdo",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/copywriting.md",
+    "skill_dir": "marketing-workflows/copywriting"
+  },
+  {
+    "name": "workflow-copy-editing",
+    "description": "Revisar e melhorar copy de marketing existente. Edição linha por linha.",
+    "category": "📢 Marketing / Conteúdo",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/copy-editing.md",
+    "skill_dir": "marketing-workflows/copy-editing"
+  },
+  {
+    "name": "workflow-content-strategy",
+    "description": "Planejar estratégia de conteúdo, tópicos e calendário editorial.",
+    "category": "📢 Marketing / Conteúdo",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/content-strategy.md",
+    "skill_dir": "marketing-workflows/content-strategy"
+  },
+  {
+    "name": "workflow-email-sequence",
+    "description": "Criar sequências de email automatizadas — welcome, onboarding, nurture, re-engagement.",
+    "category": "📢 Marketing / Conteúdo",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/email-sequence.md",
+    "skill_dir": "marketing-workflows/email-sequence"
+  },
+  {
+    "name": "workflow-lead-magnets",
+    "description": "Criar lead magnets para captura de email e geração de leads.",
+    "category": "📢 Marketing / Conteúdo",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/lead-magnets.md",
+    "skill_dir": "marketing-workflows/lead-magnets"
+  },
+  {
+    "name": "workflow-social-content",
+    "description": "Conteúdo para redes sociais — LinkedIn, Twitter/X, Instagram, TikTok, Reddit.",
+    "category": "📢 Marketing / Conteúdo",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/social-content.md",
+    "skill_dir": "marketing-workflows/social-content"
+  },
+  {
+    "name": "workflow-seo-audit",
+    "description": "Auditoria completa de SEO técnico e on-page. Crawlability, indexação, Core Web Vitals.",
+    "category": "📢 Marketing / SEO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/seo-audit.md",
+    "skill_dir": "marketing-workflows/seo-audit"
+  },
+  {
+    "name": "workflow-ai-seo",
+    "description": "Otimizar conteúdo para buscas via IA — AEO, GEO, LLMO. Aparecer em respostas do ChatGPT/Perplexity.",
+    "category": "📢 Marketing / SEO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/ai-seo.md",
+    "skill_dir": "marketing-workflows/ai-seo"
+  },
+  {
+    "name": "workflow-programmatic-seo",
+    "description": "Criar páginas SEO em escala usando templates e dados. pSEO.",
+    "category": "📢 Marketing / SEO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/programmatic-seo.md",
+    "skill_dir": "marketing-workflows/programmatic-seo"
+  },
+  {
+    "name": "workflow-site-architecture",
+    "description": "Planejar hierarquia de páginas, navegação, URLs e internal linking.",
+    "category": "📢 Marketing / SEO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/site-architecture.md",
+    "skill_dir": "marketing-workflows/site-architecture"
+  },
+  {
+    "name": "workflow-schema-markup",
+    "description": "Adicionar e otimizar dados estruturados (schema.org) para rich results.",
+    "category": "📢 Marketing / SEO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/schema-markup.md",
+    "skill_dir": "marketing-workflows/schema-markup"
+  },
+  {
+    "name": "workflow-competitor-alternatives",
+    "description": "Criar páginas de comparação com concorrentes e alternativas para SEO e vendas.",
+    "category": "📢 Marketing / SEO",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/competitor-alternatives.md",
+    "skill_dir": "marketing-workflows/competitor-alternatives"
+  },
+  {
+    "name": "workflow-churn-prevention",
+    "description": "Reduzir churn com cancel flows, save offers, dunning e recuperação de pagamento.",
+    "category": "📢 Marketing / Retenção",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/churn-prevention.md",
+    "skill_dir": "marketing-workflows/churn-prevention"
+  },
+  {
+    "name": "workflow-free-tool-strategy",
+    "description": "Planejar ferramentas gratuitas de marketing para lead gen e SEO.",
+    "category": "📢 Marketing / Growth",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/free-tool-strategy.md",
+    "skill_dir": "marketing-workflows/free-tool-strategy"
+  },
+  {
+    "name": "workflow-referral-program",
+    "description": "Criar e otimizar programas de indicação e afiliados.",
+    "category": "📢 Marketing / Growth",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/referral-program.md",
+    "skill_dir": "marketing-workflows/referral-program"
+  },
+  {
+    "name": "workflow-marketing-ideas",
+    "description": "140+ ideias de marketing para SaaS e software. Brainstorm estruturado.",
+    "category": "📢 Marketing / Estratégia",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/marketing-ideas.md",
+    "skill_dir": "marketing-workflows/marketing-ideas"
+  },
+  {
+    "name": "workflow-marketing-psychology",
+    "description": "Aplicar psicologia e modelos mentais ao marketing. Ciência comportamental.",
+    "category": "📢 Marketing / Estratégia",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/marketing-psychology.md",
+    "skill_dir": "marketing-workflows/marketing-psychology"
+  },
+  {
+    "name": "workflow-launch-strategy",
+    "description": "Planejar lançamento de produto, feature ou release. Playbook completo.",
+    "category": "📢 Marketing / Estratégia",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/launch-strategy.md",
+    "skill_dir": "marketing-workflows/launch-strategy"
+  },
+  {
+    "name": "workflow-pricing-strategy",
+    "description": "Definir precificação, empacotamento e monetização.",
+    "category": "📢 Marketing / Estratégia",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/pricing-strategy.md",
+    "skill_dir": "marketing-workflows/pricing-strategy"
+  },
+  {
+    "name": "workflow-product-marketing-context",
+    "description": "Criar contexto de marketing do projeto. Fonte de verdade para todos os workflows.",
+    "category": "📢 Marketing / Contexto",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "📢",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/marketing/workflows/product-marketing-context.md",
+    "skill_dir": "marketing-workflows/product-marketing-context"
+  },
+  {
+    "name": "workflow-paid-ads",
+    "description": "Campanhas Google Ads, Meta Ads, LinkedIn Ads. Estratégia, setup e otimização.",
+    "category": "💰 Mídia Paga",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "💰",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/paid-media/workflows/paid-ads.md",
+    "skill_dir": "paid-media-workflows/paid-ads"
+  },
+  {
+    "name": "workflow-ad-creative",
+    "description": "Gerar e iterar criativos de anúncios em escala — headlines, descrições, textos.",
+    "category": "💰 Mídia Paga",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "💰",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/paid-media/workflows/ad-creative.md",
+    "skill_dir": "paid-media-workflows/ad-creative"
+  },
+  {
+    "name": "workflow-analytics-tracking",
+    "description": "Configurar GA4, GTM, eventos, UTMs, tracking de conversão e atribuição.",
+    "category": "💰 Mídia Paga",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "💰",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/paid-media/workflows/analytics-tracking.md",
+    "skill_dir": "paid-media-workflows/analytics-tracking"
+  },
+  {
+    "name": "workflow-ab-test-setup",
+    "description": "Planejar e implementar testes A/B e experimentos. Hipóteses, sample size, duração.",
+    "category": "💰 Mídia Paga",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "💰",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/paid-media/workflows/ab-test-setup.md",
+    "skill_dir": "paid-media-workflows/ab-test-setup"
+  },
+  {
+    "name": "workflow-cold-email",
+    "description": "Emails frios B2B e sequências de follow-up que geram respostas.",
+    "category": "💼 Vendas",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "💼",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/sales/workflows/cold-email.md",
+    "skill_dir": "sales-workflows/cold-email"
+  },
+  {
+    "name": "workflow-sales-enablement",
+    "description": "Decks de vendas, one-pagers, docs de objeções, scripts de demo.",
+    "category": "💼 Vendas",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "💼",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/sales/workflows/sales-enablement.md",
+    "skill_dir": "sales-workflows/sales-enablement"
+  },
+  {
+    "name": "workflow-revops",
+    "description": "Revenue operations — lead lifecycle, scoring, routing, handoff MQL→SQL.",
+    "category": "💼 Vendas",
+    "source": "Corey Haines (marketingskills)",
+    "source_emoji": "💼",
+    "source_url": "https://github.com/coreyhaines31/marketingskills",
+    "local_path": "skills/agency/sales/workflows/revops.md",
+    "skill_dir": "sales-workflows/revops"
   }
 ]

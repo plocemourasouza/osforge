@@ -93,6 +93,7 @@ Quando o usuário apresentar uma demanda:
 ### 2. TRIAGE — Classificar Complexidade
 
 Carregar `./triage-rules.md` e classificar a demanda.
+Se a demanda envolver marketing, mídia paga ou vendas, carregar também `./triage-rules-marketing.md`.
 
 Apresentar classificação ao usuário com justificativa de 1-2 frases:
 "Classifiquei como STANDARD porque envolve schema changes e nova API, mas
@@ -338,6 +339,22 @@ dificuldade encontrada durante uso do software:
 | SEO avançado | `skills/seo` |
 | GEO (AI search optimization) | `skills/genai-optimization` |
 
+### Marketing, Mídia Paga & Vendas
+| Necessidade | Skill / Workflow |
+|-------------|-------|
+| CRO (páginas, signup, onboarding, forms, popups, paywall) | `skills/agency/marketing/workflows/page-cro` + variantes |
+| Copywriting e edição | `skills/agency/marketing/workflows/copywriting`, `copy-editing` |
+| SEO audit, AI SEO, schema, pSEO, site architecture | `skills/agency/marketing/workflows/seo-audit` + variantes |
+| Conteúdo (estratégia, email, social, lead magnets) | `skills/agency/marketing/workflows/content-strategy` + variantes |
+| Retenção (churn, referral, free tools) | `skills/agency/marketing/workflows/churn-prevention` + variantes |
+| Estratégia (ideias, psicologia, lançamento, pricing) | `skills/agency/marketing/workflows/launch-strategy` + variantes |
+| Ads (Google, Meta, LinkedIn, criativos) | `skills/agency/paid-media/workflows/paid-ads`, `ad-creative` |
+| Analytics e A/B testing | `skills/agency/paid-media/workflows/analytics-tracking`, `ab-test-setup` |
+| Vendas (cold email, enablement, RevOps) | `skills/agency/sales/workflows/cold-email` + variantes |
+| Contexto de marketing do projeto | `skills/agency/marketing/workflows/product-marketing-context` |
+
+> Para mapa completo agente↔workflow, ver `skills/agency/marketing/workflows/ROUTING.md`
+
 ### Scaffolding & Projeto Novo
 | Necessidade | Skill |
 |-------------|-------|
@@ -369,7 +386,11 @@ dificuldade encontrada durante uso do software:
 
 ---
 
-## Agentes Disponíveis (26 total)
+## Agentes Disponíveis (26 core + 41 marketing/paid/vendas via The Agency)
+
+> Os 26 agentes abaixo são especialistas de desenvolvimento. Para marketing,
+> mídia paga e vendas, ver `skills/agency/` — 41 agentes com 32 workflows
+> de execução integrados. Detalhes em `skills/agency/marketing/workflows/ROUTING.md`.
 
 ### Engenharia & Código
 | Agente | Papel |

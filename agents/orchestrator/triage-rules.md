@@ -119,3 +119,6 @@ Quando a demanda envolve um domínio específico, carregar os skills corresponde
 | Brainstorm | `brainstorming` | (workflow socrático) |
 | Testing | `tdd-workflow`, `testing-patterns`, `e2e-testing-patterns`, `webapp-testing` | `test-engineer` + `qa-automation-engineer` |
 | Database | `database-design`, `prisma-expert`, `postgres-optimization` | `database-architect` |
+| Marketing/CRO | Ver `./triage-rules-marketing.md` | `marketing-growth-hacker` (The Agency) |
+| Mídia Paga | Ver `./triage-rules-marketing.md` | `paid-media-ppc-strategist` (The Agency) |
+| Vendas/RevOps | Ver `./triage-rules-marketing.md` | `sales-outbound-strategist` (The Agency) |
