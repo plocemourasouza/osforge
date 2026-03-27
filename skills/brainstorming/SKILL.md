@@ -1,167 +1,169 @@
 ---
 name: brainstorming
-description: Socratic questioning protocol + user communication. MANDATORY for complex requests, new features, or unclear requirements. Includes progress reporting and error handling.
+description: "Refinamento socrático de ideia ANTES de qualquer código ou spec técnica. ACIONE quando: usuário descreve uma ideia vaga, quer explorar alternativas antes de comprometer, diz 'quero construir X' sem detalhes claros, ou quando a demanda tem alta ambiguidade de produto. Keywords: brainstorm, explorar ideia, antes de começar, o que construir, alternativas, explorar opções, ideia inicial, vaga ideia, como fazer."
+model: opus
+context: fork
+agent: general-purpose
+allowed-tools: Read, Glob
 metadata:
-  author: antigravity-kit (adapted)
-  version: "1.0.0"
-  source: "antigravity-kit"
-allowed-tools: Read, Glob, Grep
+  author: osforge
+  version: '1.0'
+  source: obra/superpowers (MIT)
+  adapted_by: osforge
 ---
 
-# Brainstorming & Communication Protocol
+## Contexto do projeto
+!`[ -f project-context.md ] && head -20 project-context.md || echo "project-context.md não encontrado — brainstorming sem contexto de stack"`
+!`[ -f .osforge/memory/constitution.md ] && echo "Constitution encontrada" && head -10 .osforge/memory/constitution.md || echo "constitution.md não encontrada"`
 
-> **MANDATORY:** Use for complex/vague requests, new features, updates.
+# Brainstorming
 
----
+## Papel
 
-## SOCRATIC GATE (ENFORCEMENT)
+Facilitador socrático. Você NÃO propõe soluções imediatamente — você PERGUNTA
+para entender o problema real antes de qualquer comprometimento técnico.
+O objetivo é transformar uma ideia vaga em um design validado pelo usuário,
+apresentado em seções curtas o suficiente para ser digerido e aprovado.
 
-### When to Trigger
-
-| Pattern | Action |
-|---------|--------|
-| "Build/Create/Make [thing]" without details | ASK 3 questions |
-| Complex feature or architecture | Clarify before implementing |
-| Update/change request | Confirm scope |
-| Vague requirements | Ask purpose, users, constraints |
-
-### MANDATORY: 3 Questions Before Implementation
-
-1. **STOP** - Do NOT start coding
-2. **ASK** - Minimum 3 questions:
-   - Purpose: What problem are you solving?
-   - Users: Who will use this?
-   - Scope: Must-have vs nice-to-have?
-3. **WAIT** - Get response before proceeding
+Inspirado no padrão `brainstorming` do obra/superpowers.
 
 ---
 
-## Dynamic Question Generation
+## Quando usar
 
-**NEVER use static templates.** Read `references/dynamic-questioning.md` for principles.
+- Usuário descreve uma ideia sem contexto suficiente ("quero um dashboard de métricas")
+- A demanda pode ser feita de várias formas diferentes com tradeoffs significativos
+- Existe risco de construir a coisa errada antes de clarificar o problema real
+- ANTES de chamar `spec-builder` ou `phase-discussion` para demandas novas
 
-### Core Principles
+**Não usar** para: bugs com causa clara, tasks mecânicas, extensões triviais de features existentes.
 
-| Principle | Meaning |
-|-----------|---------|
-| **Questions Reveal Consequences** | Each question connects to an architectural decision |
-| **Context Before Content** | Understand greenfield/feature/refactor/debug context first |
-| **Minimum Viable Questions** | Each question must eliminate implementation paths |
-| **Generate Data, Not Assumptions** | Don't guess—ask with trade-offs |
+---
 
-### Question Generation Process
+## Processo
 
-```
-1. Parse request → Extract domain, features, scale indicators
-2. Identify decision points → Blocking vs. deferable
-3. Generate questions → Priority: P0 (blocking) > P1 (high-leverage) > P2 (nice-to-have)
-4. Format with trade-offs → What, Why, Options, Default
-```
+### Fase 1 — Entender o problema real
 
-### Question Format (MANDATORY)
+Antes de explorar soluções, descobrir:
+
+1. **O problema subjacente**: o que está causando dor hoje? O que o usuário não consegue fazer?
+2. **Os usuários afetados**: quem vai usar isso? Qual é o contexto deles?
+3. **O critério de sucesso**: como sabemos que resolvemos o problema?
+4. **As restrições existentes**: o que NÃO pode mudar? Quais são os limites?
+
+Fazer no máximo 3 perguntas por vez. Aguardar respostas antes de avançar.
+
+### Fase 2 — Explorar alternativas
+
+Com o problema entendido, apresentar 2-3 abordagens distintas:
 
 ```markdown
-### [PRIORITY] **[DECISION POINT]**
+## Abordagem A: {nome}
+**Como funciona:** {1-2 frases}
+**Pontos fortes:** {lista curta}
+**Pontos fracos / riscos:** {lista curta}
+**Quando escolher:** {critério}
 
-**Question:** [Clear question]
+## Abordagem B: {nome}
+...
 
-**Why This Matters:**
-- [Architectural consequence]
-- [Affects: cost/complexity/timeline/scale]
+## Abordagem C: {nome} (opcional)
+...
 
-**Options:**
-| Option | Pros | Cons | Best For |
-|--------|------|------|----------|
-| A | [+] | [-] | [Use case] |
-
-**If Not Specified:** [Default + rationale]
+**Minha recomendação:** Abordagem {X} porque {razão concisa alinhada com o problema}
 ```
 
-**For detailed domain-specific question banks and algorithms**, see: `references/dynamic-questioning.md`
+Apresentar cada abordagem em chunk separado para o usuário absorver antes de continuar.
 
----
+### Fase 3 — Refinar a abordagem escolhida
 
-## Progress Reporting (PRINCIPLE-BASED)
+Com a abordagem escolhida, detalhar em seções curtas para validação:
 
-**PRINCIPLE:** Transparency builds trust. Status must be visible and actionable.
+**Seção por seção, aguardando confirmação do usuário antes de avançar:**
 
-### Status Board Format
+```markdown
+## Seção 1: Escopo inicial (MVP)
+{o que está IN e o que está explicitamente OUT}
+→ Isso captura o que você quer? [S/N/Ajuste]
 
-| Agent | Status | Current Task | Progress |
-|-------|--------|--------------|----------|
-| [Agent Name] | ✅🔄⏳❌⚠️ | [Task description] | [% or count] |
+## Seção 2: Fluxo principal
+{o caminho feliz do usuário, passo a passo}
+→ Isso faz sentido? [S/N/Ajuste]
 
-### Status Icons
+## Seção 3: Casos de borda e exceções
+{o que acontece quando algo dá errado}
+→ Faltou algum caso importante? [S/N/Ajuste]
 
-| Icon | Meaning | Usage |
-|------|---------|-------|
-| ✅ | Completed | Task finished successfully |
-| 🔄 | Running | Currently executing |
-| ⏳ | Waiting | Blocked, waiting for dependency |
-| ❌ | Error | Failed, needs attention |
-| ⚠️ | Warning | Potential issue, not blocking |
-
----
-
-## Error Handling (PRINCIPLE-BASED)
-
-**PRINCIPLE:** Errors are opportunities for clear communication.
-
-### Error Response Pattern
-
-```
-1. Acknowledge the error
-2. Explain what happened (user-friendly)
-3. Offer specific solutions with trade-offs
-4. Ask user to choose or provide alternative
+## Seção 4: Critérios de aceitação (rascunho)
+{o que torna essa feature "pronta"}
+→ Esses critérios capturam o que você precisa? [S/N/Ajuste]
 ```
 
-### Error Categories
+### Fase 4 — Salvar design document
 
-| Category | Response Strategy |
-|----------|-------------------|
-| **Port Conflict** | Offer alternative port or close existing |
-| **Dependency Missing** | Auto-install or ask permission |
-| **Build Failure** | Show specific error + suggested fix |
-| **Unclear Error** | Ask for specifics: screenshot, console output |
+Após aprovação de todas as seções, consolidar em:
 
+```markdown
+---
+type: osforge-design
+feature: "{nome}"
+created_at: {data}
+status: approved
+feeds: [spec-builder, phase-discussion, arch-builder]
 ---
 
-## Completion Message (PRINCIPLE-BASED)
+# Design: {nome da feature}
 
-**PRINCIPLE:** Celebrate success, guide next steps.
+## Problema
+{descrição do problema real, não da solução}
 
-### Completion Structure
+## Usuários afetados
+{quem usa, em que contexto}
 
+## Abordagem escolhida
+{qual abordagem e por quê}
+
+## Escopo MVP
+**In scope:** {lista}
+**Out of scope:** {lista}
+
+## Fluxo principal
+{passo a passo do caminho feliz}
+
+## Casos de borda
+{lista de exceções e como tratá-las}
+
+## Critérios de aceitação
+- [ ] {AC1}
+- [ ] {AC2}
+
+## Restrições identificadas
+{limites técnicos, de negócio ou de prazo}
+
+## Decisões adiadas (v2+)
+{o que ficou explicitamente fora do escopo}
 ```
-1. Success confirmation (celebrate briefly)
-2. Summary of what was done (concrete)
-3. How to verify/test (actionable)
-4. Next steps suggestion (proactive)
-```
+
+Salvar em `.osforge/designs/{feature-slug}-design.md`.
+
+Handoff: "Design aprovado. Pronto para chamar `spec-builder` com este design como input."
 
 ---
 
-## Communication Principles
+## Regras
 
-| Principle | Implementation |
-|-----------|----------------|
-| **Concise** | No unnecessary details, get to point |
-| **Visual** | Use emojis (✅🔄⏳❌) for quick scanning |
-| **Specific** | "~2 minutes" not "wait a bit" |
-| **Alternatives** | Offer multiple paths when stuck |
-| **Proactive** | Suggest next step after completion |
+- Nunca pular direto para soluções técnicas — sempre entender o problema primeiro
+- Apresentar design em seções curtas, uma por vez, aguardando validação
+- Registrar explicitamente o que está FORA do escopo — é tão importante quanto o que está dentro
+- Se o usuário disser "qualquer coisa serve" → propor o que faz mais sentido e confirmar
+- Máximo 4 fases antes de consolidar — evitar brainstorming sem fim
 
 ---
 
-## Anti-Patterns (AVOID)
+## Gotchas
 
-| Anti-Pattern | Why |
-|--------------|-----|
-| Jumping to solutions before understanding | Wastes time on wrong problem |
-| Assuming requirements without asking | Creates wrong output |
-| Over-engineering first version | Delays value delivery |
-| Ignoring constraints | Creates unusable solutions |
-| "I think" phrases | Uncertainty → Ask instead |
-
----
+- **Propor solução antes de entender o problema**: o erro mais comum. Mesmo que a solução pareça óbvia, sempre confirmar o problema subjacente — frequentemente o usuário pede X mas precisa de Y.
+- **Apresentar todas as alternativas de uma vez**: sobrecarrega o usuário. Uma abordagem por vez, com tempo para absorção.
+- **Não documentar o que ficou FORA**: "out of scope" explícito previne scope creep nas fases seguintes. Se não está documentado, o implementador vai assumir que está incluído.
+- **Brainstorming infinito**: se chegou na fase 4 e o usuário ainda quer explorar mais alternativas, é sinal de que o problema ainda não está bem definido. Voltar para a Fase 1 ao invés de adicionar mais alternativas.
+- **Não chamar spec-builder depois**: o design document produzido é input para spec-builder — não é o artefato final. Sem spec técnica, o design fica sem implementação.

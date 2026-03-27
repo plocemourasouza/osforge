@@ -79,8 +79,26 @@ Para cada task na story:
 - [x] `{file/path.ts}` — {ação} ✅
 ```
 
-### 3. Self-Check — ACs Satisfeitos?
-Após completar todas as tasks:
+### 3. Two-Stage Review por task (padrão superpowers)
+
+Após cada task concluída, antes de marcar como `[x]`, executar dois estágios de review em sequência:
+
+**Estágio 1 — Spec Compliance** (verifica o CONTRATO):
+- O output da task satisfaz o `<done>` definido no XML?
+- O `<verify>` pode ser executado e retorna o resultado esperado?
+- A task não tocou em arquivos fora do `<files>` declarado?
+
+**Estágio 2 — Code Quality** (verifica o CÓDIGO):
+- TypeScript correto? Sem `any` não justificado?
+- Segue os padrões do `project-context.md`?
+- Sem `console.log` de debug?
+- Lógica de error handling presente?
+
+Se QUALQUER estágio falhar → corrigir antes de avançar para a próxima task.
+Esta verificação dupla previne que bugs se acumulem ao longo das tasks.
+
+### 4. Self-Check — ACs Satisfeitos?
+Após completar TODAS as tasks:
 - Verificar cada AC contra o código produzido
 - Rodar `skills/quality/edge-case-hunter` no diff produzido
 - Se algum AC não satisfeito → identificar o gap e resolver

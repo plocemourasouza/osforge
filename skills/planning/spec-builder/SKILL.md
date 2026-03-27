@@ -10,6 +10,32 @@ metadata:
 ## Contexto do projeto
 !`[ -f project-context.md ] && head -30 project-context.md || echo "project-context.md não encontrado"`
 !`ls docs/specs/ 2>/dev/null | head -5 && echo "Specs existentes encontradas" || echo "Nenhuma spec anterior encontrada em docs/specs/"`
+!`ls .osforge/designs/ 2>/dev/null | head -5 && echo "Design documents encontrados" || echo "Nenhum design document encontrado"`
+
+## Dois modos de operação
+
+### Modo Greenfield (feature nova, do zero)
+Processo padrão: clarificar → especificar → tasks ordenadas → ACs → riscos.
+
+### Modo Delta / Brownfield (extensão de feature existente — padrão OpenSpec)
+Para features que MODIFICAM comportamento existente, adicionar seções de delta:
+
+```markdown
+## Baseline (como está hoje)
+{descrição do comportamento atual — o que NÃO vai mudar}
+
+## Delta (o que vai mudar)
+**Adicionado:** {o que é novo}
+**Modificado:** {o que muda no comportamento existente}
+**Removido:** {o que para de existir}
+**Migração necessária:** {dados ou configurações que precisam ser migrados}
+
+## Riscos de Regressão
+- {área que pode quebrar} → {como verificar que não quebrou}
+```
+
+Usar modo Delta quando o usuário diz: "adicionar ao", "modificar o", "extender o", "melhorar o", em vez de "criar um novo".
+
 
 # Spec Builder
 
