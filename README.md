@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **80 on-demand skills**, **26 specialized agents**, **12 always-on rules**, **9 spec commands**, **Python hooks**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **85 on-demand skills**, **26 specialized agents**, **12 always-on rules**, **9 spec commands**, **Python hooks**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -14,7 +14,7 @@ OSForge is a production-grade AI development framework with **80 on-demand skill
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 80 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 85 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Core skills tailored for Next.js App Router + Prisma + Supabase + shadcn/ui, with expanded coverage for mobile, game dev, Rust, Python, and cross-platform.
 3. **Quality gates built-in** — TDD enforcement, security auditing, red team tactics, insecure defaults detection, Reality Check + Quality Control Loop in every agent, and Python hooks at zero token cost.
 
@@ -419,7 +419,7 @@ See `mcp/claude-code.json` and `mcp/cursor.json` for full configs.
 
 ## Origins
 
-OSForge was built by evaluating **1050+ agent skills, commands, and patterns across 20 sources**, curating and adapting the most relevant into a unified framework:
+OSForge was built by evaluating **1100+ agent skills, commands, and patterns across 23 sources**, curating e adaptando os mais relevantes em um framework unificado:
 
 | Source | Repository | Focus |
 |---|---|---|
@@ -439,13 +439,16 @@ OSForge was built by evaluating **1050+ agent skills, commands, and patterns acr
 | **Marketing Skills** | [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) ⭐ 16.8k | 32 marketing execution workflows: CRO, copywriting, SEO, paid ads, sales enablement, RevOps |
 | **Sentry** | [getsentry/skills](https://github.com/getsentry/skills) ⭐ 173 | Code review, PR workflow |
 | **Supabase** | [supabase/agent-skills](https://github.com/supabase/agent-skills) ⭐ 1.1k | PostgreSQL optimization, Supabase patterns |
-| **Superpowers (obra)** | [obra/superpowers](https://github.com/obra/superpowers) ⭐ 45.3k | TDD workflow, spec-driven development, subagents |
+| **Superpowers (obra)** | [obra/superpowers](https://github.com/obra/superpowers) ⭐ 118k | brainstorming, finishing-a-branch, receiving-review, git worktrees, two-stage task review pattern |
 | **The Agency** | [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) ⭐ 31k | 121 AI specialists across 10 business divisions |
 | **Trail of Bits** | [trailofbits/skills](https://github.com/trailofbits/skills) ⭐ 2.4k | Enterprise security auditing methodology |
 | **UI-UX Pro Max** | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) ⭐ 39k | Design intelligence database: 67 styles, 161 palettes, 57 font pairs, 99 UX guidelines, 25 chart types |
 | **Vercel Labs** | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) ⭐ 19.1k | React, Next.js performance, Core Web Vitals |
+| **spec-kit (GitHub)** | [github/spec-kit](https://github.com/github/spec-kit) ⭐ 81.4k | requirements-clarify, constitution.md pattern, artifact DAG |
+| **OpenSpec (Fission-AI)** | [Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec) ⭐ 23.8k | delta/brownfield spec pattern for incrementally extending existing features |
+| **shanraisshan best-practice** | [shanraisshan/claude-code-best-practice](https://github.com/shanraisshan/claude-code-best-practice) ⭐ 19.7k | frontmatter patterns (model, context:fork, allowed-tools), shell injection, Gotchas sections |
 
-> **Breakdown:** 111 SKILL.md files · 26 specialized agents · 121 Agency specialists · 32 marketing execution workflows · 80 trigger entries · 12 always-on rules · 21 detectable domains · 13 project templates · 10 game sub-skills · 9 Next.js optimization modules · 33 GSD commands · ~50 BMAD orchestration patterns · 5 UI-UX Pro Max reference databases · 2 tool patterns (llmfit + autoresearch)
+> **Breakdown:** 116 SKILL.md files · 26 specialized agents · 121 Agency specialists · 32 marketing execution workflows · 85 trigger entries · 12 always-on rules · 21 detectable domains · 13 project templates · 10 game sub-skills · 9 Next.js optimization modules · 33 GSD commands · ~50 BMAD orchestration patterns · 5 UI-UX Pro Max reference databases · 2 tool patterns (llmfit + autoresearch)
 
 ---
 
