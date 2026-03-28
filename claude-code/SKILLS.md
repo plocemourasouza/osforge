@@ -711,9 +711,9 @@ Python development principles and decision-making. Framework selection (FastAPI,
 ---
 
 ## Skill 57: Brainstorming
-**Trigger:** Brainstorm, ideation, problem exploration, Socratic questioning.
+**Trigger:** Brainstorm, explorar ideia, antes de começar, o que construir, alternativas, ideia vaga, ideação, problem exploration, Socratic questioning, "não sei como fazer", "quero construir X".
 
-Brainstorming and communication protocol using Socratic questioning. MANDATORY for complex requests, new features, and unclear requirements. Includes progress reporting and structured elicitation.
+Refinamento socrático de ideia ANTES de qualquer código ou spec técnica. Fase 1: entender o problema real (não a solução). Fase 2: explorar 2-3 abordagens distintas com tradeoffs. Fase 3: detalhar a abordagem escolhida em chunks aprovados um por vez. Salva design document em `.osforge/designs/` para alimentar spec-builder. Fonte: obra/superpowers (MIT).
 
 ---
 
@@ -868,3 +868,31 @@ Testing patterns and principles. Testing pyramid, unit testing, integration test
 **Trigger:** Web app testing, E2E testing, Playwright testing, visual regression.
 
 Web application testing principles. Deep audit approaches, Playwright-based testing, accessibility testing, visual regression, and discovery-driven testing.
+
+---
+
+## Skill 80: Finishing a Development Branch
+**Trigger:** Finalizar branch, merge, pull request, PR, ship, branch completa, done, concluído, terminar feature, fechar branch, "pronto para mergear", "abrir PR".
+
+Workflow de finalização de branch: (1) verificação pré-merge — testes, TypeScript, lint, status; (2) resumo do trabalho na branch; (3) menu de opções [M]erge / [P]ull Request / [K]eep / [D]iscard com execução segura. Discard requer confirmação explícita. Arquiva specs em `.osforge/archive/`. Fonte: obra/superpowers (MIT).
+
+---
+
+## Skill 81: Receiving Code Review
+**Trigger:** Responder review, feedback de review, changes requested, responder PR, tratar comments, resolver feedback, revisor pediu mudanças, CHANGES_REQUESTED.
+
+Resposta estruturada a feedback de code review: cataloga itens em bloqueante/importante/opcional, classifica cada um (concordo/concordo parcialmente/discordo), implementa correções com verificação por item, gera resposta formal ao reviewer e solicita re-review. Commits atômicos por item. Fonte: obra/superpowers (MIT).
+
+---
+
+## Skill 82: Using Git Worktrees
+**Trigger:** Git worktree, worktrees, parallel development, multiple branches, isolated workspace, branch paralela, desenvolvimento paralelo, agents paralelos em branches separadas.
+
+Setup e uso de git worktrees para desenvolvimento paralelo: layout recomendado de diretórios por agent, integração com dispatching-parallel-agents (um worktree por task paralela), comandos essenciais (add/remove/list/prune), setup de node_modules e .env por worktree, portas diferentes para dev servers. Fonte: obra/superpowers (MIT).
+
+---
+
+## Skill 83: Requirements Clarify
+**Trigger:** Clarificar requisitos, requirements clarification, underspecified, ambiguous requirements, clarify, antes do plano, esclarecer requisitos, spec tem áreas vagas, "pode ser qualquer coisa", requirements vagas.
+
+Clarificação estruturada por dimensões de cobertura ANTES do plano técnico: funcional, dados, UX, integração, segurança. Máximo 8-10 perguntas priorizadas por impacto. Produz Clarifications Record em `.osforge/designs/{feature}-clarifications.md` que alimenta spec-builder. Fonte: github/spec-kit (MIT).

@@ -4,6 +4,7 @@
 Specialized agents available in ~/.claude/agents/:
 
 **Core Engineering**
+- orchestrator — Meta-agente: intake, triage (QUICK/STANDARD/COMPLEX), planejamento, routing, tracking cross-session via STATE.md
 - planner — Decomposes features into atomic tasks with TDD order + complexity detection
 - debugger — 10-step root cause analysis with evidence hierarchy; zero context-switching from user
 - code-reviewer — 7-dimension quality review + refactoring prioritization
@@ -50,26 +51,75 @@ Available in ~/.claude/commands/. Execute with `/spec:discover`, `/spec:specify`
 
 ## Development Workflow (Agent Orchestration)
 
-### Feature Nova (full cycle)
-1. `/spec:discover` → `.specs/features/[f]/discovery.md` (problema + hipótese + métricas)
-2. `/spec:specify` → `spec.md` (requisitos + acceptance criteria)
-3. `/spec:design` → `.specs/features/[f]/design.md` (arquitetura + decisões técnicas)
-4. [validator] → critique spec (QA gate pré-implementação — lê spec.md, aponta gaps)
-5. `/spec:tasks` → `.specs/features/[f]/tasks.md` com critérios de verificação por task
-6. [dev/you] → implement (TDD: red-green-refactor por story, usando `/spec:implement` → gera `validation.md`)
-7. [code-reviewer] → review (7 dimensões de qualidade)
-8. [validator] → validate against spec.md
-9. `/spec:measure` → `.specs/features/[f]/measure.md` (resultados pós-deploy vs hipótese do discover)
+### Fluxo Principal: Orchestrator (recomendado)
 
-### Bug Fix
-1. [debugger] → 10-step root cause analysis
-2. [dev/you] → fix (TDD: test que reproduz → fix → verify)
-3. [code-reviewer] → review fix
+O orchestrator é o meta-agente que faz intake, triage e coordena todos os outros.
+Acionar com: `"Read agents/orchestrator/AGENT.md"` ou descrever o que quer construir.
 
-### Security Review
-1. [security-auditor] → full audit
-2. [dev/you] → fix findings
-3. [security-auditor] → re-audit findings
+```
+INTAKE → TRIAGE → PLAN → [APPROVE] → ROUTE → TRACK → [CORRECT]
+```
+
+**Ciclo completo para feature nova:**
+```
+1. brainstorming          → refinamento socrático ANTES de qualquer spec
+                             salva design doc em .osforge/designs/
+                             (pular para features triviais ou bem definidas)
+
+2. requirements-clarify   → clarificação por dimensões de cobertura
+                             (funcional, dados, UX, integração, segurança)
+                             produz clarifications record antes do plano técnico
+
+3. phase-discussion       → captura decisões de implementação por fase
+                             (UI, API, dados) — produz .osforge/phases/N-CONTEXT.md
+
+4. spec-builder           → tech spec com ACs testáveis
+                             modo Delta/Brownfield para features existentes
+                             CHECKPOINT: [A]prove / [E]dit / [R]efine
+
+5. arch-builder           → ADRs e decisões de arquitetura (se schema/API changes)
+
+6. epic-decomposer        → épicos e stories com tasks em XML canônico
+
+7. story-executor         → implementa cada story
+                             two-stage review por task: spec compliance → code quality
+
+8. quality/code-review    → review com adversarial-review + edge-case-hunter
+
+9. quality/ui-audit       → auditoria de 6 pilares para phases com UI
+
+10. finishing-a-branch    → verificação pré-merge + menu M/P/K/D
+```
+
+**Ciclo para bug fix:**
+```
+1. systematic-debugging → 4 fases: reproduce → isolate → understand → fix
+2. story-executor       → implementa fix com two-stage review
+3. quality/code-review  → review do fix
+```
+
+**Ciclo para security review:**
+```
+1. security-auditor     → Trail of Bits methodology, threat modeling
+2. story-executor       → fix findings
+3. security-auditor     → re-audit
+```
+
+### Fluxo Alternativo: spec:* Commands (legacy, compatível)
+
+Comandos slash disponíveis em `~/.claude/commands/`. Usam o sistema `tlc-spec-driven`.
+
+| Command | Phase | Output |
+|---------|-------|--------|
+| `/spec:constitution` | Pré-projeto | `.specs/memory/constitution.md` |
+| `/spec:discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
+| `/spec:specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
+| `/spec:design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
+| `/spec:tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
+| `/spec:implement` | Phase 4 — Implement | atualiza `tasks.md` + `validation.md` |
+| `/spec:measure` | Phase 5 — Measure | `.specs/features/[f]/measure.md` |
+| `/spec:clarify` | Auxiliar | atualiza artefatos in-place |
+| `/spec:checklist` | Auxiliar | `.specs/features/[f]/checklist.md` |
 
 ### Regra: Não pule etapas. Se a feature é trivial, o ciclo é rápido.
 Se é complexa, pular etapas custa mais que seguir o ciclo.
