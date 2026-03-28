@@ -896,3 +896,10 @@ Setup e uso de git worktrees para desenvolvimento paralelo: layout recomendado d
 **Trigger:** Clarificar requisitos, requirements clarification, underspecified, ambiguous requirements, clarify, antes do plano, esclarecer requisitos, spec tem áreas vagas, "pode ser qualquer coisa", requirements vagas.
 
 Clarificação estruturada por dimensões de cobertura ANTES do plano técnico: funcional, dados, UX, integração, segurança. Máximo 8-10 perguntas priorizadas por impacto. Produz Clarifications Record em `.osforge/designs/{feature}-clarifications.md` que alimenta spec-builder. Fonte: github/spec-kit (MIT).
+
+---
+
+## Skill 84: DB State Sync
+**Trigger:** Salvar estado, registrar decisão, add-decision, set-phase, resumir sessão, buscar decisão, osforge-db, estado do projeto, blocker, retomar sessão, where did I leave off.
+
+Gerencia o estado de projetos no banco SQLite local do OSForge (`~/.osforge/osforge.db`). Usa `osforge-db` CLI para salvar progresso de fases, registrar decisões arquiteturais, adicionar/resolver blockers e retomar sessões com contexto preciso (~50 tokens via `osforge-db resume`). Banco global cross-project; banco local por projeto via `--scope=local`. FTS5 para busca semântica cross-project em decisões passadas.

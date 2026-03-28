@@ -67,8 +67,10 @@ Ver `rules/intelligent-routing.mdc` para tabela completa de routing.
 Quando o usuário apresentar uma demanda:
 
 **a) Escanear estado do projeto:**
-- Verificar se `.osforge/status.yaml` existe e tem work in-progress
-- Se existir → informar: "Há trabalho em progresso em {projeto}. Retomar ou iniciar novo?"
+- Executar: `osforge-db list-projects --status=active` para ver work in progress
+- Se projeto identificado → `osforge-db resume <slug>` para carregar fase atual e resume point
+- Informar ao usuário: "Há trabalho em progresso em {projeto}. Fase: {fase}. Retomar ou iniciar novo?"
+- Fallback (banco não disponível): verificar se `.osforge/status.yaml` existe
 - Carregar `project-context.md` se existir (buscar em `docs/` ou raiz do projeto)
 
 **b) Identificar tipo de demanda:**
@@ -142,13 +144,38 @@ Após aprovação do plano:
 
 ### 5. TRACK — Manter Estado
 
-Dois arquivos de estado complementares:
+Dois mecanismos complementares — banco SQLite (primário) e arquivos markdown (fallback legível):
 
-**`.osforge/status.yaml`** — fonte de verdade de fases e artefatos.
-Ver `../.osforge/status-schema.yaml` para o formato.
+**Primário: `osforge-db` (SQLite local)**
 
-**`.osforge/STATE.md`** — memória cross-session de decisões e bloqueios.
-Criar/atualizar a cada sessão relevante.
+```bash
+# Ao iniciar sessão — verificar work in progress
+osforge-db list-projects --status=active
+osforge-db status <slug>          # estado completo
+osforge-db resume <slug>          # fase atual + resume point (~50 tokens)
+
+# Ao iniciar projeto novo
+osforge-db upsert-project <slug> "<descrição>" <triage> active
+
+# Ao completar fase
+osforge-db set-phase <slug> "<fase>" complete <skill-path> <artifact-path>
+osforge-db add-decision <slug> "<decisão arquitetural tomada>"
+
+# Ao encerrar sessão (OBRIGATÓRIO)
+osforge-db set-resume <slug> "Próximo: <fase> — <detalhe do que fazer>"
+
+# Ao encontrar blocker
+osforge-db add-blocker <slug> "<descrição>" --waiting="<o que está esperando>"
+osforge-db resolve-blocker <slug> <id>
+
+# Busca cross-project em decisões passadas
+osforge-db search "<termo>"
+```
+
+**Fallback: arquivos locais** (manter atualizados para leitura humana)
+
+`.osforge/status.yaml` — pipeline de fases com artefatos.
+`.osforge/STATE.md` — decisões e bloqueadores em markdown livre.
 
 ```markdown
 ---
@@ -159,30 +186,22 @@ last_updated: {data}
 # Project State
 
 ## Decisões Tomadas
-- {data}: {decisão arquitetural e sua justificativa}
-- {data}: {decisão de produto e seu impacto}
+- {data}: {decisão e justificativa}
 
 ## Bloqueadores Ativos
-- [ ] {bloqueador}: {descrição} — esperando: {o que é necessário}
-
-## Bloqueadores Resolvidos
-- [x] {bloqueador antigo}: resolvido em {data} — {como}
+- [ ] {bloqueador}: esperando: {o que é necessário}
 
 ## Posição Atual
 Fase: {N} — {título}
 Próximo passo: {ação concreta}
-Sessão anterior encerrou em: {ponto exato}
-
-## Notas Livres
-{observações que não cabem em outro lugar}
 ```
 
 **Regras de tracking:**
-- Atualizar `status.yaml` a cada mudança de fase
-- Atualizar `STATE.md` ao encerrar qualquer sessão com work in progress
-- Ao iniciar nova sessão: ler AMBOS antes de qualquer ação
-- Registrar artefatos produzidos com caminhos relativos
-- Nunca apagar entries — marcar como `skipped` ou `cancelled` se necessário
+- `osforge-db set-resume` ao encerrar QUALQUER sessão com work in progress
+- `osforge-db add-decision` para toda decisão arquitetural, de produto ou de segurança tomada
+- Atualizar `STATUS.md` e `STATE.md` em paralelo para leitura humana
+- Ao iniciar sessão nova: `osforge-db resume <slug>` antes de qualquer ação
+- Se banco indisponível (primeira vez, nova máquina): cair para arquivos locais e executar `osforge-db init` + `osforge-db import-yaml .osforge/status.yaml <slug>`
 
 ### 6. CORRECT — Lidar com Mudanças
 

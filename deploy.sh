@@ -215,6 +215,44 @@ PYEOF
   ok "Claude Code deploy completo"
 }
 
+# ── Deploy osforge-db ────────────────────────────────────────────────────
+deploy_osforge_db() {
+  echo ""
+  echo "🗄️  Deploy → osforge-db CLI"
+
+  local db_dir="$HOME/.osforge"
+  local db_bin="$HOME/.local/bin/osforge-db"
+  local script_src="$REPO/scripts/osforge-db.py"
+
+  if $DRY_RUN; then
+    skip "mkdir -p $db_dir"
+    skip "cp osforge-db.py → $db_bin"
+    return
+  fi
+
+  mkdir -p "$db_dir"
+  mkdir -p "$HOME/.local/bin"
+  cp "$script_src" "$db_bin"
+  chmod +x "$db_bin"
+  ok "osforge-db instalado em $db_bin"
+
+  # Inicializar banco global se ainda não existe
+  if [ ! -f "$db_dir/osforge.db" ]; then
+    python3 "$db_bin" init >/dev/null 2>&1 && ok "Banco global criado: $db_dir/osforge.db"
+  else
+    # Garantir que schema está atualizado (idempotente)
+    python3 "$db_bin" init >/dev/null 2>&1
+    ok "Banco global verificado: $db_dir/osforge.db"
+  fi
+
+  # Checar se ~/.local/bin está no PATH
+  if ! command -v osforge-db &>/dev/null; then
+    echo "  ⚠️  ~/.local/bin não está no PATH"
+    echo "     Adicione ao ~/.zshrc ou ~/.bashrc:"
+    echo '     export PATH="$HOME/.local/bin:$PATH"'
+  fi
+}
+
 # ── Deploy Cursor ────────────────────────────────────────────────────────
 deploy_cursor() {
   echo ""
@@ -276,6 +314,7 @@ echo "════════════════════════�
 
 $DEPLOY_CLAUDE && deploy_claude
 $DEPLOY_CURSOR && deploy_cursor
+deploy_osforge_db
 
 echo ""
 echo "═══════════════════════════════════════════════════"
