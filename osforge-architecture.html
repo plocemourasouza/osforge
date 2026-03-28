@@ -3,1308 +3,675 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OSForge — Architecture Map</title>
+<title>OSForge — Architecture Map v3</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
   :root {
-    --bg: #0a0a0f;
-    --bg-card: #12121a;
-    --bg-card-hover: #1a1a26;
-    --border: #1e1e2e;
-    --border-accent: #2a2a3e;
-    --text: #e4e4ef;
-    --text-dim: #8888a0;
-    --text-muted: #55556a;
-    --accent-blue: #4a9eff;
-    --accent-cyan: #22d3ee;
-    --accent-green: #34d399;
-    --accent-amber: #fbbf24;
-    --accent-red: #f87171;
-    --accent-pink: #f472b6;
-    --accent-purple: #a78bfa;
-    --accent-orange: #fb923c;
-    --accent-teal: #2dd4bf;
-    --accent-lime: #a3e635;
-    --accent-rose: #fb7185;
-    --accent-sky: #38bdf8;
-    --glow-blue: rgba(74, 158, 255, 0.15);
-    --glow-cyan: rgba(34, 211, 238, 0.12);
+    --bg:#0a0a0f; --bg-card:#12121a; --bg-card-hover:#1a1a26;
+    --border:#1e1e2e; --border-accent:#2a2a3e;
+    --text:#e4e4ef; --text-dim:#8888a0; --text-muted:#55556a;
+    --blue:#4a9eff; --cyan:#22d3ee; --green:#34d399;
+    --amber:#fbbf24; --red:#f87171; --pink:#f472b6;
+    --purple:#a78bfa; --orange:#fb923c; --teal:#2dd4bf;
+    --lime:#a3e635; --rose:#fb7185; --sky:#38bdf8;
+    --glow-blue:rgba(74,158,255,.15); --glow-cyan:rgba(34,211,238,.12);
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', -apple-system, sans-serif;
-    overflow-x: hidden;
-    min-height: 100vh;
-  }
-
-  .noise {
-    position: fixed;
-    inset: 0;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .grid-bg {
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(74, 158, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(74, 158, 255, 0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 40px 24px 80px;
-  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;overflow-x:hidden;min-height:100vh}
+  .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(74,158,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(74,158,255,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+  .container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:40px 24px 80px}
 
   /* HEADER */
-  .header {
-    text-align: center;
-    margin-bottom: 56px;
-    position: relative;
-  }
+  .header{text-align:center;margin-bottom:56px;position:relative}
+  .header::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,var(--glow-blue),transparent 70%);pointer-events:none;z-index:-1}
+  .logo{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--blue);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
+  .header h1{font-size:46px;font-weight:900;letter-spacing:-1.5px;line-height:1.1;background:linear-gradient(135deg,#fff 0%,var(--cyan) 50%,var(--blue) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px}
+  .header p{color:var(--text-dim);font-size:17px;font-weight:300;max-width:700px;margin:0 auto;line-height:1.6}
+  .stats-bar{display:flex;justify-content:center;gap:36px;margin-top:32px;flex-wrap:wrap}
+  .stat{text-align:center}
+  .stat-number{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-top:4px}
+  .version-badge{display:inline-block;margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:6px;background:rgba(74,158,255,.12);color:var(--blue);border:1px solid rgba(74,158,255,.25)}
 
-  .header::before {
-    content: '';
-    position: absolute;
-    top: -40px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 300px;
-    background: radial-gradient(ellipse, var(--glow-blue), transparent 70%);
-    pointer-events: none;
-    z-index: -1;
-  }
+  /* SECTION */
+  .section{margin-bottom:48px}
+  .section-title{font-size:19px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  .section-subtitle{font-size:13px;color:var(--text-dim);margin-bottom:22px}
 
-  .logo {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--accent-blue);
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
+  /* ORCHESTRATOR */
+  .orch-core{background:linear-gradient(135deg,rgba(74,158,255,.08),rgba(34,211,238,.05));border:1px solid rgba(74,158,255,.2);border-radius:20px;padding:36px;position:relative;overflow:hidden;margin-bottom:48px}
+  .orch-core::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent)}
+  .orch-title{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+  .orch-title h2{font-size:22px;font-weight:700}
+  .orch-badge{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border-radius:5px;background:rgba(74,158,255,.15);color:var(--blue);border:1px solid rgba(74,158,255,.3)}
+  .flow-steps{display:flex;gap:4px;align-items:stretch;flex-wrap:wrap;justify-content:center}
+  .flow-step{flex:1;min-width:130px;max-width:175px;padding:16px 12px;text-align:center;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;margin:3px;transition:all .3s}
+  .flow-step:hover{background:rgba(74,158,255,.06);border-color:rgba(74,158,255,.3);transform:translateY(-2px)}
+  .flow-step .step-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);margin-bottom:6px}
+  .flow-step h4{font-size:13px;font-weight:700;margin-bottom:5px}
+  .flow-step p{font-size:10px;color:var(--text-dim);line-height:1.4}
+  .flow-step .artifact{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--amber);margin-top:6px;padding:2px 5px;background:rgba(251,191,36,.08);border-radius:3px;display:inline-block}
 
-  .header h1 {
-    font-size: 48px;
-    font-weight: 900;
-    letter-spacing: -1.5px;
-    line-height: 1.1;
-    background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 50%, var(--accent-blue) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 16px;
-  }
+  /* CARDS */
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px;transition:all .3s;position:relative;overflow:hidden}
+  .card:hover{background:var(--bg-card-hover);border-color:var(--border-accent);transform:translateY(-2px)}
+  .card-accent{position:absolute;top:0;left:0;right:0;height:2px}
+  .card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .card-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+  .card h3{font-size:13px;font-weight:700;line-height:1.3}
+  .card-tag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 6px;border-radius:4px;margin-left:auto;flex-shrink:0}
+  .card p{font-size:11px;color:var(--text-dim);line-height:1.5}
+  .skills-list{margin-top:9px;display:flex;flex-wrap:wrap;gap:4px}
+  .skill-pill{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text-dim)}
 
-  .header p {
-    color: var(--text-dim);
-    font-size: 18px;
-    font-weight: 300;
-    max-width: 700px;
-    margin: 0 auto;
-    line-height: 1.6;
-  }
+  /* SKILLS GRID */
+  .skills-mega{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px}
+  .skill-category{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px}
+  .skill-cat-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .skill-cat-header h3{font-size:13px;font-weight:700}
+  .skill-cat-count{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,.06);color:var(--text-dim);margin-left:auto}
+  .skill-item{font-size:11px;color:var(--text-dim);padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);display:flex;gap:6px;align-items:flex-start;line-height:1.4}
+  .skill-item:last-child{border-bottom:none}
+  .skill-name{font-weight:600;color:var(--text);flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px}
 
-  .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-top: 32px;
-    flex-wrap: wrap;
-  }
+  /* SQLITE SECTION */
+  .sqlite-box{background:linear-gradient(135deg,rgba(52,211,153,.06),rgba(34,211,238,.04));border:1px solid rgba(52,211,153,.2);border-radius:16px;padding:28px;position:relative;overflow:hidden}
+  .sqlite-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),var(--cyan),transparent)}
+  .db-schema{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:16px}
+  .db-table{background:rgba(255,255,255,.03);border:1px solid rgba(52,211,153,.15);border-radius:8px;padding:12px}
+  .db-table-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--green);margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid rgba(52,211,153,.15)}
+  .db-field{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);padding:1px 0}
+  .db-field .ftype{color:var(--text-muted)}
 
-  .stat {
-    text-align: center;
-  }
+  /* DEPLOY FLOW */
+  .deploy-flow{display:grid;grid-template-columns:1fr auto 1fr 1fr;gap:12px;align-items:center}
+  .deploy-box{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .deploy-arrow{display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:22px;opacity:.5}
+  .deploy-target{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .deploy-item{font-size:11px;color:var(--text-dim);padding:2px 0;display:flex;gap:6px}
+  .deploy-item .di-file{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--sky)}
 
-  .stat-number {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 36px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+  /* HOOKS */
+  .hooks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .hook-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .hook-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--amber);margin-bottom:5px}
+  .hook-trigger{font-size:10px;color:var(--text-muted);margin-bottom:6px;font-style:italic}
+  .hook-desc{font-size:11px;color:var(--text-dim);line-height:1.4}
 
-  .stat-label {
-    font-size: 12px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 4px;
-  }
+  /* RULES */
+  .rules-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+  .rule-item{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;gap:8px;align-items:flex-start}
+  .rule-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+  .rule-name{font-size:12px;font-weight:600;margin-bottom:2px}
+  .rule-desc{font-size:10px;color:var(--text-dim);line-height:1.4}
 
-  /* ORCHESTRATOR SECTION */
-  .orch-section {
-    margin-bottom: 56px;
-  }
+  /* SOURCES */
+  .sources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+  .source-item{background:var(--bg-card);border:1px solid var(--border);border-radius:9px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+  .source-stars{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--amber);flex-shrink:0;margin-top:2px}
+  .source-name{font-size:12px;font-weight:600;margin-bottom:2px}
+  .source-desc{font-size:10px;color:var(--text-dim);line-height:1.4}
 
-  .orch-core {
-    background: linear-gradient(135deg, rgba(74, 158, 255, 0.08), rgba(34, 211, 238, 0.05));
-    border: 1px solid rgba(74, 158, 255, 0.2);
-    border-radius: 20px;
-    padding: 40px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .orch-core::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent-blue), var(--accent-cyan), transparent);
-  }
-
-  .orch-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .orch-title h2 {
-    font-size: 24px;
-    font-weight: 700;
-  }
-
-  .orch-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 6px;
-    background: rgba(74, 158, 255, 0.15);
-    color: var(--accent-blue);
-    border: 1px solid rgba(74, 158, 255, 0.3);
-  }
-
-  .flow-steps {
-    display: flex;
-    gap: 0;
-    align-items: stretch;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .flow-step {
-    flex: 1;
-    min-width: 160px;
-    max-width: 200px;
-    padding: 20px 16px;
-    text-align: center;
-    position: relative;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin: 4px;
-    transition: all 0.3s ease;
-  }
-
-  .flow-step:hover {
-    background: rgba(74, 158, 255, 0.06);
-    border-color: rgba(74, 158, 255, 0.3);
-    transform: translateY(-2px);
-  }
-
-  .flow-step .step-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--accent-cyan);
-    margin-bottom: 8px;
-  }
-
-  .flow-step h4 {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-
-  .flow-step p {
-    font-size: 11px;
-    color: var(--text-dim);
-    line-height: 1.4;
-  }
-
-  .flow-arrow {
-    display: flex;
-    align-items: center;
-    color: var(--accent-blue);
-    font-size: 20px;
-    opacity: 0.5;
-    padding: 0 2px;
-  }
-
-  /* DOMAINS GRID */
-  .section-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .section-subtitle {
-    font-size: 14px;
-    color: var(--text-dim);
-    margin-bottom: 24px;
-  }
-
-  .section {
-    margin-bottom: 48px;
-  }
-
-  .domains-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 8px;
-  }
-
-  .domain-chip {
-    padding: 10px 12px;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    background: var(--bg-card);
-    transition: all 0.2s ease;
-    cursor: default;
-  }
-
-  .domain-chip:hover {
-    transform: translateY(-1px);
-  }
-
-  .domain-chip .domain-icon {
-    font-size: 20px;
-    display: block;
-    margin-bottom: 6px;
-  }
-
-  /* AGENTS & SKILLS SECTIONS */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-  }
-
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card:hover {
-    background: var(--bg-card-hover);
-    border-color: var(--border-accent);
-    transform: translateY(-2px);
-  }
-
-  .card-accent {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-  }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .card-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
-  .card h3 {
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.3;
-  }
-
-  .card-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-
-  .card p {
-    font-size: 12px;
-    color: var(--text-dim);
-    line-height: 1.5;
-  }
-
-  .card .skills-list {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-
-  .skill-pill {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-  }
-
-  /* SKILLS MEGA GRID */
-  .skills-mega {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-  }
-
-  .skill-category {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    transition: all 0.3s ease;
-  }
-
-  .skill-category:hover {
-    border-color: var(--border-accent);
-  }
-
-  .skill-cat-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 14px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .skill-cat-header h3 {
-    font-size: 14px;
-    font-weight: 700;
-  }
-
-  .skill-cat-count {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-left: auto;
-  }
-
-  .skill-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 0;
-    font-size: 12px;
-  }
-
-  .skill-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .skill-name {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--text);
-  }
-
-  .skill-desc {
-    color: var(--text-muted);
-    font-size: 11px;
-    margin-left: auto;
-    text-align: right;
-    max-width: 140px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .new-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    padding: 1px 5px;
-    border-radius: 4px;
-    background: rgba(52, 211, 153, 0.15);
-    color: var(--accent-green);
-    border: 1px solid rgba(52, 211, 153, 0.3);
-    flex-shrink: 0;
-  }
-
-  /* TRIAGE */
-  .triage-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-
-  @media (max-width: 900px) {
-    .triage-grid { grid-template-columns: 1fr; }
-    .flow-steps { flex-direction: column; align-items: center; }
-    .flow-arrow { transform: rotate(90deg); }
-  }
-
-  .triage-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .triage-card h3 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-
-  .triage-card .triage-sub {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-bottom: 16px;
-  }
-
-  .triage-pipeline {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 12px;
-  }
-
-  .pipe-step {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--border);
-  }
-
-  .pipe-arrow {
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    font-size: 10px;
-  }
+  /* COLORS */
+  .c-blue{color:var(--blue)} .c-cyan{color:var(--cyan)} .c-green{color:var(--green)}
+  .c-amber{color:var(--amber)} .c-red{color:var(--red)} .c-pink{color:var(--pink)}
+  .c-purple{color:var(--purple)} .c-orange{color:var(--orange)} .c-teal{color:var(--teal)}
+  .c-rose{color:var(--rose)} .c-sky{color:var(--sky)} .c-lime{color:var(--lime)}
+  .bg-blue{background:rgba(74,158,255,.12)} .bg-green{background:rgba(52,211,153,.1)}
+  .bg-amber{background:rgba(251,191,36,.1)} .bg-purple{background:rgba(167,139,250,.1)}
+  .bg-pink{background:rgba(244,114,182,.1)} .bg-orange{background:rgba(251,146,60,.1)}
+  .bg-teal{background:rgba(45,212,191,.1)} .bg-cyan{background:rgba(34,211,238,.1)}
 
   /* FOOTER */
-  .footer {
-    text-align: center;
-    padding-top: 40px;
-    border-top: 1px solid var(--border);
-    margin-top: 20px;
+  .footer{text-align:center;padding:32px 0 0;border-top:1px solid var(--border);color:var(--text-muted);font-size:12px;line-height:1.8}
+  .footer a{color:var(--blue);text-decoration:none}
+  .footer a:hover{text-decoration:underline}
+  @media(max-width:768px){
+    .header h1{font-size:32px}
+    .stat-number{font-size:24px}
+    .deploy-flow{grid-template-columns:1fr}
   }
-
-  .footer p {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  .footer a {
-    color: var(--accent-blue);
-    text-decoration: none;
-  }
-
-  /* Color utilities */
-  .c-blue { color: var(--accent-blue); }
-  .c-cyan { color: var(--accent-cyan); }
-  .c-green { color: var(--accent-green); }
-  .c-amber { color: var(--accent-amber); }
-  .c-red { color: var(--accent-red); }
-  .c-pink { color: var(--accent-pink); }
-  .c-purple { color: var(--accent-purple); }
-  .c-orange { color: var(--accent-orange); }
-  .c-teal { color: var(--accent-teal); }
-  .c-lime { color: var(--accent-lime); }
-  .c-rose { color: var(--accent-rose); }
-  .c-sky { color: var(--accent-sky); }
-
-  .bg-blue { background: rgba(74, 158, 255, 0.12); }
-  .bg-cyan { background: rgba(34, 211, 238, 0.12); }
-  .bg-green { background: rgba(52, 211, 153, 0.12); }
-  .bg-amber { background: rgba(251, 191, 36, 0.12); }
-  .bg-red { background: rgba(248, 113, 113, 0.12); }
-  .bg-pink { background: rgba(244, 114, 182, 0.12); }
-  .bg-purple { background: rgba(167, 139, 250, 0.12); }
-  .bg-orange { background: rgba(251, 146, 60, 0.12); }
-  .bg-teal { background: rgba(45, 212, 191, 0.12); }
-  .bg-lime { background: rgba(163, 230, 53, 0.12); }
-
-  .border-blue { border-color: rgba(74, 158, 255, 0.3) !important; }
-  .border-cyan { border-color: rgba(34, 211, 238, 0.3) !important; }
-  .border-green { border-color: rgba(52, 211, 153, 0.3) !important; }
-  .border-amber { border-color: rgba(251, 191, 36, 0.3) !important; }
-  .border-red { border-color: rgba(248, 113, 113, 0.3) !important; }
-  .border-pink { border-color: rgba(244, 114, 182, 0.3) !important; }
-  .border-purple { border-color: rgba(167, 139, 250, 0.3) !important; }
-  .border-orange { border-color: rgba(251, 146, 60, 0.3) !important; }
-
-  .accent-bar-blue { background: linear-gradient(90deg, var(--accent-blue), transparent); }
-  .accent-bar-cyan { background: linear-gradient(90deg, var(--accent-cyan), transparent); }
-  .accent-bar-green { background: linear-gradient(90deg, var(--accent-green), transparent); }
-  .accent-bar-amber { background: linear-gradient(90deg, var(--accent-amber), transparent); }
-  .accent-bar-red { background: linear-gradient(90deg, var(--accent-red), transparent); }
-  .accent-bar-pink { background: linear-gradient(90deg, var(--accent-pink), transparent); }
-  .accent-bar-purple { background: linear-gradient(90deg, var(--accent-purple), transparent); }
-  .accent-bar-orange { background: linear-gradient(90deg, var(--accent-orange), transparent); }
-  .accent-bar-teal { background: linear-gradient(90deg, var(--accent-teal), transparent); }
-  .accent-bar-lime { background: linear-gradient(90deg, var(--accent-lime), transparent); }
-
-  .dot-blue { background: var(--accent-blue); }
-  .dot-cyan { background: var(--accent-cyan); }
-  .dot-green { background: var(--accent-green); }
-  .dot-amber { background: var(--accent-amber); }
-  .dot-red { background: var(--accent-red); }
-  .dot-pink { background: var(--accent-pink); }
-  .dot-purple { background: var(--accent-purple); }
-  .dot-orange { background: var(--accent-orange); }
-  .dot-teal { background: var(--accent-teal); }
-  .dot-lime { background: var(--accent-lime); }
 </style>
 </head>
 <body>
-
-<div class="noise"></div>
 <div class="grid-bg"></div>
-
 <div class="container">
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="logo">OSForge</div>
-    <h1>Architecture Map</h1>
-    <p>Framework de desenvolvimento AI com 110 skills, 26 agentes e orchestrator inteligente — otimizado para Claude Code & Cursor</p>
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">OSForge</div>
+  <h1>Architecture Map</h1>
+  <p>Framework de desenvolvimento AI-powered para Claude Code e Cursor — 86 skills on-demand, 27 agentes, SQLite local state, 121 especialistas.</p>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-number">86</div><div class="stat-label">Skills</div></div>
+    <div class="stat"><div class="stat-number">27</div><div class="stat-label">Agents</div></div>
+    <div class="stat"><div class="stat-number">12</div><div class="stat-label">Always-on Rules</div></div>
+    <div class="stat"><div class="stat-number">121</div><div class="stat-label">Specialists</div></div>
+    <div class="stat"><div class="stat-number">23</div><div class="stat-label">Sources</div></div>
+    <div class="stat"><div class="stat-number">~6%</div><div class="stat-label">Context Budget</div></div>
+  </div>
+  <span class="version-badge">v3.0 · Mar 2026 · MIT</span>
+</header>
 
-    <div class="stats-bar">
-      <div class="stat">
-        <div class="stat-number">110</div>
-        <div class="stat-label">Skills</div>
-      </div>
-      <div class="stat">
-        <div class="stat-number">26</div>
-        <div class="stat-label">Agentes</div>
-      </div>
-      <div class="stat">
-        <div class="stat-number">21</div>
-        <div class="stat-label">Domínios</div>
-      </div>
-      <div class="stat">
-        <div class="stat-number">79</div>
-        <div class="stat-label">Triggers</div>
-      </div>
-      <div class="stat">
-        <div class="stat-number">121+</div>
-        <div class="stat-label">Agency Roles</div>
-      </div>
+<!-- ORCHESTRATOR FLOW -->
+<div class="orch-core">
+  <div class="orch-title">
+    <h2 class="c-blue">Orchestrator — Fluxo Principal</h2>
+    <span class="orch-badge">meta-agent</span>
+    <span class="orch-badge" style="background:rgba(52,211,153,.12);color:var(--green);border-color:rgba(52,211,153,.3)">INTAKE→TRIAGE→PLAN→ROUTE→TRACK</span>
+  </div>
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="step-num">01</div>
+      <h4 class="c-teal">brainstorming</h4>
+      <p>Refinamento socrático antes de qualquer código</p>
+      <div class="artifact">design.md</div>
     </div>
-  </header>
-
-  <!-- ORCHESTRATOR -->
-  <section class="orch-section">
-    <div class="orch-core">
-      <div class="orch-title">
-        <span style="font-size: 28px;">&#x1F9E0;</span>
-        <h2>Orchestrator</h2>
-        <span class="orch-badge">META-AGENT</span>
-        <span class="orch-badge" style="background: rgba(34, 211, 238, 0.15); color: var(--accent-cyan); border-color: rgba(34, 211, 238, 0.3);">ALWAYS-ACTIVE</span>
-      </div>
-
-      <div class="flow-steps">
-        <div class="flow-step">
-          <div class="step-num">STEP 0</div>
-          <h4>DETECT</h4>
-          <p>Análise silenciosa. Classifica request e detecta domínios entre 21 possíveis.</p>
-        </div>
-        <div class="flow-arrow">&#x2192;</div>
-        <div class="flow-step">
-          <div class="step-num">STEP 1</div>
-          <h4>INTAKE</h4>
-          <p>Entende demanda. Escaneia estado do projeto, clarifica com perguntas.</p>
-        </div>
-        <div class="flow-arrow">&#x2192;</div>
-        <div class="flow-step">
-          <div class="step-num">STEP 2</div>
-          <h4>TRIAGE</h4>
-          <p>Classifica complexidade: QUICK, STANDARD ou COMPLEX.</p>
-        </div>
-        <div class="flow-arrow">&#x2192;</div>
-        <div class="flow-step">
-          <div class="step-num">STEP 3</div>
-          <h4>PLAN</h4>
-          <p>Gera plano multi-fase com skills e agentes mapeados.</p>
-        </div>
-        <div class="flow-arrow">&#x2192;</div>
-        <div class="flow-step">
-          <div class="step-num">STEP 4</div>
-          <h4>ROUTE</h4>
-          <p>Executa fase por fase. Seleciona entre 26 agentes e 110 skills.</p>
-        </div>
-        <div class="flow-arrow">&#x2192;</div>
-        <div class="flow-step">
-          <div class="step-num">STEP 5</div>
-          <h4>TRACK</h4>
-          <p>Mantém estado via status.yaml e STATE.md cross-session.</p>
-        </div>
-      </div>
+    <div class="flow-step">
+      <div class="step-num">02</div>
+      <h4 class="c-teal">requirements-clarify</h4>
+      <p>Cobertura por dimensões: funcional, dados, UX, segurança</p>
+      <div class="artifact">clarifications.md</div>
     </div>
-  </section>
-
-  <!-- DOMAIN DETECTION -->
-  <section class="section">
-    <h2 class="section-title"><span>&#x1F50D;</span> Detecção de Domínios</h2>
-    <p class="section-subtitle">21 domínios detectados automaticamente por keywords no request do usuário</p>
-
-    <div class="domains-grid">
-      <div class="domain-chip border-blue" style="background: rgba(74, 158, 255, 0.06);"><span class="domain-icon">&#x1F3A8;</span>Frontend</div>
-      <div class="domain-chip border-cyan" style="background: rgba(34, 211, 238, 0.06);"><span class="domain-icon">&#x2699;&#xFE0F;</span>Backend</div>
-      <div class="domain-chip border-red" style="background: rgba(248, 113, 113, 0.06);"><span class="domain-icon">&#x1F512;</span>Security</div>
-      <div class="domain-chip border-green" style="background: rgba(52, 211, 153, 0.06);"><span class="domain-icon">&#x1F9EA;</span>Testing</div>
-      <div class="domain-chip border-purple" style="background: rgba(167, 139, 250, 0.06);"><span class="domain-icon">&#x1F680;</span>DevOps</div>
-      <div class="domain-chip border-amber" style="background: rgba(251, 191, 36, 0.06);"><span class="domain-icon">&#x26A1;</span>Performance</div>
-      <div class="domain-chip border-orange" style="background: rgba(251, 146, 60, 0.06);"><span class="domain-icon">&#x1F41B;</span>Debug</div>
-      <div class="domain-chip border-pink" style="background: rgba(244, 114, 182, 0.06);"><span class="domain-icon">&#x267B;&#xFE0F;</span>Refactor</div>
-      <div class="domain-chip border-cyan" style="background: rgba(34, 211, 238, 0.06);"><span class="domain-icon">&#x1F4F1;</span>Mobile</div>
-      <div class="domain-chip border-purple" style="background: rgba(167, 139, 250, 0.06);"><span class="domain-icon">&#x1F3AE;</span>Game</div>
-      <div class="domain-chip border-blue" style="background: rgba(74, 158, 255, 0.06);"><span class="domain-icon">&#x1F5C4;&#xFE0F;</span>Database</div>
-      <div class="domain-chip border-green" style="background: rgba(52, 211, 153, 0.06);"><span class="domain-icon">&#x1F50E;</span>SEO</div>
-      <div class="domain-chip border-amber" style="background: rgba(251, 191, 36, 0.06);"><span class="domain-icon">&#x1F4DD;</span>Docs</div>
-      <div class="domain-chip border-orange" style="background: rgba(251, 146, 60, 0.06);"><span class="domain-icon">&#x1F310;</span>API Design</div>
-      <div class="domain-chip border-lime" style="background: rgba(163, 230, 53, 0.06);"><span class="domain-icon">&#x1F3D7;&#xFE0F;</span>Scaffolding</div>
-      <div class="domain-chip border-red" style="background: rgba(248, 113, 113, 0.06);"><span class="domain-icon">&#x1F980;</span>Rust</div>
-      <div class="domain-chip border-amber" style="background: rgba(251, 191, 36, 0.06);"><span class="domain-icon">&#x1F40D;</span>Python</div>
-      <div class="domain-chip border-green" style="background: rgba(52, 211, 153, 0.06);"><span class="domain-icon">&#x1F4BB;</span>Infra</div>
-      <div class="domain-chip border-pink" style="background: rgba(244, 114, 182, 0.06);"><span class="domain-icon">&#x1F4A1;</span>Ideation</div>
-      <div class="domain-chip border-purple" style="background: rgba(167, 139, 250, 0.06);"><span class="domain-icon">&#x1F916;</span>GEO</div>
-      <div class="domain-chip border-cyan" style="background: rgba(34, 211, 238, 0.06);"><span class="domain-icon">&#x1F504;</span>Diff Review</div>
+    <div class="flow-step">
+      <div class="step-num">03</div>
+      <h4 class="c-teal">phase-discussion</h4>
+      <p>Decisões por fase antes do planejamento técnico</p>
+      <div class="artifact">CONTEXT.md</div>
     </div>
-  </section>
-
-  <!-- TRIAGE -->
-  <section class="section">
-    <h2 class="section-title"><span>&#x1F3AF;</span> Triage de Complexidade</h2>
-    <p class="section-subtitle">Classificação automática que determina o pipeline de execução</p>
-
-    <div class="triage-grid">
-      <div class="triage-card border-green">
-        <div class="card-accent accent-bar-green"></div>
-        <h3 class="c-green">QUICK</h3>
-        <div class="triage-sub">1-3 arquivos, zero ambiguidade</div>
-        <p style="font-size: 12px; color: var(--text-dim);">Fix, ajuste, refactor pontual, campo, cor, validação, lint, README simples</p>
-        <div class="triage-pipeline">
-          <span class="pipe-step" style="color: var(--accent-green);">spec</span>
-          <span class="pipe-arrow">&#x2192;</span>
-          <span class="pipe-step" style="color: var(--accent-green);">implement</span>
-          <span class="pipe-arrow">&#x2192;</span>
-          <span class="pipe-step" style="color: var(--accent-green);">review</span>
-        </div>
-      </div>
-
-      <div class="triage-card border-amber">
-        <div class="card-accent accent-bar-amber"></div>
-        <h3 class="c-amber">STANDARD</h3>
-        <div class="triage-sub">Feature multi-arquivo, domínio conhecido</div>
-        <p style="font-size: 12px; color: var(--text-dim);">CRUD, API, endpoint, mobile screen, game feature, Docker, profiling</p>
-        <div class="triage-pipeline">
-          <span class="pipe-step" style="color: var(--accent-amber);">spec</span>
-          <span class="pipe-arrow">&#x2192;</span>
-          <span class="pipe-step" style="color: var(--accent-amber);">arch</span>
-          <span class="pipe-arrow">&#x2192;</span>
-          <span class="pipe-step" style="color: var(--accent-amber);">stories</span>
-          <span class="pipe-arrow">&#x2192;</span>
-          <span class="pipe-step" style="color: var(--accent-amber);">loop</span>
-          <span class="pipe-arrow">&#x2192;</span>
-          <span class="pipe-step" style="color: var(--accent-amber);">review</span>
-        </div>
-      </div>
-
-      <div class="triage-card border-red">
-        <div class="card-accent accent-bar-red"></div>
-        <h3 class="c-red">COMPLEX</h3>
-        <div class="triage-sub">Sistema novo, requisitos ambíguos, multi-integração</div>
-        <p style="font-size: 12px; color: var(--text-dim);">SaaS, marketplace, jogo completo, app mobile do zero, microsserviços, multi-tenant</p>
-        <div class="triage-pipeline">
-          <span class="pipe-step" style="color: var(--accent-red);">PRD</span>
-          <span class="pipe-arrow">&#x2192;</span>
-          <span class="pipe-step" style="color: var(--accent-red);">arch</span>
-          <span class="pipe-arrow">&#x2192;</span>
-          <span class="pipe-step" style="color: var(--accent-red);">epics</span>
-          <span class="pipe-arrow">&#x2192;</span>
-          <span class="pipe-step" style="color: var(--accent-red);">gate</span>
-          <span class="pipe-arrow">&#x2192;</span>
-          <span class="pipe-step" style="color: var(--accent-red);">sprints</span>
-        </div>
-      </div>
+    <div class="flow-step">
+      <div class="step-num">04</div>
+      <h4 class="c-blue">spec-builder</h4>
+      <p>ACs testáveis · modo delta/brownfield · CHECKPOINT</p>
+      <div class="artifact">spec.md</div>
     </div>
-  </section>
-
-  <!-- AGENTS -->
-  <section class="section">
-    <h2 class="section-title"><span>&#x1F916;</span> 26 Agentes Especializados</h2>
-    <p class="section-subtitle">Cada agente tem Reality Check + Quality Control Loop embutidos</p>
-
-    <div class="cards-grid">
-      <!-- Engineering -->
-      <div class="card">
-        <div class="card-accent accent-bar-blue"></div>
-        <div class="card-header">
-          <div class="card-icon bg-blue"><span class="c-blue">&#x1F3A8;</span></div>
-          <h3>frontend-engineer</h3>
-          <span class="card-tag bg-blue c-blue">ENG</span>
-        </div>
-        <p>React, Next.js, shadcn/ui, Server Components. Anti-cliché design rules embutidas.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-cyan"></div>
-        <div class="card-header">
-          <div class="card-icon bg-cyan"><span class="c-cyan">&#x2699;&#xFE0F;</span></div>
-          <h3>backend-engineer</h3>
-          <span class="card-tag bg-cyan c-cyan">ENG</span>
-        </div>
-        <p>Prisma, Supabase, Server Actions, APIs. Padrões de segurança integrados.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-blue"></div>
-        <div class="card-header">
-          <div class="card-icon bg-blue"><span class="c-blue">&#x1F5C4;&#xFE0F;</span></div>
-          <h3>database-architect</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Schema design, indexing, migrations, ORM selection. PostgreSQL & multi-DB.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-cyan"></div>
-        <div class="card-header">
-          <div class="card-icon bg-cyan"><span class="c-cyan">&#x1F4F1;</span></div>
-          <h3>mobile-developer</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>React Native, Flutter, mobile-first. Touch psychology, platform-specific patterns.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-purple"></div>
-        <div class="card-header">
-          <div class="card-icon bg-purple"><span class="c-purple">&#x1F3AE;</span></div>
-          <h3>game-developer</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Game mechanics, engines, 2D/3D, multiplayer, VR/AR. Multi-plataforma.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-purple"></div>
-        <div class="card-header">
-          <div class="card-icon bg-purple"><span class="c-purple">&#x1F680;</span></div>
-          <h3>devops-engineer</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>CI/CD, Docker, infra, pipelines, monitoring. Zero-downtime deploys.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-amber"></div>
-        <div class="card-header">
-          <div class="card-icon bg-amber"><span class="c-amber">&#x26A1;</span></div>
-          <h3>performance-optimizer</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Core Web Vitals, profiling, bundle analysis. Lighthouse scores.</p>
-      </div>
-
-      <!-- Quality & Security -->
-      <div class="card">
-        <div class="card-accent accent-bar-green"></div>
-        <div class="card-header">
-          <div class="card-icon bg-green"><span class="c-green">&#x1F50D;</span></div>
-          <h3>code-reviewer</h3>
-          <span class="card-tag bg-green c-green">ENG</span>
-        </div>
-        <p>Review estruturado com YAML output. Reality Check anti-autoengano.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-pink"></div>
-        <div class="card-header">
-          <div class="card-icon bg-pink"><span class="c-pink">&#x267B;&#xFE0F;</span></div>
-          <h3>code-refactorer</h3>
-          <span class="card-tag bg-pink c-pink">QUA</span>
-        </div>
-        <p>Clean code, refactoring patterns. Simplificação sem perda de funcionalidade.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-red"></div>
-        <div class="card-header">
-          <div class="card-icon bg-red"><span class="c-red">&#x1F6E1;&#xFE0F;</span></div>
-          <h3>security-auditor</h3>
-          <span class="card-tag bg-red c-red">SEC</span>
-        </div>
-        <p>Trail of Bits methodology. Auditoria defensiva completa.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-red"></div>
-        <div class="card-header">
-          <div class="card-icon bg-red"><span class="c-red">&#x1F525;</span></div>
-          <h3>penetration-tester</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Segurança ofensiva, red team. MITRE ATT&CK, OWASP Top 10.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-green"></div>
-        <div class="card-header">
-          <div class="card-icon bg-green"><span class="c-green">&#x1F9EA;</span></div>
-          <h3>test-engineer</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Estratégias de teste, TDD, test pyramid. Design de test suites.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-teal"></div>
-        <div class="card-header">
-          <div class="card-icon bg-teal"><span class="c-teal">&#x1F3AD;</span></div>
-          <h3>qa-automation-engineer</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>E2E com Playwright, CI pipelines, visual regression. Automação completa.</p>
-      </div>
-
-      <!-- Planning & Product -->
-      <div class="card">
-        <div class="card-accent accent-bar-amber"></div>
-        <div class="card-header">
-          <div class="card-icon bg-amber"><span class="c-amber">&#x1F4CB;</span></div>
-          <h3>planner</h3>
-          <span class="card-tag bg-amber c-amber">PLAN</span>
-        </div>
-        <p>Decomposição técnica, planejamento de features. Fases atômicas.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-orange"></div>
-        <div class="card-header">
-          <div class="card-icon bg-orange"><span class="c-orange">&#x1F3D7;&#xFE0F;</span></div>
-          <h3>system-architect</h3>
-          <span class="card-tag bg-orange c-orange">ARCH</span>
-        </div>
-        <p>Design de sistema, ADRs, decisões arquiteturais estruturadas.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-amber"></div>
-        <div class="card-header">
-          <div class="card-icon bg-amber"><span class="c-amber">&#x1F4C5;</span></div>
-          <h3>project-planner</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Discovery, task planning, roadmap. Gestão de projeto estruturada.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-orange"></div>
-        <div class="card-header">
-          <div class="card-icon bg-orange"><span class="c-orange">&#x1F4E6;</span></div>
-          <h3>product-manager</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Requisitos, user stories, priorização. User-centric decision making.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-orange"></div>
-        <div class="card-header">
-          <div class="card-icon bg-orange"><span class="c-orange">&#x1F451;</span></div>
-          <h3>product-owner</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Estratégia, backlog, MVP. Visão de produto e priorização de valor.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-pink"></div>
-        <div class="card-header">
-          <div class="card-icon bg-pink"><span class="c-pink">&#x1F4CA;</span></div>
-          <h3>product-strategy-advisor</h3>
-          <span class="card-tag bg-pink c-pink">STRAT</span>
-        </div>
-        <p>Estratégia de produto, roadmap, posicionamento de mercado.</p>
-      </div>
-
-      <!-- Investigation -->
-      <div class="card">
-        <div class="card-accent accent-bar-orange"></div>
-        <div class="card-header">
-          <div class="card-icon bg-orange"><span class="c-orange">&#x1F41B;</span></div>
-          <h3>debugger</h3>
-          <span class="card-tag bg-orange c-orange">INV</span>
-        </div>
-        <p>Debugging autônomo em 10 passos. Root cause analysis.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-cyan"></div>
-        <div class="card-header">
-          <div class="card-icon bg-cyan"><span class="c-cyan">&#x1F50E;</span></div>
-          <h3>explorer-agent</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Análise de codebase desconhecido. Onboarding, mapeamento de dependências.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-amber"></div>
-        <div class="card-header">
-          <div class="card-icon bg-amber"><span class="c-amber">&#x1F3FA;</span></div>
-          <h3>code-archaeologist</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Legacy code, arqueologia de código, entender e modernizar sistemas antigos.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-green"></div>
-        <div class="card-header">
-          <div class="card-icon bg-green"><span class="c-green">&#x2705;</span></div>
-          <h3>validator</h3>
-          <span class="card-tag bg-green c-green">QUA</span>
-        </div>
-        <p>Spec critique, acceptance verification. Garante que o output atende requisitos.</p>
-      </div>
-
-      <!-- Docs & SEO -->
-      <div class="card">
-        <div class="card-accent accent-bar-teal"></div>
-        <div class="card-header">
-          <div class="card-icon bg-teal"><span class="c-teal">&#x1F4D6;</span></div>
-          <h3>documentation-writer</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>Manuais, docs técnicos, READMEs. Escrita clara e completa.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-lime"></div>
-        <div class="card-header">
-          <div class="card-icon bg-lime"><span class="c-lime">&#x1F310;</span></div>
-          <h3>seo-specialist</h3>
-          <span class="card-tag bg-green c-green">NEW</span>
-        </div>
-        <p>SEO técnico, E-E-A-T, structured data, ranking optimization.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-accent accent-bar-blue"></div>
-        <div class="card-header">
-          <div class="card-icon bg-blue"><span class="c-blue">&#x1F4DD;</span></div>
-          <h3>git-commit-helper</h3>
-          <span class="card-tag bg-blue c-blue">UTIL</span>
-        </div>
-        <p>Conventional commits, release notes, changelog automation.</p>
-      </div>
+    <div class="flow-step">
+      <div class="step-num">05</div>
+      <h4 class="c-blue">arch-builder</h4>
+      <p>ADRs e decisões arquiteturais</p>
+      <div class="artifact">ADR.md</div>
     </div>
-  </section>
-
-  <!-- SKILLS BY CATEGORY -->
-  <section class="section">
-    <h2 class="section-title"><span>&#x1F4DA;</span> 110 Skills por Categoria</h2>
-    <p class="section-subtitle">On-demand — carregam apenas quando necessários, preservando janela de contexto</p>
-
-    <div class="skills-mega">
-
-      <!-- Frontend & UI -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F3A8;</span>
-          <h3 class="c-blue">Frontend & UI</h3>
-          <span class="skill-cat-count">10 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-blue"></span><span class="skill-name">nextjs-react-expert</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-blue"></span><span class="skill-name">react-performance</span></div>
-        <div class="skill-item"><span class="skill-dot dot-blue"></span><span class="skill-name">frontend-design</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-blue"></span><span class="skill-name">frontend-ui-system</span></div>
-        <div class="skill-item"><span class="skill-dot dot-blue"></span><span class="skill-name">tailwind-patterns</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-blue"></span><span class="skill-name">ui-design-intelligence</span></div>
-        <div class="skill-item"><span class="skill-dot dot-blue"></span><span class="skill-name">web-design-guidelines</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-blue"></span><span class="skill-name">openui-genui-layout</span></div>
-        <div class="skill-item"><span class="skill-dot dot-blue"></span><span class="skill-name">core-web-vitals</span></div>
-        <div class="skill-item"><span class="skill-dot dot-blue"></span><span class="skill-name">i18n-localization</span></div>
-      </div>
-
-      <!-- Backend & Database -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x2699;&#xFE0F;</span>
-          <h3 class="c-cyan">Backend & Database</h3>
-          <span class="skill-cat-count">9 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-cyan"></span><span class="skill-name">api-patterns</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-cyan"></span><span class="skill-name">database-design</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-cyan"></span><span class="skill-name">nodejs-best-practices</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-cyan"></span><span class="skill-name">prisma-expert</span></div>
-        <div class="skill-item"><span class="skill-dot dot-cyan"></span><span class="skill-name">postgres-optimization</span></div>
-        <div class="skill-item"><span class="skill-dot dot-cyan"></span><span class="skill-name">nextjs-supabase-auth</span></div>
-        <div class="skill-item"><span class="skill-dot dot-cyan"></span><span class="skill-name">stripe-integration</span></div>
-        <div class="skill-item"><span class="skill-dot dot-cyan"></span><span class="skill-name">server-management</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-cyan"></span><span class="skill-name">bun-development</span></div>
-      </div>
-
-      <!-- Security -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F512;</span>
-          <h3 class="c-red">Seguranca</h3>
-          <span class="skill-cat-count">6 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-red"></span><span class="skill-name">security-best-practices</span></div>
-        <div class="skill-item"><span class="skill-dot dot-red"></span><span class="skill-name">red-team-tactics</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-red"></span><span class="skill-name">vulnerability-scanner</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-red"></span><span class="skill-name">security-threat-model</span></div>
-        <div class="skill-item"><span class="skill-dot dot-red"></span><span class="skill-name">insecure-defaults</span></div>
-        <div class="skill-item"><span class="skill-dot dot-red"></span><span class="skill-name">gdpr-data-handling</span></div>
-      </div>
-
-      <!-- Testing & Quality -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F9EA;</span>
-          <h3 class="c-green">Testing & Quality</h3>
-          <span class="skill-cat-count">12 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">tdd-workflow</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">testing-patterns</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">e2e-testing-patterns</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">webapp-testing</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">lint-and-validate</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">code-review-checklist</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">quality/code-review</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">quality/adversarial-review</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">quality/edge-case-hunter</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">quality/readiness-gate</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">quality/elicitation-engine</span></div>
-        <div class="skill-item"><span class="skill-dot dot-green"></span><span class="skill-name">quality/ui-audit</span></div>
-      </div>
-
-      <!-- Mobile & Game -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F4F1;</span>
-          <h3 class="c-purple">Mobile & Game</h3>
-          <span class="skill-cat-count">12 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">mobile-design</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development/2d-games</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development/3d-games</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development/multiplayer</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development/web-games</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development/mobile-games</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development/game-design</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development/game-art</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development/game-audio</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development/pc-games</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-purple"></span><span class="skill-name">game-development/vr-ar</span> <span class="new-badge">NEW</span></div>
-      </div>
-
-      <!-- Planning & Ideation -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F4CB;</span>
-          <h3 class="c-amber">Planning & Ideation</h3>
-          <span class="skill-cat-count">10 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-amber"></span><span class="skill-name">brainstorming</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-amber"></span><span class="skill-name">plan-writing</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-amber"></span><span class="skill-name">planning/spec-builder</span></div>
-        <div class="skill-item"><span class="skill-dot dot-amber"></span><span class="skill-name">planning/prd-builder</span></div>
-        <div class="skill-item"><span class="skill-dot dot-amber"></span><span class="skill-name">planning/arch-builder</span></div>
-        <div class="skill-item"><span class="skill-dot dot-amber"></span><span class="skill-name">planning/epic-decomposer</span></div>
-        <div class="skill-item"><span class="skill-dot dot-amber"></span><span class="skill-name">planning/story-executor</span></div>
-        <div class="skill-item"><span class="skill-dot dot-amber"></span><span class="skill-name">planning/phase-discussion</span></div>
-        <div class="skill-item"><span class="skill-dot dot-amber"></span><span class="skill-name">architecture</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-amber"></span><span class="skill-name">behavioral-modes</span> <span class="new-badge">NEW</span></div>
-      </div>
-
-      <!-- Languages -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F4BB;</span>
-          <h3 class="c-orange">Linguagens & Runtime</h3>
-          <span class="skill-cat-count">5 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-orange"></span><span class="skill-name">rust-pro</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-orange"></span><span class="skill-name">python-patterns</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-orange"></span><span class="skill-name">bash-linux</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-orange"></span><span class="skill-name">powershell-windows</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-orange"></span><span class="skill-name">bun-development</span></div>
-      </div>
-
-      <!-- Scaffolding -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F3D7;&#xFE0F;</span>
-          <h3 class="c-lime">Scaffolding</h3>
-          <span class="skill-cat-count">14 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">app-builder</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; nextjs-fullstack</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; nextjs-saas</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; express-api</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; python-fastapi</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; react-native-app</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; flutter-app</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; electron-desktop</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; chrome-extension</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; cli-tool</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; monorepo-turborepo</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; astro-static</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; nuxt-app</span></div>
-        <div class="skill-item"><span class="skill-dot dot-lime"></span><span class="skill-name">&#x2514; nextjs-static</span></div>
-      </div>
-
-      <!-- DevOps & Deploy -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F680;</span>
-          <h3 class="c-teal">DevOps & Deploy</h3>
-          <span class="skill-cat-count">4 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-teal"></span><span class="skill-name">deployment-procedures</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-teal"></span><span class="skill-name">server-management</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-teal"></span><span class="skill-name">vercel-deploy</span></div>
-        <div class="skill-item"><span class="skill-dot dot-teal"></span><span class="skill-name">claude-ci-actions</span></div>
-      </div>
-
-      <!-- Docs & SEO -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F4D6;</span>
-          <h3 class="c-pink">Docs & SEO</h3>
-          <span class="skill-cat-count">8 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-pink"></span><span class="skill-name">documentation-templates</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-pink"></span><span class="skill-name">docs-writer</span></div>
-        <div class="skill-item"><span class="skill-dot dot-pink"></span><span class="skill-name">technical-design-doc-creator</span></div>
-        <div class="skill-item"><span class="skill-dot dot-pink"></span><span class="skill-name">seo-fundamentals</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-pink"></span><span class="skill-name">seo</span></div>
-        <div class="skill-item"><span class="skill-dot dot-pink"></span><span class="skill-name">genai-optimization</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-pink"></span><span class="skill-name">doc-sanitization</span></div>
-        <div class="skill-item"><span class="skill-dot dot-pink"></span><span class="skill-name">accessibility</span></div>
-      </div>
-
-      <!-- Meta & Context -->
-      <div class="skill-category">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F527;</span>
-          <h3 class="c-sky">Meta & Context</h3>
-          <span class="skill-cat-count">14 skills</span>
-        </div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">context/context-distillator</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">context/project-context-gen</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">context/doc-shard</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">context/editorial-review</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">smart-model-dispatch</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">dispatching-parallel-agents</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">clean-code</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">coding-guidelines</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">verification-before-completion</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">performance-profiling</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">systematic-debugging</span> <span class="new-badge">NEW</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">differential-review</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">predictive-failure</span></div>
-        <div class="skill-item"><span class="skill-dot dot-sky"></span><span class="skill-name">skill-creator</span></div>
-      </div>
-
-      <!-- The Agency -->
-      <div class="skill-category" style="grid-column: span 2;">
-        <div class="skill-cat-header">
-          <span style="font-size: 18px;">&#x1F3E2;</span>
-          <h3 class="c-rose">The Agency — 121+ Specialist Roles</h3>
-          <span class="skill-cat-count">10 divisions</span>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 8px;">
-          <div>
-            <div style="font-size: 11px; font-weight: 700; color: var(--accent-blue); margin-bottom: 6px;">Engineering (27)</div>
-            <div style="font-size: 10px; color: var(--text-dim); line-height: 1.6;">Backend Architect, Frontend Dev, Data Engineer, DB Optimizer, DevOps, Security Eng, SRE, Mobile Builder, AI Engineer, Solidity Dev...</div>
-          </div>
-          <div>
-            <div style="font-size: 11px; font-weight: 700; color: var(--accent-pink); margin-bottom: 6px;">Design (8)</div>
-            <div style="font-size: 10px; color: var(--text-dim); line-height: 1.6;">UX Architect, UI Designer, Brand Guardian, Image Prompt Eng, UX Researcher, Visual Storyteller...</div>
-          </div>
-          <div>
-            <div style="font-size: 11px; font-weight: 700; color: var(--accent-orange); margin-bottom: 6px;">Marketing (26)</div>
-            <div style="font-size: 10px; color: var(--text-dim); line-height: 1.6;">Growth Hacker, SEO Specialist, Content Creator, Social Media, TikTok, Instagram, LinkedIn...</div>
-          </div>
-          <div>
-            <div style="font-size: 11px; font-weight: 700; color: var(--accent-amber); margin-bottom: 6px;">Product (5) & PM (6)</div>
-            <div style="font-size: 10px; color: var(--text-dim); line-height: 1.6;">Product Manager, Sprint Prioritizer, Feedback Synthesizer, Behavioral Nudge, Trend Research...</div>
-          </div>
-          <div>
-            <div style="font-size: 11px; font-weight: 700; color: var(--accent-green); margin-bottom: 6px;">Testing (8) & QA</div>
-            <div style="font-size: 10px; color: var(--text-dim); line-height: 1.6;">API Tester, Accessibility Auditor, Performance Benchmarker, Test Analyzer...</div>
-          </div>
-          <div>
-            <div style="font-size: 11px; font-weight: 700; color: var(--accent-purple); margin-bottom: 6px;">Specialized (24)</div>
-            <div style="font-size: 10px; color: var(--text-dim); line-height: 1.6;">Compliance Auditor, Blockchain Security, MCP Builder, Workflow Architect...</div>
-          </div>
-        </div>
-      </div>
-
+    <div class="flow-step">
+      <div class="step-num">06</div>
+      <h4 class="c-purple">epic-decomposer</h4>
+      <p>Épicos e stories em XML canônico</p>
+      <div class="artifact">stories.xml</div>
     </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <p>OSForge v2.0 — Built by <strong>Paulo Souza</strong> — Powered by skills from <a href="https://github.com/vudovn/antigravity-kit">antigravity-kit</a> + original OSForge</p>
-    <p style="margin-top: 8px;">MIT License &middot; <a href="https://github.com/plocemourasouza/osforge">github.com/plocemourasouza/osforge</a></p>
-  </footer>
-
+    <div class="flow-step">
+      <div class="step-num">07</div>
+      <h4 class="c-purple">story-executor</h4>
+      <p>Two-stage review por task: spec compliance → code quality</p>
+      <div class="artifact">code</div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">08</div>
+      <h4 class="c-rose">code-review</h4>
+      <p>adversarial-review + edge-case-hunter</p>
+      <div class="artifact">review</div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">09</div>
+      <h4 class="c-rose">ui-audit</h4>
+      <p>6 pilares visuais (se UI)</p>
+      <div class="artifact">audit.md</div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">10</div>
+      <h4 class="c-green">finishing-a-branch</h4>
+      <p>Pre-merge check · M/P/K/D · archive</p>
+      <div class="artifact">ship</div>
+    </div>
+  </div>
+  <p style="font-size:11px;color:var(--text-muted);margin-top:16px;text-align:center">
+    Estado persistido via <span style="color:var(--green);font-family:'JetBrains Mono',monospace">osforge-db</span> (SQLite local) · fallback para <span style="color:var(--amber);font-family:'JetBrains Mono',monospace">.osforge/STATUS.md</span>
+  </p>
 </div>
 
+
+<!-- DEPLOY FLOW -->
+<div class="section">
+  <div class="section-title">⚙️ <span class="c-blue">Deploy Pipeline</span></div>
+  <div class="section-subtitle">deploy.sh sincroniza tudo em um único comando · não-destrutivo · detecta drift de MCPs</div>
+  <div style="display:grid;grid-template-columns:1fr auto 1fr 1fr;gap:12px;align-items:center">
+    <div class="deploy-box">
+      <div style="font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:12px;font-family:'JetBrains Mono',monospace">~/Development/osforge/</div>
+      <div class="deploy-item"><span class="di-file">agents/</span><span>27 agent .md files</span></div>
+      <div class="deploy-item"><span class="di-file">skills/</span><span>86 SKILL.md files</span></div>
+      <div class="deploy-item"><span class="di-file">rules/</span><span>12 .mdc always-on</span></div>
+      <div class="deploy-item"><span class="di-file">commands/</span><span>9 /spec:* slash cmds</span></div>
+      <div class="deploy-item"><span class="di-file">hooks/</span><span>Python + shell scripts</span></div>
+      <div class="deploy-item"><span class="di-file">scripts/osforge-db.py</span><span>SQLite CLI</span></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:22px;opacity:.5">→</div>
+    <div class="deploy-box" style="border-color:rgba(74,158,255,.3)">
+      <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:12px;font-family:'JetBrains Mono',monospace">~/.claude/</div>
+      <div class="deploy-item"><span class="di-file">CLAUDE.md</span><span>workflow + agents map</span></div>
+      <div class="deploy-item"><span class="di-file">SKILLS.md</span><span>86 triggers · ~12K tokens</span></div>
+      <div class="deploy-item"><span class="di-file">agents/</span><span>on-demand</span></div>
+      <div class="deploy-item"><span class="di-file">skills/</span><span>on-demand</span></div>
+      <div class="deploy-item"><span class="di-file">hooks/</span><span>zero token cost</span></div>
+      <div class="deploy-item"><span class="di-file">~/.local/bin/osforge-db</span><span>SQLite CLI</span></div>
+    </div>
+    <div class="deploy-box" style="border-color:rgba(167,139,250,.3)">
+      <div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:12px;font-family:'JetBrains Mono',monospace">~/.cursor/</div>
+      <div class="deploy-item"><span class="di-file">SKILLS.md</span><span>trigger reference</span></div>
+      <div class="deploy-item"><span class="di-file">agents/</span><span>on-demand</span></div>
+      <div class="deploy-item"><span class="di-file">skills/</span><span>on-demand</span></div>
+      <div class="deploy-item"><span class="di-file">rules/</span><span><strong style="color:var(--purple)">always-on</strong> · toda sessão</span></div>
+      <div class="deploy-item"><span class="di-file">hooks/</span><span>shell scripts</span></div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+    <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px">🗄️ osforge-db · SQLite local</div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.6">
+        <code style="color:var(--green)">~/.osforge/osforge.db</code> — banco global cross-project<br>
+        <code style="color:var(--green)">.osforge/osforge.db</code> — banco local por projeto<br>
+        Resume point em ~50 tokens · FTS5 cross-project search
+      </div>
+    </div>
+    <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:8px">📊 Token Budget</div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.6">
+        Base sempre carregado: <strong style="color:var(--amber)">~12K tokens (~6% de 200K)</strong><br>
+        SKILL.md on-demand: 500–3K tokens cada<br>
+        Agent on-demand: 1.5–5.5K tokens cada<br>
+        Hooks Python: <strong style="color:var(--green)">0 tokens</strong> (processo externo)
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- AGENTS -->
+<div class="section">
+  <div class="section-title">🤖 <span class="c-cyan">27 Agentes Especializados</span></div>
+  <div class="section-subtitle">Todos com Reality Check + Quality Control Loop · acionados on-demand · orchestrator sempre-ativo</div>
+  <div class="cards-grid">
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--blue),var(--cyan))"></div>
+      <div class="card-header"><div class="card-icon bg-blue">🎯</div><h3 class="c-blue">orchestrator</h3><span class="card-tag bg-blue c-blue">meta-agent</span></div>
+      <p>Intake, triage QUICK/STANDARD/COMPLEX, planejamento multi-fase, routing, tracking via osforge-db, course correction. STATE.md cross-session.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--purple),var(--pink))"></div>
+      <div class="card-header"><div class="card-icon bg-purple">📐</div><h3 class="c-purple">planner</h3><span class="card-tag bg-purple c-purple">arch</span></div>
+      <p>Decomposição de features em tasks atômicas TDD-ordered com detecção de complexidade.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--teal),var(--green))"></div>
+      <div class="card-header"><div class="card-icon bg-teal">⚙️</div><h3 class="c-teal">backend-engineer</h3></div>
+      <p>Prisma schema, Server Actions, APIs, Supabase, data integrity patterns.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--pink),var(--rose))"></div>
+      <div class="card-header"><div class="card-icon bg-pink">🎨</div><h3 class="c-pink">frontend-engineer</h3></div>
+      <p>shadcn/ui, Server/Client Components, visual verification, anti-cliché design rules.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--red),var(--orange))"></div>
+      <div class="card-header"><div class="card-icon" style="background:rgba(248,113,113,.1)">🔍</div><h3 class="c-red">debugger</h3></div>
+      <p>10-step root cause analysis com evidência hierárquica. Zero context-switching.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--amber),var(--orange))"></div>
+      <div class="card-header"><div class="card-icon bg-amber">🛡️</div><h3 class="c-amber">security-auditor</h3></div>
+      <p>Trail of Bits methodology, fail-secure defaults, RLS verification, threat modeling.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div>
+      <div class="card-header"><div class="card-icon bg-green">✅</div><h3 class="c-green">code-reviewer</h3></div>
+      <p>Review estruturado 7 dimensões com YAML output + adversarial + edge-case-hunter.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--sky),var(--blue))"></div>
+      <div class="card-header"><div class="card-icon bg-cyan">🏗️</div><h3 class="c-sky">system-architect</h3></div>
+      <p>System design escalável, clean architecture, ADRs, legacy refactoring.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--lime),var(--green))"></div>
+      <div class="card-header"><div class="card-icon" style="background:rgba(163,230,53,.1)">🔬</div><h3 class="c-lime">validator</h3></div>
+      <p>Adversarial spec conformance. Read-only, nunca modifica código. QA gate.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--orange),var(--amber))"></div>
+      <div class="card-header"><div class="card-icon bg-orange">📱</div><h3 class="c-orange">mobile-developer</h3></div>
+      <p>React Native + Flutter, mobile-first design, iOS/Android patterns.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--purple),var(--blue))"></div>
+      <div class="card-header"><div class="card-icon bg-purple">🎮</div><h3 class="c-purple">game-developer</h3></div>
+      <p>Game mechanics, engines, multiplayer, 2D/3D/VR/AR platforms.</p>
+    </div>
+    <div class="card"><div class="card-accent" style="background:linear-gradient(90deg,var(--red),var(--pink))"></div>
+      <div class="card-header"><div class="card-icon" style="background:rgba(248,113,113,.1)">⚔️</div><h3 class="c-red">penetration-tester</h3></div>
+      <p>Segurança ofensiva, red team, MITRE ATT&CK framework.</p>
+    </div>
+  </div>
+  <p style="font-size:11px;color:var(--text-muted);margin-top:10px">+ 15 mais: database-architect, devops-engineer, performance-optimizer, code-refactorer, explorer-agent, code-archaeologist, product-manager, product-owner, product-strategy-advisor, project-planner, test-engineer, qa-automation-engineer, documentation-writer, seo-specialist, git-commit-helper</p>
+</div>
+
+
+<!-- SKILLS -->
+<div class="section">
+  <div class="section-title">⚡ <span class="c-amber">86 Skills On-Demand</span></div>
+  <div class="section-subtitle">Carregadas apenas quando o trigger é detectado no SKILLS.md · frontmatter com model/allowed-tools/context/hooks · shell injection dinâmica</div>
+  <div class="skills-mega">
+
+    <div class="skill-category">
+      <div class="skill-cat-header"><h3 class="c-teal">Planejamento</h3><span class="skill-cat-count">8 skills</span></div>
+      <div class="skill-item"><span class="skill-name">brainstorming</span>Refinamento socrático antes do código</div>
+      <div class="skill-item"><span class="skill-name">requirements-clarify</span>Cobertura por dimensões pré-plano</div>
+      <div class="skill-item"><span class="skill-name">phase-discussion</span>Decisões por fase → CONTEXT.md</div>
+      <div class="skill-item"><span class="skill-name">spec-builder</span>ACs testáveis + modo delta/brownfield</div>
+      <div class="skill-item"><span class="skill-name">prd-builder</span>PRD colaborativo: problema, métricas, MVP</div>
+      <div class="skill-item"><span class="skill-name">arch-builder</span>ADRs + decisões arquiteturais</div>
+      <div class="skill-item"><span class="skill-name">epic-decomposer</span>Épicos e stories em XML canônico</div>
+      <div class="skill-item"><span class="skill-name">story-executor</span>Implementação com two-stage review</div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header"><h3 class="c-rose">Qualidade</h3><span class="skill-cat-count">6 skills</span></div>
+      <div class="skill-item"><span class="skill-name">adversarial-review</span>Revisão cínica · mín. 10 findings · Opus</div>
+      <div class="skill-item"><span class="skill-name">code-review</span>Checklist OSForge stack · context: fork</div>
+      <div class="skill-item"><span class="skill-name">edge-case-hunter</span>Enumeração sistemática de edge cases</div>
+      <div class="skill-item"><span class="skill-name">elicitation-engine</span>Refinamento iterativo de outputs</div>
+      <div class="skill-item"><span class="skill-name">readiness-gate</span>Quality gate GO/NO-GO pré-implementação</div>
+      <div class="skill-item"><span class="skill-name">ui-audit</span>6 pilares visuais pós-implementação</div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header"><h3 class="c-cyan">Contexto</h3><span class="skill-cat-count">5 skills</span></div>
+      <div class="skill-item"><span class="skill-name">project-context-generator</span>Gera project-context.md + constitution.md</div>
+      <div class="skill-item"><span class="skill-name">db-state-sync</span>Interface com osforge-db SQLite</div>
+      <div class="skill-item"><span class="skill-name">context-distillator</span>Compressão sem perdas para LLMs</div>
+      <div class="skill-item"><span class="skill-name">doc-shard</span>Split de docs grandes em shards</div>
+      <div class="skill-item"><span class="skill-name">editorial-review</span>Revisão editorial: prose ou structure</div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header"><h3 class="c-blue">Stack Core</h3><span class="skill-cat-count">7 skills</span></div>
+      <div class="skill-item"><span class="skill-name">prisma-expert</span>Schema, migrations, query optimization</div>
+      <div class="skill-item"><span class="skill-name">nextjs-supabase-auth</span>SSR auth, RBAC, RLS, OAuth</div>
+      <div class="skill-item"><span class="skill-name">stripe-integration</span>Webhooks, checkout, billing</div>
+      <div class="skill-item"><span class="skill-name">postgres-optimization</span>Indexes, explain analyze, queries</div>
+      <div class="skill-item"><span class="skill-name">nextjs-react-expert</span>57 regras de performance App Router</div>
+      <div class="skill-item"><span class="skill-name">bun-development</span>Bun runtime, scripts, workspaces</div>
+      <div class="skill-item"><span class="skill-name">frontend-ui-system</span>shadcn/ui, Tailwind, components</div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header"><h3 class="c-pink">Frontend / UI</h3><span class="skill-cat-count">7 skills</span></div>
+      <div class="skill-item"><span class="skill-name">openui-genui-layout</span>Plano OpenUI Lang antes do código</div>
+      <div class="skill-item"><span class="skill-name">ui-design-intelligence</span>67 estilos, 161 paletas, 57 font pairs</div>
+      <div class="skill-item"><span class="skill-name">frontend-design</span>Cores, tipografia, animação, UX</div>
+      <div class="skill-item"><span class="skill-name">tailwind-patterns</span>Tailwind v4 patterns</div>
+      <div class="skill-item"><span class="skill-name">react-performance</span>Memoization, Suspense, lazy loading</div>
+      <div class="skill-item"><span class="skill-name">accessibility</span>WCAG 2.1, aria, screen readers</div>
+      <div class="skill-item"><span class="skill-name">core-web-vitals</span>LCP, CLS, INP, Vercel metrics</div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header"><h3 class="c-red">Segurança</h3><span class="skill-cat-count">5 skills</span></div>
+      <div class="skill-item"><span class="skill-name">security-best-practices</span>OWASP top 10, input validation</div>
+      <div class="skill-item"><span class="skill-name">security-threat-model</span>Threat modeling sistemático</div>
+      <div class="skill-item"><span class="skill-name">red-team-tactics</span>MITRE ATT&CK, offensive security</div>
+      <div class="skill-item"><span class="skill-name">insecure-defaults</span>Detecta fail-open patterns</div>
+      <div class="skill-item"><span class="skill-name">gdpr-data-handling</span>LGPD/GDPR compliance</div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header"><h3 class="c-green">Git / Branch</h3><span class="skill-cat-count">4 skills</span></div>
+      <div class="skill-item"><span class="skill-name">finishing-a-development-branch</span>Pre-merge check + M/P/K/D menu</div>
+      <div class="skill-item"><span class="skill-name">receiving-code-review</span>Resposta estruturada a feedback</div>
+      <div class="skill-item"><span class="skill-name">using-git-worktrees</span>Branches paralelas por agent</div>
+      <div class="skill-item"><span class="skill-name">git-workflow</span>Branching, commits, PRs</div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header"><h3 class="c-purple">Meta / Orq.</h3><span class="skill-cat-count">8 skills</span></div>
+      <div class="skill-item"><span class="skill-name">smart-model-dispatch</span>Opus/Sonnet/Haiku routing · ~65% saving</div>
+      <div class="skill-item"><span class="skill-name">dispatching-parallel-agents</span>Wave execution por dependência</div>
+      <div class="skill-item"><span class="skill-name">llmfit-advisor</span>Local LLMs por hardware fit</div>
+      <div class="skill-item"><span class="skill-name">autorefine-skill</span>Loop modify→evaluate→keep/discard</div>
+      <div class="skill-item"><span class="skill-name">skill-creator</span>Criação e avaliação de skills</div>
+      <div class="skill-item"><span class="skill-name">mcp-builder</span>Build MCP servers</div>
+      <div class="skill-item"><span class="skill-name">claude-api-typescript</span>SDK, tool use, streaming</div>
+      <div class="skill-item"><span class="skill-name">context7-docs-first</span>Docs atualizadas via Context7 MCP</div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header"><h3 class="c-orange">Linguagens</h3><span class="skill-cat-count">5 skills</span></div>
+      <div class="skill-item"><span class="skill-name">rust-pro</span>Ownership, async, cargo, lifetimes</div>
+      <div class="skill-item"><span class="skill-name">python-patterns</span>FastAPI, Django, Flask, async</div>
+      <div class="skill-item"><span class="skill-name">bash-linux</span>Shell scripting, macOS/Linux</div>
+      <div class="skill-item"><span class="skill-name">powershell-windows</span>Windows scripting, admin</div>
+      <div class="skill-item"><span class="skill-name">nodejs-best-practices</span>Express, async, architecture</div>
+    </div>
+
+    <div class="skill-category" style="grid-column:span 2">
+      <div class="skill-cat-header"><h3 class="c-amber">+ Mais skills</h3><span class="skill-cat-count">31 skills</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px">
+        <span class="skill-pill">tdd-workflow</span><span class="skill-pill">verification-before-completion</span>
+        <span class="skill-pill">coding-guidelines</span><span class="skill-pill">i18n-localization</span>
+        <span class="skill-pill">e2e-testing-patterns</span><span class="skill-pill">testing-patterns</span>
+        <span class="skill-pill">webapp-testing</span><span class="skill-pill">docs-writer</span>
+        <span class="skill-pill">technical-design-doc-creator</span><span class="skill-pill">doc-sanitization</span>
+        <span class="skill-pill">seo-fundamentals</span><span class="skill-pill">seo</span>
+        <span class="skill-pill">genai-optimization</span><span class="skill-pill">vercel-deploy</span>
+        <span class="skill-pill">claude-ci-actions</span><span class="skill-pill">deployment-procedures</span>
+        <span class="skill-pill">differential-review</span><span class="skill-pill">predictive-failure</span>
+        <span class="skill-pill">performance-profiling</span><span class="skill-pill">mobile-design</span>
+        <span class="skill-pill">game-development</span><span class="skill-pill">app-builder</span>
+        <span class="skill-pill">api-patterns</span><span class="skill-pill">database-design</span>
+        <span class="skill-pill">architecture</span><span class="skill-pill">behavioral-modes</span>
+        <span class="skill-pill">smart-hooks</span><span class="skill-pill">plan-writing</span>
+        <span class="skill-pill">aesthetic-boost</span><span class="skill-pill">vulnerability-scanner</span>
+        <span class="skill-pill">web-design-guidelines</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- SQLITE -->
+<div class="section">
+  <div class="section-title">🗄️ <span class="c-green">osforge-db — SQLite Local State</span></div>
+  <div class="section-subtitle">Zero dependências externas · Python built-in sqlite3 · FTS5 full-text search · banco global (~/.osforge/) ou local (.osforge/)</div>
+  <div class="sqlite-box">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:12px">Schema</div>
+        <div class="db-schema">
+          <div class="db-table">
+            <div class="db-table-name">projects</div>
+            <div class="db-field">id <span class="ftype">INTEGER PK</span></div>
+            <div class="db-field">slug <span class="ftype">TEXT UNIQUE</span></div>
+            <div class="db-field">triage / status</div>
+            <div class="db-field">stack_json</div>
+          </div>
+          <div class="db-table">
+            <div class="db-table-name">phases</div>
+            <div class="db-field">project_id <span class="ftype">FK</span></div>
+            <div class="db-field">name / status</div>
+            <div class="db-field">skill_path</div>
+            <div class="db-field">artifact_path</div>
+          </div>
+          <div class="db-table">
+            <div class="db-table-name">state</div>
+            <div class="db-field">project_id <span class="ftype">FK UNIQUE</span></div>
+            <div class="db-field">current_phase</div>
+            <div class="db-field">resume_point</div>
+            <div class="db-field">plan_approved</div>
+          </div>
+          <div class="db-table">
+            <div class="db-table-name">decisions</div>
+            <div class="db-field">project_id <span class="ftype">FK</span></div>
+            <div class="db-field">content <span class="ftype">TEXT</span></div>
+            <div class="db-field">category <span class="ftype">arch|ux|data…</span></div>
+            <div class="db-field" style="color:var(--cyan)">→ FTS5 virtual table</div>
+          </div>
+          <div class="db-table">
+            <div class="db-table-name">blockers</div>
+            <div class="db-field">project_id <span class="ftype">FK</span></div>
+            <div class="db-field">description</div>
+            <div class="db-field">waiting_for</div>
+            <div class="db-field">resolved_at</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:12px">Comandos essenciais</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:2;color:var(--text-dim)">
+          <div><span style="color:var(--text-muted)"># INTAKE — retomada em ~50 tokens</span></div>
+          <div><span style="color:var(--green)">osforge-db</span> resume <span style="color:var(--amber)">projeto</span></div>
+          <div><span style="color:var(--text-muted)"># → fase=spec-builder | resume=...</span></div>
+          <br>
+          <div><span style="color:var(--text-muted)"># TRACK — progressão</span></div>
+          <div><span style="color:var(--green)">osforge-db</span> set-phase <span style="color:var(--amber)">proj fase</span> complete</div>
+          <div><span style="color:var(--green)">osforge-db</span> add-decision <span style="color:var(--amber)">proj</span> "..." --category=arch</div>
+          <div><span style="color:var(--green)">osforge-db</span> set-resume <span style="color:var(--amber)">proj</span> "próximo passo"</div>
+          <br>
+          <div><span style="color:var(--text-muted)"># SEARCH — FTS5 cross-project</span></div>
+          <div><span style="color:var(--green)">osforge-db</span> search "Prisma RLS multi-tenant"</div>
+          <br>
+          <div><span style="color:var(--text-muted)"># MIGRAÇÃO de status.yaml</span></div>
+          <div><span style="color:var(--green)">osforge-db</span> import-yaml .osforge/status.yaml <span style="color:var(--amber)">slug</span></div>
+        </div>
+        <div style="margin-top:14px;padding:10px;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.15);border-radius:7px">
+          <div style="font-size:11px;color:var(--green);font-weight:600;margin-bottom:4px">Shell Injection em SKILL.md</div>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan)">!`osforge-db resume PROJETO_SLUG`</code>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:4px">~50 tokens vs ~3K do STATE.md inteiro</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RULES -->
+<div class="section">
+  <div class="section-title">📏 <span class="c-purple">12 Always-On Rules (Cursor)</span></div>
+  <div class="section-subtitle">Ativas automaticamente em toda sessão Cursor · zero ativação manual necessária</div>
+  <div class="rules-list">
+    <div class="rule-item"><div class="rule-dot" style="background:var(--blue)"></div><div><div class="rule-name c-blue">intelligent-routing</div><div class="rule-desc">Detecção silenciosa de domínio · 21 domínios · routing automático para o agente certo</div></div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:var(--purple)"></div><div><div class="rule-name c-purple">typescript-strict</div><div class="rule-desc">strict: true · proíbe any, enum, export default</div></div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:var(--red)"></div><div><div class="rule-name c-red">tdd-enforcement</div><div class="rule-desc">Nenhum código de produção sem teste falhando primeiro</div></div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:var(--amber)"></div><div><div class="rule-name c-amber">code-style</div><div class="rule-desc">Naming conventions, import order, product thinking</div></div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:var(--green)"></div><div><div class="rule-name c-green">commit-conventions</div><div class="rule-desc">Conventional commits enforced em todo commit</div></div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:var(--cyan)"></div><div><div class="rule-name c-cyan">nextjs-patterns</div><div class="rule-desc">Server Components por padrão · "use client" só quando necessário</div></div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:var(--pink)"></div><div><div class="rule-name c-pink">product-thinking</div><div class="rule-desc">Decisão de produto antes de decisão técnica</div></div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:var(--red)"></div><div><div class="rule-name c-red">security-mindset</div><div class="rule-desc">Zero-trust, fail-safe, sem segredos hard-coded</div></div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:var(--teal)"></div><div><div class="rule-name c-teal">agent-skills-reference</div><div class="rule-desc">Como carregar e usar skills OSForge</div></div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:var(--blue)"></div><div><div class="rule-name c-blue">orchestrator-awareness</div><div class="rule-desc">Verificar osforge-db/status.yaml para WIP</div></div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:var(--orange)"></div><div><div class="rule-name c-orange">artifact-chain</div><div class="rule-desc">Artefatos com frontmatter type/status/depends_on · nunca pular checkpoints</div></div></div>
+  </div>
+</div>
+
+
+<!-- PYTHON HOOKS -->
+<div class="section">
+  <div class="section-title">🪝 <span class="c-amber">Python Hooks — Zero Token Cost</span></div>
+  <div class="section-subtitle">Rodam como processos externos via settings.json · não consomem contexto · instalados em ~/.claude/hooks/</div>
+  <div class="hooks-grid">
+    <div class="hook-card">
+      <div class="hook-name">pre_tool_use.py</div>
+      <div class="hook-trigger">Antes de qualquer tool call</div>
+      <div class="hook-desc">Bloqueia comandos shell perigosos · protege .env e .env.local · gera audit log de operações</div>
+    </div>
+    <div class="hook-card">
+      <div class="hook-name">post_tool_use.py</div>
+      <div class="hook-trigger">Após Write/Edit</div>
+      <div class="hook-desc">Detecta console.log em produção · bloqueia any TypeScript · avisa sobre @ts-ignore sem justificativa · detecta export default</div>
+    </div>
+    <div class="hook-card">
+      <div class="hook-name">validate.py</div>
+      <div class="hook-trigger">Pre-commit</div>
+      <div class="hook-desc">Validação de qualidade antes de commit · TypeScript, lint, testes básicos</div>
+    </div>
+    <div class="hook-card">
+      <div class="hook-name">scan-secrets.sh</div>
+      <div class="hook-trigger">Pre-commit</div>
+      <div class="hook-desc">Detecta secrets/API keys em arquivos staged · bloqueia commit com credenciais</div>
+    </div>
+    <div class="hook-card">
+      <div class="hook-name">protect-tests.sh</div>
+      <div class="hook-trigger">Pre Write</div>
+      <div class="hook-desc">Avisa ao modificar arquivos de teste críticos · requer confirmação explícita</div>
+    </div>
+    <div class="hook-card">
+      <div class="hook-name">notify-done.sh</div>
+      <div class="hook-trigger">Session end</div>
+      <div class="hook-desc">Notificação macOS via AppleScript ao concluir tarefa · session log resumido</div>
+    </div>
+  </div>
+</div>
+
+<!-- THE AGENCY -->
+<div class="section">
+  <div class="section-title">🏢 <span class="c-rose">The Agency — 121 Especialistas</span></div>
+  <div class="section-subtitle">10 divisões de negócio · carregados on-demand por divisão · 32 marketing execution workflows integrados</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:6px">💻 Engineering (23)</div>
+      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">Backend Architect, Frontend Dev, Data Engineer, DB Optimizer, DevOps, Security Eng, SRE, Mobile Builder, AI Engineer, Solidity Dev...</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--pink);margin-bottom:6px">🎨 Design (8)</div>
+      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">UX Architect, UI Designer, Brand Guardian, Image Prompt Engineer, UX Researcher, Visual Storyteller, Motion Designer...</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px">📢 Marketing (26)</div>
+      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">Growth Hacker, SEO Specialist, Content Creator, Social Media, TikTok, Instagram, LinkedIn, Email Marketing, CRO...</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:6px">💰 Paid Media (7)</div>
+      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">Google Ads, Meta Ads, LinkedIn Ads, Performance Marketer, Analytics Tracker, A/B Tester...</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--purple);margin-bottom:6px">📊 Product (5)</div>
+      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">Product Manager, Sprint Prioritizer, Feedback Synthesizer, Behavioral Nudge Designer, Trend Researcher</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--sky);margin-bottom:6px">🎬 Project Mgmt (6)</div>
+      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">Project Planner, Risk Analyst, Stakeholder Communicator, Retrospective Facilitator, Sprint Master...</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px">💼 Sales (8)</div>
+      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">Outbound Strategist, Cold Email Writer, Sales Enablement, RevOps Architect, Objection Handler, Deal Closer...</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px">🛟 Support &amp; Ops (6)</div>
+      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">Customer Success, Support Specialist, Operations Analyst, Process Optimizer, SLA Manager...</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--lime);margin-bottom:6px">🧪 Testing (8)</div>
+      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">API Tester, Accessibility Auditor, Performance Benchmarker, Test Analyzer, Regression Tester...</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--rose);margin-bottom:6px">🎯 Specialized (24)</div>
+      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">Compliance Auditor, Blockchain Security, MCP Builder, Workflow Architect, Accounts Payable, Agentic Identity...</div>
+    </div>
+  </div>
+</div>
+
+<!-- SOURCES / ORIGINS -->
+<div class="section">
+  <div class="section-title">📚 <span class="c-sky">23 Fontes — Origins</span></div>
+  <div class="section-subtitle">Curadoria de 1100+ skills/patterns · todas MIT · avaliadas por relevância ao stack, eficiência de tokens e qualidade</div>
+  <div class="sources-grid">
+    <div class="source-item"><div class="source-stars">⭐ 118k</div><div><div class="source-name c-orange">obra/superpowers</div><div class="source-desc">brainstorming socrático, finishing-branch, receiving-review, git worktrees, two-stage task review</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 81k</div><div><div class="source-name c-blue">github/spec-kit</div><div class="source-desc">requirements-clarify, conceito de constitution.md, coverage dimensions</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 23.8k</div><div><div class="source-name c-purple">Fission-AI/OpenSpec</div><div class="source-desc">spec-builder modo delta/brownfield para features existentes</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 19.7k</div><div><div class="source-name c-amber">shanraisshan/claude-code-best-practice</div><div class="source-desc">frontmatter model/context/allowed-tools, shell injection, Gotchas sections</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 14.8k</div><div><div class="source-name c-cyan">msitarzewski/agency-agents</div><div class="source-desc">121 especialistas em 10 divisões de negócio (The Agency)</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 12.1k</div><div><div class="source-name c-teal">karpathy/autoresearch</div><div class="source-desc">autonomous research patterns, wave execution, parallel agent coordination</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 9.4k</div><div><div class="source-name c-green">gsd-build/get-shit-done</div><div class="source-desc">pragmatic shipping mindset, context distillation patterns</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 7.2k</div><div><div class="source-name c-pink">vudovn/antigravity-kit</div><div class="source-desc">32 skills especializadas, 15 agentes, orchestrator upgrade</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 5.8k</div><div><div class="source-name c-rose">nextlevelbuilder/ui-ux-pro-max-skill</div><div class="source-desc">ui-design-intelligence: 67 estilos, 161 paletas, 57 font pairs, 99 UX guidelines</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 4.1k</div><div><div class="source-name c-blue">AlexsJones/llmfit</div><div class="source-desc">local LLM hardware-fit recommendations, llmfit-advisor skill</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 3.9k</div><div><div class="source-name c-sky">thesysdev/openui-lang</div><div class="source-desc">OpenUI Lang completo: genui-layout skill para planejamento visual Next.js</div></div></div>
+    <div class="source-item"><div class="source-stars">⭐ 3.2k</div><div><div class="source-name c-amber">coreyhaines31/marketingskills</div><div class="source-desc">32 marketing execution workflows: CRO, SEO, ads, email, social, sales</div></div></div>
+    <div class="source-item"><div class="source-stars">native</div><div><div class="source-name c-text">OSForge original</div><div class="source-desc">orchestrator, prisma-expert, nextjs-supabase-auth, stripe-integration, spec-driven workflow, osforge-db</div></div></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>OSForge v3.0 · <strong>Paulo Souza</strong> · MIT License · <a href="https://github.com/plocemourasouza/osforge">github.com/plocemourasouza/osforge</a></p>
+  <p style="margin-top:6px;color:var(--text-muted)">86 skills · 27 agents · 12 rules · 121 specialists · 23 sources · SQLite local state · ~6% context budget</p>
+</footer>
+
+</div><!-- /container -->
 </body>
 </html>
