@@ -16,11 +16,12 @@ Complete installation, configuration, and day-to-day usage instructions.
 6. [Spec Commands](#6-spec-commands)
 7. [Orchestrator — Intelligent Workflow](#7-orchestrator--intelligent-workflow)
 8. [Python Hooks](#8-python-hooks)
-9. [The Agency — 121 Specialists](#9-the-agency--121-specialists)
-10. [llmfit Advisor — Local LLMs](#10-llmfit-advisor--local-llms)
-11. [Smart Model Dispatch](#11-smart-model-dispatch)
-12. [Recommended MCPs](#12-recommended-mcps)
-13. [High-Risk Agents](#13-high-risk-agents)
+9. [osforge-db — Local SQLite State](#9-osforge-db--local-sqlite-state)
+10. [The Agency — 121 Specialists](#10-the-agency--121-specialists)
+11. [llmfit Advisor — Local LLMs](#11-llmfit-advisor--local-llms)
+12. [Smart Model Dispatch](#12-smart-model-dispatch)
+13. [Recommended MCPs](#13-recommended-mcps)
+14. [High-Risk Agents](#14-high-risk-agents)
 
 ---
 
@@ -446,63 +447,98 @@ hooks/notify-done.sh      # macOS notification on task completion
 
 ---
 
-## 9. The Agency — 121 Specialists
+## 9. osforge-db — Local SQLite State
 
-A library of 121 AI agents covering all business and technical functions. Built on a 3-layer structure for efficient loading.
+Persistent state management for OSForge projects via SQLite local database. No server, no network — pure Python built-in.
 
-### Activation flow
+### How it works
 
-```
-Step 1 — Identify the division
-"Read skills/agency/SKILL.md"
-→ Claude shows the 10 divisions and when to use each
+After deploy, `osforge-db` is available at `~/.local/bin/osforge-db`. The global database lives at `~/.osforge/osforge.db` and accumulates state across all projects on your machine.
 
-Step 2 — Browse the division's agents
-"Read skills/agency/engineering/SKILL.md"
-→ Lists the 23 engineering agents with their specialties
-
-Step 3 — Activate the agent
-"Activate the Security Engineer"
-→ Claude reads the full .md and assumes that specialty
+```bash
+# Add to ~/.zshrc or ~/.bashrc if not already there:
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
-### Practical example — software development
+### Daily workflow
 
-```
-# Architecture for a payments system:
-"Read skills/agency/engineering/SKILL.md"
-→ "Activate the Backend Architect"
-→ "Design the OFX reconciliation architecture with multi-bank support"
-
-# UX for a marketplace:
-"Read skills/agency/design/SKILL.md"
-→ "Activate the UX Researcher"
-→ "Analyze the onboarding flow for service providers"
-
-# Sales strategy for small businesses:
-"Read skills/agency/sales/SKILL.md"
-→ "Activate the Outbound Strategist"
-→ "Create a prospecting sequence for micro enterprises"
+**Starting a session** — load context in ~50 tokens:
+```bash
+osforge-db resume my-project
+# → fase=spec-builder | resume=Próximo: ACs do módulo de checkout
 ```
 
-### Available divisions
+**During work** — record progress:
+```bash
+# Mark phase complete with artifact path
+osforge-db set-phase my-project "spec-builder" complete \
+  skills/planning/spec-builder docs/specs/billing.md
 
-| Division | Agents | Index file |
+# Record architectural decision
+osforge-db add-decision my-project \
+  "Usar cursor-based pagination para tabelas >10K registros" \
+  --category=arch
+
+# Register a blocker
+osforge-db add-blocker my-project \
+  "Modelo de precificação não definido" \
+  --waiting="decisão de produto"
+```
+
+**Ending a session** — mandatory before closing:
+```bash
+osforge-db set-resume my-project \
+  "Próximo: arch-builder — schema do módulo de billing, relação com orgs"
+```
+
+### Search across all projects
+
+```bash
+# Full-text search in all decisions (FTS5)
+osforge-db search "autenticação OAuth"
+osforge-db search "Prisma RLS multi-tenant" --project=linkme-tur
+
+# List decisions by category
+osforge-db list-decisions my-project --category=security --limit=10
+
+# Full status
+osforge-db status my-project
+
+# All active projects
+osforge-db list-projects
+```
+
+### Scopes
+
+| Scope | Path | Quando usar |
 |---|---|---|
-| 💻 Engineering | 23 | `skills/agency/engineering/SKILL.md` |
-| 🎨 Design | 8 | `skills/agency/design/SKILL.md` |
-| 📢 Marketing | 26 | `skills/agency/marketing/SKILL.md` |
-| 💰 Paid Media | 7 | `skills/agency/paid-media/SKILL.md` |
-| 📊 Product | 5 | `skills/agency/product/SKILL.md` |
-| 🎬 Project Management | 6 | `skills/agency/project-management/SKILL.md` |
-| 💼 Sales | 8 | `skills/agency/sales/SKILL.md` |
-| 🛟 Support & Ops | 6 | `skills/agency/support/SKILL.md` |
-| 🧪 Testing | 8 | `skills/agency/testing/SKILL.md` |
-| 🎯 Specialized | 24 | `skills/agency/specialized/SKILL.md` |
+| global (padrão) | `~/.osforge/osforge.db` | Histórico cross-project, decisões não-sensíveis |
+| local | `.osforge/osforge.db` | Projetos com dados sensíveis (Essent, Rede Essent Jus) |
+
+```bash
+# Usar escopo local
+osforge-db --scope=local add-decision meu-projeto "RLS: clientes só veem orgs próprias"
+```
+
+### Migrating from status.yaml
+
+```bash
+osforge-db import-yaml .osforge/status.yaml meu-projeto
+```
+
+### Decision categories
+
+| Category | Use |
+|---|---|
+| `arch` | Architecture and stack decisions (default) |
+| `product` | Product scope and priority decisions |
+| `ux` | Interface and experience decisions |
+| `data` | Schema, migration, data model decisions |
+| `security` | Auth, LGPD, security decisions |
 
 ---
 
-## 10. llmfit Advisor — Local LLMs
+## 10. The Agency — 121 Specialists
 
 Detects the machine's actual hardware and recommends which local models will run well, with optimal quantization and speed estimates.
 

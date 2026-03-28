@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **85 on-demand skills**, **26 specialized agents**, **12 always-on rules**, **9 spec commands**, **Python hooks**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **86 on-demand skills**, **26 specialized agents**, **12 always-on rules**, **9 spec commands**, **Python hooks**, **SQLite local state backend**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -14,9 +14,10 @@ OSForge is a production-grade AI development framework with **85 on-demand skill
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 85 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 86 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Core skills tailored for Next.js App Router + Prisma + Supabase + shadcn/ui, with expanded coverage for mobile, game dev, Rust, Python, and cross-platform.
 3. **Quality gates built-in** — TDD enforcement, security auditing, red team tactics, insecure defaults detection, Reality Check + Quality Control Loop in every agent, and Python hooks at zero token cost.
+4. **Local SQLite state** — `osforge-db` CLI persists project state, architectural decisions, and blockers locally. Session resumption in ~50 tokens via `osforge-db resume`. FTS5 full-text search across all decisions cross-project.
 
 ---
 
@@ -304,7 +305,59 @@ Key use cases: LGPD-sensitive data (Essent/Rede Essent Jus), OSystems clients wi
 > Source: [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) (MIT)
 
 ---
-## Architecture
+## 🗄️ Local SQLite State — osforge-db
+
+Persistent project state management via a local SQLite database (`~/.osforge/osforge.db`). No server, no network, no dependencies beyond Python's built-in `sqlite3`.
+
+### What it stores
+
+| Table | Content |
+|---|---|
+| `projects` | slug, description, triage, status |
+| `phases` | per-phase status, skill used, artifact produced |
+| `state` | current phase + resume point (session continuity) |
+| `decisions` | architectural, product, UX, data, security decisions |
+| `blockers` | active impediments + what they're waiting on |
+
+`decisions` is backed by an **FTS5 virtual table** — full-text search across all decisions from all projects in milliseconds.
+
+### Core commands
+
+```bash
+# Session start — load context in ~50 tokens
+osforge-db resume my-project
+
+# Record progress
+osforge-db set-phase my-project "spec-builder" complete skills/planning/spec-builder docs/specs/feature.md
+osforge-db add-decision my-project "Usar Prisma multi-tenant via organizationId" --category=arch
+
+# Session end — mandatory
+osforge-db set-resume my-project "Próximo: arch-builder — definir schema de billing"
+
+# Cross-project semantic search
+osforge-db search "autenticação OAuth multi-tenant"
+
+# Full project status
+osforge-db status my-project
+```
+
+### Shell injection in skills
+
+```
+# In any SKILL.md — injects ~50 tokens of precise context
+!`osforge-db resume PROJETO_SLUG`
+```
+
+### Two scopes
+
+- **Global** (`~/.osforge/osforge.db`) — cross-project state, decision history, no sensitive data
+- **Local** (`.osforge/osforge.db`) — per-project, `.gitignore`-able for sensitive projects (Essent, Rede Essent Jus)
+
+### Installed by deploy.sh
+
+`deploy.sh` installs `osforge-db` to `~/.local/bin/` and initializes the global database automatically.
+
+---
 
 ```
 osforge/
