@@ -244,6 +244,7 @@ dificuldade encontrada durante uso do software:
 | Spec | `skills/planning/spec-builder` |
 | Architecture check | `skills/planning/arch-builder` ou `skills/architecture` (se schema/API changes) |
 | Stories | `skills/planning/epic-decomposer` |
+| **🎨 Visual Breakdown** | **`skills/visual-planner`** (ver Pipeline de Apresentação abaixo) |
 | Implement (loop) | `skills/planning/story-executor` → skills de execução por domínio |
 | Review (loop) | `skills/quality/code-review` |
 | Final review | `skills/quality/adversarial-review` + `skills/quality/edge-case-hunter` |
@@ -255,6 +256,7 @@ dificuldade encontrada durante uso do software:
 | Architecture | `skills/planning/arch-builder` + `skills/architecture` |
 | Phase context | `skills/planning/phase-discussion` (antes de cada fase) |
 | Épicos + Stories | `skills/planning/epic-decomposer` |
+| **🎨 Visual Breakdown** | **`skills/visual-planner`** (ver Pipeline de Apresentação abaixo) |
 | Readiness gate | `skills/quality/readiness-gate` |
 | Sprint loop | `skills/planning/story-executor` → skills de execução por domínio |
 | Review (loop) | `skills/quality/code-review` |
@@ -347,6 +349,7 @@ dificuldade encontrada durante uso do software:
 | Architecture patterns | `skills/architecture` |
 | Epic decomposer | `skills/planning/epic-decomposer` |
 | Story executor | `skills/planning/story-executor` |
+| **Visual Planner (Plan → HTML)** | **`skills/visual-planner`** |
 
 ### Documentação & SEO
 | Necessidade | Skill |
@@ -379,6 +382,43 @@ dificuldade encontrada durante uso do software:
 |-------------|-------|
 | App builder (13 templates) | `skills/app-builder` |
 | Templates: Next.js, FastAPI, Flutter, Electron, etc. | `skills/app-builder/references/` |
+
+### 🎨 Pipeline de Apresentação (Agency-Style Delivery)
+
+Após qualquer fase de planejamento que gere artefato (spec, PRD, ADR, épico),
+o orchestrator DEVE encadear automaticamente o pipeline de apresentação visual.
+
+**Fluxo automático:**
+```
+Planning Skill output (markdown)
+  → [1] Visual Planner (skills/visual-planner)
+        Transforma em HTML interativo com flow diagrams, cards, review system
+  → [2] Aesthetic Boost (skills/aesthetic-boost) — OPCIONAL
+        Customiza accent color, tipografia, e anti-AI-slop check
+  → [3] UI Design Intelligence (skills/ui-design-intelligence) — OPCIONAL
+        Gera design tokens por indústria/produto (se project-context tiver vertical definida)
+  → [4] Web Design Guidelines (skills/web-design-guidelines) — OPCIONAL
+        Auditoria final de acessibilidade e UX
+```
+
+**Regras de ativação:**
+
+| Condição | Comportamento |
+|----------|---------------|
+| Triage QUICK | Oferecer: "Quer visualizar a spec como HTML interativo?" |
+| Triage STANDARD | Executar automaticamente [1]. Oferecer [2-4] como polish opcional |
+| Triage COMPLEX | Executar automaticamente [1]+[2]. Oferecer [3-4] como polish |
+| Usuário pede "visualizar" | Executar [1]+[2]+[4] sem perguntar |
+| Usuário pede "entrega de agência" / "agency delivery" | Executar pipeline completo [1]+[2]+[3]+[4] |
+
+**Output esperado:**
+- `{project}-breakdown.html` — arquivo HTML autocontido, abrível no browser
+- Review system embutido com clipboard export para iteration loop
+- Design customizado por vertical do projeto (se ui-design-intelligence ativo)
+
+**Checkpoint:** Após gerar o visual breakdown, apresentar ao usuário:
+- Link para abrir no browser
+- "Revise e use o botão 'Copy Review' para feedback. Cole aqui para iterarmos."
 
 ### Meta & Utilitários
 | Necessidade | Skill |

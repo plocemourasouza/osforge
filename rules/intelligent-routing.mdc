@@ -48,6 +48,7 @@ Analisar keywords e contexto do request:
 | bash, shell, Linux, terminal, PowerShell, Windows | INFRA |
 | brainstorm, ideia, explorar problema, ideação | IDEATION |
 | GEO, AI search, LLM visibility, Perplexity, ChatGPT ranking | GEO |
+| visualizar plano, breakdown visual, HTML interativo, apresentar spec, agency delivery | VISUALIZATION |
 
 ## 3. Selecionar agente(s)
 
@@ -78,6 +79,7 @@ Com base nos domínios detectados:
 | FRONTEND + BACKEND | `frontend-engineer` + `backend-engineer` |
 | BACKEND + DATABASE | `backend-engineer` + `database-architect` |
 | SECURITY + TESTING | `security-auditor` + `penetration-tester` |
+| VISUALIZATION | usa `skills/visual-planner` + `skills/aesthetic-boost` (sem agente dedicado) |
 | Explorar codebase desconhecido | `explorer-agent` |
 | Planejamento de produto | `product-manager` ou `product-owner` |
 | Planejamento de projeto | `project-planner` |
@@ -101,9 +103,28 @@ Sugestão: ativar o Orchestrator para planejamento estruturado.
 Prefere prosseguir direto ou estruturar o plano?
 ```
 
+## 5. Post-Planning Visual Pipeline (Agency-Style Delivery)
+
+Após qualquer skill de planejamento gerar artefato, encadear apresentação visual:
+
+| Gatilho | Ação automática |
+|---------|-----------------|
+| Output de `spec-builder`, `prd-builder`, `arch-builder`, `epic-decomposer` em triage STANDARD/COMPLEX | Executar `skills/visual-planner` automaticamente |
+| Output de planning skill em triage QUICK | Oferecer: "Quer visualizar como HTML interativo?" |
+| Usuário diz "visualizar", "breakdown visual", "apresentar", "tornar visual" | Executar `skills/visual-planner` + `skills/aesthetic-boost` |
+| Usuário diz "entrega de agência", "agency delivery", "apresentação profissional" | Pipeline completo: `visual-planner` → `aesthetic-boost` → `ui-design-intelligence` → `web-design-guidelines` |
+
+**Accent color automático** (baseado no domínio detectado):
+- BACKEND / DATABASE / DEVOPS → Teal (`#2A7B9B`)
+- FRONTEND / DESIGN → Vermillion (`#D94F30`)
+- MOBILE / GAME → Coral (`#E06B56`)
+- SCAFFOLDING (dev tools, CLIs) → Forest (`#2D8B55`)
+- PERFORMANCE (fintech, analytics) → Amber (`#D4A843`)
+
 ## Regras
 
 - Nunca bloquear o usuário — routing é sugestão inteligente, não barreira
 - Override explícito do usuário ("use o backend-engineer") sempre prevalece
 - Para requests ambíguos: fazer UMA pergunta de clarificação antes de rotear
 - Não anunciar routing para respostas simples (QUESTION, QUICK_FIX trivial)
+- Visual pipeline é automático em STANDARD/COMPLEX — mas o checkpoint de aprovação antes de prosseguir continua obrigatório

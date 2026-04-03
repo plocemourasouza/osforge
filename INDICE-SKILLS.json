@@ -8738,5 +8738,15 @@
     "source_url": "https://github.com/coreyhaines31/marketingskills",
     "local_path": "skills/agency/sales/workflows/revops.md",
     "skill_dir": "sales-workflows/revops"
+  },
+  {
+    "name": "visual-planner",
+    "description": "Transforma documentos de planejamento (PRD, spec, épico, ADR) em breakdowns HTML single-page interativos com flow diagrams, expandable cards, stat badges, e review system embutido. Camada de apresentação do pipeline de planejamento.",
+    "category": "📋 Planejamento",
+    "source": "ethanplusai/visualplanner (adapted)",
+    "source_emoji": "📋",
+    "source_url": "https://github.com/ethanplusai/visualplanner",
+    "local_path": "skills/visual-planner/SKILL.md",
+    "skill_dir": "visual-planner"
   }
 ]

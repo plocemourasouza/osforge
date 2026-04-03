@@ -903,3 +903,10 @@ Clarificação estruturada por dimensões de cobertura ANTES do plano técnico: 
 **Trigger:** Salvar estado, registrar decisão, add-decision, set-phase, resumir sessão, buscar decisão, osforge-db, estado do projeto, blocker, retomar sessão, where did I leave off.
 
 Gerencia o estado de projetos no banco SQLite local do OSForge (`~/.osforge/osforge.db`). Usa `osforge-db` CLI para salvar progresso de fases, registrar decisões arquiteturais, adicionar/resolver blockers e retomar sessões com contexto preciso (~50 tokens via `osforge-db resume`). Banco global cross-project; banco local por projeto via `--scope=local`. FTS5 para busca semântica cross-project em decisões passadas.
+
+---
+
+## Skill 85: Visual Planner (Plan → Interactive HTML)
+**Trigger:** Visualizar plano, breakdown visual, transformar spec em HTML, apresentar PRD visualmente, gerar HTML interativo, tornar spec mais fácil de seguir, visual breakdown, plan breakdown, turn spec into HTML, make plan visual, visualize this spec, break down this plan.
+
+Camada de apresentação do pipeline de planejamento. Transforma qualquer documento de planejamento (PRD, spec, épico, ADR, ou markdown genérico) em um breakdown HTML single-page interativo com scroll-based navigation, animações reveal, flow diagrams, expandable cards, stat badges, e review system embutido. Reconhece automaticamente os formatos OSForge (`osforge-prd`, `osforge-spec`, `osforge-architecture`, `osforge-epic`, `osforge-phase-context`). Design system warm com Bricolage Grotesque + DM Sans, 13 componentes visuais reutilizáveis, e sistema de review com clipboard output para iteration loop. Zero dependências além de Google Fonts. Source: `ethanplusai/visualplanner` (adapted).
