@@ -8748,5 +8748,15 @@
     "source_url": "https://github.com/ethanplusai/visualplanner",
     "local_path": "skills/visual-planner/SKILL.md",
     "skill_dir": "visual-planner"
+  },
+  {
+    "name": "autorefine-skill",
+    "description": "Loop autônomo de refinamento iterativo v3 com meta-otimização e transferência cross-domínio. Inspirado no Karpathy autoresearch e HyperAgents (Meta). Verify+guard, osforge-db memory, domain generalization, meta self-improvement, cross-project knowledge propagation.",
+    "category": "🔄 Workflow / Process",
+    "source": "OSForge (Orchestrator) + karpathy/autoresearch + facebookresearch/HyperAgents",
+    "source_emoji": "🔵",
+    "source_url": "https://github.com/plocemourasouza/osforge",
+    "local_path": "skills/autorefine-skill/SKILL.md",
+    "skill_dir": "autorefine-skill"
   }
 ]
