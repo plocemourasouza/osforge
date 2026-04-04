@@ -1,30 +1,44 @@
 ---
 name: autorefine-skill
-description: "Refinamento autônomo iterativo de skills do OSForge. ACIONE quando: usuário pede 'melhorar uma skill', 'otimizar a skill X', 'a skill Y não está funcionando bem', 'iterar sobre skill', 'autorefine'. Também acionar quando uma skill existente produz outputs inconsistentes ou abaixo do esperado. Keywords: melhorar skill, refinar skill, otimizar skill, autorefine, iteração de skill, skill inconsistente, skill não dispara."
+description: "Refinamento autônomo iterativo com loop autoresearch. ACIONE quando: usuário pede 'melhorar uma skill', 'otimizar a skill X', 'a skill Y não está funcionando bem', 'iterar sobre skill', 'autorefine', 'refinar código', 'otimizar performance', 'melhorar métrica X'. Generalizado para qualquer artefato com métrica mensurável — skills, código, prompts, configs, docs. Keywords: melhorar skill, refinar skill, otimizar, autorefine, iteração autônoma, autoresearch, loop de melhoria, self-improving, guard, verify."
 model: sonnet
-allowed-tools: Read, Write, Bash, Glob
+allowed-tools: Read, Write, Bash, Glob, Grep
 metadata:
   author: osforge
-  version: '1.1'
-  inspired_by: karpathy/autoresearch
+  version: '2.0'
+  inspired_by: 'karpathy/autoresearch, uditgoenka/autoresearch, alfonsograziano/auto-agent'
+  changelog: 'v2.0 — verify+guard separation, osforge-db memory, domain generalization, eval packages'
 ---
 
-# AutoRefine Skill
+## Estado do projeto
+!`osforge-db list-projects --status=active 2>/dev/null | head -3 || echo "nenhum projeto ativo"`
+!`osforge-db search "autorefine" 2>/dev/null | head -5 || echo "sem histórico de autorefine"`
+
+# AutoRefine v2
 
 ## Princípio
 
-Aplicar o loop de pesquisa autônoma do autoresearch ao próprio OSForge: em vez de iterar sobre código de treinamento de LLM, iterar sobre `SKILL.md` de skills existentes. O agente modifica a skill, avalia o output, mantém ou descarta, e repete — dentro de um budget fixo de iterações.
+Aplicar o loop de pesquisa autônoma do Karpathy a **qualquer artefato com métrica mensurável**: skills, código, prompts, configs, documentação. O agente formula uma hipótese → aplica uma mudança atômica → verifica com métrica mecânica → protege com guard contra regressões → mantém ou reverte → registra no banco → repete.
 
-O humano programa o **escopo da melhoria** (equivalente ao `program.md` do autoresearch). O agente itera sobre o **conteúdo da skill** (equivalente ao `train.py`). Você nunca toca nos arquivos de skill diretamente durante o loop — apenas avalia e decide manter ou reverter.
+**constraint + mechanical metric + autonomous iteration = compounding gains**
 
 ---
 
-## Quando usar
+## Dois modos de operação
 
-- Uma skill produz outputs inconsistentes ou abaixo do esperado
-- O usuário quer explorar variações de instrução de uma skill
-- Uma skill foi integrada de repositório externo e precisa de adaptação ao padrão OSForge
-- O usuário quer otimizar o campo `description` de uma skill para melhorar o triggering
+### Modo Skill (refinar SKILL.md do OSForge)
+O modo original: iterar sobre o conteúdo de uma skill para melhorar seus outputs.
+Artefato: `skills/<nome>/SKILL.md`. Métrica: aprovação em prompts de teste.
+
+### Modo Genérico (qualquer artefato com métrica)
+Modo expandido inspirado no autoresearch generalizado: iterar sobre qualquer arquivo/conjunto de arquivos onde existe uma métrica mecânica.
+
+Exemplos:
+- **Código**: `npm test -- --coverage` → melhorar cobertura de testes
+- **Performance**: `lighthouse --output=json` → melhorar Core Web Vitals
+- **Bundle**: `bun build && du -sh dist/` → reduzir tamanho
+- **Prompt**: `python eval.py` → melhorar accuracy em dataset
+- **Config**: `bun run bench` → melhorar throughput
 
 ---
 
@@ -32,105 +46,193 @@ O humano programa o **escopo da melhoria** (equivalente ao `program.md` do autor
 
 Antes de iniciar o loop, colete do usuário:
 
-1. **Qual skill refinar?** (nome do diretório em `skills/`)
-2. **Qual o problema ou objetivo?** ("a skill gera código sem TypeScript", "quero que ela sempre produza OpenUI Lang antes do código", etc.)
-3. **Quantas iterações?** Default: 5. Máximo recomendado: 10.
-4. **Quais prompts de teste?** Peça 2–3 exemplos reais. Se o usuário não tiver, gere você mesmo e confirme antes de rodar.
-5. **Critério de sucesso?** O que torna um output "melhor"? (Ex: "sempre inclui tipagem TypeScript", "nunca usa `any`", "sempre começa com bloco OpenUI Lang")
+### 1. Escopo
 
-Snapshot obrigatório antes de qualquer modificação:
-```bash
-cp -r skills/<nome-da-skill> skills/<nome-da-skill>-snapshot-$(date +%Y%m%d%H%M)
+| Pergunta | Exemplo |
+|---|---|
+| Qual artefato refinar? | `skills/frontend-design/SKILL.md` ou `src/lib/auth.ts` |
+| Qual o problema/objetivo? | "a skill gera código sem TypeScript" ou "latência p95 acima de 200ms" |
+| Quais arquivos podem ser modificados? | Lista explícita (scope constraint) |
+| Quais arquivos são read-only? | Guard files — nunca modificados |
+
+### 2. Verify + Guard (separação obrigatória)
+
 ```
+Verify: <comando que mede a métrica principal>
+Guard:  <comando que garante que nada mais quebrou>
+```
+
+**Verify** = "A métrica melhorou?" — é o objetivo da otimização.
+**Guard** = "Alguma outra coisa quebrou?" — é a rede de segurança.
+
+| Cenário | Verify | Guard | Decisão |
+|---|---|---|---|
+| ✅ melhora | ✅ passa | ✅ passa | **KEEP** |
+| ✅ melhora | ✅ passa | ❌ falha | **REWORK** (max 2 tentativas, depois DISCARD) |
+| ❌ piora | ❌ falha | ✅ passa | **DISCARD** |
+| ❌ piora | ❌ falha | ❌ falha | **DISCARD + rollback imediato** |
+
+Exemplos de pares verify/guard:
+
+| Domínio | Verify | Guard |
+|---|---|---|
+| Skill OSForge | `python eval_skill.py --prompts=3` | `grep -c "allowed-tools" SKILL.md` (frontmatter intacto) |
+| Cobertura de testes | `bun test --coverage \| grep Stmts` | `bun tsc --noEmit` (tipos não quebraram) |
+| Performance API | `bun run bench:api \| grep p95` | `bun test` (funcionalidade intacta) |
+| Bundle size | `bun build && du -sh dist/` | `bun test && bun tsc --noEmit` |
+| Prompt engineering | `python eval.py --metric=accuracy` | `python eval.py --metric=safety` (safety ≥ baseline) |
+
+Se o guard não for definido pelo usuário, o default é: `exit 0` (sem guard). Mas **sempre sugerir** um guard relevante.
+
+### 3. Budget e prompts de teste
+
+| Configuração | Default |
+|---|---|
+| Iterações | 5 (max 10) |
+| Prompts de teste (modo skill) | 2-3 exemplos reais |
+| Direção da métrica | higher-is-better ou lower-is-better |
+
+### 4. Snapshot obrigatório
+
+```bash
+cp -r <artefato-dir> <artefato-dir>-snapshot-$(date +%Y%m%d%H%M)
+```
+
+### 5. Carregar memória de hipóteses
+
+```bash
+# Buscar iterações anteriores de autorefine neste artefato
+osforge-db search "autorefine <nome-do-artefato>" 2>/dev/null
+```
+
+Se existem hipóteses anteriores que falharam, **nunca repeti-las**. Listar as hipóteses falhas conhecidas antes de formular novas.
 
 ---
 
-## O Loop (modify → evaluate → keep/discard → repeat)
+## O Loop (modify → verify → guard → keep/discard → log → repeat)
 
-### Budget fixo
+### Regras de ferro
 
-Cada iteração tem um **budget fixo de complexidade**: máximo de 1 modificação substancial por iteração. Não reescreva a skill inteira de uma vez — faça hipóteses pequenas e testáveis, como um pesquisador. Isso torna os resultados interpretáveis.
+| # | Regra | Implementação |
+|---|---|---|
+| 1 | Loop até acabar o budget | Bounded: N iterações, depois para |
+| 2 | Ler antes de escrever | Entender contexto completo antes de modificar |
+| 3 | Uma mudança por iteração | Atômico e rastreável — se quebra, sabe o porquê |
+| 4 | Verificação mecânica apenas | Números, não julgamento subjetivo |
+| 5 | Rollback automático | Falha → revert via git ou snapshot |
+| 6 | Simplicidade vence | Resultado igual + menos código = KEEP |
+| 7 | Git é memória | Commits prefixados `experiment:` preservam histórico |
+| 8 | Quando travado, pensar mais | Re-ler, combinar near-misses, tentar abordagem radical |
 
 ### Estrutura de cada iteração
 
 ```
 Iteração N:
-  1. [haiku]  Lê o SKILL.md atual
-  2. [haiku]  Formula hipótese: "se eu adicionar/remover/reescrever X, o output Y vai melhorar porque Z"
-  3. [haiku]  Aplica a modificação ao SKILL.md
-  4. [haiku]  Executa os prompts de teste com a skill modificada
-  5. [sonnet] Avalia os outputs contra o critério de sucesso
-  6. [sonnet] Decide: KEEP (val melhorou) ou DISCARD (revert ao estado anterior)
-  7. Registra no log de iterações
+  1. [haiku]  Lê o artefato atual + git log + memória (hipóteses que já falharam)
+  2. [haiku]  Formula hipótese: "se eu modificar X, a métrica Y vai melhorar porque Z"
+  3. [haiku]  Aplica UMA modificação atômica
+  4. [haiku]  git commit -m "experiment: <hipótese resumida>"
+  5. [haiku]  Executa Verify → coleta métrica
+  6. [haiku]  Executa Guard → verifica que nada quebrou
+  7. [sonnet] Decide: KEEP / REWORK / DISCARD (ver tabela acima)
+  8. [sonnet] Se DISCARD → git revert HEAD
+     [sonnet] Se REWORK → tenta ajustar (max 2x), depois DISCARD
+  9. Registra no log + osforge-db
 ```
 
 ### Modelo por etapa (smart-model-dispatch)
 
 | Etapa | Modelo | Razão |
 |---|---|---|
-| Leitura + hipótese | Haiku | Mecânico, baixo custo |
-| Modificação do SKILL.md | Haiku | Segue padrão claro |
-| Execução dos prompts de teste | Haiku | Geração de outputs |
-| Avaliação dos outputs | Sonnet | Requer julgamento qualitativo |
-| Decisão keep/discard | Sonnet | Raciocínio sobre critério de sucesso |
-| Síntese final (relatório) | Sonnet | Análise do progresso |
+| Leitura + hipótese + modificação | Haiku | Mecânico, baixo custo |
+| Execução verify + guard | Haiku | Rodar comandos |
+| Avaliação + decisão | Sonnet | Requer julgamento |
+| Síntese final (relatório) | Sonnet | Análise de padrões |
 
-Use Opus apenas se o critério de sucesso for ambíguo e exigir raciocínio profundo sobre tradeoffs arquiteturais.
+Usar Opus apenas se o critério for ambíguo e exigir raciocínio sobre tradeoffs arquiteturais.
 
-### Log de iterações
+---
 
-Mantenha um arquivo `autorefine-log.md` dentro do diretório da skill durante o processo:
+## Log de iterações (TSV + markdown)
+
+### TSV (machine-readable)
+
+Manter `autorefine-results.tsv` no diretório do artefato:
+
+```tsv
+iteration	commit	metric	delta	guard	status	hypothesis
+0	a1b2c3d	85.2	0.0	pass	baseline	initial state
+1	b2c3d4e	87.1	+1.9	pass	keep	add explicit TypeScript types to output rules
+2	-	86.5	-0.6	pass	discard	refactor section ordering (no improvement)
+3	c4d5e6f	89.3	+2.2	pass	keep	add code block examples for each pattern
+4	d5e6f7g	91.0	+1.7	fail	rework	aggressive minification broke guard tests
+4b	e6f7g8h	90.8	+1.5	pass	keep	conservative minification (guard-safe)
+```
+
+### Markdown (human-readable)
+
+Manter `autorefine-log.md` durante o processo:
 
 ```markdown
-# AutoRefine Log — <nome-da-skill>
+# AutoRefine Log — <nome-do-artefato>
 Data: <data>
 Budget: <N> iterações
-Critério: <critério de sucesso>
+Verify: <comando>
+Guard: <comando>
+Direção: higher-is-better | lower-is-better
 
 ## Iteração 1
 - Hipótese: ...
 - Modificação: ...
-- Resultado: KEEP | DISCARD
+- Métrica: X → Y (delta: +Z)
+- Guard: pass | fail
+- Resultado: KEEP | DISCARD | REWORK
 - Razão: ...
-
-## Iteração 2
-...
 
 ## Resultado final
 - Melhor versão: iteração N
-- Val score inicial: X/3 prompts aprovados
-- Val score final: Y/3 prompts aprovados
-- Resumo das mudanças que funcionaram: ...
+- Métrica inicial: X
+- Métrica final: Y (delta: +Z, melhoria de W%)
+- Hipóteses que funcionaram: ...
+- Hipóteses que falharam: ...
 ```
-
-Remova o `autorefine-log.md` após aprovação do usuário, ou mova para `skills/<nome>-snapshot-*/`.
 
 ---
 
-## Métricas de avaliação
+## Memória cross-sessão (osforge-db)
 
-Adapte as métricas ao tipo de skill. Exemplos:
+Ao final de cada sessão de autorefine, persista os aprendizados:
 
-### Skills de geração de código
-- [ ] Output sempre tem tipagem TypeScript válida
-- [ ] Nenhum uso de `any` sem justificativa
-- [ ] Imports organizados (external → internal → relative)
-- [ ] Segue convenções do projeto (App Router, Server Actions, etc.)
+```bash
+# Registrar cada hipótese KEEP como decisão
+osforge-db add-decision <project-slug> \
+  "autorefine(<artefato>): KEEP — <hipótese resumida> (metric +<delta>)" \
+  --category=arch
 
-### Skills de UI (openui-genui-layout)
-- [ ] Sempre produz bloco OpenUI Lang antes do código
-- [ ] Usa apenas componentes shadcn/ui nativos
-- [ ] Seleciona padrão canônico correto para o contexto
+# Registrar cada hipótese DISCARD como decisão
+osforge-db add-decision <project-slug> \
+  "autorefine(<artefato>): DISCARD — <hipótese resumida> (reason: <razão>)" \
+  --category=arch
 
-### Skills de documentação
-- [ ] Inclui todos os campos obrigatórios
-- [ ] Tom e idioma consistentes
-- [ ] Sem vazamento de informações internas
+# Registrar resultado final
+osforge-db add-decision <project-slug> \
+  "autorefine(<artefato>): resultado — metric <inicial> → <final> (+<delta>%) em <N> iterações" \
+  --category=arch
+```
 
-### Skills de análise
-- [ ] Cobre todos os aspectos solicitados
-- [ ] Cita fontes ou contexto quando necessário
-- [ ] Conclui com recomendação acionável
+Na próxima sessão, o loop consulta `osforge-db search "autorefine <artefato>"` e evita repetir hipóteses que já falharam. Isso cria **aprendizado institucional** — o agente não comete os mesmos erros entre sessões.
+
+---
+
+## Crash recovery
+
+| Falha | Resposta |
+|---|---|
+| Syntax error no artefato | Fix imediato, não contar iteração |
+| Runtime error no verify/guard | Tentar fix (max 3x), depois skip |
+| Timeout no comando | Revert, tentar variante menor |
+| Guard quebra após verify passar | REWORK (max 2x), depois DISCARD |
+| Processo interrompido | Snapshot preserva estado; `osforge-db resume` retoma |
 
 ---
 
@@ -138,51 +240,78 @@ Adapte as métricas ao tipo de skill. Exemplos:
 
 Encerre o loop antes de esgotar o budget se:
 
-1. **Convergência** — 3 iterações consecutivas resultaram em KEEP sem melhoria adicional mensurável
-2. **Saturação** — 100% dos prompts de teste aprovados por 2 iterações consecutivas
-3. **Regressão persistente** — 3 iterações consecutivas resultaram em DISCARD (a hipótese de melhoria está errada; pare e discuta com o usuário)
+1. **Convergência** — 3 iterações consecutivas KEEP sem melhoria adicional mensurável
+2. **Saturação** — 100% dos critérios aprovados por 2 iterações consecutivas
+3. **Regressão persistente** — 3 iterações consecutivas DISCARD (hipótese de melhoria está errada; pare e discuta com o usuário)
 4. **Budget esgotado** — N iterações concluídas
+
+Progresso impresso a cada 5 iterações (se budget > 5).
 
 ---
 
 ## Relatório final
 
-Ao encerrar o loop, apresente ao usuário:
+Ao encerrar o loop:
 
 ```
-## AutoRefine — Resultado Final
+## AutoRefine v2 — Resultado Final
 
-Skill: <nome>
-Iterações executadas: N/budget
-Prompts de teste aprovados: Y/total (era X/total)
+Artefato: <nome>
+Modo: Skill | Genérico
+Iterações: N/budget
+Métrica: <inicial> → <final> (delta: +X, melhoria: Y%)
+Guard: <N> passes, <M> fails, <K> reworks
 
-### O que melhorou
-- <mudança 1 que foi mantida>
-- <mudança 2 que foi mantida>
+### Hipóteses que funcionaram (KEEP)
+| # | Hipótese | Delta | Guard |
+|---|----------|-------|-------|
+| 1 | <descrição> | +1.9 | pass |
+| 3 | <descrição> | +2.2 | pass |
 
-### O que não funcionou
-- <hipótese descartada 1>
-- <hipótese descartada 2>
+### Hipóteses que falharam (DISCARD)
+| # | Hipótese | Razão |
+|---|----------|-------|
+| 2 | <descrição> | sem melhoria mensurável |
+| 4 | <descrição> | guard failure (testes quebraram) |
+
+### Memória persistida
+- <N> decisões registradas em osforge-db
+- Próxima sessão consultará hipóteses falhas automaticamente
 
 ### Próximos passos sugeridos
-- <sugestão baseada nas iterações descartadas>
+- <sugestão baseada nos padrões observados>
 
-O snapshot da versão original está em: skills/<nome>-snapshot-<timestamp>/
+Snapshot original: <path>
 ```
 
-Ofereça fazer commit da versão refinada com mensagem convencional:
+Ofereça fazer commit com mensagem convencional:
 ```
-refine(skills): autorefine <nome-da-skill> — N iterações, val +X%
+refine(<escopo>): autorefine <artefato> — N iterações, metric +X%
 ```
 
 Aguarde aprovação explícita antes de commitar.
 
+---
 
 ## Gotchas
 
-- **Modificar muita coisa por iteração**: o loop funciona com hipóteses pequenas e testáveis. Reescrever o SKILL.md inteiro em uma iteração é o erro mais comum — torna impossível saber o que causou melhoria ou regressão.
-- **Não fazer snapshot antes**: se esquecer o `cp -r skills/<nome> skills/<nome>-snapshot-...` antes de começar, não há como reverter para a versão original. O snapshot é obrigatório — não é opcional.
-- **Critério de sucesso vago**: "ficar melhor" não é um critério. O critério precisa ser binário e verificável: "sempre inclui bloco TypeScript com tipos explícitos" ou "nunca gera código sem schema Zod". Critérios vagos produzem iterações inconsistentes.
-- **Avaliar com Haiku**: a avaliação de qualidade (KEEP/DISCARD) deve usar Sonnet, não Haiku — Haiku não tem julgamento qualitativo suficiente para avaliar a diferença entre versões de skill. Só a geração de modificações usa Haiku.
-- **Não commitar versão refinada sem aprovação**: sempre apresentar o relatório final e aguardar aprovação explícita antes de commitar. O commit da versão refinada é o artefato final — não uma ação intermediária automática.
-- **Usar sem prompts de teste reais**: prompts de teste genéricos ("faça um componente") não revelam falhas específicas da skill. Sempre coletar ou gerar 2-3 prompts que representam casos de uso reais do usuário antes de iniciar o loop.
+### Modificar muita coisa por iteração
+O loop funciona com hipóteses atômicas. Reescrever o artefato inteiro em uma iteração torna impossível saber o que causou melhoria ou regressão.
+
+### Verify sem Guard
+Otimizar uma métrica sem guard é como correr sem freio — a métrica melhora mas o resto quebra. Sempre definir um guard, mesmo que simples (`bun test` ou `tsc --noEmit`).
+
+### Repetir hipóteses falhas
+Sem memória cross-sessão, o agente repete as mesmas hipóteses que já falharam. Sempre consultar `osforge-db search "autorefine <artefato>"` antes de formular hipóteses.
+
+### Não fazer snapshot antes
+O snapshot é obrigatório. Sem ele, não há como reverter à versão original.
+
+### Critério de sucesso vago
+"Ficar melhor" não é critério. O critério precisa ser mecânico e binário — um comando que retorna um número ou pass/fail.
+
+### Avaliar com Haiku
+A decisão KEEP/DISCARD deve usar Sonnet. Haiku gera modificações; Sonnet julga resultados.
+
+### Guard files no scope de modificação
+Arquivos usados pelo guard NUNCA podem estar no scope de modificação. Se o guard é `bun test`, os arquivos de teste são read-only.
