@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **86 on-demand skills**, **26 specialized agents**, **12 always-on rules**, **9 spec commands**, **Python hooks**, **SQLite local state backend**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **122 on-demand skills**, **26 specialized agents**, **12 always-on rules**, **9 spec commands**, **Python hooks**, **SQLite local state backend**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -14,7 +14,7 @@ OSForge is a production-grade AI development framework with **86 on-demand skill
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 86 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 122 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Core skills tailored for Next.js App Router + Prisma + Supabase + shadcn/ui, with expanded coverage for mobile, game dev, Rust, Python, and cross-platform.
 3. **Quality gates built-in** — TDD enforcement, security auditing, red team tactics, insecure defaults detection, Reality Check + Quality Control Loop in every agent, and Python hooks at zero token cost.
 4. **Local SQLite state** — `osforge-db` CLI persists project state, architectural decisions, and blockers locally. Session resumption in ~50 tokens via `osforge-db resume`. FTS5 full-text search across all decisions cross-project.
@@ -35,7 +35,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 
 ## What's Inside
 
-### 79 Skills (on-demand)
+### 122 Skills (on-demand)
 
 #### Core & Workflow
 | # | Skill | Category |
@@ -60,6 +60,10 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | 13 | Tailwind Patterns (v4) | Frontend |
 | 14 | UI Design Intelligence (Styles, Palettes, Typography, UX, Charts) | Frontend |
 | 15 | Web Design Guidelines (accessibility, UX rules) | Frontend |
+| 15a | **Taste Design Dials** (DESIGN_VARIANCE / MOTION_INTENSITY / VISUAL_DENSITY dials, GSAP, magnetic, perpetual motion, Bento 2.0) | Frontend |
+| 15b | **Aesthetic Modes** (3 modos: Editorial Minimalist / Industrial Brutalist / Soft Premium) | Frontend |
+| 15c | **Redesign Audit** (auditoria + upgrades cirúrgicos em projeto existente) | Frontend |
+| 15d | **Stitch Design Export** (DESIGN.md para Google Stitch) | Frontend |
 | 16 | Core Web Vitals | Performance |
 | 17 | Accessibility (WCAG 2.1) | Frontend |
 | 18 | OpenUI/GenUI Layout | Frontend |
@@ -161,7 +165,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | 78 | Context Distillator | Context |
 | 79 | Project Context Generator | Context |
 
-> **Plus:** Doc Shard, Editorial Review, Agent Skills Search, Dispatching Parallel Agents, MCP Builder, Claude API & Agent SDK (TypeScript), Context7 Docs-First, Smart Hooks (Python), AutoRefine Skill, Skill Creator, The Agency (121 AI Specialists)
+> **Plus:** Doc Shard, Editorial Review, Agent Skills Search, Dispatching Parallel Agents, MCP Builder, Claude API & Agent SDK (TypeScript), Context7 Docs-First, Smart Hooks (Python), AutoRefine Skill, Skill Creator, The Agency (121 AI Specialists), **Output Enforcement** (anti-truncation/anti-placeholder modifier)
 
 ### 26 Agents (on-demand)
 
@@ -214,7 +218,7 @@ All agents include **Reality Check** (anti-self-deception) and **Quality Control
 | **seo-specialist** | SEO, E-E-A-T, structured data, ranking optimization |
 | **git-commit-helper** | Conventional commits and release notes |
 
-### 11 Always-On Rules (Cursor)
+### 12 Always-On Rules (Cursor)
 
 - **TypeScript Strict Mode** — `strict: true` + `noUncheckedIndexedAccess` + no `any`
 - **Code Style** — Product thinking (PDD), naming conventions, import order
@@ -226,7 +230,8 @@ All agents include **Reality Check** (anti-self-deception) and **Quality Control
 - **Agent Skills Reference** — How to load and use OSForge skills
 - **Orchestrator Awareness** — Always check .osforge/status.yaml for work in progress; route complex demands through Orchestrator
 - **Artifact Chain** — Every planning artifact must have frontmatter with type, status, depends_on; never advance phase without checkpoint approval
-- **Intelligent Routing** — Silent domain detection + automatic agent selection on every message
+- **Intelligent Routing** — Silent domain detection + automatic agent + skill selection on every message (21 domains + design taste sub-routing)
+- **Anti-AI-Slop** — 40 enforced rules preventing generic AI design (typography, color, layout, content, components, performance, meta)
 
 ### 9 Spec Commands (Claude Code)
 
@@ -291,6 +296,65 @@ Integrated from [coreyhaines31/marketingskills](https://github.com/coreyhaines31
 | Sales | cold-email, sales-enablement, revops | `skills/agency/sales/workflows/` |
 
 All workflows reference `.osforge/marketing-context.md` as the shared context source. Full agent↔workflow mapping in `skills/agency/marketing/workflows/ROUTING.md`.
+
+---
+
+## 🎨 Design Taste System (taste-skill integration)
+
+Integrated from [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT, 10k+ stars). A complete premium frontend engineering toolkit that overrides default LLM design biases via three tunable dials, mode-specific paradigms, and audit-and-upgrade workflows.
+
+### The 3-Dial System (`taste-design-dials`)
+
+Premium frontend at the level of award-winning agency work — tunable on three independent axes:
+
+| Dial | Range | What it controls |
+|---|---|---|
+| **DESIGN_VARIANCE** | 1 (Predictable Symmetric) → 10 (Artsy Chaos) | Layout asymmetry, grid breaking, negative space |
+| **MOTION_INTENSITY** | 1 (Static) → 10 (Cinematic GSAP scrolltelling) | Animations, spring physics, perpetual loops |
+| **VISUAL_DENSITY** | 1 (Art Gallery Airy) → 10 (Cockpit/Packed Data) | Spacing, card usage, information density |
+
+Default baseline: `VARIANCE=8 · MOTION=6 · DENSITY=4`. Auto-adjusts to user prompt (*"mais minimal"* → lower density; *"animações fortes"* → raise motion).
+
+**Includes:** Creative Arsenal (50+ premium components), Motion-Engine Bento 2.0 paradigm, double-bezel nested architecture, magnetic micro-physics, liquid glass refraction, GSAP scroll-pinning, AI Tells (forbidden patterns), and the full Pre-Flight Check matrix.
+
+### The 3 Aesthetic Modes (`aesthetic-modes`)
+
+Pick ONE per project and commit. Each mode has its own complete typographic, chromatic, and motion architecture:
+
+| Mode | Vibe | Use for |
+|---|---|---|
+| **EDITORIAL_MINIMALIST** | Warm monochrome, document-style, typographic contrast | Notion/Linear-style products, knowledge tools, content-heavy SaaS |
+| **INDUSTRIAL_BRUTALIST** | Swiss print or CRT terminal, rigid grids, hazard red accent | Data-heavy dashboards, telemetry, blueprint UIs, portfolios |
+| **SOFT_PREMIUM** | Apple-tier, haptic depth, double-bezel cards, cinematic motion | Premium SaaS, AI products, agency sites, Awwwards-tier launches |
+
+### Audit + Upgrade Loop (`redesign-audit`)
+
+Different from review-only skills. This skill **audits AND applies fixes** working with the existing stack — no rewrites. Covers typography, color, layout, interactivity, content, components, iconography, code quality, and the 5 "things AI typically forgets" (legal links, back nav, 404, validation, skip links).
+
+### Cross-Cutting Quality Modifiers
+
+- **`output-enforcement`** — anti-laziness directive. Bans `// ... rest of code`, `// TODO`, `for brevity`. Enforces complete output via SCOPE-counting and clean `[PAUSED — X of Y complete]` breakpoints when token limit looms.
+- **`stitch-design-export`** — generates `DESIGN.md` files compatible with [Google Stitch](https://labs.google.com/stitch) for semantic design system handoff.
+
+### How auto-routing works
+
+The `rules/intelligent-routing.mdc` rule silently detects design intent and bundles the right skills:
+
+```
+"crie uma landing page premium"
+  → frontend-design + aesthetic-boost + taste-design-dials + (ask: which mood?)
+
+"estilo Notion / minimalist editorial"
+  → aesthetic-modes → EDITORIAL_MINIMALIST
+
+"redesenhar nosso site"
+  → redesign-audit → ui-audit (validation loop)
+
+"refatora tudo isso sem placeholder"
+  → output-enforcement modifier activates on any agent
+```
+
+Combined with the enhanced **`anti-ai-slop.mdc`** rule (40 enforced anti-patterns spanning typography, color, layout, content, components, performance, and meta), every frontend output is automatically gated against generic AI design.
 
 ---
 
@@ -364,7 +428,7 @@ osforge/
 ├── .osforge/              # Project status tracking (status.yaml)
 ├── claude-code/
 │   ├── CLAUDE.md          # Entry point for Claude Code sessions
-│   ├── SKILLS.md          # 79 skill triggers (~12K base tokens)
+│   ├── SKILLS.md          # 122 skill triggers (~12K base tokens)
 │   └── agents/            # 26 agent definitions (.md)
 ├── agents/                # 26 agent source files (with Reality Check + Quality Control Loop)
 │   ├── orchestrator/      # Meta-agent: AGENT.md + triage-rules + plan-templates
@@ -375,16 +439,24 @@ osforge/
 │   ├── code-archaeologist.md # Legacy code archaeology
 │   ├── explorer-agent.md     # Codebase analysis, onboarding
 │   └── ... (26 total)
-├── rules/                 # 11 always-on rules (.mdc + .md) for Cursor
-│   └── intelligent-routing.mdc  # 21 domains, 28 agent routing combinations
+├── rules/                 # 12 always-on rules (.mdc + .md) for Cursor
+│   ├── intelligent-routing.mdc  # 27 domains, design taste sub-routing, automatic skill bundling
+│   └── anti-ai-slop.mdc        # 40 enforced rules vs generic AI design
 ├── commands/              # 9 spec:* slash commands for Claude Code
-├── skills/                # On-demand skill library (110 SKILL.md files)
+├── skills/                # On-demand skill library (122 SKILL.md files)
 │   ├── agency/            # 121 AI specialists — The Agency (10 divisions) + 32 marketing workflows
 │   ├── app-builder/       # 13 project templates (Next.js, FastAPI, Flutter, Electron...)
 │   ├── api-patterns/      # REST/GraphQL/tRPC + 10 reference modules
 │   ├── game-development/  # Orchestrator + 10 sub-skills (2D, 3D, multiplayer, VR/AR...)
 │   ├── mobile-design/     # Touch psychology, platform-specific + references
 │   ├── frontend-design/   # Colors, typography, animation, UX + 7 references
+│   ├── taste-design-dials/ # 3-dial tunable system (VARIANCE/MOTION/DENSITY) + Creative Arsenal + Bento 2.0
+│   ├── aesthetic-modes/   # 3 modos: Editorial Minimalist / Industrial Brutalist / Soft Premium
+│   ├── aesthetic-boost/   # Anti-AI-slop compact primer (~500 tokens)
+│   ├── redesign-audit/    # Audit + cirurgia em projetos existentes
+│   ├── stitch-design-export/ # DESIGN.md generator para Google Stitch
+│   ├── output-enforcement/ # Anti-truncation / anti-placeholder modifier
+│   ├── ui-design-intelligence/ # Design system spec por indústria (67 estilos, 161 paletas)
 │   ├── architecture/      # System design patterns + 5 reference modules
 │   ├── database-design/   # Schema, indexing, ORM + 6 reference modules
 │   ├── nextjs-react-expert/ # 9 performance optimization modules
@@ -396,7 +468,7 @@ osforge/
 │   ├── planning/          # 6 planning skills (spec, prd, arch, epics, story, phase)
 │   ├── quality/           # 6 quality skills (adversarial, code-review, edge-case, elicitation, readiness, ui-audit)
 │   ├── context/           # 4 context skills (distillator, project-context, doc-shard, editorial)
-│   └── ... (110 SKILL.md files total)
+│   └── ... (122 SKILL.md files total)
 ├── hooks/                 # Python hooks + shell scripts + config
 ├── mcp/                   # MCP server configs (claude-code.json, cursor.json)
 ├── scripts/               # Utility scripts
@@ -410,7 +482,7 @@ osforge/
 
 | Component | Tokens | Loaded |
 |---|---|---|
-| SKILLS.md (80 triggers + 12 rules) | ~12,000 | Always |
+| SKILLS.md (122 triggers + 12 rules) | ~12,000 | Always |
 | Agent definitions (26) | ~1,500–3,000 | On invoke |
 | Agency router (SKILL.md) | ~2,000 | On invoke |
 | Agency division index (1 of 10) | ~1,500 | On invoke |
@@ -493,6 +565,7 @@ OSForge was built by evaluating **1100+ agent skills, commands, and patterns acr
 | **Sentry** | [getsentry/skills](https://github.com/getsentry/skills) ⭐ 173 | Code review, PR workflow |
 | **Supabase** | [supabase/agent-skills](https://github.com/supabase/agent-skills) ⭐ 1.1k | PostgreSQL optimization, Supabase patterns |
 | **Superpowers (obra)** | [obra/superpowers](https://github.com/obra/superpowers) ⭐ 118k | brainstorming, finishing-a-branch, receiving-review, git worktrees, two-stage task review pattern |
+| **taste-skill (Leonxlnx)** | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) ⭐ 10k | High-Agency Frontend — 3-dial tunable system (DESIGN_VARIANCE/MOTION_INTENSITY/VISUAL_DENSITY), GSAP scrolltelling, double-bezel cards, perpetual micro-physics, Bento 2.0 paradigm. Inspired `taste-design-dials`, `aesthetic-modes`, `redesign-audit`, `output-enforcement`, `stitch-design-export`. |
 | **The Agency** | [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) ⭐ 31k | 121 AI specialists across 10 business divisions |
 | **Trail of Bits** | [trailofbits/skills](https://github.com/trailofbits/skills) ⭐ 2.4k | Enterprise security auditing methodology |
 | **UI-UX Pro Max** | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) ⭐ 39k | Design intelligence database: 67 styles, 161 palettes, 57 font pairs, 99 UX guidelines, 25 chart types |

@@ -30,10 +30,13 @@ ok()   { echo "  ✅ $1"; }
 skip() { echo "  ⟳  [dry-run] $1"; }
 
 backup_file() {
-  # Cria backup versionado antes de sobrescrever arquivo crítico
+  # Cria backup versionado em ~/.claude_backups (fora da pasta oficial)
   local dst="$1"
   if [ -f "$dst" ]; then
-    local bak="${dst}.bak.$(date +%Y%m%d%H%M%S)"
+    local bak_dir="$HOME/.claude_backups"
+    mkdir -p "$bak_dir"
+    local filename="$(basename "$dst")"
+    local bak="${bak_dir}/${filename}.bak.$(date +%Y%m%d%H%M%S)"
     cp "$dst" "$bak"
   fi
 }

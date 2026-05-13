@@ -49,6 +49,11 @@ Analisar keywords e contexto do request:
 | brainstorm, ideia, explorar problema, ideação | IDEATION |
 | GEO, AI search, LLM visibility, Perplexity, ChatGPT ranking | GEO |
 | visualizar plano, breakdown visual, HTML interativo, apresentar spec, agency delivery | VISUALIZATION |
+| premium, awwwards, agência, $150k, magnetic, GSAP, perpetual motion, bento 2.0, double-bezel, liquid glass, scrolltelling | DESIGN_TASTE |
+| minimalist editorial, Notion style, Linear style, warm monochrome, Apple-tier, soft premium, brutalist, industrial, Swiss, CRT terminal, blueprint UI | DESIGN_MODE |
+| redesenhar, modernizar UI, upgrade visual, tirar cara de AI, site parece template, melhorar design atual | REDESIGN |
+| Google Stitch, DESIGN.md (export), Stitch prompt, semantic design system | STITCH_EXPORT |
+| output completo, sem placeholder, sem `// ...`, sem `// TODO`, exaustivo, sem cortar | OUTPUT_QUALITY |
 
 ## 3. Selecionar agente(s)
 
@@ -80,6 +85,12 @@ Com base nos domínios detectados:
 | BACKEND + DATABASE | `backend-engineer` + `database-architect` |
 | SECURITY + TESTING | `security-auditor` + `penetration-tester` |
 | VISUALIZATION | usa `skills/visual-planner` + `skills/aesthetic-boost` (sem agente dedicado) |
+| FRONTEND + DESIGN_TASTE | `frontend-engineer` + `skills/taste-design-dials` + `skills/aesthetic-boost` |
+| FRONTEND + DESIGN_MODE | `frontend-engineer` + `skills/aesthetic-modes` (resolver Editorial/Brutalist/Soft) |
+| REDESIGN | `frontend-engineer` + `skills/redesign-audit` → depois `skills/ui-audit` |
+| STITCH_EXPORT | `skills/stitch-design-export` + `skills/ui-design-intelligence` |
+| OUTPUT_QUALITY | always-active modifier `skills/output-enforcement` |
+| Qualquer task longa (>500 LOC ou >5 deliverables) | adicionar `skills/output-enforcement` automaticamente |
 | Explorar codebase desconhecido | `explorer-agent` |
 | Planejamento de produto | `product-manager` ou `product-owner` |
 | Planejamento de projeto | `project-planner` |
@@ -113,6 +124,29 @@ Após qualquer skill de planejamento gerar artefato, encadear apresentação vis
 | Output de planning skill em triage QUICK | Oferecer: "Quer visualizar como HTML interativo?" |
 | Usuário diz "visualizar", "breakdown visual", "apresentar", "tornar visual" | Executar `skills/visual-planner` + `skills/aesthetic-boost` |
 | Usuário diz "entrega de agência", "agency delivery", "apresentação profissional" | Pipeline completo: `visual-planner` → `aesthetic-boost` → `ui-design-intelligence` → `web-design-guidelines` |
+
+## 6. Design Taste Sub-Routing (when DESIGN detected)
+
+Após detectar DESIGN, executar análise secundária para escolher entre:
+
+| Sinal no prompt | Sub-skill ativada |
+|---|---|
+| "premium", "awwwards", "agência", explicitamente "alto nível" | `taste-design-dials` (com dials default 8/6/4 ou ajustados pelo user) |
+| "minimal", "editorial", "Notion", "Linear", "warm", "document" | `aesthetic-modes` → `EDITORIAL_MINIMALIST` |
+| "brutalist", "industrial", "Swiss", "CRT", "terminal", "blueprint", "data-heavy" | `aesthetic-modes` → `INDUSTRIAL_BRUTALIST` |
+| "Apple-tier", "soft", "haptic", "glassmorphism", "luxury", "ethereal" | `aesthetic-modes` → `SOFT_PREMIUM` |
+| "redesenhar", "modernizar", "upgrade", "tirar cara de AI" | `redesign-audit` → depois `ui-audit` |
+| "Google Stitch", "DESIGN.md" | `stitch-design-export` |
+| Sem sinal claro mas FRONTEND visual + alta importância | `taste-design-dials` (baseline) + `aesthetic-boost` (compact) |
+
+**Regra de bundling automático:**
+Toda task com domínio FRONTEND **E** indicadores de qualidade ("premium", "agency", "polish",
+"production-ready", "landing page", "hero", "marketing site") deve carregar:
+1. `frontend-design` (sempre — princípios + UX psychology)
+2. `aesthetic-boost` (sempre — anti-slop compact primer ~500 tokens)
+3. `taste-design-dials` (premium contexts)
+4. `aesthetic-modes` (se mood específico detectado)
+5. `ui-audit` (após implementação)
 
 **Accent color automático** (baseado no domínio detectado):
 - BACKEND / DATABASE / DEVOPS → Teal (`#2A7B9B`)

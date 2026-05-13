@@ -104,6 +104,13 @@ Quando a demanda envolve um domínio específico, carregar os skills corresponde
 | Tipo de Projeto | Skills Primários | Agente Principal |
 |---|---|---|
 | App web Next.js | `nextjs-react-expert`, `frontend-ui-system`, `tailwind-patterns` | `frontend-engineer` |
+| Landing / Hero / Marketing site | `frontend-design`, `aesthetic-boost`, `taste-design-dials`, `aesthetic-modes` (mood-dependent), `frontend-ui-system` | `frontend-engineer` |
+| Premium / Awwwards / Agency-tier | `taste-design-dials`, `aesthetic-modes` → `SOFT_PREMIUM`, `aesthetic-boost`, `ui-audit` (post) | `frontend-engineer` |
+| Editorial / Minimalist (Notion/Linear) | `aesthetic-modes` → `EDITORIAL_MINIMALIST`, `frontend-design`, `taste-design-dials` (low motion/density) | `frontend-engineer` |
+| Brutalist / Industrial / Terminal | `aesthetic-modes` → `INDUSTRIAL_BRUTALIST`, `frontend-design`, `taste-design-dials` (high density) | `frontend-engineer` |
+| Redesign / Modernize existing UI | `redesign-audit` → `ui-audit` → fix loop | `frontend-engineer` |
+| Google Stitch export | `stitch-design-export`, `ui-design-intelligence` | (sem agente dedicado) |
+| Output longo / multi-arquivo | + `output-enforcement` (modifier, sempre) | (qualquer agente) |
 | API/Backend | `api-patterns`, `nodejs-best-practices`, `database-design` | `backend-engineer` |
 | App mobile | `mobile-design`, `app-builder` (react-native/flutter template) | `mobile-developer` |
 | Game | `game-development` + sub-skills relevantes | `game-developer` |

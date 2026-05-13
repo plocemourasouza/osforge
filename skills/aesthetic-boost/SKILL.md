@@ -77,3 +77,15 @@ Sem brand assets → crie uma direção estética original e consistente para o 
 
 > **Lembre:** Claude é capaz de trabalho criativo extraordinário. Não segure — mostre o que
 > pode ser criado quando se pensa fora da caixa e se compromete totalmente com uma visão distinta.
+
+---
+
+## Skills Relacionadas (deep-dive quando precisar mais que o primer compact)
+
+- **`taste-design-dials`** — sistema tunável de 3 dials (DESIGN_VARIANCE / MOTION_INTENSITY / VISUAL_DENSITY)
+  + Creative Arsenal + Motion-Engine Bento 2.0 + AI Tells completos
+- **`aesthetic-modes`** — 3 paradigmas distintos (Editorial Minimalist / Industrial Brutalist / Soft Premium)
+- **`redesign-audit`** — aplicar este boost a projeto existente via auditoria e upgrades cirúrgicos
+- **`frontend-design`** — princípios de design + UX psychology (ler primeiro)
+- **`ui-design-intelligence`** — gerar design system spec adaptado ao produto e indústria
+- **`stitch-design-export`** — gerar DESIGN.md compatível com Google Stitch

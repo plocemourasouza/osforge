@@ -11,12 +11,61 @@ alwaysApply: true
 
 ## Ao gerar QUALQUER código frontend:
 
-1. **NUNCA** use Inter, Roboto, Arial, Open Sans, Lato ou system fonts como escolha primária de tipografia
-2. **NUNCA** use gradientes roxos em fundo branco — é o clichê mais reconhecível de "AI slop"
-3. **NUNCA** replique o layout "Vercel template" (hero split left/right, bento grid, cards uniformes)
-4. **NUNCA** repita a mesma escolha estética de uma geração anterior na mesma sessão
-5. **SEMPRE** commita com uma direção estética intencional antes de codificar
-6. **SEMPRE** use CSS variables para tokens de design (cores, spacing, fontes)
-7. Se o projeto tem brand assets definidos (logo, paleta, fontes) → use-os como fundação
-8. Se não tem → crie uma direção original e consistente que sirva o contexto específico
-9. **Complexity matching:** design maximalista = código elaborado; design minimalista = restraint e precisão
+### Tipografia
+1. **NUNCA** use Inter, Roboto, Arial, Open Sans, Lato ou system fonts como escolha primária
+2. **NUNCA** use serifas genéricas (Times New Roman, Georgia, Garamond, Palatino) — se serifa for
+   necessária, use apenas Fraunces, Gambarino, Editorial New, Instrument Serif
+3. **NUNCA** use serifa em dashboards / software UIs — somente sans-serif pairings (Geist + Geist Mono,
+   Satoshi + JetBrains Mono)
+4. **NUNCA** gere H1 com mais de 2-3 linhas — use `max-w-5xl/6xl` + `clamp()` para forçar wrap horizontal
+5. **SEMPRE** use Geist, Outfit, Cabinet Grotesk ou Satoshi para display em contextos premium
+
+### Cor
+6. **NUNCA** use gradientes roxos em fundo branco — clichê AI slop número 1
+7. **NUNCA** use neon/outer glow `box-shadow` — use inner borders ou tinted shadows
+8. **NUNCA** use `#000000` puro — use Off-Black, Zinc-950 ou Charcoal
+9. **NUNCA** use accent oversaturado (saturação > 80%)
+10. **NUNCA** misture warm e cool grays no mesmo projeto
+11. **SEMPRE** limite a 1 accent color por output
+12. **SEMPRE** use neutros (Zinc/Slate) como base + 1 accent contrastante
+
+### Layout
+13. **NUNCA** replique o layout "Vercel template" (hero split left/right, bento grid genérico, 3 cards iguais)
+14. **NUNCA** use 3 cards iguais horizontalmente em feature row — use zig-zag 2-col, asymmetric grid, ou horizontal scroll
+15. **NUNCA** use `h-screen` para hero — sempre `min-h-[100dvh]` (iOS Safari bug)
+16. **NUNCA** use flexbox math com `calc()` — sempre CSS Grid para multi-column
+17. **NUNCA** centralize Hero quando ambição visual > 4 (variance) — force Split Screen ou Asymmetric
+
+### Conteúdo (Jane Doe Effect)
+18. **NUNCA** use nomes genéricos: "John Doe", "Sarah Chan", "Jack Su" — invente nomes criativos realistas
+19. **NUNCA** use empresas genéricas: "Acme", "Nexus", "SmartFlow" — invente brand names contextuais
+20. **NUNCA** use números falsos: `99.99%`, `50%`, `1234567` — use orgânicos (`47.2%`, `+1 (312) 847-1928`)
+21. **NUNCA** use copywriting AI: "Elevate", "Seamless", "Unleash", "Next-Gen", "Game-changer", "Delve", "Tapestry"
+22. **NUNCA** use meta-labels: "SECTION 01", "QUESTION 05", "ABOUT US"
+23. **NUNCA** use filler UI: "Scroll to explore", "Swipe down", scroll arrows, bouncing chevrons
+24. **NUNCA** use Unsplash quebrado — use `https://picsum.photos/seed/{string}/W/H`
+
+### Componentes
+25. **NUNCA** use shadcn/ui em estado default genérico — customize radii, cores, shadows
+26. **NUNCA** use Lucide/Feather como única opção de ícones — use Phosphor, Radix, Heroicons
+27. **NUNCA** misture stroke-widths de ícones diferentes — padronize em 1.5 ou 2.0
+28. **NUNCA** use emojis em código, markup, alt text — use ícones ou SVG primitives
+
+### Performance
+29. **NUNCA** anime `top`, `left`, `width` ou `height` — apenas `transform` e `opacity`
+30. **NUNCA** aplique `backdrop-blur` em scrolling containers — apenas em fixed/sticky
+31. **NUNCA** aplique grain/noise em scrolling containers — apenas em `fixed inset-0 pointer-events-none`
+32. **NUNCA** use `window.addEventListener('scroll')` — use IntersectionObserver ou Framer `whileInView`
+
+### Meta
+33. **NUNCA** repita a mesma escolha estética de uma geração anterior NA MESMA SESSÃO (anti-convergência de segunda ordem)
+34. **NUNCA** crie output incompleto: `// ... rest of code`, `// TODO`, "for brevity" → ative `output-enforcement`
+35. **SEMPRE** commita com uma direção estética intencional antes de codificar (acione `aesthetic-modes` se necessário)
+36. **SEMPRE** use CSS variables para tokens de design
+37. **SEMPRE** verifique deps em `package.json` antes de importar libs (framer-motion, gsap, etc.)
+38. Se o projeto tem brand assets → use como fundação
+39. Se não tem → crie direção original que sirva o contexto
+40. **Complexity matching:** design maximalista = código elaborado; design minimalista = restraint e precisão
+
+> **Para deep-dive:** `skills/aesthetic-boost` (compact primer), `skills/taste-design-dials` (3-dial system),
+> `skills/aesthetic-modes` (Editorial / Brutalist / Soft modes).
