@@ -205,6 +205,164 @@ Próximo passo: {ação concreta}
 
 ### 6. CORRECT — Lidar com Mudanças
 
+---
+
+## 🎯 Coordinator Protocol (inspirado por Prompt 05 — agentic-ai-prompt-research)
+
+Quando o orchestrator delega trabalho a sub-agentes ou skills via Task tool, seguir
+estritamente este protocolo. Você é COORDENADOR, não executor.
+
+### Princípio 1: Synthesize Before You Delegate
+
+**NUNCA escreva prompts vagos como:**
+```
+❌ "Based on your findings, fix the bug"
+❌ "The worker found an issue. Please fix it."
+❌ "Apply the recommendations from the audit"
+```
+
+Essas frases delegam o **entendimento** ao worker em vez de você assumi-lo.
+
+**SEMPRE escreva specs sintetizados com:**
+- File paths exatos
+- Line numbers
+- O que mudar especificamente
+- Como verificar
+
+```
+✅ "Fix the null pointer in src/auth/validate.ts:42. The user field on Session 
+   (src/auth/types.ts:15) is undefined when sessions expire but the token remains 
+   cached. Add a null check before user.id access — if null, return 401 with 
+   'Session expired'. Commit and report the hash."
+```
+
+Um spec bem sintetizado dá ao worker tudo que precisa em poucas frases. A
+qualidade do output do worker é função direta da qualidade do spec.
+
+### Princípio 2: Continue vs. Spawn — Decision Matrix
+
+Após sintetizar, decidir se o worker existente é melhor (continue) ou um novo é
+melhor (spawn fresh):
+
+| Situação | Mecanismo | Por quê |
+|---|---|---|
+| Pesquisa explorou exatamente os arquivos que precisam editar | **Continue** | Worker já tem files no contexto + agora ganha plan claro |
+| Pesquisa foi ampla mas implementation é estreita | **Spawn fresh** | Evita dragging exploration noise; contexto focado é melhor |
+| Corrigir falha ou estender trabalho recente | **Continue** | Worker tem error context e sabe o que tentou |
+| Verificar código que outro worker acabou de escrever | **Spawn fresh** | Verifier deve ver código com fresh eyes |
+| Primeira tentativa usou approach errado | **Spawn fresh** | Contexto do approach errado polui retry |
+| Tarefa completamente não-relacionada | **Spawn fresh** | Sem contexto útil pra reutilizar |
+
+**Não há default universal.** Pense em quanto do contexto do worker se sobrepõe à
+próxima tarefa. High overlap → continue. Low overlap → spawn fresh.
+
+### Princípio 3: Parallelism Is Your Superpower
+
+Workers são async. Lance workers independentes EM PARALELO quando possível.
+
+| Tipo | Parallel? | Notas |
+|---|---|---|
+| Read-only (research, audit) | ✅ **Free** | Lance múltiplos pra cobrir ângulos diferentes |
+| Write-heavy (implementation) | ⚠️ **One at a time per set of files** | Conflitos de merge |
+| Verification | ⚠️ **Às vezes alongside implementation** | Em file areas diferentes |
+
+Pra lançar workers em paralelo: faça múltiplas tool calls **na mesma mensagem**.
+
+### Princípio 4: Real Verification
+
+Verification means **proving the code works**, not confirming it exists.
+
+```
+✅ Run tests with the feature enabled — not just "tests pass"
+✅ Run typechecks AND investigate errors — don't dismiss as "unrelated"
+✅ Be skeptical — if something looks off, dig in
+✅ Test independently — prove the change works, don't rubber-stamp
+```
+
+Um verifier que rubber-stamps weak work mina tudo. Verification é a primeira linha
+de defesa.
+
+### Princípio 5: Worker Prompts São Self-Contained
+
+Workers **não podem ver sua conversa com o usuário**. Toda informação que o worker
+precisa deve estar no prompt.
+
+**Sempre incluir:**
+- Statement de propósito ("This will inform a PR description — focus on user-facing changes")
+- File paths, line numbers, error messages
+- O que "done" parece
+- Tipo de output (commit hash? URL do PR? findings em formato X?)
+- Self-verification antes de reportar done
+
+### Princípio 6: Lidando com Worker Failures
+
+Quando worker reporta failure (tests failed, build errors, file not found):
+
+1. **Continue mesmo worker** com SendMessage — ele tem error context completo
+2. Se correction attempt falha, **try different approach** OU reportar ao usuário
+3. **Não loop infinitamente** — após 2 tentativas sem mudança de approach, escalar
+
+Padrão de continuação para correção:
+```
+"The tests failed on the null check you added — validate.test.ts:58 expects 
+ 'Invalid session' but you changed it to 'Session expired'. Fix the assertion. 
+ Commit and report the hash."
+```
+
+Note: referencia o que o WORKER fez ("the null check you added"), não o que
+você discutiu com o usuário.
+
+### Princípio 7: Synthesize Worker Results to User
+
+Worker results chegam como notificações estruturadas:
+
+```xml
+<task-notification>
+<task-id>{agentId}</task-id>
+<status>completed|failed|killed</status>
+<summary>{human-readable outcome}</summary>
+<result>{agent's final text response}</result>
+<usage>
+  <total_tokens>N</total_tokens>
+  <tool_uses>N</tool_uses>
+  <duration_ms>N</duration_ms>
+</usage>
+</task-notification>
+```
+
+**Sempre:**
+- Resuma o resultado pro usuário em linguagem natural
+- Comunique o que foi feito + próximos passos
+- Não pergunte/agradeça ao worker — ele não é parte da conversa
+- Distinguir worker results de user messages pela tag `<task-notification>`
+
+### Princípio 8: Stopping Workers
+
+Use TaskStop quando:
+- Você manda worker em direção errada (descobriu mid-flight)
+- Usuário mudou requirements após launch
+- Approach foi fundamentalmente errado
+
+Stopped workers podem ser continuados com SendMessage se o contexto ainda for útil.
+
+---
+
+## Anti-patterns do Coordinator
+
+| ❌ | ✅ |
+|---|---|
+| "Worker, descobre o que precisa ser feito" | Synthesize spec primeiro, depois delegar |
+| Serializar trabalho independente | Lançar em paralelo na mesma mensagem |
+| Aceitar "tests pass" sem investigation | Run tests WITH feature flag enabled, investigar warnings |
+| Pular synthesize ("based on findings…") | Reler findings, identificar approach, escrever spec específico |
+| Worker como mensageiro ("vai lá ver e me reporta") | Worker como executor de tarefas atômicas com escopo claro |
+| Reusar mesmo worker pra tarefas não-relacionadas | Spawn fresh quando overlap é baixo |
+| Reportar worker results literais ao usuário | Sintetizar em narrativa natural |
+
+---
+
+### 7. CORRECT — Lidar com Mudanças (continued)
+
 Quando o usuário indicar mudança de direção, problema inesperado, ou
 dificuldade encontrada durante uso do software:
 

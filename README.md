@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **122 on-demand skills**, **26 specialized agents**, **12 always-on rules**, **9 spec commands**, **Python hooks**, **SQLite local state backend**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **126 on-demand skills**, **26 specialized agents**, **13 always-on rules**, **9 spec commands**, **Python hooks**, **SQLite local state backend**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -14,7 +14,7 @@ OSForge is a production-grade AI development framework with **122 on-demand skil
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 122 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 126 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Core skills tailored for Next.js App Router + Prisma + Supabase + shadcn/ui, with expanded coverage for mobile, game dev, Rust, Python, and cross-platform.
 3. **Quality gates built-in** — TDD enforcement, security auditing, red team tactics, insecure defaults detection, Reality Check + Quality Control Loop in every agent, and Python hooks at zero token cost.
 4. **Local SQLite state** — `osforge-db` CLI persists project state, architectural decisions, and blockers locally. Session resumption in ~50 tokens via `osforge-db resume`. FTS5 full-text search across all decisions cross-project.
@@ -35,7 +35,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 
 ## What's Inside
 
-### 122 Skills (on-demand)
+### 126 Skills (on-demand)
 
 #### Core & Workflow
 | # | Skill | Category |
@@ -218,7 +218,7 @@ All agents include **Reality Check** (anti-self-deception) and **Quality Control
 | **seo-specialist** | SEO, E-E-A-T, structured data, ranking optimization |
 | **git-commit-helper** | Conventional commits and release notes |
 
-### 12 Always-On Rules (Cursor)
+### 13 Always-On Rules (Cursor)
 
 - **TypeScript Strict Mode** — `strict: true` + `noUncheckedIndexedAccess` + no `any`
 - **Code Style** — Product thinking (PDD), naming conventions, import order
@@ -232,6 +232,7 @@ All agents include **Reality Check** (anti-self-deception) and **Quality Control
 - **Artifact Chain** — Every planning artifact must have frontmatter with type, status, depends_on; never advance phase without checkpoint approval
 - **Intelligent Routing** — Silent domain detection + automatic agent + skill selection on every message (21 domains + design taste sub-routing)
 - **Anti-AI-Slop** — 40 enforced rules preventing generic AI design (typography, color, layout, content, components, performance, meta)
+- **Memory Hierarchy** — 4-layer CLAUDE.md system (Managed/User/Project/Local) with `@include` directive, frontmatter `paths` conditional injection, and explicit override semantics
 
 ### 9 Spec Commands (Claude Code)
 
@@ -296,6 +297,37 @@ Integrated from [coreyhaines31/marketingskills](https://github.com/coreyhaines31
 | Sales | cold-email, sales-enablement, revops | `skills/agency/sales/workflows/` |
 
 All workflows reference `.osforge/marketing-context.md` as the shared context source. Full agent↔workflow mapping in `skills/agency/marketing/workflows/ROUTING.md`.
+
+---
+
+## 🔬 Agentic AI Patterns (agentic-ai-prompt-research integration)
+
+Integrated from [Leonxlnx/agentic-ai-prompt-research](https://github.com/Leonxlnx/agentic-ai-prompt-research) (1.6k+ stars). Research-grade patterns extracted from observed Claude Code internal architecture.
+
+### 4 New Skills
+
+| Skill | Purpose | Inspired by Prompt |
+|---|---|---|
+| **`tool-safety-classifier`** | LLM-powered auto-approval gate for autonomous tool execution. 3 user-customizable sections (`allow` / `soft_deny` / `environment`). Injection defense: compact transcript excludes assistant text. | 12 — YOLO Classifier |
+| **`context-compact`** | 9-section structured summarization when context > 70%. Three modes (full / partial-recent / partial-up-to). `NO_TOOLS_PREAMBLE` prevents tool calls during summary. `<analysis>` scratchpad stripped before delivery. | 21 — Compact Service |
+| **`config-critique`** | LLM linter for user customizations (new SKILL.md, rules, hooks, agents). Evaluates in 4 axes: Clarity / Completeness / Conflicts / Actionability. Cross-references against baseline. | 17 — Auto Mode Critique |
+| **`stuck-recovery`** | Detect agent loops (same tool failing 3x, no progress in N turns) + save state via osforge-db + propose surgical reset. 4-phase protocol: STOP → SAVE → DIAGNOSE → RECOVER. | 26 — Stuck Skill (reframed) |
+
+### 1 New Rule + 2 Enrichments
+
+- **`rules/memory-hierarchy.mdc`** (NEW) — Formalizes 4-layer CLAUDE.md system, `@include` directive (depth 5), frontmatter `paths` conditional injection, override resolution rules.
+- **`agents/orchestrator/AGENT.md`** (enriched) — Added Coordinator Protocol section: synthesize-before-delegate, Continue vs Spawn decision matrix, parallelism rules, real verification philosophy, worker prompt guidance, `<task-notification>` XML format.
+- **`claude-code/CLAUDE.md`** (enriched) — Documented Cacheable Prefix + Cache Boundary + Dynamic Suffix pattern for Anthropic API prompt caching (~10% cost reduction on stable prefix).
+
+### Why This Matters
+
+The taste-skill integration improved **output quality** (anti-slop, premium design).
+This integration improves **agent infrastructure** — how agents coordinate, handle context limits, validate customizations, and recover from stuck states. Together they make OSForge production-ready for:
+
+- **Long-running autonomous sessions** (auto-mode + context-compact + stuck-recovery)
+- **Multi-agent orchestration** (Coordinator Protocol + parallelism rules)
+- **Enterprise deployments** (memory-hierarchy with Managed layer)
+- **Open-source contributions** (config-critique as PR review gate)
 
 ---
 
@@ -566,6 +598,7 @@ OSForge was built by evaluating **1100+ agent skills, commands, and patterns acr
 | **Supabase** | [supabase/agent-skills](https://github.com/supabase/agent-skills) ⭐ 1.1k | PostgreSQL optimization, Supabase patterns |
 | **Superpowers (obra)** | [obra/superpowers](https://github.com/obra/superpowers) ⭐ 118k | brainstorming, finishing-a-branch, receiving-review, git worktrees, two-stage task review pattern |
 | **taste-skill (Leonxlnx)** | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) ⭐ 10k | High-Agency Frontend — 3-dial tunable system (DESIGN_VARIANCE/MOTION_INTENSITY/VISUAL_DENSITY), GSAP scrolltelling, double-bezel cards, perpetual micro-physics, Bento 2.0 paradigm. Inspired `taste-design-dials`, `aesthetic-modes`, `redesign-audit`, `output-enforcement`, `stitch-design-export`. |
+| **agentic-ai-prompt-research (Leonxlnx)** | [Leonxlnx/agentic-ai-prompt-research](https://github.com/Leonxlnx/agentic-ai-prompt-research) ⭐ 1.6k | Reverse-engineering research of Claude Code internal architecture. Reconstructed prompts for coordinator, classifier, compaction, memory hierarchy, stuck recovery. Inspired `tool-safety-classifier`, `context-compact`, `config-critique`, `stuck-recovery`, `memory-hierarchy.mdc` rule, Coordinator Protocol enrichment, Cache Boundary documentation. |
 | **The Agency** | [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) ⭐ 31k | 121 AI specialists across 10 business divisions |
 | **Trail of Bits** | [trailofbits/skills](https://github.com/trailofbits/skills) ⭐ 2.4k | Enterprise security auditing methodology |
 | **UI-UX Pro Max** | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) ⭐ 39k | Design intelligence database: 67 styles, 161 palettes, 57 font pairs, 99 UX guidelines, 25 chart types |

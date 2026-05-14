@@ -54,6 +54,10 @@ Analisar keywords e contexto do request:
 | redesenhar, modernizar UI, upgrade visual, tirar cara de AI, site parece template, melhorar design atual | REDESIGN |
 | Google Stitch, DESIGN.md (export), Stitch prompt, semantic design system | STITCH_EXPORT |
 | output completo, sem placeholder, sem `// ...`, sem `// TODO`, exaustivo, sem cortar | OUTPUT_QUALITY |
+| modo automático, yolo, headless, CI mode, auto-approve, sem confirmação, autonomous | AUTO_MODE |
+| comprimir contexto, compactar, summary, perto do limite, context full, /compact | CONTEXT_FULL |
+| revisar minha skill, validar minha rule, lint config, conflito de hooks, minha skill está boa? | CONFIG_REVIEW |
+| stuck, travado, loop, não progredindo, esquece o que estava fazendo, recuperar sessão | STUCK |
 
 ## 3. Selecionar agente(s)
 
@@ -91,6 +95,10 @@ Com base nos domínios detectados:
 | STITCH_EXPORT | `skills/stitch-design-export` + `skills/ui-design-intelligence` |
 | OUTPUT_QUALITY | always-active modifier `skills/output-enforcement` |
 | Qualquer task longa (>500 LOC ou >5 deliverables) | adicionar `skills/output-enforcement` automaticamente |
+| AUTO_MODE | `skills/tool-safety-classifier` (gate pré tool call em modo autônomo) |
+| CONTEXT_FULL | `skills/context-compact` (9-section structured summary) |
+| CONFIG_REVIEW | `skills/config-critique` (4-axis LLM linter de customizações) |
+| STUCK | `skills/stuck-recovery` (detect loop + save state + reset cirúrgico) |
 | Explorar codebase desconhecido | `explorer-agent` |
 | Planejamento de produto | `product-manager` ou `product-owner` |
 | Planejamento de projeto | `project-planner` |

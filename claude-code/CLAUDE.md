@@ -27,6 +27,53 @@ Specialized agents available in ~/.claude/agents/:
 The spec workflow is powered by the **tlc-spec-driven** SKILL (included in @SKILLS.md).
 Execute each phase via the `spec:*` commands listed below.
 
+## Prompt Cache Strategy
+
+OSForge organiza memória em 2 zonas explícitas para maximizar cache hit no Anthropic API:
+
+### 🔒 Cacheable Prefix (stable across sessions)
+Esta seção raramente muda. Quando ela é estável, Anthropic API faz cache do prefixo
+e cobra ~10% do preço normal por tokens repetidos. Pra OSForge, isso inclui:
+
+- Identity + safety instructions (este arquivo, sections 1-3)
+- Permission + hook configuration  (`~/.claude/settings.json`)
+- Code style + error handling rules (`rules/typescript-strict.mdc`, `rules/code-style.mdc`)
+- Tool preferences (este arquivo, MCP Servers section)
+- Tone + style + output rules (anti-ai-slop, intelligent-routing)
+- Skills index (@SKILLS.md — 122 triggers)
+
+**Mantenha estas seções ESTÁVEIS.** Mudanças invalidam o cache de TODOS os usuários.
+
+### 🔄 Cache Boundary
+
+```
+═══════════════════════════════════════════════════════
+   CACHEABLE PREFIX ENDS HERE
+═══════════════════════════════════════════════════════
+   DYNAMIC SUFFIX BELOW (changes per session)
+```
+
+### 🌊 Dynamic Suffix (changes per session)
+Esta seção muda toda sessão. Não tente cachear — desperdiça tokens:
+
+- Available agents and skills (loaded on-demand via @include)
+- Memory file contents (`CLAUDE.local.md`, `.osforge/status.yaml`)
+- Environment context (OS, directory, git state)
+- Language and output preferences (per-session)
+- Active MCP server instructions (per-session)
+- Context window management directives
+
+### Hierarquia de carregamento
+
+Loading order (último carregado = maior prioridade):
+1. **Managed** (`/etc/claude-code/CLAUDE.md`) — corporate global
+2. **User** (`~/.claude/CLAUDE.md`) — pessoal global (esse arquivo)
+3. **Project** (`<repo>/CLAUDE.md`, `<repo>/.claude/CLAUDE.md`) — compartilhado
+4. **Local** (`CLAUDE.local.md`) — privado per-project, `.gitignore`-able
+
+Ver `rules/memory-hierarchy.mdc` para detalhes completos sobre `@include`,
+frontmatter `paths` (conditional injection), e resolução de conflitos.
+
 ## Commands (spec:* system)
 Available in ~/.claude/commands/. Execute with `/spec:discover`, `/spec:specify`, etc.
 

@@ -271,3 +271,7 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Doc Shard | shard doc, dividir documento | `skills/meta/doc-shard.md` |
 | Editorial Review | editorial review, review prose | `skills/meta/editorial-review.md` |
 | Output Enforcement | completo, todo o arquivo, exaustivo, sem placeholder, no `// ...`, no `// TODO` | `skills/output-enforcement/SKILL.md` |
+| Tool Safety Classifier | modo automático, yolo mode, headless, CI mode, auto-approve, sem confirmação | `skills/tool-safety-classifier/SKILL.md` |
+| Context Compact | comprimir contexto, compactar, summary, perto do limite, context full, save state, /compact | `skills/context-compact/SKILL.md` |
+| Config Critique | revisar minha skill, validar minha rule, verificar conflito de hooks, lint config | `skills/config-critique/SKILL.md` |
+| Stuck Recovery | stuck, travado, loop, não está funcionando, esquece o que estava fazendo | `skills/stuck-recovery/SKILL.md` |
