@@ -3,13 +3,13 @@ name: coding-guidelines
 description: Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code changes, refactoring, bug fixes, or feature development.
 metadata:
   author: ale
-  version: "1.0.0"
-  source: "Karpathy Guidelines"
+  version: "1.1.0"
+  source: "Karpathy Guidelines + extensions"
 ---
 
 # Coding Guidelines
 
-Behavioral guidelines to reduce common LLM coding mistakes. These principles bias toward caution over speed—for trivial tasks, use judgment.
+Behavioral guidelines to reduce common LLM coding mistakes. These principles bias toward caution over speed—for trivial tasks, use judgment. Every rule exists to prevent a specific failure mode, not as a style wishlist.
 
 ## 1. Think Before Coding
 
@@ -72,3 +72,46 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+## 5. Read Before You Write
+
+**Understand existing code before adding to it.**
+
+Before writing new code next to old code:
+
+- Read the file you're editing and its nearby siblings.
+- Check whether the thing you're about to write already exists.
+- New code that conflicts with code 30 lines away is a silent regression.
+
+## 6. Tests Check Behavior, Not Just Pass
+
+**A passing test that tests nothing is a failure.**
+
+- Assert the function returns the *right* thing, not just *something*.
+- A test that passes against a hardcoded constant is worse than no test.
+- "Tests pass" is not the goal—correct behavior is.
+
+## 7. Long-Running Operations Require Checkpoints
+
+**Don't build on broken state.**
+
+For multi-step work (refactors, migrations, multi-file changes):
+
+- After each significant step, summarize what was done and confirm before proceeding.
+- A failure at step 4 must not silently feed steps 5 and 6.
+
+## 8. Convention Beats Novelty
+
+**In an established codebase, match the existing pattern.**
+
+- Follow the existing pattern even if a "better" one exists.
+- Introducing a second pattern is worse than either pattern alone.
+- "Better in isolation" loses to "consistent with the codebase."
+
+## 9. Fail Visibly, Never Silently
+
+**The most expensive failures look like success.**
+
+- Surface every skipped record, rolled-back transaction, and constraint violation.
+- Never report "done" or "succeeded" when something was bypassed.
+- A migration that silently skips 14% of rows is a failure, not a success.
