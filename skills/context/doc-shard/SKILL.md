@@ -3,7 +3,8 @@ name: doc-shard
 description: >
   Divide documentos markdown grandes em arquivos menores organizados
   com index. Use quando documento exceder context window ou para
-  organizar docs extensos. Use com "shard doc", "dividir documento".
+  organizar docs extensos — ex. um guia de 10k tokens, uma spec com
+  múltiplas seções, um PRD extenso. Use com "shard doc", "dividir documento".
 trigger: shard|split doc|dividir doc|quebrar documento
 model-tier: haiku
 ---

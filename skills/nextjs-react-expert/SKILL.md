@@ -1,6 +1,6 @@
 ---
 name: nextjs-react-expert
-description: React and Next.js performance optimization from Vercel Engineering. Use when building React components, optimizing performance, eliminating waterfalls, reducing bundle size, reviewing code for performance issues, or implementing server/client-side optimizations.
+description: 'React and Next.js performance optimization from Vercel Engineering. Use when building React components, optimizing performance, eliminating waterfalls, reducing bundle size, reviewing code for performance issues, or implementing server/client-side optimizations. Specific symptoms: TTI > 3s, First Load JS bundle > 200KB, LCP > 2.5s, slow page loads from sequential fetches, excessive re-renders, hydration errors.'
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

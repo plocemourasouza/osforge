@@ -1,6 +1,6 @@
 ---
 name: documentation-templates
-description: Documentation templates and structure guidelines. README, API docs, code comments, and AI-friendly documentation.
+description: "Templates prontos e guias de estrutura para documentação: README, API docs, comentários de código e docs AI-friendly. ACIONE quando: criar README do zero com estrutura padrão, montar esqueleto de documentação de API, definir seções e ordem de um doc novo, padronizar comentários de código, estruturar docs legíveis por agentes de IA. Keywords: template, README, estrutura de documentação, API docs, boilerplate, scaffold, comentários de código, documentation structure, doc skeleton, AI-friendly docs. Não acione para: escrever/revisar/editar prosa de documentação existente baseada no código (use docs-writer)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

@@ -1,6 +1,6 @@
 ---
 name: game-audio
-description: Game audio and sound design principles. Music, SFX, adaptive audio.
+description: "Princípios de áudio para jogos: SFX, música, formatos e compressão, áudio adaptativo, performance e acessibilidade sonora. ACIONE quando: quero adicionar sons e música ao meu jogo e não sei quais formatos usar (WAV, OGG, MP3); como fazer música adaptativa que muda com combate, vida ou local (layers, mixing em tempo real); o áudio está consumindo muita memória/CPU e preciso de pooling, streaming ou compressão; como balancear volumes e atenuação por distância; preciso de acessibilidade de áudio (legendas, feedback visual para sons). Keywords: game audio, SFX, sound design, música, áudio adaptativo, mixing, OGG, atenuação, trilha sonora, FMOD. Não acione para: restrições de autoplay de áudio no navegador (use web-games) ou design geral de feedback de gameplay (use game-design)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

@@ -166,6 +166,16 @@ Salvar em `.osforge/phases/{N}-UI-AUDIT.md`.
 
 ---
 
+## Artefatos Esperados como Saída
+
+Ao final da auditoria, os artefatos produzidos devem ser:
+
+1. **Relatório de auditoria** — `.osforge/phases/{N}-UI-AUDIT.md` no formato acima (obrigatório), com verdict geral, tabela por pilar, issues priorizados e plano de correção.
+2. **Screenshots de evidência** (quando disponíveis) — capturas das telas auditadas (desktop e mobile), anexadas ou referenciadas no relatório junto ao issue correspondente; ex.: `.osforge/phases/{N}-audit-screens/hero-mobile.png` mostrando texto transbordando.
+3. **Lista de tasks de correção** — items Alto/Médio formatados como tasks prontas para `story-executor`, com estimativa S/M/L.
+
+---
+
 ## Integração com outros skills
 
 - **`openui-genui-layout`** → planeja ANTES da implementação (contrato de design)

@@ -165,6 +165,24 @@ export async function signInWithProvider(provider: 'google' | 'github') {
 }
 ```
 
+## Debug Checklist
+
+Quando auth não funciona, verificar nesta ordem:
+
+1. **Supabase logs** — Dashboard → Logs → Auth. Procurar erros de `invalid_grant`, `refresh_token_not_found`, rate limits de email.
+2. **Network inspector** — verificar requests para `/auth/v1/token`. Status 400/401 indica token inválido; checar se cookies `sb-*` estão sendo enviados e atualizados na resposta.
+3. **Cookies no browser** — DevTools → Application → Cookies. Devem existir cookies `sb-<project-ref>-auth-token`. Ausentes = middleware não está propagando `setAll`.
+
+Sintomas comuns e causa provável:
+
+| Sintoma | Causa provável | Onde olhar |
+|---------|----------------|------------|
+| Loop de redirect (login ↔ dashboard) | Middleware redireciona mas cookies não persistem; ou matcher cobre a própria rota de login | Network inspector (cookies na resposta), `config.matcher` |
+| Token expirado / deslogado aleatório | Middleware não chama `getUser()` ou não retorna o `response` com cookies de refresh | middleware.ts, cookies `sb-*` no browser |
+| RLS silencioso (query retorna `[]` sem erro) | RLS habilitado sem policy para o caso, ou query roda com anon key sem sessão | Supabase logs (Postgres), testar query no SQL Editor com `auth.uid()` |
+| OAuth volta para login sem sessão | `redirectTo` fora da allowlist ou callback não troca o code | Supabase Dashboard → Auth → URL Configuration, rota `/auth/callback` |
+| Funciona local, quebra em produção | `NEXT_PUBLIC_APP_URL` apontando para localhost; domínio fora da allowlist | Env vars de produção, Supabase URL allowlist |
+
 ## Security Checklist
 - [ ] Middleware protects all `/dashboard/*` routes
 - [ ] `getUser()` (not `getSession()`) for auth checks — session can be spoofed

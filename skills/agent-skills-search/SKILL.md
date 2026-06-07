@@ -1,6 +1,6 @@
 ---
 name: agent-skills-search
-description: Search and install Agent Skills from the local consolidated repository at ~/Development/agent-skills-consolidado/. Use when looking for specialized skills, best practices, or domain-specific patterns for security, React, PostgreSQL, testing, mobile, Cloudflare, or any technical domain. Triggers when the user asks about available skills, wants to install skills, or needs specialized knowledge for a new domain.
+description: Search and install Agent Skills from the local consolidated repository at ~/Development/agent-skills-consolidado/. Use when looking for specialized skills, best practices, or domain-specific patterns for security, React, PostgreSQL, testing, mobile, Cloudflare, or any technical domain. Triggers when the user asks about available skills, wants to install skills, or needs specialized knowledge for a new domain — frases concretas como "instala a skill de prisma", "procura um padrão de PostgreSQL", "tem alguma skill de testing?", "quais skills existem para mobile?", "instala a skill X no projeto".
 ---
 
 # Agent Skills Repository Search

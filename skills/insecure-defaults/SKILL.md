@@ -124,3 +124,34 @@ When auditing a codebase, search for these patterns:
 6. `process.env.X || 'default'` where default is insecure
 7. Missing rate limiting on auth endpoints
 8. Missing CSRF protection on mutations
+
+## Como Usar (comandos práticos de detecção)
+
+Run these from the repo root to detect each pattern quickly:
+
+```bash
+# 1-2. Permissive fallbacks and flags defaulting on
+grep -rnE "(\|\||\?\?)\s*['\"]\*['\"]" --include='*.{ts,tsx,js,jsx}' src/ app/
+grep -rnE "(\|\||\?\?)\s*true" --include='*.{ts,tsx,js,jsx}' src/ app/
+
+# 3. Open CORS (cors() with no args or origin: true / '*')
+grep -rnE "cors\(\s*\)|origin:\s*(true|['\"]\*['\"])" --include='*.{ts,js}' src/ app/
+
+# 4. Tables possibly missing RLS (list tables, then check ENABLE ROW LEVEL SECURITY)
+grep -rniE "create table" --include='*.sql' . | grep -viE "row level security"
+grep -rniL "ENABLE ROW LEVEL SECURITY" --include='*.sql' supabase/migrations/ 2>/dev/null
+
+# 5. Server Actions without auth check ('use server' files lacking requireAuth)
+grep -rl "'use server'" --include='*.{ts,tsx}' src/ app/ | xargs grep -L "requireAuth"
+
+# 6. Insecure env fallbacks
+grep -rnE "process\.env\.[A-Z_]+\s*(\|\||\?\?)\s*['\"]" --include='*.{ts,tsx,js,jsx}' src/ app/
+
+# 7. Auth endpoints without rate limiting
+grep -rnE "(login|signin|signup|reset-password|password)" --include='*.{ts,tsx}' src/app/api/ app/api/ 2>/dev/null | grep -viE "rateLimit|rate-limit"
+
+# 8. Mutations possibly missing CSRF protection (POST/PUT/DELETE handlers)
+grep -rnE "export\s+(async\s+)?function\s+(POST|PUT|DELETE|PATCH)" --include='route.ts' src/ app/ | grep -viE "csrf"
+```
+
+Review each hit manually — these are heuristics, not proofs. Zero hits does not mean secure; combine with the checklist above.

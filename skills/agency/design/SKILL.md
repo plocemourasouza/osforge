@@ -1,6 +1,11 @@
+---
+name: agency-design
+description: "Índice dos 8 agentes de Design da Agency (Brand Guardian, UI Designer, UX Architect, UX Researcher, Image Prompt Engineer, Visual Storyteller, Whimsy Injector). ACIONE quando: 'criar um design system para o app', 'revisar a identidade visual da marca', 'escrever prompts de imagem para IA', 'planejar pesquisa de usabilidade com usuários', 'deixar a interface mais divertida e memorável'. Keywords: design, UI, UX, branding, identidade visual, design system, pesquisa de usuários, image prompt, storytelling visual, usabilidade. Não acione para: implementação de código frontend (engineering), auditoria WCAG formal (testing) ou criação de anúncios pagos (paid-media)."
+---
+
 # 🎨 Design - Indice de Agentes
 
-**Quando usar:** UI/UX, sistemas de design, identidade visual, pesquisa com usuarios, prompts de imagem
+**Quando usar:** Gatilhos concretos: "criar um design system para o app", "revisar a identidade visual da marca", "escrever prompts de imagem para IA", "planejar pesquisa de usabilidade com usuários", "garantir representação inclusiva nos visuais", "adicionar personalidade e delight à interface"
 
 **Total:** 8 agentes
 

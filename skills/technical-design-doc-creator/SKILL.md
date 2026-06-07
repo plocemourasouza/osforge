@@ -224,6 +224,23 @@ Use this heuristic to determine project complexity:
 
 ## Interactive Workflow
 
+### Mandatory Fields to Collect Before Generating (via questions)
+
+Do NOT generate the document until ALL of these fields are collected from the user (ask explicitly for any that are missing):
+
+1. **Project name** — name of the feature/integration/project
+2. **Project size** — small (< 1 week) / medium (1-4 weeks) / large (> 1 month)
+3. **Project type** — integration, feature, refactor, infrastructure, payment, auth, data
+4. **Tech Lead / Owner** — who owns the document
+5. **Team members** — who will work on it
+6. **Problem description** — what, why now, impact of not solving
+7. **Scope** — explicit in-scope AND out-of-scope lists
+8. **High-level solution approach** — main components and integration points
+9. **At least 3 risks** — with impact, probability, and mitigation
+10. **Implementation tasks breakdown** — phases with estimates
+11. **(If payment/auth/PII)** Security requirements — auth, encryption, PII handling, compliance
+12. **(If production)** Monitoring metrics and rollback triggers/steps
+
 ### Step 1: Initial Gathering
 
 Use **AskQuestion** tool to collect basic information:

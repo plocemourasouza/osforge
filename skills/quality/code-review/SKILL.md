@@ -75,6 +75,13 @@ performance e manutenibilidade. Respeita project-context.md.
 - Invocar `edge-case-hunter` no diff (se mudanças > 20 linhas)
 - Identificar patterns que divergem do project-context
 
+**Exemplos concretos de edge cases a procurar:**
+- **Null/undefined**: `user.profile.name` quando `profile` pode ser `null`; retorno de `findUnique` não checado antes de acessar campos
+- **Strings vazias**: `""` passando em validação que só checa `!== null`; busca/filtro com input vazio retornando tudo
+- **Condições de corrida**: dois requests simultâneos criando registro "único" sem constraint no banco; `read-modify-write` sem transação (ex.: decrementar saldo/estoque)
+- **Arrays vazios**: `items[0]` sem checar length; `reduce` sem valor inicial em array vazio
+- **Limites numéricos**: paginação com `page=0` ou negativo; valores monetários com float em vez de Decimal
+
 ### 4. Verdict
 
 ```markdown

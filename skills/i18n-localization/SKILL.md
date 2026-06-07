@@ -1,6 +1,6 @@
 ---
 name: i18n-localization
-description: Internationalization for Next.js applications. Trigger on multi-language support, locale routing, translation management, date/currency formatting, RTL support, or next-intl/i18next configuration.
+description: Internationalization for Next.js applications. Trigger on multi-language support ("set up multiple languages", "add English/Spanish support", "translate the app"), locale routing ("/en routes", "detect user language"), translation management, date/currency formatting ("format prices in BRL", "localize dates"), RTL support, or next-intl/i18next configuration.
 metadata:
   author: osforge
   version: '1.0'

@@ -206,6 +206,8 @@ The AI should automatically detect the appropriate mode based on:
 | "review", "check", "audit" | REVIEW |
 | "explain", "how does", "learn" | TEACH |
 | "deploy", "release", "production" | SHIP |
+| "explore the codebase", "map dependencies", "how is this structured", "what does this repo do", "understand the architecture", "where is X defined" | EXPLORE |
+| "plan then implement", "complex feature", "decompose this task", "break it down and execute", "implement with review", "multi-step refactor" | PEC |
 
 ---
 

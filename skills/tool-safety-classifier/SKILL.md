@@ -34,6 +34,26 @@ allowed-tools: Read, Bash
 - Operações destrutivas críticas (rm -rf, drop database) — sempre human-in-the-loop
 - Primeira interação com codebase desconhecido (deixar o usuário ver o que está acontecendo)
 
+## Pré-requisito obrigatório: `~/.osforge/safety-rules.yaml`
+
+O classifier NÃO funciona sem o arquivo de regras. Antes do primeiro uso, criar/inicializar:
+
+```bash
+mkdir -p ~/.osforge
+test -f ~/.osforge/safety-rules.yaml || cat > ~/.osforge/safety-rules.yaml <<'EOF'
+allow:
+  - "Bash commands matching: git (status|diff|log|branch) .*"
+soft_deny:
+  - "Any Bash with sudo"
+  - "rm -rf in any path outside node_modules or dist"
+  - "Modifying files in: .git/, .env*, secrets/"
+environment:
+  - "Describe your OS, shell, and which projects are prod vs dev here"
+EOF
+```
+
+Normalmente o template padrão é deployado pelo `deploy.sh` do OSForge; o comando acima é o fallback manual. Se o arquivo não existir em runtime, o hook deve falhar fechado (bloquear auto-mode) em vez de rodar sem regras. As 3 seções (`allow` / `soft_deny` / `environment`) são detalhadas abaixo.
+
 ## Arquitetura — 2 estágios
 
 ### Estágio 1: Fast-path (Safe Allowlist)

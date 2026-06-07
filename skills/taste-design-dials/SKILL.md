@@ -1,21 +1,28 @@
 ---
 name: taste-design-dials
-description: >
-  Sistema tunável de 3 dials (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY)
-  para frontend premium nível Awwwards. ACIONE quando: usuário pede "design premium",
-  "awwwards", "alto nível", "agência", "magnetic button", "GSAP", "scroll telling",
-  "bento 2.0", "perpetual motion", "spring physics", "double-bezel", "liquid glass",
-  ou quando quiser ajustar variance/motion/density. Combina taste-skill + gpt-taste
-  para output non-generic com micro-physics, perpetual loops e mathematical grid execution.
-version: 1.0.0
-inspired_by: Leonxlnx/taste-skill (taste-skill + gpt-tasteskill) — MIT, 10k+ stars
+description: "Camada de enhancement OSForge sobre a taste-skill com 3 dials ajustáveis (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY) mais regras Next.js App Router e constraints estruturais OSForge. ACIONE quando: 'sobe o motion para 8' ou 'quero mais minimal/mais ousado' (ajustar dials), 'aplica os dials de taste neste projeto OSForge', 'compõe a taste skill com as regras do OSForge', 'design premium com variance, motion e density configuráveis'. Keywords: dials, variance, motion intensity, density, OSForge, taste, enhancement layer, Next.js, design premium, anti-slop. Não acione para: uso standalone da taste skill fora de projetos OSForge (design-taste-frontend), geração de DESIGN.md para Stitch (stitch-design-taste), motion GSAP puro (gpt-taste), padrões técnicos Tailwind v4 (tailwind-patterns)."
+version: 1.1.0
+compose_with:
+  upstream:
+    - design-taste-frontend
+    - gpt-taste  # when MOTION_INTENSITY >= 8
+  osforge:
+    - osforge-design structural rules
+    - aesthetic-boost
 metadata:
-  source: "Leonxlnx/taste-skill"
+  source: "Leonxlnx/taste-skill + OSForge"
+  role: "enhancement-layer"
   category: "frontend-quality"
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
-# Taste Design Dials — High-Agency Frontend Engineering
+# Taste Design Dials — OSForge Enhancement Layer
+
+> **Compose stack (mandatory in OSForge projects):**
+> 1. Read `~/.claude/skills/design-taste-frontend/SKILL.md` — upstream visual quality + pre-flight
+> 2. If `MOTION_INTENSITY >= 8`: also read `~/.claude/skills/gpt-taste/SKILL.md`
+> 3. Apply **this skill** — dials + Next.js App Router + OSForge structural constraints
+> 4. After build: `skills/quality/ui-audit` or `/impeccable polish <target>`
 
 > **Override default LLM biases.** Premium UIs are not the median of training data.
 > Pull every decision toward intention via three tunable dials.
@@ -34,6 +41,7 @@ ousado" → raise variance.
 
 ## 2. Default Architecture (assume unless user specifies)
 
+- **OSForge project check:** Read `osforge.config.json` + project `DESIGN.md` when present — tokens override defaults below.
 - **Framework:** React / Next.js App Router. Default to Server Components.
 - **RSC Safety:** Interactive UI extracted into isolated `'use client'` leaf components.
   Server Components render static layouts only.
@@ -81,12 +89,15 @@ ousado" → raise variance.
   negative space to group logic. Cards ONLY when elevation communicates hierarchy.
 - When shadow IS used: tint to background hue (not generic black).
 
-### Rule 5 — Interactive UI States (MANDATORY GENERATION)
-LLMs default to "static successful states". You MUST implement full cycles:
-- **Loading:** Skeletal loaders matching layout dimensions (no generic spinners).
-- **Empty States:** Composed compositions indicating how to populate data.
-- **Error States:** Clear, inline error reporting.
+### Rule 5 — Interactive UI States (MANDATORY — OSForge 4 states)
+LLMs default to "static successful states". You MUST implement full cycles per **osforge-design**:
+- **Loading:** `loading.tsx` / `<Suspense>` + `<Skeleton>` mirroring layout (no generic spinners alone).
+- **Empty:** `<EmptyState>` with icon + title + optional CTA.
+- **Error:** `error.tsx` + `<Alert variant="destructive">` + retry; forms use `toast.error()`.
+- **Success:** render content — no "Carregado com sucesso" toast.
 - **Tactile Feedback:** On `:active`, use `-translate-y-[1px]` or `scale-[0.98]`.
+- **Dialog/Sheet actions:** primary + cancel in `<DialogFooter>` / `<SheetFooter>` — never inside body.
+- **i18n:** all user-facing strings via `t()` — no hardcoded PT/EN temporário.
 
 ### Rule 6 — Forms
 Label ABOVE input. Helper text below input. Error text below input. Use `gap-2`.
@@ -254,8 +265,10 @@ When generating SaaS dashboards or feature sections:
 ---
 
 ## Related Skills
-- `frontend-design` — design thinking + UX psychology principles (read first for context)
-- `aesthetic-boost` — anti-AI-slop directive (compact ~500 token primer)
-- `aesthetic-modes` — Editorial Minimalist / Industrial Brutalist / Soft Premium modes
-- `redesign-audit` — audit existing project + apply these rules as upgrades
+- `design-taste-frontend` — **upstream base** (read first)
+- `gpt-taste` — upstream motion engine when `MOTION_INTENSITY >= 8`
+- `frontend-design` — design thinking + UX psychology
+- `aesthetic-boost` — anti-AI-slop compact primer
+- `aesthetic-modes` — Editorial / Brutalist / Soft Premium
+- `redesign-audit` — brownfield upgrades with OSForge structural pass
 - `ui-audit` — 6-pillar review after implementation

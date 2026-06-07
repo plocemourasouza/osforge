@@ -1,3 +1,8 @@
+---
+name: agency
+description: "Índice geral dos 121 agentes especialistas da The Agency, organizado em 10 divisões com roteamento on-demand. ACIONE quando: 'ative o agente X', 'qual especialista usar para revisar minha arquitetura', 'preciso de um agente para criar campanha de ads', 'liste os agentes de vendas disponíveis', 'use a Agency para auditar acessibilidade'. Keywords: agency, agentes, especialistas, specialists, persona, divisão, orquestração, roteamento, ativar agente, índice. Não acione para: tarefas que o assistente resolve diretamente sem persona especialista, propostas comerciais OSystems ou skills de plugins externos."
+---
+
 # The Agency - Indice de Especialistas de IA
 > Skill de roteamento on-demand. 121 agentes especializados sem custo de contexto permanente.
 

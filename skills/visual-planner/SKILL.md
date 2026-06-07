@@ -19,6 +19,12 @@ metadata:
 
 Transforma qualquer documento de planejamento em um breakdown HTML single-page, interativo e visualmente rico. O output é um arquivo HTML autocontido com navegação scroll-based, animações reveal, flow diagrams, seções expansíveis, e design system warm. Zero dependências além de Google Fonts.
 
+**Invocação mínima:**
+```
+visual-planner docs/specs/auth-spec.md
+```
+ou em linguagem natural: "visualizar ./docs/specs/auth-spec.md".
+
 ## Integração com Pipeline OSForge
 
 Esta skill é a **camada de apresentação** do pipeline de planejamento. Reconhece automaticamente os formatos de output das planning skills:

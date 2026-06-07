@@ -1,6 +1,11 @@
+---
+name: agency-paid-media
+description: "Índice dos 7 agentes e 4 workflows de Mídia Paga da Agency (PPC Strategist, Paid Social Strategist, Creative Strategist, Tracking Specialist, Programmatic Buyer, Auditor). ACIONE quando: 'criar campanha no Google Ads ou Meta Ads', 'auditar minha conta de anúncios e desperdício de budget', 'configurar tracking GA4, GTM e pixels de conversão', 'gerar criativos de anúncio em escala', 'planejar teste A/B de campanhas', 'analisar search queries e negative keywords'. Keywords: mídia paga, paid media, Google Ads, Meta Ads, PPC, tracking, atribuição, pixel, criativos, A/B test, programmatic, budget. Não acione para: SEO e conteúdo orgânico (marketing), análise de pipeline de vendas (sales)."
+---
+
 # 💰 Mídia Paga — Índice de Agentes & Workflows
 
-**Quando usar:** Google/Meta Ads, campanhas PPC, tracking e atribuição, auditoria de contas, testes A/B, criativos
+**Quando usar:** Gatilhos concretos: "criar campanha no Google Ads ou Meta Ads", "auditar minha conta de anúncios e desperdício de budget", "configurar tracking GA4/GTM e pixels de conversão", "gerar criativos de anúncio em escala", "planejar teste A/B de campanhas", "analisar search queries e negative keywords", "montar compra programática com DSPs"
 
 **Total:** 7 agentes + 4 workflows de execução
 

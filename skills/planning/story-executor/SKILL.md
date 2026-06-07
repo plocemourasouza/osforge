@@ -56,12 +56,12 @@ Atributo `type`:
 
 ## Processo
 
-### 1. Carregar Story
+### 1. Carregamento
 - Ler story file completo (ACs, tasks, dependências)
 - Verificar que dependências estão completas (stories anteriores done)
 - Carregar project-context.md para regras do codebase
 
-### 2. Executar Tasks em Ordem
+### 2. Execução por task
 Para cada task na story:
 
 **a) Identificar skill OSForge mais adequado:**
@@ -79,7 +79,7 @@ Para cada task na story:
 - [x] `{file/path.ts}` — {ação} ✅
 ```
 
-### 3. Two-Stage Review por task (padrão superpowers)
+### 3. Review (two-stage por task — padrão superpowers)
 
 Após cada task concluída, antes de marcar como `[x]`, executar dois estágios de review em sequência:
 
@@ -97,13 +97,14 @@ Após cada task concluída, antes de marcar como `[x]`, executar dois estágios 
 Se QUALQUER estágio falhar → corrigir antes de avançar para a próxima task.
 Esta verificação dupla previne que bugs se acumulem ao longo das tasks.
 
-### 4. Self-Check — ACs Satisfeitos?
-Após completar TODAS as tasks:
+### 4. Validação de ACs
+Após completar TODAS as tasks (self-check — ACs satisfeitos?):
 - Verificar cada AC contra o código produzido
 - Rodar `skills/quality/edge-case-hunter` no diff produzido
 - Se algum AC não satisfeito → identificar o gap e resolver
 
-### 4. Atualizar Story
+### 5. Handoff
+Atualizar a story:
 ```markdown
 ---
 status: in-review
@@ -112,7 +113,6 @@ files_changed: [{lista de arquivos}]
 ---
 ```
 
-### 5. Handoff
 Informar ao Orchestrator ou usuário:
 "Story {id} implementada. {N} tasks completas, {N} arquivos modificados.
 Todos ACs verificados. Pronto para code review."

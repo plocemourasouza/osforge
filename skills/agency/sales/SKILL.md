@@ -1,6 +1,11 @@
+---
+name: agency-sales
+description: "Índice dos 8 agentes e 3 workflows de Vendas da Agency (Outbound Strategist, Discovery Coach, Deal Strategist, Proposal Strategist, Pipeline Analyst, Account Strategist, Sales Coach, Sales Engineer). ACIONE quando: 'montar estratégia de prospecção outbound', 'escrever sequência de cold emails', 'preparar discovery call com qualificação MEDDPICC', 'criar proposta ou deck de vendas com tratamento de objeções', 'analisar pipeline e forecast do trimestre', 'fazer roleplay e coaching de negociação'. Keywords: vendas, sales, prospecção, outbound, cold email, discovery, MEDDPICC, proposta, pipeline, forecast, RevOps, coaching. Não acione para: propostas comerciais branded da OSystems (osystems-comercial), campanhas de marketing e nutrição (marketing)."
+---
+
 # 💼 Vendas — Índice de Agentes & Workflows
 
-**Quando usar:** Prospecção outbound, discovery, qualificação MEDDPICC, propostas, pipeline, coaching, RevOps
+**Quando usar:** Gatilhos concretos: "montar estratégia de prospecção outbound", "escrever sequência de cold emails", "preparar discovery call com qualificação MEDDPICC", "criar proposta ou deck de vendas com tratamento de objeções", "analisar pipeline e forecast do trimestre", "planejar expansão e upsell de contas", "fazer roleplay e coaching de negociação", "estruturar RevOps (scoring, routing, handoff MQL→SQL)"
 
 **Total:** 8 agentes + 3 workflows de execução
 

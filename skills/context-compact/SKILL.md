@@ -19,6 +19,21 @@ allowed-tools: Read
 > Quando context > 70%, NÃO use `/clear` (destrutivo). Use este protocolo
 > estruturado de 9 seções que preserva o essencial em ~5k tokens.
 
+## Quick Start
+
+**Exemplo 1 — pedido explícito:**
+> Usuário: *"compactar contexto, estamos perto do limite"*
+> A skill gera um summary estruturado de 9 seções (~5k tokens) que substitui a conversa inteira, preservando pedidos, decisões, arquivos tocados e o trabalho em andamento — sem perder o fio da execução.
+
+**Exemplo 2 — proativo:**
+> Contador de tokens passa de 140k no meio de uma refatoração.
+> A skill sugere um **Partial Compact (Modo 3)**: resume as mensagens antigas e mantém as recentes intactas, liberando espaço sem tocar no "now".
+
+**Mini-fluxo (3 passos):**
+1. **Escolha o modo** — Full (tudo vira summary), Partial Recent (preserva o início) ou Partial Up-To (preserva o final). Veja "3 modos de operação".
+2. **Execute o protocolo** — emita o NO_TOOLS_PREAMBLE, faça o scratchpad `<analysis>`, depois preencha o template de 9 seções (Passos 1–3 em "Protocolo de execução").
+3. **Verifique e persista** — confira o checklist de "Verificação" e salve via `osforge-db set-resume` para recuperação cross-session.
+
 ## Quando ativar
 
 | Trigger | Ação |

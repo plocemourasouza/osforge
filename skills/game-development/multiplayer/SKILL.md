@@ -1,6 +1,6 @@
 ---
 name: multiplayer
-description: Multiplayer game development principles. Architecture, networking, synchronization.
+description: "Princípios de jogos multiplayer: arquitetura de rede (dedicated server, P2P, host-based), sincronização, lag compensation, anti-cheat e matchmaking. ACIONE quando: quero adicionar multiplayer ao meu jogo e não sei qual arquitetura usar; os jogadores remotos ficam teleportando ou com lag (prediction, interpolation, reconciliation); como reduzir bandwidth do netcode (delta compression, area of interest); jogadores estão trapaceando (speed hack, aimbot) e preciso de autoridade no servidor; como desenhar matchmaking por skill e latência. Keywords: multiplayer, netcode, networking, latência, sincronização, lag compensation, dedicated server, anti-cheat, matchmaking, P2P. Não acione para: jogos single-player ou questões gerais de arquitetura de jogo sem rede (use game-development)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

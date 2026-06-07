@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: "Orquestra tasks paralelas em subagents independentes. ACIONE quando: 2+ tasks sem estado compartilhado, refatoração em múltiplos arquivos não relacionados, decomposição revela trabalho paralelizável, wave execution com dependências parciais. Keywords: parallel, wave, dispatch, parallel agents, multiple tasks, independent, subagents."
+description: "Orquestra tasks paralelas em subagents independentes. ACIONE quando: 2+ tasks sem estado compartilhado, refatoração em múltiplos arquivos não relacionados, decomposição revela trabalho paralelizável, ou tasks com dependências parciais. Keywords: parallel, wave, dispatch, parallel agents, multiple tasks, independent, subagents."
 model: sonnet
 allowed-tools: Read, Bash, Glob, Grep
 metadata:

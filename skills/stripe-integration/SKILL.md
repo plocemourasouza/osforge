@@ -91,6 +91,53 @@ export async function POST(req: Request) {
 }
 ```
 
+## Error Handling (Checkout & Webhook)
+
+### Sessão expirada e cartão recusado no checkout
+```typescript
+// Checkout sessions expiram em 24h por padrão — trate o evento e o retorno
+const session = await stripe.checkout.sessions.create({
+  // ...
+  expires_at: Math.floor(Date.now() / 1000) + 60 * 30, // opcional: 30 min
+})
+
+// No webhook, trate a expiração para liberar reservas/carrinho:
+case 'checkout.session.expired': {
+  const session = event.data.object as Stripe.Checkout.Session
+  await releaseReservedItems(session.metadata?.userId) // não marque como pago
+  break
+}
+```
+
+```typescript
+// Cartão recusado ao criar cobrança server-side (PaymentIntent/portal):
+try {
+  await stripe.paymentIntents.create({ ... })
+} catch (err) {
+  if (err instanceof Stripe.errors.StripeCardError) {
+    // err.code: 'card_declined', 'expired_card', 'insufficient_funds'...
+    return Response.json({ error: err.code, message: err.message }, { status: 402 })
+  }
+  throw err // outros erros: logar e retornar 500 genérico (sem detalhes internos)
+}
+```
+No Stripe Checkout hosted, cartão recusado é tratado na própria página do Stripe — o usuário tenta outro cartão ou cancela (cai no `cancel_url`). Nunca marque a assinatura como ativa no `success_url`; só via webhook `checkout.session.completed`.
+
+### Falha de pagamento recorrente no webhook
+```typescript
+case 'invoice.payment_failed': {
+  const invoice = event.data.object as Stripe.Invoice
+  // 1. Marcar assinatura como past_due (não cancelar imediatamente —
+  //    Stripe faz retries automáticos via Smart Retries)
+  // 2. Notificar usuário para atualizar cartão (link do Customer Portal)
+  // 3. Só revogar acesso em customer.subscription.deleted ou status 'unpaid'
+  await handlePaymentFailed(invoice)
+  break
+}
+```
+- Handlers de webhook devem capturar erros internos e ainda retornar 200 quando o evento foi reconhecido mas o processamento pode ser re-tentado internamente — ou 500 para o Stripe reenviar. Escolha consciente: 500 gera retry automático do Stripe.
+- Eventos chegam fora de ordem: sempre confie no estado atual do objeto (`subscription.status`), não na sequência de eventos.
+
 ## Subscription Sync
 ```typescript
 async function syncSubscriptionStatus(subscription: Stripe.Subscription) {

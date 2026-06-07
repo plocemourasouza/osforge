@@ -115,4 +115,4 @@ Após cada seção:
 PRD completo → apresentar resumo:
 - **[A] Aprovar** — status muda para `ready`
 - **[E] Editar** seção específica
-- **[V] Validar** — invocar `adversarial-review` no PRD
+- **[V] Validar** — invocar a skill `quality/adversarial-review` passando o PRD como input. Ela faz uma crítica adversarial do documento (gaps, ambiguidades, requisitos não testáveis) e devolve uma lista de issues. Incorporar as correções relevantes ao PRD e reapresentar este checkpoint antes de marcar `ready`.

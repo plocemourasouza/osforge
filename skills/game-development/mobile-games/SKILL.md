@@ -1,6 +1,6 @@
 ---
 name: mobile-games
-description: Mobile game development principles. Touch input, battery, performance, app stores.
+description: "Princípios de jogos mobile: touch input, bateria e thermal, requisitos de App Store e Google Play, monetização. ACIONE quando: estou portando ou criando um jogo para iOS/Android e os controles de touch estão ruins; meu jogo mobile esquenta o aparelho ou drena bateria (thermal throttling, 30 vs 60 FPS); quais requisitos preciso cumprir para publicar na App Store ou Google Play (privacy labels, 64-bit, target API); qual modelo de monetização usar (premium, IAP, ads, assinatura); como lidar com interrupções, tamanhos de tela e portrait/landscape. Keywords: mobile, iOS, Android, touch, gestos, bateria, App Store, Google Play, IAP, monetização. Não acione para: jogos que rodam no navegador mobile (use web-games) ou AR com ARKit/ARCore (use vr-ar)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

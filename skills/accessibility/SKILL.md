@@ -9,6 +9,13 @@ metadata:
 
 # Accessibility (a11y)
 
+## Quick start — immediate steps (critical issues first)
+
+1. **Critical (fix immediately):** add missing form labels, add missing image alt text, fix insufficient color contrast (AA: 4.5:1 normal text), remove keyboard traps, restore visible focus indicators.
+2. **Serious (fix before launch):** set `<html lang>`, fix heading structure, rewrite non-descriptive link text, stop auto-playing media, add skip links.
+3. **Verify:** run `npx lighthouse <url> --only-categories=accessibility` and `axe <url>`, then manually tab through the page and test with a screen reader.
+4. Use the detailed sections below (POUR principles) for guidance on each fix.
+
 Comprehensive accessibility guidelines based on WCAG 2.1 and Lighthouse accessibility audits. Goal: make content usable by everyone, including people with disabilities.
 
 ## WCAG Principles: POUR

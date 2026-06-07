@@ -1,28 +1,35 @@
 ---
 name: stitch-design-export
-description: >
-  Gera arquivo DESIGN.md compatível com Google Stitch (labs.google.com/stitch) para
-  geração consistente de telas com identidade premium. ACIONE quando: usuário menciona
-  "Google Stitch", "DESIGN.md", "exportar design system para Stitch", "gerar telas no
-  Stitch", "Stitch prompt", ou quer compartilhar identidade visual via prompt semântico
-  ao invés de código.
-version: 1.0.0
-inspired_by: Leonxlnx/taste-skill (stitch-skill) — MIT, 10k+ stars
+description: "OSForge enhancement layer sobre stitch-design-taste. Gera DESIGN.md para Google Stitch com tokens de osforge.config.json + Impeccable. ACIONE com stitch-design-taste quando: 'Google Stitch', 'DESIGN.md', 'exportar design system', 'Stitch prompt'. Exemplos concretos de uso: 'quero gerar as telas desse projeto no Google Stitch', 'cria um DESIGN.md com os tokens do projeto para o Stitch', 'exporta o design system OSForge para usar no Stitch', 'prepara o prompt de design antes de gerar screens no Stitch'."
+version: 1.1.0
+compose_with:
+  upstream:
+    - stitch-design-taste
+  osforge:
+    - ui-design-intelligence
 metadata:
-  source: "Leonxlnx/taste-skill"
+  source: "Leonxlnx/taste-skill + OSForge"
+  role: "enhancement-layer"
   category: "design-tools"
 allowed-tools: Read, Write, Edit, Glob
 ---
 
-# Stitch Design Export — Semantic DESIGN.md Generator
+# Stitch Design Export — OSForge Enhancement Layer
+
+> **Compose stack:**
+> 1. Read `~/.claude/skills/stitch-design-taste/SKILL.md` — upstream semantic DESIGN.md spec
+> 2. Apply **this skill** — merge OSForge project tokens + industry palette from `ui-design-intelligence`
+> 3. Output path: project root `DESIGN.md` (or path user specifies)
 
 Generates `DESIGN.md` files optimized for Google Stitch screen generation. Stitch interprets
 design through "Visual Descriptions" — descriptive natural-language rules paired with precise
 hex/typography/component values. This skill encodes premium anti-slop directives into that
-semantic format.
+semantic format **and** syncs with the active OSForge project when present.
 
 ## Prerequisites
 - Access to Google Stitch ([labs.google.com/stitch](https://labs.google.com/stitch))
+- Upstream `stitch-design-taste` loaded (semantic spec authority)
+- **OSForge:** read `osforge.config.json` → `design.register` overrides default dials/palette
 - Optionally: Stitch MCP server for programmatic integration with Cursor/Antigravity/Gemini CLI
 
 ## What gets encoded
@@ -190,6 +197,7 @@ clichés. No generic placeholder names. No broken image links. No scroll arrows.
 ---
 
 ## Related Skills
-- `ui-design-intelligence` — full design system spec (richer than DESIGN.md, for codebase)
-- `taste-design-dials` — the principles being encoded into DESIGN.md
+- `stitch-design-taste` — **upstream base** (read first)
+- `ui-design-intelligence` — industry palette + OSForge token merge
+- `taste-design-dials` — dials encoded into DESIGN.md
 - `aesthetic-modes` — pick a mode before generating DESIGN.md

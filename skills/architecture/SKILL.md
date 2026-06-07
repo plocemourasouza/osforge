@@ -1,6 +1,6 @@
 ---
 name: architecture
-description: Architectural decision-making framework. Requirements analysis, trade-off evaluation, ADR documentation. Use when making architecture decisions or analyzing system design.
+description: "Framework de decisão arquitetural com análise de requisitos, avaliação de trade-offs e documentação em ADRs. ACIONE quando: decidir entre X e Y (monolito vs microservices, REST vs eventos), escrever ou revisar um ADR, escolher padrões de arquitetura para um sistema novo, avaliar se a complexidade proposta é justificada, levantar requisitos e constraints antes do design. Keywords: arquitetura, architecture, ADR, trade-off, system design, padrões, microservices, decisão técnica, requirements, constraints. Não acione para: implementação de código, schema de banco isolado ou design de UI/UX."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

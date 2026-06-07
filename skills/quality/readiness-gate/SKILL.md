@@ -1,10 +1,7 @@
 ---
 name: readiness-gate
-description: >
-  Quality gate pré-implementação. Valida que PRD, Architecture e Épicos
-  estão alinhados e completos antes de iniciar o sprint loop.
-  Use com "readiness check", "pronto para implementar?", "quality gate".
-trigger: readiness|pronto para implementar|quality gate|gate check
+description: "Quality gate pré-implementação. Valida que PRD, Architecture e Épicos estão alinhados e completos antes de iniciar o sprint loop. Use com: 'readiness check', 'pronto para implementar?', 'quality gate', 'o PRD está alinhado com a arquitetura?', 'validar cobertura de requisitos', 'todos os requisitos têm story?', 'checar rastreabilidade antes do sprint'."
+trigger: readiness|pronto para implementar|quality gate|gate check|alinhamento PRD|cobertura de requisitos|rastreabilidade
 model-tier: sonnet
 ---
 

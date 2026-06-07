@@ -1,6 +1,6 @@
 ---
 name: testing-patterns
-description: Testing patterns and principles. Unit, integration, mocking strategies.
+description: "Padrões e princípios de testes unitários e de integração: pirâmide de testes, padrão AAA, estratégias de mocking, organização e dados de teste. ACIONE quando: escrever testes unitários ou de integração, configurar mocks/stubs/spies/fakes, corrigir teste flaky, decidir o que testar vs o que mockar, organizar suíte com factories e fixtures. Keywords: unit test, integration test, mock, stub, spy, fixture, factory, teste flaky, AAA, jest. Não acione para: testes E2E de browser com Playwright ou auditoria de rotas de webapp (use webapp-testing) nem checklist de code review."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

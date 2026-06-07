@@ -5,6 +5,14 @@ description: PostgreSQL and Supabase optimization best practices for queries, in
 
 # PostgreSQL & Supabase Optimization
 
+## Quando NÃO usar esta skill
+
+Delegue a um especialista de banco de dados (DBA / database-design) em vez de usar esta skill quando:
+- O problema é de **modelagem/arquitetura de dados** (normalização, particionamento, sharding) — não de otimização de queries existentes
+- Envolve **tuning de infraestrutura** (postgresql.conf, vacuum/autovacuum, réplicas, failover)
+- Requer **migração de dados em larga escala** ou mudança de engine/provider
+- A causa raiz é de aplicação (caching, arquitetura de API), não do banco
+
 ## Query Performance
 
 ### Always Use EXPLAIN ANALYZE

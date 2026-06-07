@@ -1,6 +1,11 @@
+---
+name: agency-product
+description: "Índice dos 5 agentes de Produto da Agency (Product Manager, Sprint Prioritizer, Feedback Synthesizer, Trend Researcher, Behavioral Nudge Engine). ACIONE quando: 'priorizar features do próximo sprint', 'sintetizar feedback dos usuários em insights acionáveis', 'montar roadmap de produto', 'pesquisar tendências de mercado e concorrentes', 'desenhar nudges comportamentais para ativação e engajamento'. Keywords: produto, product management, roadmap, priorização, sprint, feedback, discovery, tendências, market research, backlog. Não acione para: coordenação de execução e timelines (project-management), pesquisa de usabilidade com usuários (design)."
+---
+
 # 📊 Produto - Indice de Agentes
 
-**Quando usar:** Roadmap, priorizacao de sprint, pesquisa de mercado, sintese de feedback
+**Quando usar:** Gatilhos concretos: "priorizar features do próximo sprint", "sintetizar feedback dos usuários em insights acionáveis", "montar roadmap de produto", "pesquisar tendências de mercado e concorrentes", "desenhar nudges comportamentais para ativação e engajamento"
 
 **Total:** 5 agentes
 

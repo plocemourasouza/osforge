@@ -75,6 +75,16 @@ Com o problema entendido, apresentar 2-3 abordagens distintas:
 
 Apresentar cada abordagem em chunk separado para o usuário absorver antes de continuar.
 
+Após apresentar todas individualmente, consolidar em uma tabela comparativa para visão lado a lado:
+
+```markdown
+| Abordagem | Prós | Contras | Esforço |
+|-----------|------|---------|---------|
+| A: {nome} | {pontos fortes resumidos} | {pontos fracos resumidos} | {baixo/médio/alto} |
+| B: {nome} | {pontos fortes resumidos} | {pontos fracos resumidos} | {baixo/médio/alto} |
+| C: {nome} | {pontos fortes resumidos} | {pontos fracos resumidos} | {baixo/médio/alto} |
+```
+
 ### Fase 3 — Refinar a abordagem escolhida
 
 Com a abordagem escolhida, detalhar em seções curtas para validação:

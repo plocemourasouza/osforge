@@ -228,6 +228,45 @@ Never place cards flat. Nest enclosures:
 
 ---
 
+## Example Outputs (per mode)
+
+### EDITORIAL_MINIMALIST — example output
+```html
+<article style="background:#F7F6F3; border:1px solid #EAEAEA; border-radius:12px; padding:32px;">
+  <span style="background:#E1F3FE; color:#1F6C9F; border-radius:9999px; font-size:11px;
+    text-transform:uppercase; letter-spacing:0.05em; padding:2px 10px;">Docs</span>
+  <h2 style="font-family:'Newsreader',serif; letter-spacing:-0.03em; line-height:1.1; color:#111;">Quiet, considered writing surface</h2>
+  <p style="color:#787774; line-height:1.6;">Press <kbd>⌘K</kbd> to search.</p>
+</article>
+```
+*Visual effect:* warm bone canvas, hairline-bordered bento card, serif headline against muted gray body — feels like a Notion/Linear document, calm and crafted.
+
+### INDUSTRIAL_BRUTALIST — example output
+```html
+<section style="background:#0A0A0A; color:#EAEAEA; font-family:'JetBrains Mono',monospace;">
+  <h1 style="font-family:'Archivo Black'; font-size:clamp(4rem,10vw,12rem);
+    letter-spacing:-0.04em; line-height:0.9; text-transform:uppercase;">RE-IND</h1>
+  <hr style="border:1px solid #EAEAEA;" />
+  <p style="font-size:11px; letter-spacing:0.08em;">[ UNIT / D-01 ] >>> STATUS: <span style="color:#E61919;">ARMED</span> REV 2.6</p>
+</section>
+```
+*Visual effect:* CRT-black panel with massive uppercase macro-type, telemetry mono micro-text, ASCII framing and a single hazard-red accent — reads like a declassified control console, zero rounded corners.
+
+### SOFT_PREMIUM — example output
+```html
+<div class="rounded-[2rem] bg-white/5 ring-1 ring-white/10 p-1.5"><!-- outer shell -->
+  <div class="rounded-[calc(2rem-0.375rem)] bg-[#0B0B0C] shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] p-8"><!-- inner core -->
+    <span class="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em]">New</span>
+    <h2 class="font-['Clash_Display'] text-5xl">Ship faster, feel expensive</h2>
+    <button class="rounded-full px-6 py-3 bg-white text-black active:scale-[0.98]">Get started
+      <span class="w-8 h-8 rounded-full bg-black/5 inline-flex items-center justify-center">↗</span></button>
+  </div>
+</div>
+```
+*Visual effect:* nested double-bezel glass card on OLED black with inner highlight, pill CTA with islanded arrow — haptic, Apple/Linear-tier depth that feels engineered, not decorated.
+
+---
+
 ## Mode Selection Decision Tree
 
 ```

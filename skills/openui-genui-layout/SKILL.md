@@ -33,6 +33,11 @@ Load and follow this skill when any of these triggers appear:
 
 **Do NOT load** for: purely styling changes (colors, spacing), logic-only tasks (API routes, hooks), or database schema work.
 
+Concrete examples of when NOT to load:
+- "Deixa esse botão com um novo estilo / muda a cor do botão" — styling only, no layout planning needed
+- "Cria um hook `useDebounce` / `useAuth`" — logic-only, no UI tree involved
+- "Adiciona uma tabela `orders` no schema do banco / cria a migration" — database schema work, not UI
+
 ---
 
 ## 2. Mandatory Pre-Planning Step

@@ -1,6 +1,6 @@
 ---
 name: vr-ar
-description: VR/AR game development principles. Comfort, tracking, interaction design.
+description: "Princípios de jogos VR/AR: conforto e prevenção de motion sickness, locomoção, hand tracking, anchoring AR e metas de performance por headset. ACIONE quando: jogadores estão passando mal no meu jogo VR (motion sickness, locomoção teleport vs smooth); estou desenvolvendo para Meta Quest, PSVR2 ou SteamVR e preciso das metas de FPS/latência (90+ FPS, <20ms); como desenhar interação com as mãos (controllers vs hand tracking, haptics); estou fazendo um app AR com ARKit/ARCore e preciso de anchors (plane, image, cloud); como dimensionar UI legível em VR. Keywords: VR, AR, realidade virtual, realidade aumentada, Quest, motion sickness, hand tracking, ARKit, ARCore, locomoção. Não acione para: jogos 3D de tela plana (use 3d-games) ou netcode de multiplayer VR (use multiplayer)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

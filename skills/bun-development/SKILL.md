@@ -1,6 +1,6 @@
 ---
 name: bun-development
-description: Bun runtime patterns, bundler configuration, and Bun-specific APIs. Trigger on Bun FFI, Bun.serve, Bun.file, Bun shell, workspace configuration, Bun-specific test patterns, or runtime edge cases that differ from Node.js.
+description: 'Bun runtime patterns, bundler configuration, and Bun-specific APIs. Trigger on Bun FFI, Bun.serve, Bun.file, Bun shell, workspace configuration, Bun-specific test patterns, or runtime edge cases that differ from Node.js. Common error triggers: "Cannot find module" for native addons (.node incompatible with Bun), "node-gyp rebuild failed" under bun install, segfault loading a native dependency, Jest API missing in bun test, package works in Node but crashes in Bun.'
 metadata:
   author: osforge
   version: '1.0'

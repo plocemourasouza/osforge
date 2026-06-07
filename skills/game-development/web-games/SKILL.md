@@ -1,6 +1,6 @@
 ---
 name: web-games
-description: Web browser game development principles. Framework selection, WebGPU, optimization, PWA.
+description: "Princípios de jogos para navegador: escolha de framework (Phaser, PixiJS, Three.js, Babylon.js), WebGPU vs WebGL, compressão de assets, PWA e áudio no browser. ACIONE quando: quero fazer um jogo que roda no navegador e não sei qual framework escolher; devo usar WebGPU ou WebGL no meu projeto novo; meu jogo web demora a carregar e preciso de compressão e lazy loading de assets (KTX2, Draco, WebP); o áudio não toca no browser por causa do autoplay; quero transformar meu jogo em PWA instalável com modo offline. Keywords: web game, browser, HTML5, WebGL, WebGPU, Phaser, Three.js, Babylon.js, PWA, canvas. Não acione para: jogos nativos mobile (use mobile-games), desktop/Steam (use pc-games) ou padrões de gameplay 2D/3D em si (use 2d-games ou 3d-games)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

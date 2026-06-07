@@ -119,6 +119,40 @@ Apresentar spec completa ao usuário.
 
 Não avançar sem aprovação explícita.
 
+### Exemplo de output (esqueleto preenchido, abreviado)
+
+```markdown
+---
+type: osforge-spec
+project: "taskboard"
+status: ready
+created: "2026-06-07"
+---
+
+# Tech Spec: Arquivar projetos
+
+## Objetivo
+Permitir que o dono arquive um projeto, ocultando-o da listagem padrão.
+
+## Escopo
+**In scope:** botão de arquivar, filtro "mostrar arquivados"
+**Out of scope:** exclusão definitiva, restauração em lote
+
+## Acceptance Criteria
+- [ ] **AC1:** Given um projeto ativo, When o dono clica em "Arquivar", Then o projeto sai da listagem padrão e `archivedAt` é preenchido
+
+## Tasks (ordenadas por dependência)
+1. **prisma/schema.prisma** — adicionar campo `archivedAt DateTime?` ao model Project
+2. **app/api/projects/[id]/archive/route.ts** — POST handler que seta `archivedAt`
+3. **app/api/projects/[id]/archive/route.test.ts** — testes cobrindo AC1
+
+## Riscos
+- Queries existentes listarem arquivados → adicionar filtro default `archivedAt: null`
+
+## Notas Técnicas
+- Soft-delete via timestamp, sem flag booleana
+```
+
 
 ## Gotchas
 

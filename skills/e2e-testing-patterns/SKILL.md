@@ -1,6 +1,6 @@
 ---
 name: e2e-testing-patterns
-description: End-to-end testing with Playwright for Next.js applications. Trigger on E2E test setup, cross-page flow testing (checkout, onboarding, multi-step forms), visual regression, or Playwright debugging.
+description: 'End-to-end testing with Playwright for Next.js applications. Trigger on E2E test setup, cross-page flow testing (checkout, onboarding, multi-step forms), visual regression, or Playwright debugging. Keywords: E2E test, Playwright, test failure, flaky test, browser test, integration test, page.goto, locator, screenshot test.'
 metadata:
   author: osforge
   version: '1.0'

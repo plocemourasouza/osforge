@@ -1,6 +1,6 @@
 ---
 name: autorefine-skill
-description: "Refinamento autônomo iterativo com loop autoresearch + meta-otimização + transferência cross-domínio. ACIONE quando: usuário pede 'melhorar uma skill', 'otimizar a skill X', 'a skill Y não está funcionando bem', 'iterar sobre skill', 'autorefine', 'refinar código', 'otimizar performance', 'melhorar métrica X', 'meta-otimizar', 'transferir aprendizado', 'aplicar padrão de outro projeto'. Generalizado para qualquer artefato com métrica mensurável — skills, código, prompts, configs, docs. Keywords: melhorar skill, refinar skill, otimizar, autorefine, iteração autônoma, autoresearch, loop de melhoria, self-improving, guard, verify, meta-otimização, transferência, cross-domain."
+description: "Refinamento autônomo iterativo com loop autoresearch + meta-otimização + transferência cross-domínio. ACIONE quando (ex.: 'melhorar minha skill de frontend'): usuário pede 'melhorar uma skill', 'otimizar a skill X', 'a skill Y não está funcionando bem', 'iterar sobre skill', 'autorefine', 'refinar código', 'otimizar performance', 'melhorar métrica X', 'meta-otimizar', 'transferir aprendizado', 'aplicar padrão de outro projeto'. Generalizado para qualquer artefato com métrica mensurável — skills, código, prompts, configs, docs. Keywords: melhorar skill, refinar skill, otimizar, autorefine, iteração autônoma, autoresearch, loop de melhoria, self-improving, guard, verify, meta-otimização, transferência, cross-domain."
 model: sonnet
 allowed-tools: Read, Write, Bash, Glob, Grep
 metadata:

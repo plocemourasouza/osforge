@@ -71,6 +71,28 @@ export async function exportMyData() {
   // Return as downloadable JSON
   return sanitizePII(data) // Remove internal IDs, timestamps as needed
 }
+
+// Reference implementation — adapt the stripped keys to your schema.
+// Removes internal/operational fields that the data subject does not need
+// and that may leak system internals (GDPR data minimization).
+function sanitizePII<T>(data: T): T {
+  const INTERNAL_KEYS = new Set([
+    'id', 'internalId', 'passwordHash', 'stripeCustomerId',
+    'createdById', 'updatedAt', 'deletedAt', 'sessionToken',
+  ])
+  const strip = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(strip)
+    if (value && typeof value === 'object') {
+      return Object.fromEntries(
+        Object.entries(value as Record<string, unknown>)
+          .filter(([key]) => !INTERNAL_KEYS.has(key))
+          .map(([key, v]) => [key, strip(v)]),
+      )
+    }
+    return value
+  }
+  return strip(data) as T
+}
 ```
 
 ### Right to Deletion

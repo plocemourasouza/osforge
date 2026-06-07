@@ -1,6 +1,6 @@
 ---
 name: game-design
-description: Game design principles. GDD structure, balancing, player psychology, progression.
+description: "Princípios de game design: core loop, estrutura de GDD, psicologia do jogador, balanceamento de dificuldade e progressão. ACIONE quando: meu jogo não está divertido e quero analisar o core loop de 30 segundos; preciso escrever um GDD (game design document) para o meu jogo; como balancear dificuldade para manter o jogador em flow; estou desenhando progressão, recompensas e retenção (loot, níveis, desbloqueios); que tipo de jogador estou atendendo (achiever, explorer, socializer). Keywords: game design, core loop, GDD, balanceamento, progressão, dificuldade, player psychology, reward schedule, flow, mecânicas. Não acione para: implementação técnica de mecânicas em código (use a skill da plataforma/dimensão correspondente, como 2d-games ou 3d-games)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

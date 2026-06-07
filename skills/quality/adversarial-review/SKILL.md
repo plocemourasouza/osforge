@@ -79,6 +79,7 @@ Encontrar **MÍNIMO 10 issues** para corrigir ou melhorar.
 
 ## Halt Conditions
 - HALT se zero findings → suspeito, re-analisar com mais ceticismo
+- HALT se findings < 10 issues após a primeira passada → fazer UMA segunda passada mais cética (fluxos alternativos, assumptions implícitas, race conditions, error states, omissões). Se após a segunda passada ainda houver < 10 findings, abortar a busca por mais issues: entregar os findings reais encontrados e declarar explicitamente no relatório que o mínimo de 10 não foi atingido e por quê (ex.: artefato muito pequeno ou trivial). Nunca inventar findings artificiais para bater a cota.
 - HALT se conteúdo vazio ou ilegível
 
 

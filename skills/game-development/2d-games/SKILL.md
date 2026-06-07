@@ -1,6 +1,6 @@
 ---
 name: 2d-games
-description: 2D game development principles. Sprites, tilemaps, physics, camera.
+description: "Princípios de jogos 2D: sprites, atlases, tilemaps, física 2D, câmeras e padrões de gênero (platformer, top-down). ACIONE quando: estou fazendo um platformer 2D e o pulo parece travado (coyote time, jump buffering); como organizar sprites e animações no Godot, Unity 2D ou Phaser; preciso montar tilemaps com auto-tiling e camadas; qual collision shape usar para o personagem 2D; minha câmera 2D está tremendo ou quero câmera que segue o player. Keywords: 2D, sprite, tilemap, pixel art, platformer, top-down, física 2D, screen shake, parallax, atlas. Não acione para: jogos 3D (use 3d-games), escolha de framework web (use web-games) ou criação de arte/assets em si (use game-art)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

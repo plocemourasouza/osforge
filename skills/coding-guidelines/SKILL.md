@@ -1,6 +1,7 @@
 ---
 name: coding-guidelines
-description: Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code changes, refactoring, bug fixes, or feature development.
+description: 'Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code changes, refactoring, bug fixes, or feature development. Trigger phrases: "implement this feature", "refactor this code", "review this code", "fix this bug", "add this function", "clean up this module", "make this change".'
+alwaysApply: true
 metadata:
   author: ale
   version: "1.1.0"

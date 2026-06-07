@@ -3,8 +3,7 @@ name: epic-decomposer
 description: >
   Decompõe specs, PRDs ou requisitos em épicos e stories implementáveis.
   Cada story com ACs testáveis, tasks com file paths, e dependências mapeadas.
-  Use com "épicos", "stories", "decompor", "breakdown", "criar stories".
-trigger: épico|stories|decompor|breakdown|criar stories|sprint
+trigger: épico|épicos|stories|decompor|breakdown|criar stories|sprint
 model-tier: sonnet
 ---
 

@@ -142,6 +142,37 @@ const ExpensiveList = memo(({ items }: Props) => {
 })
 ```
 
+## Diagnosing Before Optimizing
+
+Always measure first — never optimize on a hunch.
+
+### React DevTools Profiler
+1. Open React DevTools → Profiler tab → click Record, interact with the slow UI, stop
+2. Read the flame graph: wide bars = expensive renders; gray bars = did not re-render
+3. Enable "Record why each component rendered" to see the cause (props change, state, parent)
+4. Look for components re-rendering with identical props → candidates for `memo()` / stable callbacks
+
+```typescript
+// Programmatic measurement for a specific subtree
+<Profiler id="ProductList" onRender={(id, phase, actualDuration) => {
+  if (actualDuration > 16) console.warn(`${id} slow render: ${actualDuration}ms`)
+}}>
+  <ProductList />
+</Profiler>
+```
+
+### Core Web Vitals
+- **LCP** (< 2.5s): slow LCP usually means waterfall fetching or blocking bundles — apply the CRITICAL rules above
+- **INP** (< 200ms): slow interactions point to expensive re-renders or heavy main-thread work
+- **CLS** (< 0.1): reserve space for images/dynamic content (`next/image` handles this)
+- Measure in the field with `useReportWebVitals` (next/web-vitals) or the `web-vitals` package; in the lab with Lighthouse
+
+### Browser Flame Graphs
+1. Chrome DevTools → Performance tab → Record the slow interaction
+2. Wide blocks in the main-thread flame graph = long tasks (> 50ms); zoom in to find the function
+3. Long yellow (scripting) blocks during load = too much JS — check bundle rules above
+4. Use the Network panel waterfall to spot sequential request chains → fix with `Promise.all()` / parallel fetching
+
 ## Decision Quick Reference
 
 | Situation | Action |

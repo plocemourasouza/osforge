@@ -9,6 +9,17 @@ Write the test first. Watch it fail. Write minimal code to pass.
 
 **Core principle:** If you didn't watch the test fail, you don't know if it tests the right thing.
 
+## When NOT to Use TDD
+
+TDD applies to behavior and logic. Skip it (without guilt) for:
+- **UI prototypes / throwaway spikes** — exploratory code meant to be deleted; testing it first wastes the exploration
+- **Pure styling changes** — CSS/Tailwind tweaks, spacing, colors, typography with zero logic
+- **Static content** — copy changes, markdown, layout-only markup
+- **Config files** — next.config, biome.json, tsconfig
+- **Generated code** — Prisma Client, shadcn components
+
+If the change has any conditional logic, data transformation, or user-facing behavior — TDD applies. When in doubt, it applies.
+
 ## The Iron Law
 
 ```

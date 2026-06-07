@@ -1,6 +1,6 @@
 ---
 name: rust-pro
-description: Master Rust 1.75+ with modern async patterns, advanced type system features, and production-ready systems programming. Expert in the latest Rust ecosystem including Tokio, axum, and cutting-edge crates. Use PROACTIVELY for Rust development, performance optimization, or systems programming.
+description: "Especialista em Rust 1.75+ para sistemas de alta performance: async com Tokio, ownership, lifetimes, traits avançados, unsafe/FFI e web services com axum. ACIONE quando: erro de borrow checker ou lifetime em código genérico, desenhar serviço web async com Tokio, axum ou tonic, otimizar performance e uso de memória mantendo memory safety, criar wrapper seguro sobre biblioteca C via FFI, implementar estrutura concorrente lock-free com atomics, modelar erros com thiserror e anyhow. Keywords: Rust, Tokio, axum, ownership, lifetime, borrow checker, async, FFI, serde, cargo. Não acione para: scripts rápidos em linguagens dinâmicas, dúvidas básicas de sintaxe Rust ou stacks que não podem adotar Rust."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

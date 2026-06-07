@@ -1,6 +1,6 @@
 ---
 name: nodejs-best-practices
-description: Node.js development principles and decision-making. Framework selection, async patterns, security, and architecture. Teaches thinking, not copying.
+description: "Princípios de desenvolvimento Node.js: escolha de framework, padrões async, arquitetura em camadas, validação, error handling e segurança. ACIONE quando: escolher entre Hono, Fastify, NestJS e Express para novo projeto, async/await travando ou event loop bloqueado por trabalho CPU-bound, decidir entre Promise.all, allSettled e race, estruturar camadas controller/service/repository, escolher Zod, Valibot ou ArkType para validação, erro 500 sem tratamento centralizado ou status code errado. Keywords: Node.js, Hono, Fastify, Express, NestJS, async/await, event loop, Zod, ESM, middleware. Não acione para: código frontend React/Next.js ou desenvolvimento em Python."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

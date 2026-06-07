@@ -76,6 +76,44 @@ Identifique: componentes, API routes, Server Actions, hooks, utils.
 - Slow 3G: o que o usuário vê durante carregamento?
 - Acessibilidade: funciona sem mouse? sem visão?
 
+### Exemplos Concretos de Código Vulnerável
+
+#### Missing AbortController em useEffect
+```tsx
+// ❌ Vulnerável: se o usuário navegar/trocar query antes da resposta,
+// setState roda em componente desmontado ou com dados stale (race condition)
+useEffect(() => {
+  fetch(`/api/search?q=${query}`)
+    .then(res => res.json())
+    .then(setResults)
+}, [query])
+
+// ✅ Fix: AbortController cancela o request anterior no cleanup
+useEffect(() => {
+  const controller = new AbortController()
+  fetch(`/api/search?q=${query}`, { signal: controller.signal })
+    .then(res => res.json())
+    .then(setResults)
+    .catch(err => { if (err.name !== 'AbortError') throw err })
+  return () => controller.abort()
+}, [query])
+```
+
+#### Double-click em submit sem debounce/guard
+```tsx
+// ❌ Vulnerável: double-click cria 2 pedidos/2 cobranças
+<button onClick={() => createOrder(data)}>Finalizar compra</button>
+
+// ✅ Fix: desabilitar durante o submit (guard de estado)
+const [submitting, setSubmitting] = useState(false)
+async function handleSubmit() {
+  if (submitting) return
+  setSubmitting(true)
+  try { await createOrder(data) } finally { setSubmitting(false) }
+}
+<button onClick={handleSubmit} disabled={submitting}>Finalizar compra</button>
+```
+
 ### 3. Output
 
 Para cada issue encontrada, reporte:

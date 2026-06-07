@@ -21,6 +21,14 @@ Production-grade hooks that add safety rails, quality gates, and developer exper
 - Prevents writes to protected files (.env, .env.local, package-lock.json)
 - Logs all tool calls to `.claude/audit.log` for traceability
 
+**Example of a blocked command:**
+```
+$ rm -rf / --no-preserve-root
+BLOCKED by pre_tool_use.py: command matches dangerous pattern "rm -rf /"
+(see scripts/config/blocked_patterns.json → bash_blocked). Tool call denied
+and logged to .claude/audit.log.
+```
+
 ### 2. post_tool_use.py — Quality Gates
 **Event:** PostToolUse (after Write, Edit on .ts/.tsx files)
 **What it does:**

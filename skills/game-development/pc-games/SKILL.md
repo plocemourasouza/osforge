@@ -1,6 +1,6 @@
 ---
 name: pc-games
-description: PC game development principles. Steam, platform-specific features, desktop optimization.
+description: "Princípios de jogos para PC (Windows, Mac, Linux): publicação na Steam, configurações gráficas, rebinding de controles, modding e acessibilidade desktop. ACIONE quando: vou lançar meu jogo na Steam (ou Epic, GOG, itch.io) e preciso preparar a store page; como estruturar opções gráficas em tiers (resolução, sombras, ray tracing, FPS); preciso suportar teclado+mouse e controle com rebinding completo; quero adicionar suporte a mods e Steam Workshop; quais specs mínimas/recomendadas definir para o hardware alvo. Keywords: PC, Steam, desktop, resoluções, graphics settings, rebinding, modding, Steam Workshop, itch.io, GOG. Não acione para: jogos no navegador (use web-games), mobile (use mobile-games) ou headsets VR via SteamVR (use vr-ar)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

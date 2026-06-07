@@ -1,6 +1,6 @@
 ---
 name: database-design
-description: Database design principles and decision-making. Schema design, indexing strategy, ORM selection, serverless databases.
+description: "Princípios de design de banco de dados: escolha de banco e ORM, schema, índices, otimização e migrations. ACIONE quando: query lenta ou N+1 em produção, escolher entre PostgreSQL, Neon, Turso e SQLite, escolher entre Drizzle, Prisma e Kysely, modelar schema e relacionamentos de nova feature, criar índice composto ou interpretar EXPLAIN ANALYZE, planejar migration segura em banco serverless. Keywords: database, banco de dados, schema, index, ORM, Prisma, Drizzle, migration, N+1, PostgreSQL. Não acione para: queries triviais de leitura, backup/restore operacional ou administração de servidor de banco."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

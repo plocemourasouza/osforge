@@ -177,10 +177,24 @@ critique:
 
 ## Regra de ouro
 
-> Comente APENAS regras que podem ser melhoradas. Se está tudo bom, diga "tudo good"
-> sucinto. Não sermãoneie. Não invente issues pra mostrar trabalho.
+Comente APENAS regras que podem ser melhoradas. Não invente issues pra mostrar trabalho. Exemplo concreto — config com 3 eixos OK e 1 issue real:
 
-Se de 4 eixos, 3 passaram e 1 tem 1 issue: aponte o issue específico, elogie os outros 3, e termine. Não escreva 500 linhas pra justificar 1 fix de 1 linha.
+**Output ACEITÁVEL:**
+```
+Grade: B+. Clarity, Completeness e Actionability: OK.
+Conflicts (linha 3): trigger "design premium" colide com `taste-design-dials`.
+Fix: restringir a description para "landing pages com motion design".
+```
+
+**Output REJEITADO:**
+```
+Grade: B+. Vamos analisar profundamente cada eixo...
+[3 parágrafos elogiando Clarity] [2 parágrafos especulando que a
+Completeness "poderia talvez ser mais robusta"] [seção de "considerações
+gerais sobre boas práticas de skills"] ...e por fim, há um conflito de trigger.
+```
+
+O primeiro entrega o mesmo fix em 4 linhas; o segundo enterra o único issue real em sermão e issues inventados.
 
 ## Anti-patterns
 

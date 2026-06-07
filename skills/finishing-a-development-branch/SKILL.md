@@ -103,8 +103,16 @@ git branch -d {branch}
 **[P] Pull Request:**
 ```bash
 git push origin {branch}
-gh pr create --title "{título}" --body "{descrição}" --base main
-# Ou: abrir URL do PR para o usuário completar manualmente
+
+# Verificar se o gh CLI está instalado e autenticado antes de criar o PR
+if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+  gh pr create --title "{título}" --body "{descrição}" --base main
+else
+  # Fallback: gh não disponível — montar URL de criação de PR para o usuário
+  remote_url=$(git remote get-url origin | sed -e 's/\.git$//' -e 's#git@github\.com:#https://github.com/#')
+  echo "gh CLI não instalado/autenticado. Abra manualmente:"
+  echo "${remote_url}/compare/main...{branch}?expand=1"
+fi
 ```
 
 **[K] Keep branch:**

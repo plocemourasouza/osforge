@@ -3,7 +3,8 @@ name: editorial-review
 description: >
   Revisão editorial de documentos técnicos em 2 modos: prose (copy-editing
   clínico) e structure (reorganização e simplificação).
-  Use com "editorial review", "review prose", "review structure", "revisar redação".
+  Use com "editorial review", "review prose", "review structure", "revisar redação",
+  "documento confuso", "redação flácida", "texto prolixo", "esse doc está mal organizado".
 trigger: editorial|review prose|review structure|revisar redação
 model-tier: sonnet
 ---

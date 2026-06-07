@@ -1,6 +1,11 @@
+---
+name: agency-engineering
+description: "Índice dos 23 agentes de Engenharia da Agency (Backend Architect, Code Reviewer, Security Engineer, SRE, DevOps Automator, AI Engineer, Database Optimizer, etc.). ACIONE quando: 'revisar arquitetura escalável do backend', 'melhorar performance do código ou de queries', 'configurar pipeline CI/CD', 'fazer threat modeling da aplicação', 'prototipar um MVP rápido', 'escrever documentação técnica de API'. Keywords: engenharia, código, arquitetura, backend, frontend, DevOps, SRE, segurança, code review, database, firmware, smart contract. Não acione para: QA e validação de entregáveis (testing), gestão de projetos (project-management) ou design de UI (design)."
+---
+
 # 💻 Engenharia - Indice de Agentes
 
-**Quando usar:** Construir, revisar ou depurar codigo, arquitetura, seguranca, DevOps, SRE, documentacao tecnica
+**Quando usar:** Gatilhos concretos: "revisar arquitetura escalável do backend", "melhorar performance do código ou de queries lentas", "configurar pipeline CI/CD e infraestrutura", "fazer threat modeling ou revisão de segurança", "prototipar um MVP rápido", "gerenciar um incidente de produção", "escrever documentação técnica de API"
 
 **Total:** 23 agentes
 

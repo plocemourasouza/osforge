@@ -30,49 +30,7 @@ Antes de resolver tecnicamente, pergunte:
 
 PDD não substitui rigor técnico — ele DIRECIONA o rigor técnico para onde importa.
 
-## Project Structure
-
-```
-.specs/
-├── project/
-│   ├── PROJECT.md      # Vision & goals
-│   ├── ROADMAP.md      # Features & milestones
-│   ├── STATE.md        # Memory between sessions
-│   └── DECISIONS.md    # ADR log (architectural decisions)
-├── codebase/           # Brownfield analysis (existing projects)
-│   ├── STACK.md
-│   ├── ARCHITECTURE.md
-│   ├── CONVENTIONS.md
-│   ├── STRUCTURE.md
-│   ├── TESTING.md
-│   └── INTEGRATIONS.md
-└── features/           # Feature specifications
-    └── [feature]/
-        ├── discovery.md    # ← NOVO: Problema, hipótese, métricas
-        ├── spec.md
-        ├── design.md
-        ├── tasks.md
-        └── stories/
-```
-
-## Workflow
-
-**New project:**
-1. Initialize project → PROJECT.md
-2. Create roadmap → ROADMAP.md
-3. **Discover** → discovery.md (problema + hipótese + métricas)
-4. Specify features → spec.md
-5. Design → design.md
-6. Tasks → tasks.md
-7. Implement + Validate
-8. **Measure** → verificar métricas pós-deploy
-
-**Existing codebase:**
-1. Map codebase → 6 brownfield docs
-2. Initialize project → PROJECT.md + ROADMAP.md
-3. **Discover** → discovery.md
-4. Specify features → existing workflow
-5. Implement + Validate + **Measure**
+As seções a seguir detalham cada fase na ordem em que são executadas. Cada fase define os artefatos (arquivos `.md`) que produz; a estrutura de arquivos consolidada e o workflow completo aparecem depois das fases.
 
 ---
 
@@ -82,7 +40,7 @@ PDD não substitui rigor técnico — ele DIRECIONA o rigor técnico para onde i
 
 **Propósito:** Garantir que estamos construindo a coisa certa ANTES de especificar a solução.
 
-**Saída:** `.specs/features/[feature]/discovery.md`
+**Saída:** `.specs/features/[feature]/discovery.md` — documento com problema, hipótese e métricas de sucesso da feature.
 
 ### Discovery Template
 
@@ -134,6 +92,8 @@ Score: [H×H/L = muito alta ... L×L/H = muito baixa]
 
 ## Phase 1-3: SPECIFY → DESIGN → TASKS
 
+Estas três fases produzem, respectivamente, os artefatos `spec.md` (requisitos técnicos + acceptance criteria), `design.md` (arquitetura + decisões + trade-offs) e `tasks.md` (tarefas atômicas priorizadas).
+
 (Mantém workflow existente — ver references/)
 
 ### Impact-First Prioritization (na fase TASKS)
@@ -159,6 +119,8 @@ Prioridade = (Impacto no Usuário × Confiança) / Esforço Técnico
 ---
 
 ## Phase 4: IMPLEMENT + VALIDATE
+
+Implementação do código com testes e evidência de verificação para cada task.
 
 (Mantém workflow existente — ver references/)
 
@@ -205,6 +167,116 @@ Data do deploy: [YYYY-MM-DD]
 - Features sem evidência de impacto são candidatas a remoção
 
 ---
+
+## Project Structure
+
+Os artefatos produzidos pelas fases acima são organizados no diretório `.specs/`. Além dos arquivos por feature (discovery.md, spec.md, design.md, tasks.md — definidos nas fases), existem arquivos de nível de projeto, descritos inline abaixo:
+
+```
+.specs/
+├── project/
+│   ├── PROJECT.md      # Vision & goals
+│   ├── ROADMAP.md      # Features & milestones
+│   ├── STATE.md        # Memory between sessions
+│   └── DECISIONS.md    # ADR log (architectural decisions)
+├── codebase/           # Brownfield analysis (existing projects)
+│   ├── STACK.md
+│   ├── ARCHITECTURE.md
+│   ├── CONVENTIONS.md
+│   ├── STRUCTURE.md
+│   ├── TESTING.md
+│   └── INTEGRATIONS.md
+└── features/           # Feature specifications
+    └── [feature]/
+        ├── discovery.md    # ← NOVO: Problema, hipótese, métricas
+        ├── spec.md
+        ├── design.md
+        ├── tasks.md
+        └── stories/
+```
+
+## Templates
+
+### User Stories
+Antes de implementar features, crie user stories usando o template:
+- Template: [templates/user-story.md](templates/user-story.md)
+- Local: `.specs/features/[feature]/stories/`
+- Criar ANTES da implementação para guiar acceptance testing
+- DEVE incluir Contexto de Produto e Métricas de Sucesso (PDD)
+
+### Decision Log (ADR)
+Registre decisões arquiteturais importantes:
+- Template: [templates/decisions.md](templates/decisions.md)
+- Local: `.specs/project/DECISIONS.md`
+- Toda decisão com trade-offs deve ser registrada
+
+## Workflow
+
+Com as fases e a estrutura de arquivos definidas, o fluxo completo é:
+
+**New project:**
+1. Initialize project → PROJECT.md
+2. Create roadmap → ROADMAP.md
+3. **Discover** → discovery.md (problema + hipótese + métricas)
+4. Specify features → spec.md
+5. Design → design.md
+6. Tasks → tasks.md
+7. Implement + Validate
+8. **Measure** → verificar métricas pós-deploy
+
+**Existing codebase:**
+1. Map codebase → 6 brownfield docs
+2. Initialize project → PROJECT.md + ROADMAP.md
+3. **Discover** → discovery.md
+4. Specify features → existing workflow
+5. Implement + Validate + **Measure**
+
+## Commands
+
+Cada comando é acionado por um trigger pattern e detalhado em um arquivo de referência:
+
+**Project-level:**
+
+| Trigger Pattern | Reference |
+|----------------|-----------|
+| Initialize project, setup project | [project-init.md](references/project-init.md) |
+| Create roadmap, plan features | [roadmap.md](references/roadmap.md) |
+| Map codebase, analyze existing code | [brownfield-mapping.md](references/brownfield-mapping.md) |
+| Record decision, log blocker | [state-management.md](references/state-management.md) |
+| Pause work, end session | [session-handoff.md](references/session-handoff.md) |
+| Resume work, continue | [session-handoff.md](references/session-handoff.md) |
+
+**Feature-level:**
+
+| Trigger Pattern | Reference |
+|----------------|-----------|
+| Discover, validate problem, why build | (inline — Phase 0 above) |
+| Specify feature, define requirements | [specify.md](references/specify.md) |
+| Design feature, architecture | [design.md](references/design.md) |
+| Break into tasks, create tasks | [tasks.md](references/tasks.md) |
+| Implement task, build | [implement.md](references/implement.md) |
+| Validate, verify, test | [validate.md](references/validate.md) |
+| Measure, post-deploy, check metrics | (inline — Phase 5 above) |
+
+**Tools:**
+
+| Trigger Pattern | Reference |
+|----------------|-----------|
+| Code analysis, search patterns | [code-analysis.md](references/code-analysis.md) |
+
+## Code Analysis
+
+Use available tools with graceful degradation. See [code-analysis.md](references/code-analysis.md).
+
+## Output Behavior
+
+**Model guidance:** After completing lightweight tasks (validation, state updates, session handoff), naturally mention once that such tasks work well with faster/cheaper models. Track in STATE.md under `Preferences` to avoid repeating. For heavy tasks (brownfield mapping, complex design), briefly note the reasoning requirements before starting.
+
+Be conversational, not robotic. Don't interrupt workflow—add as a natural closing note. Skip if user seems experienced or has already acknowledged the tip.
+
+---
+
+As seções a seguir cobrem cuidados operacionais (gotchas): gestão de contexto e registro de tentativas falhadas.
 
 ## Context Loading Strategy
 
@@ -292,7 +364,7 @@ Quando o contexto entra na zona amarela ou vermelha, adote automaticamente:
 
 ### Story Loading por Fase
 
-User stories têm ~725 tokens. Cada fase precisa apenas de seções específicas:
+User stories (ver Templates acima) têm ~725 tokens. Cada fase precisa apenas de seções específicas:
 
 | Fase | Seções necessárias da story | Ignorar |
 |------|----------------------------|--------|
@@ -331,59 +403,3 @@ Quando uma task falha após tentativa genuína, registre em STATE.md:
 - Após 3 tentativas falhadas na mesma task: PARE e revise a spec/design
 - Cada tentativa DEVE usar abordagem diferente (repetir = desperdício)
 - SEMPRE faça rollback limpo antes de nova tentativa (não acumule fixes)
-
-## Commands
-
-**Project-level:**
-
-| Trigger Pattern | Reference |
-|----------------|-----------|
-| Initialize project, setup project | [project-init.md](references/project-init.md) |
-| Create roadmap, plan features | [roadmap.md](references/roadmap.md) |
-| Map codebase, analyze existing code | [brownfield-mapping.md](references/brownfield-mapping.md) |
-| Record decision, log blocker | [state-management.md](references/state-management.md) |
-| Pause work, end session | [session-handoff.md](references/session-handoff.md) |
-| Resume work, continue | [session-handoff.md](references/session-handoff.md) |
-
-**Feature-level:**
-
-| Trigger Pattern | Reference |
-|----------------|-----------|
-| Discover, validate problem, why build | (inline — Phase 0 above) |
-| Specify feature, define requirements | [specify.md](references/specify.md) |
-| Design feature, architecture | [design.md](references/design.md) |
-| Break into tasks, create tasks | [tasks.md](references/tasks.md) |
-| Implement task, build | [implement.md](references/implement.md) |
-| Validate, verify, test | [validate.md](references/validate.md) |
-| Measure, post-deploy, check metrics | (inline — Phase 5 above) |
-
-**Tools:**
-
-| Trigger Pattern | Reference |
-|----------------|-----------|
-| Code analysis, search patterns | [code-analysis.md](references/code-analysis.md) |
-
-## Output Behavior
-
-**Model guidance:** After completing lightweight tasks (validation, state updates, session handoff), naturally mention once that such tasks work well with faster/cheaper models. Track in STATE.md under `Preferences` to avoid repeating. For heavy tasks (brownfield mapping, complex design), briefly note the reasoning requirements before starting.
-
-Be conversational, not robotic. Don't interrupt workflow—add as a natural closing note. Skip if user seems experienced or has already acknowledged the tip.
-
-## Code Analysis
-
-Use available tools with graceful degradation. See [code-analysis.md](references/code-analysis.md).
-
-## Templates
-
-### User Stories
-Antes de implementar features, crie user stories usando o template:
-- Template: [templates/user-story.md](templates/user-story.md)
-- Local: `.specs/features/[feature]/stories/`
-- Criar ANTES da implementação para guiar acceptance testing
-- DEVE incluir Contexto de Produto e Métricas de Sucesso (PDD)
-
-### Decision Log (ADR)
-Registre decisões arquiteturais importantes:
-- Template: [templates/decisions.md](templates/decisions.md)
-- Local: `.specs/project/DECISIONS.md`
-- Toda decisão com trade-offs deve ser registrada

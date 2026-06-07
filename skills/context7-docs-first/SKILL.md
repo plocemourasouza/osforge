@@ -1,6 +1,6 @@
 ---
 name: context7-docs-first
-description: "Ground all platform and library answers in current official documentation by using Context7 MCP tools before responding. TRIGGER when: user asks about Next.js, Supabase, Prisma, Stripe, Playwright, Bun, shadcn/ui, Vercel, or any version-sensitive library behavior. Also trigger when user says 'docs', 'latest', 'current version', 'how does X work now', or is integrating APIs that change between versions. Do NOT trigger for general programming concepts, algorithms, or topics unrelated to specific libraries."
+description: "Ground all platform and library answers in current official documentation by using Context7 MCP tools before responding. TRIGGER when: user asks about Next.js, Supabase, Prisma, Stripe, Playwright, Bun, shadcn/ui, Vercel, or any version-sensitive library behavior. Also trigger when user says 'docs', 'latest', 'current version', 'how does X work now', 'API deprecated', 'quebrou no update', 'como fazer X na versão Y', or is integrating APIs that change between versions. Do NOT trigger for general programming concepts, algorithms, or topics unrelated to specific libraries."
 metadata:
   author: osforge
   version: '1.0'

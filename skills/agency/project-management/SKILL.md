@@ -1,6 +1,11 @@
+---
+name: agency-project-management
+description: "Índice dos 6 agentes de Gestão de Projetos da Agency (Project Shepherd, Studio Producer, Studio Operations, Jira Workflow Steward, Experiment Tracker, Senior Project Manager). ACIONE quando: 'converter a spec em tarefas executáveis', 'organizar workflow Git/Jira com commits rastreáveis', 'coordenar timeline e stakeholders de um projeto', 'rastrear experimentos e A/B tests em andamento', 'gerenciar portfólio de múltiplos projetos e recursos'. Keywords: gestão de projetos, project management, Jira, timeline, coordenação, tarefas, sprint, portfólio, operações, experimentos. Não acione para: priorização de roadmap de produto (product), operações puramente técnicas de Git (engineering)."
+---
+
 # 🎬 Gestao de Projetos - Indice de Agentes
 
-**Quando usar:** Planejamento, coordenacao de times, workflows Git/Jira, rastreamento de experimentos
+**Quando usar:** Gatilhos concretos: "converter a spec em tarefas executáveis", "organizar workflow Git/Jira com commits rastreáveis", "coordenar timeline e stakeholders de um projeto", "rastrear experimentos e A/B tests em andamento", "gerenciar portfólio de múltiplos projetos e alocação de recursos", "otimizar processos e operações do estúdio"
 
 **Total:** 6 agentes
 

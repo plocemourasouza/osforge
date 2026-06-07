@@ -14,6 +14,8 @@ metadata:
 ## Principle
 Use the most powerful model only where reasoning depth matters. Route mechanical tasks to cheaper/faster models. The Agent tool's `model` parameter enables per-subagent model selection.
 
+**Requisito:** esta skill depende do **Agent tool** (spawning de subagents) para funcionar — é ele que aceita o parâmetro `model` e permite rotear cada subtask para o tier certo. Se o Agent tool não estiver disponível no ambiente, não há como despachar para modelos diferentes; nesse caso, apenas recomende o tier adequado para o usuário executar manualmente.
+
 ## Model Tiers
 
 ### 🔴 Opus (`claude-opus-4-6`) — $5/$25 per 1M tokens

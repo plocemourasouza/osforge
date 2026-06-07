@@ -1,6 +1,6 @@
 ---
 name: doc-sanitization
-description: Clean up, consolidate, and organize project documentation. Removes obsolete specs, merges duplicates, enforces lifecycle rules. Use when triggered by /clean-docs command, when docs accumulate over 5 files in specs/ or plans/, when documents are older than 30 days, or when the user mentions organizing, cleaning, or reviewing documentation.
+description: Clean up, consolidate, and organize project documentation. Removes obsolete specs, merges duplicates, enforces lifecycle rules. Trigger on phrases like "tenho muita documentação desorganizada", "limpar os docs do projeto", "consolidar specs antigas", or "esses arquivos .md estão uma bagunça". Use when triggered by /clean-docs command, when docs accumulate over 5 files in specs/ or plans/, when documents are older than 30 days, or when the user mentions organizing, cleaning, or reviewing documentation.
 ---
 
 # Documentation Sanitization

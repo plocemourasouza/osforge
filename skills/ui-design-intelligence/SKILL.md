@@ -112,6 +112,35 @@ usar variantes do shadcn mapeadas para a paleta
 **HTML + Tailwind:** CDN + CSS variables inline no :root
 ```
 
+#### Exemplo curto de output gerado
+
+```markdown
+## Design System Spec — PayFlow (fintech SaaS B2B)
+
+### Estilo Visual
+Nome: Corporate Trust Minimal | Atmosfera: sóbrio, preciso, confiável
+Referências: Stripe Dashboard, Mercury, Brex
+
+### Paleta de Cores
+| Token          | Hex     | Uso |
+|----------------|---------|-----|
+| --primary      | #0F4C81 | CTAs, links |
+| --background   | #FAFBFC | Fundo principal |
+| --surface      | #FFFFFF | Cards, modais |
+| --text-primary | #1A2330 | Textos principais |
+| --success      | #1E7F4F | Transações confirmadas |
+| --error        | #C0392B | Falhas de pagamento |
+
+### Tipografia
+Heading: Geist | Body: Geist | Mono: JetBrains Mono (valores monetários, tabular-nums)
+Scale: xs(12) sm(14) base(16) lg(18) xl(20) 2xl(24) 3xl(30)
+
+### Diretrizes UX Prioritárias
+1. Valores monetários sempre em fonte mono com tabular-nums
+2. Estados destrutivos exigem confirmação em duas etapas
+3. Tabelas densas com zebra sutil, nunca cards para dados financeiros
+```
+
 ### 4. Handoff para skills dependentes
 
 Ao final, informar como o design system se conecta:

@@ -1,23 +1,42 @@
 ---
 name: redesign-audit
 description: >
-  Audita projeto existente, identifica padrões AI-genéricos, e aplica upgrades
-  cirúrgicos sem quebrar funcionalidade. ACIONE quando: usuário pede "redesenhar",
-  "melhorar design atual", "upgrade visual", "modernizar UI", "tirar cara de AI",
-  "site parece template", "deixar mais premium", "auditar e arrumar design".
-  Funciona com QUALQUER stack (Tailwind, vanilla CSS, styled-components, etc).
-version: 1.0.0
-inspired_by: Leonxlnx/taste-skill (redesign-skill) — MIT, 10k+ stars
+  OSForge enhancement layer sobre redesign-existing-projects. Audita projeto existente,
+  identifica padrões AI-genéricos, aplica upgrades cirúrgicos + regras estruturais OSForge
+  (4 estados, footer slots, i18n, RSC). ACIONE com redesign-existing-projects quando:
+  "redesenhar", "modernizar UI", "upgrade visual", "tirar cara de AI", "site parece template".
+version: 1.1.0
+compose_with:
+  upstream:
+    - redesign-existing-projects
+  osforge:
+    - osforge-design structural rules
+    - taste-design-dials
 metadata:
-  source: "Leonxlnx/taste-skill"
+  source: "Leonxlnx/taste-skill + OSForge"
+  role: "enhancement-layer"
   category: "frontend-quality"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# Redesign Audit — Upgrade Existing Projects to Premium
+# Redesign Audit — OSForge Enhancement Layer
 
-> Different from `ui-audit` (which is review-only). This skill **audits AND applies fixes**
+> **Compose stack (mandatory in OSForge projects):**
+> 1. Read `~/.claude/skills/redesign-existing-projects/SKILL.md` — upstream audit + upgrade methodology
+> 2. Apply **this skill** — OSForge structural pass (4 states, footers, i18n, RSC/repository)
+> 3. For visual elevation: load `taste-design-dials` + `design-taste-frontend`
+> 4. After fixes: `skills/quality/ui-audit` or `/impeccable audit <target>`
+
+> Different from `ui-audit` (review-only). This skill **audits AND applies fixes**
 > working with the existing stack — no rewrites.
+
+## Triggers Visuais Concretos (sinais de que esta skill deve rodar)
+
+- Botões cinza ou roxo genéricos (`bg-purple-600`/`bg-gray-500` default) sem identidade de marca
+- Cards sem hierarquia: título, descrição e CTA com o mesmo peso visual, 3 colunas iguais
+- Gradiente roxo/azul "AI" no hero sobre fundo escuro centrado
+- Inter + slate-900 em tudo, headlines sem presença tipográfica
+- Sombras pretas puras e border-radius uniforme em todos os elementos
 
 ## How This Works
 
@@ -186,11 +205,29 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 - Keep changes reviewable + focused. Small targeted improvements over big rewrites.
 - After each upgrade: run `ui-audit` skill to verify accessibility + performance not regressed.
 
+## OSForge Structural Pass (add to DIAGNOSE + FIX)
+
+After upstream visual audit, verify structural compliance:
+
+| Check | Fix if missing |
+|-------|----------------|
+| Data screens missing loading/error/empty | Add `loading.tsx`, `error.tsx`, `<EmptyState>` |
+| Save/Cancel inside `<DialogContent>` | Move to `<DialogFooter>` / `<SheetFooter>` |
+| `alert()` / `confirm()` / `prompt()` | Replace with Sonner + `<AlertDialog>` |
+| Hardcoded user strings | Route through `t()` / project i18n |
+| Client Component fetching data | Move fetch to Server Component or repository |
+| Direct `@/server/db` or mock imports in UI | Switch to `@/lib/repositories/<entity>` |
+| `useEffect` for data load | Server Component or `useQuery` pattern |
+
+Read `osforge.config.json` + project `DESIGN.md` before changing tokens.
+
 ---
 
 ## Related Skills
+- `redesign-existing-projects` — **upstream base** (read first)
+- `design-taste-frontend` — upstream visual standards for new sections
 - `ui-audit` — 6-pillar review (run AFTER applying redesign-audit fixes)
-- `taste-design-dials` — premium design rules to apply during upgrade
+- `taste-design-dials` — premium design rules + dials during upgrade
 - `aesthetic-modes` — pick a mode to align upgrades with
 - `accessibility` — WCAG 2.1 compliance check
 - `aesthetic-boost` — anti-AI-slop primer (always-active context)

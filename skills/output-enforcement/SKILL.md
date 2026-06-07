@@ -1,20 +1,26 @@
 ---
 name: output-enforcement
-description: >
-  Garante output completo e exaustivo. Bane padrões de truncation ("// ... rest of code",
-  "// TODO", "for brevity"), placeholders, e respostas pela metade. ACIONE quando o usuário
-  pede arquivo completo, múltiplos componentes, refactor extenso, ou qualquer task longa
-  onde compressão/preguiça do modelo seria falha crítica. Triggers: "completo", "todo o
-  arquivo", "implementação inteira", "sem placeholders", "não corte", "exaustivo".
-version: 1.0.0
-inspired_by: Leonxlnx/taste-skill (output-skill) — MIT, 10k+ stars
+description: "Camada de enhancement OSForge sobre full-output-enforcement: além do output completo, exige verification gate antes de declarar done e proteção TDD (nunca enfraquecer testes). ACIONE quando: pedirem completo, todo o arquivo, exaustivo, sem placeholders ou não corte, refactor multi-arquivo, gerar vários componentes ou documentação longa, suíte de testes que precisa de todos os casos escritos, migração que não pode pular itens. Keywords: completo, exaustivo, sem placeholder, não corte, verification, TDD, multi-file, scope, deliverables, output completo. Não acione para: a regra base genérica anti-truncamento isolada — essa é full-output-enforcement, o upstream que esta camada estende com verificação e disciplina de testes."
+version: 1.1.0
+compose_with:
+  upstream:
+    - full-output-enforcement
+  osforge:
+    - verification-before-completion
+    - tdd-workflow
 metadata:
-  source: "Leonxlnx/taste-skill"
+  source: "Leonxlnx/taste-skill + OSForge"
+  role: "enhancement-layer"
   category: "meta-quality"
 allowed-tools: Read, Write, Edit
 ---
 
-# Full-Output Enforcement — Anti-Laziness Directive
+# Output Enforcement — OSForge Enhancement Layer
+
+> **Compose stack:**
+> 1. Read `~/.claude/skills/full-output-enforcement/SKILL.md` — upstream anti-truncation rules
+> 2. Apply **this skill** — PT triggers + OSForge verification + TDD test protection
+> 3. Before claiming done: run **Verification Before Completion** (Skill 2 in SKILLS.md)
 
 ## Baseline
 
@@ -109,15 +115,17 @@ Auto-activate for:
 
 ## Interaction with Other Skills
 
+- **`full-output-enforcement`** — **upstream base** (read first; banned patterns live there)
 - **`verification-before-completion`** — output-enforcement guarantees deliverables exist;
-  verification-before-completion guarantees they work. Run both.
+  verification guarantees they work. **Both required before "done".**
 - **`tdd-workflow`** — output-enforcement applies to test files too. If 5 tests are needed,
-  write all 5 — no `// similar test for case Y`.
+  write all 5 — no `// similar test for case Y`. **Never weaken tests to pass.**
 - **`technical-design-doc-creator`** — every required section in the TDD must be fully written.
 
 ---
 
 ## Related Skills
-- `verification-before-completion` — verify deliverables actually work
+- `full-output-enforcement` — upstream anti-truncation authority
+- `verification-before-completion` — verify deliverables actually work (SKILLS.md Skill 2)
 - `tdd-workflow` — TDD discipline including complete test suites
 - `clean-code` — code quality standards for the output

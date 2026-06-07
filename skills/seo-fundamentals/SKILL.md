@@ -1,6 +1,6 @@
 ---
 name: seo-fundamentals
-description: SEO fundamentals, E-E-A-T, Core Web Vitals, and Google algorithm principles.
+description: "Fundamentos de SEO para Google com E-E-A-T, Core Web Vitals e SEO técnico. ACIONE quando: melhorar ranking de página no Google, implementar schema markup/dados estruturados, otimizar Core Web Vitals (LCP, INP, CLS) para SEO, configurar sitemap/robots.txt/canonical, otimizar title/meta description/headings de conteúdo. Keywords: SEO, ranking, Google, E-E-A-T, Core Web Vitals, schema markup, sitemap, meta tags, backlinks, busca orgânica. Não acione para: otimização para motores de busca por IA como ChatGPT/Perplexity e citações em respostas de IA (use genai-optimization)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

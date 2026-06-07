@@ -1,6 +1,6 @@
 ---
 name: game-art
-description: Game art and visual principles. Asset pipeline, animation, visual effects.
+description: "Princípios de arte para jogos: pipeline de assets, otimização de texturas, animação (sprite, skeletal, procedural), VFX e direção de arte. ACIONE quando: como organizar o pipeline de assets do Blender/Aseprite para a engine (FBX, glTF, PNG); minhas texturas estão pesadas e preciso de atlases, mipmaps ou compressão (KTX2, WebP); qual tipo de animação usar para personagens (frame-based vs skeletal); quero adicionar VFX (explosões, partículas, trails) sem matar a performance; estou definindo o estilo visual do jogo (realista, stylized, pixel art, minimalista). Keywords: game art, assets, texture, animation pipeline, VFX, partículas, sprite sheet, direção de arte, Blender, Aseprite. Não acione para: implementação de sistemas de sprite/tilemap em código (use 2d-games) ou shaders e rendering 3D (use 3d-games)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

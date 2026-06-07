@@ -1,6 +1,11 @@
+---
+name: agency-testing
+description: "Índice dos 8 agentes de Qualidade e Testes da Agency (Accessibility Auditor, API Tester, Performance Benchmarker, Reality Checker, Evidence Collector, Test Results Analyzer, Tool Evaluator, Workflow Optimizer). ACIONE quando: 'auditar acessibilidade WCAG da interface', 'testar endpoints da API antes do release', 'rodar benchmark de performance da aplicação', 'validar com evidências se o entregável está pronto para produção', 'analisar resultados de testes e métricas de qualidade'. Keywords: QA, testes, testing, acessibilidade, WCAG, API, performance, benchmark, validação, evidência, qualidade. Não acione para: escrever testes unitários junto com o código (engineering), pesquisa de usabilidade com usuários (design)."
+---
+
 # 🧪 Qualidade e Testes - Indice de Agentes
 
-**Quando usar:** QA, testes de API, acessibilidade WCAG, performance, validacao de entregaveis
+**Quando usar:** Gatilhos concretos: "auditar acessibilidade WCAG da interface", "testar endpoints da API antes do release", "rodar benchmark de performance da aplicação", "validar com evidências (screenshots) se o entregável está pronto para produção", "analisar resultados de testes e métricas de qualidade", "avaliar ferramentas antes de adotar"
 
 **Total:** 8 agentes
 

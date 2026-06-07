@@ -1,6 +1,11 @@
+---
+name: agency-marketing
+description: "Índice dos 26 agentes e 25 workflows de Marketing da Agency (Growth Hacker, Content Creator, SEO Specialist, estrategistas por plataforma, CRO, mercados China/Ásia). ACIONE quando: 'otimizar minha landing page para conversão', 'fazer auditoria de SEO do site', 'planejar calendário e estratégia de conteúdo', 'criar sequência de emails de nutrição', 'montar estratégia de lançamento de produto', 'crescer no LinkedIn, TikTok ou Instagram'. Keywords: marketing, conteúdo, SEO, CRO, growth, redes sociais, copywriting, email marketing, ASO, lançamento, retenção, pricing. Não acione para: campanhas pagas Google/Meta Ads (paid-media), prospecção e propostas de vendas (sales)."
+---
+
 # 📢 Marketing — Índice de Agentes & Workflows
 
-**Quando usar:** Conteúdo, SEO, redes sociais, growth hacking, ASO, CRO, estratégia de plataformas, retenção, lançamentos
+**Quando usar:** Gatilhos concretos: "otimizar minha landing page para conversão", "fazer auditoria de SEO do site", "planejar calendário e estratégia de conteúdo", "criar sequência de emails de nutrição", "montar estratégia de lançamento de produto ou feature", "reduzir churn e melhorar retenção", "crescer no LinkedIn/TikTok/Instagram", "otimizar listagem na app store (ASO)"
 
 **Total:** 26 agentes + 25 workflows de execução
 

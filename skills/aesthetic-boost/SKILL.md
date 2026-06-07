@@ -49,6 +49,42 @@ ambos funcionam — o que importa é executar a visão com precisão.
    transparências em camada, sombras dramáticas, bordas decorativas, grain overlays.
    Crie atmosfera — nunca defaulte para cores sólidas planas.
 
+## Exemplos de Output Esperado (por eixo)
+
+1. **Typography** — pairing display + body com contraste extremo:
+   ```css
+   h1 { font-family: 'Fraunces', serif; font-weight: 900; font-size: clamp(3rem, 9vw, 8rem); letter-spacing: -0.04em; }
+   body { font-family: 'Switzer', sans-serif; font-weight: 300; }
+   ```
+   *Efeito visual:* headline massiva e marcante contra body leve — hierarquia inconfundível, zero cara de template.
+
+2. **Color & Theme** — dominante + acento afiado via CSS variables:
+   ```css
+   :root { --ink: #1A1714; --canvas: #F4EFE6; --accent: #E63B1F; }
+   ```
+   *Efeito visual:* paleta quente monocromática com um único vermelho cirúrgico que guia o olho ao CTA.
+
+3. **Motion** — page load orquestrado com stagger:
+   ```css
+   .reveal { animation: rise 700ms cubic-bezier(0.16,1,0.3,1) both; animation-delay: calc(var(--i) * 90ms); }
+   @keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+   ```
+   *Efeito visual:* elementos do hero entram em cascata coreografada, sensação de produto premium.
+
+4. **Spatial Composition** — grid assimétrico com sobreposição:
+   ```css
+   .hero { display: grid; grid-template-columns: 5fr 7fr; }
+   .hero img { margin-top: -6rem; transform: rotate(-2deg); }
+   ```
+   *Efeito visual:* imagem invade a coluna de texto em diagonal, quebrando a previsibilidade do layout centrado.
+
+5. **Backgrounds & Depth** — atmosfera com mesh + grain:
+   ```css
+   .bg { background: radial-gradient(60% 80% at 20% 10%, #2E4036 0%, #0E0E0C 70%); }
+   .grain { position: fixed; inset: 0; pointer-events: none; opacity: 0.04; background-image: url('noise.svg'); }
+   ```
+   *Efeito visual:* fundo escuro com brilho orgânico e textura de filme — profundidade em vez de cor sólida plana.
+
 ## Anti-Convergência
 
 NUNCA use as mesmas escolhas entre projetos. Varie entre light/dark, fontes diferentes,

@@ -1,6 +1,6 @@
 ---
 name: app-builder
-description: Main application building orchestrator. Creates full-stack applications from natural language requests. Determines project type, selects tech stack, coordinates agents.
+description: "Orquestrador de criação de aplicações full-stack a partir de pedidos em linguagem natural, com 13 templates de scaffolding e coordenação de agentes. ACIONE quando: cria um app novo do zero, qual stack usar para este projeto, scaffolding de Next.js/FastAPI/Expo/Electron/Astro, montar um SaaS, landing page ou CLI do zero, coordenar agentes para construir um projeto completo. Keywords: app builder, criar app, novo projeto, scaffold, tech stack, full-stack, template, boilerplate, greenfield, monorepo. Não acione para: ajustes pequenos em projetos existentes, debugging ou refactoring de código já criado."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

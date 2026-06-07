@@ -1,6 +1,11 @@
+---
+name: agency-specialized
+description: "Índice dos 24 agentes Especialistas da Agency (Agents Orchestrator, Compliance Auditor, Blockchain Security Auditor, MCP Builder, Document Generator, Workflow Architect, Supply Chain Strategist, ZK Steward, etc.). ACIONE quando: 'orquestrar pipeline com múltiplos agentes', 'preparar auditoria SOC 2, ISO 27001 ou HIPAA', 'auditar segurança de smart contract', 'construir um servidor MCP', 'gerar documentos PDF/PPTX/DOCX/XLSX profissionais', 'planejar sourcing e supply chain'. Keywords: especialistas, orquestração, compliance, SOC2, HIPAA, blockchain, MCP, supply chain, governança, automação, Zettelkasten, treinamento corporativo. Não acione para: desenvolvimento de software geral (engineering), checagem legal cotidiana de conteúdo (support)."
+---
+
 # 🎯 Especialistas - Indice de Agentes
 
-**Quando usar:** Orquestracao de agentes, compliance SOC2/ISO/HIPAA, blockchain, MCP builder, supply chain
+**Quando usar:** Gatilhos concretos: "orquestrar pipeline com múltiplos agentes", "preparar auditoria SOC 2, ISO 27001 ou HIPAA", "auditar segurança de smart contract", "construir um servidor MCP", "gerar documentos PDF/PPTX/DOCX/XLSX profissionais", "mapear workflows completos do sistema", "planejar sourcing e supply chain", "governança de automações n8n"
 
 **Total:** 24 agentes
 

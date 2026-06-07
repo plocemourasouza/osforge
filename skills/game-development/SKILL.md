@@ -1,6 +1,6 @@
 ---
 name: game-development
-description: Game development orchestrator. Routes to platform-specific skills based on project needs.
+description: "Orquestrador de desenvolvimento de jogos que ensina princípios universais (game loop, padrões, performance, IA, colisão) e roteia para sub-skills de plataforma e especialidade. ACIONE quando: quero fazer um jogo mas não sei por onde começar; estou estruturando a arquitetura do meu jogo (game loop, state machine, ECS, object pooling); meu jogo está com FPS baixo e preciso de um budget de performance; qual padrão de IA usar para inimigos (FSM, behavior tree, GOAP); como organizar input para múltiplas plataformas. Keywords: game development, desenvolvimento de jogos, game loop, gamedev, engine, Godot, Unity, Unreal, ECS, arquitetura de jogo. Não acione para: tópicos já cobertos por sub-skills específicas (2d-games, 3d-games, web-games, mobile-games, pc-games, vr-ar, multiplayer, game-art, game-audio, game-design) — prefira a sub-skill quando o pedido for claramente de uma delas."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

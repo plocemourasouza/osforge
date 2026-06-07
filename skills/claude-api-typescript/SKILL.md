@@ -66,6 +66,35 @@ for await (const message of query({
 }
 ```
 
+## Quick Start — Subagents (Agent SDK)
+
+```typescript
+import { query } from "@anthropic-ai/claude-agent-sdk"
+
+// Define subagents via options.agents — the main agent delegates with the Agent tool
+for await (const message of query({
+  prompt: "Audit this repo: review code quality and check test coverage",
+  options: {
+    allowedTools: ["Read", "Glob", "Grep", "Agent"],
+    agents: {
+      "code-reviewer": {
+        description: "Reviews code for quality and best practices",
+        prompt: "You are a senior code reviewer. Be concise and actionable.",
+        tools: ["Read", "Glob", "Grep"],
+        model: "sonnet", // cheaper model for subagent work
+      },
+      "test-auditor": {
+        description: "Audits test coverage and test quality",
+        prompt: "Find untested code paths and weak assertions.",
+        tools: ["Read", "Glob", "Grep"],
+      },
+    },
+  },
+})) {
+  if ("result" in message) console.log(message.result)
+}
+```
+
 ## Reference Files (read on demand)
 
 ### Claude API

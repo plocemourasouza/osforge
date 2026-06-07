@@ -12,6 +12,8 @@ metadata:
 ## Overview
 `anthropics/claude-code-action@v1` integrates Claude Code into GitHub Actions for automated PR review, @claude mentions in issues, and CI/CD automation.
 
+> ⚠️ **NEVER auto-merge Claude's output.** A human MUST manually review every Claude-generated suggestion, commit, or PR before merge. Configure branch protection to require human approval — automated review complements human review, it does not replace it.
+
 ## Quick Setup
 ```bash
 # In Claude Code terminal — installs GitHub App + secrets automatically

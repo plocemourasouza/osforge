@@ -1,6 +1,6 @@
 ---
 name: 3d-games
-description: 3D game development principles. Rendering, shaders, physics, cameras.
+description: "Princípios de jogos 3D: pipeline de rendering, shaders, física e colisão 3D, câmeras, iluminação e LOD. ACIONE quando: meu jogo 3D está com draw calls demais e preciso de culling/batching/LOD; quando vale escrever um shader customizado (água, toon, efeitos); qual collider usar para personagens e terreno 3D no Unity, Unreal ou Godot; como fazer câmera third-person ou first-person com boa sensação; iluminação está pesada e preciso decidir entre sombras real-time e baked. Keywords: 3D, rendering, shader, mesh, LOD, frustum culling, lighting, câmera 3D, colisão, raycast. Não acione para: jogos 2D (use 2d-games), conforto e tracking em VR/AR (use vr-ar) ou pipeline de assets artísticos (use game-art)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

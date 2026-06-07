@@ -44,6 +44,8 @@ git worktree list
 
 O diretório `../meu-projeto-feature-A` fica completamente isolado — mudanças lá não afetam o diretório principal.
 
+> ⚠️ **WARNING: uma branch checked-out em um worktree NÃO pode ser usada em outro.** O git bloqueia `git checkout`/`git worktree add` de uma branch que já está ativa em qualquer outro worktree (erro: `fatal: '<branch>' is already checked out at '<path>'`). Planeje uma branch exclusiva por worktree; se precisar da branch em outro lugar, remova o worktree que a está usando primeiro.
+
 ### Estrutura recomendada para OSForge + agents paralelos
 
 ```

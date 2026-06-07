@@ -1,10 +1,6 @@
 ---
 name: elicitation-engine
-description: >
-  Refinamento iterativo de outputs usando técnicas de elicitação estruturadas.
-  Invocável standalone ou dentro de outros skills para melhorar specs,
-  decisões arquiteturais, PRDs e qualquer artefato.
-  Use com "elicitar", "refine", "melhorar output", "dig deeper".
+description: "Refinamento iterativo de outputs (specs, PRDs, decisões arquiteturais, qualquer artefato) via menu interativo de técnicas de elicitação estruturadas. ACIONE quando: pedirem refine isso, melhorar ou aprofundar uma spec/PRD, dig deeper numa decisão de design, que perguntas estou ignorando, fortalecer seção fraca de um documento antes de finalizar. Keywords: elicitar, refine, refinamento, aprofundar, melhorar output, spec, PRD, elicitation, dig deeper, iterar. Não acione para: caça de edge cases em código (use edge-case-hunter) nem review de código (use code-review-checklist)."
 trigger: elicit|refine output|dig deeper|melhorar spec|aprofundar
 model-tier: sonnet
 ---

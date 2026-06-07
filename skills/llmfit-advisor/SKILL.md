@@ -25,19 +25,10 @@ cargo install llmfit
 llmfit --version
 ```
 
-## Quando usar (trigger phrases)
+## Quando usar
 
-Ativar esta skill imediatamente quando o usuário perguntar:
-- "quais modelos posso rodar localmente?"
-- "qual LLM cabe no meu hardware?"
-- "preciso de alternativa sem custo de API"
-- "dados sensíveis — quero rodar local"
-- "configura o Ollama com o melhor modelo"
-- "qual quantização usar?"
-- "posso rodar Llama 70B aqui?"
-- "recomenda modelo para coding/raciocínio/chat local"
-
-Também usar quando `smart-model-dispatch` identificar tarefa elegível para modelo local
+Os gatilhos de ativação estão na description do frontmatter. Além deles, usar quando
+`smart-model-dispatch` identificar tarefa elegível para modelo local
 (boilerplate, tradução, test stubs, CRUD simples) e custo/privacidade forem relevantes.
 
 ---

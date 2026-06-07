@@ -1,6 +1,6 @@
 ---
 name: mobile-design
-description: Mobile-first design thinking and decision-making for iOS and Android apps. Touch interaction, performance patterns, platform conventions. Teaches principles, not fixed values. Use when building React Native, Flutter, or native mobile apps.
+description: "Princípios de design mobile-first para apps iOS e Android: interação touch, thumb zone, performance 60fps, convenções de plataforma (HIG, Material 3), offline-first e navegação nativa. ACIONE quando: 'cria um app em React Native ou Flutter', 'design de tela mobile nativa', 'esse botão é pequeno demais para touch', 'o app precisa funcionar offline', 'tab bar, drawer ou stack para navegação do app', 'dark mode OLED no app'. Keywords: mobile, app, iOS, Android, React Native, Flutter, touch, gesture, HIG, Material Design. Não acione para: sites e web responsivo (high-end-visual-design, minimalist-ui), padrões técnicos Tailwind (tailwind-patterns), gerar mockups de imagem de apps (imagegen-frontend-mobile)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"
@@ -10,121 +10,222 @@ metadata:
 # Mobile Design System
 
 > **Philosophy:** Touch-first. Battery-conscious. Platform-respectful. Offline-capable.
-> **Core Principle:** Mobile is NOT a small desktop. THINK mobile constraints, ASK platform choice.
+> **Core Principle:** Mobile is NOT a small desktop. Design for the WORST conditions: bad network, one hand, bright sun, low battery. If it works there, it works everywhere.
+
+This skill is self-contained: everything needed to design and review mobile screens is below. The files in `references/` are optional deep dives.
 
 ---
 
-## 🔧 Runtime Scripts
+## Step 1 — Ask Before Assuming
 
-**Execute these for validation (don't read, just run):**
+If the user's request is open-ended, do NOT default to your favorite stack. Confirm these before writing any code:
 
-| Script | Purpose | Usage |
-|--------|---------|-------|
-| `scripts/mobile_audit.py` | Mobile UX & Touch Audit | `python scripts/mobile_audit.py <project_path>` |
-
----
-
-## 🔴 MANDATORY: Read Reference Files Before Working!
-
-**⛔ DO NOT start development until you read the relevant files:**
-
-### Universal (Always Read)
-
-| File | Content | Status |
-|------|---------|--------|
-| **[mobile-design-thinking.md](mobile-design-thinking.md)** | **⚠️ ANTI-MEMORIZATION: Forces thinking, prevents AI defaults** | **⬜ CRITICAL FIRST** |
-| **[touch-psychology.md](touch-psychology.md)** | **Fitts' Law, gestures, haptics, thumb zone** | **⬜ CRITICAL** |
-| **[mobile-performance.md](mobile-performance.md)** | **RN/Flutter performance, 60fps, memory** | **⬜ CRITICAL** |
-| **[mobile-backend.md](mobile-backend.md)** | **Push notifications, offline sync, mobile API** | **⬜ CRITICAL** |
-| **[mobile-testing.md](mobile-testing.md)** | **Testing pyramid, E2E, platform-specific** | **⬜ CRITICAL** |
-| **[mobile-debugging.md](mobile-debugging.md)** | **Native vs JS debugging, Flipper, Logcat** | **⬜ CRITICAL** |
-| [mobile-navigation.md](mobile-navigation.md) | Tab/Stack/Drawer, deep linking | ⬜ Read |
-| [mobile-typography.md](mobile-typography.md) | System fonts, Dynamic Type, a11y | ⬜ Read |
-| [mobile-color-system.md](mobile-color-system.md) | OLED, dark mode, battery-aware | ⬜ Read |
-| [decision-trees.md](decision-trees.md) | Framework/state/storage selection | ⬜ Read |
-
-> 🧠 **mobile-design-thinking.md is PRIORITY!** This file ensures AI thinks instead of using memorized patterns.
-
-### Platform-Specific (Read Based on Target)
-
-| Platform | File | Content | When to Read |
-|----------|------|---------|--------------|
-| **iOS** | [platform-ios.md](platform-ios.md) | Human Interface Guidelines, SF Pro, SwiftUI patterns | Building for iPhone/iPad |
-| **Android** | [platform-android.md](platform-android.md) | Material Design 3, Roboto, Compose patterns | Building for Android |
-| **Cross-Platform** | Both above | Platform divergence points | React Native / Flutter |
-
-> 🔴 **If building for iOS → Read platform-ios.md FIRST!**
-> 🔴 **If building for Android → Read platform-android.md FIRST!**
-> 🔴 **If cross-platform → Read BOTH and apply conditional platform logic!**
-
----
-
-## ⚠️ CRITICAL: ASK BEFORE ASSUMING (MANDATORY)
-
-> **STOP! If the user's request is open-ended, DO NOT default to your favorites.**
-
-### You MUST Ask If Not Specified:
-
-| Aspect | Ask | Why |
-|--------|-----|-----|
-| **Platform** | "iOS, Android, or both?" | Affects EVERY design decision |
-| **Framework** | "React Native, Flutter, or native?" | Determines patterns and tools |
-| **Navigation** | "Tab bar, drawer, or stack-based?" | Core UX decision |
-| **State** | "What state management? (Zustand/Redux/Riverpod/BLoC?)" | Architecture foundation |
-| **Offline** | "Does this need to work offline?" | Affects data strategy |
+| Aspect | Ask | Why it matters |
+|--------|-----|----------------|
+| **Platform** | "iOS, Android, or both?" | Affects every design decision (navigation, typography, feedback patterns) |
+| **Framework** | "React Native, Flutter, or native?" | Determines component APIs and performance patterns |
+| **Navigation** | "Tab bar, drawer, or stack-based?" | Core UX decision; hard to change later |
+| **State** | "Zustand/Redux (RN) or Riverpod/BLoC (Flutter)?" | Architecture foundation |
+| **Offline** | "Does this need to work offline?" | Changes the entire data strategy |
 | **Target devices** | "Phone only, or tablet support?" | Layout complexity |
 
----
-
-## 📋 Pre-Development Checklist
-
-### Before Starting ANY Mobile Project
-
-- [ ] **Platform confirmed?** (iOS / Android / Both)
-- [ ] **Framework chosen?** (RN / Flutter / Native)
-- [ ] **Navigation pattern decided?** (Tabs / Stack / Drawer)
-- [ ] **State management selected?** (Zustand / Redux / Riverpod / BLoC)
-- [ ] **Offline requirements known?**
-- [ ] **Deep linking planned from day one?**
-- [ ] **Target devices defined?** (Phone / Tablet / Both)
-
-### Before Every Screen
-
-- [ ] **Touch targets ≥ 44-48px?**
-- [ ] **Primary CTA in thumb zone?**
-- [ ] **Loading state exists?**
-- [ ] **Error state with retry exists?**
-- [ ] **Offline handling considered?**
-- [ ] **Platform conventions followed?**
-
-### Before Release
-
-- [ ] **console.log removed?**
-- [ ] **SecureStore for sensitive data?**
-- [ ] **SSL pinning enabled?**
-- [ ] **Lists optimized (memo, keyExtractor)?**
-- [ ] **Memory cleanup on unmount?**
-- [ ] **Tested on low-end devices?**
-- [ ] **Accessibility labels on all interactive elements?**
+Also avoid memorized defaults: before picking a pattern "because that's how it's always done," check whether it actually fits THIS project's context, users, and constraints. (Full anti-default protocol: [references/mobile-design-thinking.md](references/mobile-design-thinking.md).)
 
 ---
 
-## 📚 Reference Files
+## Step 2 — Touch Targets and Thumb Zone
 
-For deeper guidance on specific areas:
+### Minimum touch target sizes (memorize these)
 
-| File | When to Use |
+| Standard | Minimum | Recommended | Notes |
+|----------|---------|-------------|-------|
+| iOS (HIG) | **44pt × 44pt** | 48pt+ | All tappable elements |
+| Android (Material 3) | **48dp × 48dp** | 56dp+ | All tappable elements |
+| WCAG 2.2 | 44px × 44px | — | Accessibility compliance |
+| Primary CTAs / destructive | — | **56–64px** | Bigger = fewer mis-taps |
+
+Spacing between adjacent targets: **≥ 8px**, or accidental taps will happen. A finger contact area is ~7mm and occludes the target — there is no hover state to save the user.
+
+```jsx
+// React Native — visual icon can be small, but the TAPPABLE area must be >= 44
+<Pressable
+  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} // expands touch area
+  style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}
+>
+  <Icon name="close" size={20} />
+</Pressable>
+```
+
+```dart
+// Flutter — Material enforces 48x48 via materialTapTargetSize; don't shrink it
+IconButton(
+  iconSize: 20,
+  constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+  onPressed: close,
+  icon: const Icon(Icons.close),
+)
+```
+
+### Thumb zone (49% of users hold the phone one-handed)
+
+| Screen region | Reachability | Put here |
+|---------------|--------------|----------|
+| **Bottom third** | Easy (thumb's natural arc) | Primary CTAs, tab bar, FAB (bottom-right) |
+| **Middle** | OK | Content, secondary actions |
+| **Top** | Hard (requires stretch/regrip) | Back, menu, settings — and **destructive actions** (hard to reach = hard to tap by accident) |
+
+### Touch feedback — never nothing
+
+- Visual change on tap in **< 50ms**: highlight, slight scale (0.95–0.98), or ripple (Android).
+- Action taking **> 100ms** → show spinner/progress AND disable the button (prevents double tap); prefer optimistic UI.
+- Haptics on important actions (button taps, toggles, success/error, swipe thresholds). Don't use haptics on every scroll or list item — haptic fatigue is real.
+
+---
+
+## Step 3 — Gestures
+
+Gestures are **invisible** — many users never discover them. Rule: **gestures are shortcuts, never the only way.**
+
+| Gesture | Meaning | Always pair with a visible alternative |
+|---------|---------|----------------------------------------|
+| Tap | Select / activate | — (primary) |
+| Long press | Context menu, selection mode | Overflow/"..." menu |
+| Swipe horizontal | Delete, list actions, navigation | Delete button or item menu |
+| Swipe down | Pull to refresh, dismiss | Refresh button |
+| Pinch | Zoom | Zoom controls (+/−) |
+| Double tap | Zoom in, like/favorite | Visible like button |
+
+More on gesture psychology, Fitts' Law and haptic types: [references/touch-psychology.md](references/touch-psychology.md).
+
+---
+
+## Step 4 — Performance and Battery
+
+Target: **60fps** (16.6ms per frame). Test on low-end Android, not just the simulator.
+
+### Lists (the #1 mobile performance killer)
+
+```jsx
+// React Native — never map() a long array inside ScrollView
+<FlatList                       // or FlashList (Shopify) for long lists
+  data={items}
+  keyExtractor={(item) => item.id}
+  renderItem={renderItem}        // renderItem memoized; item component wrapped in React.memo
+  getItemLayout={(_, i) => ({ length: 72, offset: 72 * i, index: i })} // if fixed height
+  windowSize={7}
+  removeClippedSubviews
+/>
+```
+
+```dart
+// Flutter — lazy by default, but keep it that way
+ListView.builder(               // never ListView(children: [...]) for long lists
+  itemCount: items.length,
+  itemExtent: 72,               // fixed height = cheaper layout
+  itemBuilder: (context, i) => ItemTile(item: items[i]), // const constructors where possible
+)
+```
+
+### Animation and rendering
+
+- React Native: drive animations on the UI thread (`react-native-reanimated` or `useNativeDriver: true`); never animate layout via JS `setState` per frame.
+- Flutter: use `RepaintBoundary` around expensive subtrees; avoid rebuilding whole screens (`const` widgets, granular `Consumer`/`select`).
+- Images: request the size you render (resize on server/CDN); cache (`expo-image`, `cached_network_image`).
+
+### Battery
+
+- Dark mode with **pure black `#000`** saves real battery on OLED screens.
+- Batch network calls; avoid polling — prefer push.
+- Stop timers, location watchers and subscriptions when the app backgrounds; clean up on unmount/dispose.
+
+---
+
+## Step 5 — Platform Conventions (iOS vs Android)
+
+Cross-platform code must still FEEL native. Key divergence points:
+
+| Aspect | iOS (HIG) | Android (Material 3) |
+|--------|-----------|----------------------|
+| Touch target | 44pt min | 48dp min |
+| System font | SF Pro | Roboto |
+| Back navigation | Swipe-from-left-edge + back chevron top-left | System back button/gesture — must always work |
+| Primary nav | Tab bar (bottom) | Bottom navigation bar ou navigation drawer |
+| Prominent action | Buttons in context | FAB (floating action button) |
+| Tap feedback | Highlight/opacity | Ripple effect |
+| Confirmations | Action sheet (bottom) | Dialog or bottom sheet |
+| Settings/share icons | iOS-style glyphs (SF Symbols) | Material icons |
+| Type scaling | Dynamic Type — respect user setting | Font scale — respect user setting |
+
+```jsx
+// React Native — conditional platform logic
+import { Platform } from 'react-native';
+const styles = {
+  shadow: Platform.select({
+    ios: { shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
+    android: { elevation: 4 },
+  }),
+};
+```
+
+```dart
+// Flutter — adaptive widgets pick the platform-correct look
+Switch.adaptive(value: enabled, onChanged: toggle);
+// Navigation transitions, dialogs: showAdaptiveDialog / platform-aware page routes
+```
+
+Never ship an Android app with iOS-style back chevrons only, or an iOS app with a FAB + ripple — users notice immediately.
+
+---
+
+## Step 6 — Offline and Resilience
+
+- Decide per screen: must it work offline? If yes, define the cache strategy (stale-while-revalidate, queue-and-sync, read-only cache).
+- Every screen needs **4 states**: loading (skeleton > spinner), success, **empty**, and **error with retry button**.
+- Detect connectivity (`@react-native-community/netinfo`, `connectivity_plus`) and show a non-blocking offline banner — don't block the whole UI.
+- Queue writes made offline and sync on reconnect; show pending state ("sending...").
+
+---
+
+## Checklists
+
+### Before starting any mobile project
+- [ ] Platform confirmed? (iOS / Android / Both)
+- [ ] Framework chosen? (RN / Flutter / Native)
+- [ ] Navigation pattern decided? (Tabs / Stack / Drawer)
+- [ ] State management selected?
+- [ ] Offline requirements known?
+- [ ] Deep linking planned from day one?
+- [ ] Target devices defined? (Phone / Tablet / Both)
+
+### Before every screen
+- [ ] Touch targets ≥ 44pt (iOS) / 48dp (Android), spacing ≥ 8px?
+- [ ] Primary CTA in thumb zone (bottom third)?
+- [ ] Destructive actions away from easy reach + confirmation?
+- [ ] Every gesture has a visible alternative?
+- [ ] Loading, empty, and error-with-retry states exist?
+- [ ] Offline handling considered?
+- [ ] Platform conventions followed (back nav, feedback, icons)?
+
+### Before release
+- [ ] console.log / debugPrint removed?
+- [ ] SecureStore/Keychain/Keystore for sensitive data (never AsyncStorage/SharedPreferences)?
+- [ ] SSL pinning enabled (if required)?
+- [ ] Lists virtualized and memoized (FlatList/ListView.builder, keyExtractor, memo)?
+- [ ] Memory cleanup on unmount/dispose (timers, listeners, subscriptions)?
+- [ ] Tested on a low-end Android device?
+- [ ] Accessibility labels on all interactive elements; respects Dynamic Type/font scale?
+
+---
+
+## Reference Files (Optional Deep Dives)
+
+The skill works standalone; read these only when you need more depth:
+
+| File | When to use |
 |------|-------------|
-| [mobile-design-thinking.md](mobile-design-thinking.md) | **FIRST! Anti-memorization, forces context-based thinking** |
-| [touch-psychology.md](touch-psychology.md) | Understanding touch interaction, Fitts' Law, gesture design |
-| [mobile-performance.md](mobile-performance.md) | Optimizing RN/Flutter, 60fps, memory/battery |
-| [platform-ios.md](platform-ios.md) | iOS-specific design, HIG compliance |
-| [platform-android.md](platform-android.md) | Android-specific design, Material Design 3 |
-| [mobile-navigation.md](mobile-navigation.md) | Navigation patterns, deep linking |
-| [mobile-typography.md](mobile-typography.md) | Type scale, system fonts, accessibility |
-| [mobile-color-system.md](mobile-color-system.md) | OLED optimization, dark mode, battery |
-| [decision-trees.md](decision-trees.md) | Framework, state, storage decisions |
+| [references/mobile-design-thinking.md](references/mobile-design-thinking.md) | Anti-memorization protocol: component decomposition template, pattern questioning, design commitment — useful for complex/ambiguous projects |
+| [references/touch-psychology.md](references/touch-psychology.md) | Fitts' Law details, full haptic type tables (iOS), gesture discoverability, cognitive load on mobile |
 
 ---
 
-> **Remember:** Mobile users are impatient, interrupted, and using imprecise fingers on small screens. Design for the WORST conditions: bad network, one hand, bright sun, low battery. If it works there, it works everywhere.
+> **Remember:** Mobile users are impatient, interrupted, and using imprecise fingers on small screens. Every touch is a conversation — make it feel natural, responsive, and respectful of human fingers, not cursor points.

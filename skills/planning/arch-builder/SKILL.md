@@ -1,10 +1,7 @@
 ---
 name: arch-builder
-description: >
-  Facilitação de decisões arquiteturais com ADRs. Stack-aware — respeita
-  project-context.md e otimiza para Next.js/Prisma/Supabase.
-  Use com "arquitetura", "architecture", "decisões técnicas", "ADR".
-trigger: arquitetura|architecture|decisões técnicas|ADR|schema design
+description: "Facilitação de decisões arquiteturais com ADRs. Stack-aware — respeita project-context.md e otimiza para Next.js/Prisma/Supabase. ACIONE com frases como: 'definir schema Prisma', 'decidir Server Actions vs API Routes', 'desenhar fluxo de auth', 'escolher estratégia de caching', 'arquitetura', 'decisões técnicas', 'ADR'."
+trigger: arquitetura|architecture|decisões técnicas|ADR|schema design|schema prisma|server actions|fluxo de auth
 model-tier: sonnet
 ---
 

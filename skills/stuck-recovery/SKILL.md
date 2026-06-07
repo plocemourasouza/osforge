@@ -22,6 +22,13 @@ allowed-tools: Read, Bash, Glob, Grep
 > Este skill é diagnóstico de **agente** — detecta loops semânticos e propõe recovery
 > sem perder o trabalho feito.
 
+## Pré-requisitos
+
+Esta skill depende de duas peças externas (via Bash, listado em `allowed-tools`):
+
+- **`osforge-db`** (CLI) — persistência de estado/blockers/resume nas Fases 2 e 4. Verificar com `osforge-db --version`. Sem ele, o SAVE degrada para WIP commit + arquivo de notas local.
+- **`context-compact`** (skill OSForge) — usada na Opção B (compact reset). Sem ela, pular direto para Opção A ou C.
+
 ## Signs of being stuck (detection)
 
 ### Sinais externos (usuário fala)

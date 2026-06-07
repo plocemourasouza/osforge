@@ -140,6 +140,12 @@ poderiam errar sem orientação explícita._
 - Confirmar com usuário que o conteúdo está correto
 - Se usar Cursor: sugerir adicionar path nas rules para auto-load
 
+## Gotchas
+
+- **Gerar project-context.md muito longo**: ideal é 100-150 linhas. Acima disso, usar `@path` imports para separar seções por domínio (ex: `@prisma-patterns.md`, `@nextjs-patterns.md`).
+- **Não atualizar após mudanças de stack**: project-context.md desatualizado é pior que não ter — faz agents implementarem com padrões obsoletos. Atualizar sempre que houver mudança de dependência major ou novo padrão estabelecido.
+- **Constitution.md com princípios vagos**: "escrever código limpo" não é um princípio acionável. Cada princípio deve ser verificável: ou passa ou não passa em um code review.
+- **Expor .env real na análise**: ao analisar variáveis de ambiente, usar APENAS `.env.example` ou `.env.local.example`. NUNCA ler `.env` real com credenciais.
 
 ---
 
@@ -192,10 +198,3 @@ Quando houver conflito entre princípios:
 Salvar em `.osforge/memory/constitution.md`.
 
 **A constitution.md é lida automaticamente** pelo orchestrator, spec-builder e arch-builder como referência para decisões. Atualizar sempre que o time tomar uma decisão arquitetural significativa.
-
-## Gotchas
-
-- **Gerar project-context.md muito longo**: ideal é 100-150 linhas. Acima disso, usar `@path` imports para separar seções por domínio (ex: `@prisma-patterns.md`, `@nextjs-patterns.md`).
-- **Não atualizar após mudanças de stack**: project-context.md desatualizado é pior que não ter — faz agents implementarem com padrões obsoletos. Atualizar sempre que houver mudança de dependência major ou novo padrão estabelecido.
-- **Constitution.md com princípios vagos**: "escrever código limpo" não é um princípio acionável. Cada princípio deve ser verificável: ou passa ou não passa em um code review.
-- **Expor .env real na análise**: ao analisar variáveis de ambiente, usar APENAS `.env.example` ou `.env.local.example`. NUNCA ler `.env` real com credenciais.

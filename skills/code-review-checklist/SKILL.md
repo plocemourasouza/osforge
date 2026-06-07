@@ -1,6 +1,6 @@
 ---
 name: code-review-checklist
-description: Code review guidelines covering code quality, security, and best practices.
+description: "Checklist de code review cobrindo correção, segurança, performance, qualidade, testes e padrões específicos de código gerado por IA. ACIONE quando: pedirem revisar este PR, antes de aprovar um merge, checar injeção SQL/XSS/secrets hardcoded, avaliar código gerado por LLM (prompt injection, hallucination), apontar anti-patterns como magic numbers e deep nesting. Keywords: code review, revisar PR, checklist, segurança, N+1, SOLID, anti-pattern, merge, prompt injection, review comment. Não acione para: rodar linters e type-check automáticos (use lint-and-validate) nem enumeração exaustiva de edge cases (use edge-case-hunter)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

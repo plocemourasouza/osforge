@@ -1,10 +1,6 @@
 ---
 name: context-distillator
-description: >
-  Compressão lossless de documentos para consumo otimizado por LLMs.
-  Preserva 100% da informação factual eliminando overhead textual.
-  Não é sumarização (lossy) — é compressão lossless.
-  Use com "distill", "comprimir docs", "compress context".
+description: "Compressão lossless de documentos longos para consumo otimizado por LLMs, preservando 100% da informação factual e eliminando overhead textual. ACIONE quando: comprime esse doc longo, destila o contexto antes de passar para outra skill, PRD/spec/architecture grande demais para a janela de contexto, consolidar múltiplos docs em um único distillate, preparar contexto enxuto para implementação ou review. Keywords: distill, destilar, comprimir, compress, distillate, contexto, lossless, tokens, condensar, context. Não acione para: sumarização lossy voltada a humanos, escrita de documentos novos ou tradução."
 trigger: distill|comprimir|compress context|distilat
 model-tier: sonnet
 ---

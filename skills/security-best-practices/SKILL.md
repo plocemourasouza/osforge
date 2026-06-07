@@ -8,6 +8,16 @@ metadata:
 
 # Security Best Practices
 
+## When to Trigger
+
+Activate this skill when the user explicitly asks for:
+- A **security review** or **security report** of the codebase ("do a security review", "generate a security report", "how secure is this code?")
+- A **vulnerability report** with prioritized findings and suggested fixes
+- **Security best practices guidance** for a supported language (Python, JavaScript/TypeScript, Go) or its frameworks
+- **Secure-by-default coding help** when starting or extending a project ("write this securely", "harden this endpoint")
+
+Do NOT trigger for: general code review, debugging, performance work, or unsupported languages.
+
 ## Overview
 
 This skill provides a description of how to identify the language and frameworks used by the current context, and then to load information from this skill's references directory about the security best practices for this language and or frameworks.

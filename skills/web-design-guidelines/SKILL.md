@@ -18,6 +18,14 @@ Review files for compliance with Web Interface Guidelines.
 3. Check against all rules in the fetched guidelines
 4. Output findings in the terse `file:line` format
 
+### Terse `file:line` format
+
+Each finding is a single line: `<path>:<line> - <rule violated>: <short description>`. Example:
+
+```
+src/components/Button.tsx:42 - missing focus-visible: interactive element has outline:none with no focus replacement
+```
+
 ## Guidelines Source
 
 Fetch fresh guidelines before each review:

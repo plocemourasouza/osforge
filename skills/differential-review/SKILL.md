@@ -46,6 +46,56 @@ For each 🔴 HIGH file, check:
 | RLS changes | Policies weakened or disabled |
 | Env changes | New secrets without documentation |
 
+#### Concrete Examples (what each looks like in a diff)
+
+**Auth bypass** — route handler loses its guard:
+```diff
+ export async function GET(req: Request) {
+-  const session = await requireAuth()
+   const data = await db.report.findMany()
+```
+
+**Permission escalation** — check removed without replacement:
+```diff
+-  if (user.role !== 'admin') throw new Error('FORBIDDEN')
+   await deleteOrganization(orgId)  // now any member can delete the org
+```
+
+**Data exposure** — PII added to a public response:
+```diff
+   return NextResponse.json({
+     id: user.id,
+     name: user.name,
++    email: user.email,        // PII now in public API
++    stripeCustomerId: user.stripeCustomerId,
+   })
+```
+
+**Input validation** — new param used without schema check:
+```diff
++  const limit = Number(searchParams.get('limit'))  // NaN / negative / huge values unchecked
++  const rows = await db.user.findMany({ take: limit })
+```
+
+**SQL injection** — interpolation replaces parameterized query:
+```diff
+-  await prisma.$queryRaw`SELECT * FROM users WHERE name = ${name}`
++  await prisma.$queryRawUnsafe(`SELECT * FROM users WHERE name = '${name}'`)
+```
+
+**CORS weakening** — allowlist replaced by wildcard:
+```diff
+-  res.headers.set('Access-Control-Allow-Origin', 'https://app.example.com')
++  res.headers.set('Access-Control-Allow-Origin', '*')
+```
+
+**RLS weakening** — tenant filter dropped from policy:
+```diff
+-CREATE POLICY "org_read" ON projects FOR SELECT
+-  USING (organization_id IN (SELECT organization_id FROM members WHERE user_id = auth.uid()));
++CREATE POLICY "org_read" ON projects FOR SELECT USING (true);
+```
+
 ### Step 3: Context from Git History
 ```bash
 # Who else touched these files recently?

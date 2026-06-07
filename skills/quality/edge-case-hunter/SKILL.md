@@ -1,9 +1,6 @@
 ---
 name: edge-case-hunter
-description: >
-  Caça exaustiva de edge cases por enumeração sistemática de caminhos.
-  Ortogonal ao adversarial-review: method-driven, não attitude-driven.
-  Reporta APENAS paths sem handling. Use com "edge cases", "boundary".
+description: "Caça exaustiva de edge cases por enumeração sistemática de branches e boundaries, reportando em JSON apenas caminhos sem handling. ACIONE quando: pedirem edge cases ou boundary conditions de um diff/arquivo/função, verificar inputs null/vazios e off-by-one antes de mergear, checar race conditions e divisão por zero, validar handling de datas/timezone/unicode, auditar um PR por caminhos sem guard. Keywords: edge case, boundary, branch, null, off-by-one, overflow, race condition, unhandled path, guard, caça. Não acione para: review geral de qualidade de código (use code-review-checklist) nem refinamento de specs e documentos (use elicitation-engine)."
 trigger: edge case|boundary|hunt edges|caça edge
 model-tier: sonnet
 ---

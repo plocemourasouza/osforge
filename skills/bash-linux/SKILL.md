@@ -1,6 +1,6 @@
 ---
 name: bash-linux
-description: Bash/Linux terminal patterns. Critical commands, piping, error handling, scripting. Use when working on macOS or Linux systems.
+description: "Padrões de terminal Bash para Linux e macOS: comandos essenciais, pipes, processos, processamento de texto e scripts seguros. ACIONE quando: script bash com erro ou comportamento inesperado, porta ocupada e precisa matar processo (lsof, kill), buscar e transformar texto com grep, sed e awk, escrever script robusto com set -euo pipefail e trap, encadear comandos com pipes e operadores && e ||, traduzir comando PowerShell para bash. Keywords: bash, shell, linux, macOS, grep, sed, awk, pipe, script, terminal. Não acione para: PowerShell/Windows (use powershell-windows) ou administração de servidores em produção."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

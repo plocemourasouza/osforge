@@ -1,6 +1,6 @@
 ---
 name: tailwind-patterns
-description: Tailwind CSS v4 principles. CSS-first configuration, container queries, modern patterns, design token architecture.
+description: "Padrões técnicos de Tailwind CSS v4: configuração CSS-first com @theme, engine Oxide, container queries nativas, design tokens como CSS variables e migração de v3 para v4. ACIONE quando: 'migra o projeto de Tailwind v3 para v4', 'como configurar o @theme no Tailwind 4', 'usa container queries em vez de breakpoints', 'erro no postcss com tailwindcss v4', 'organiza os design tokens do Tailwind'. Keywords: tailwind, v4, theme, container queries, oklch, design tokens, CSS-first, Oxide, postcss, utility-first. Não acione para: decisões estéticas e visuais de design (high-end-visual-design, minimalist-ui), dials de estilo (taste-design-dials), UI mobile nativa (mobile-design)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

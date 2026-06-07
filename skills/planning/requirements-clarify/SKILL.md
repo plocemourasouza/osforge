@@ -33,6 +33,17 @@ Adaptado do padrão `/speckit.clarify` do github/spec-kit.
 - Sempre que o usuário usar palavras como "funcionar bem", "ser rápido", "integrar com X", "de alguma forma", sem detalhar
 - Para features complexas com múltiplos stakeholders ou fluxos alternativos
 
+**Exemplos de palavras vagas e a pergunta concreta que as resolve:**
+
+| Palavra vaga | Pergunta de clarificação |
+|---|---|
+| "funcionar bem" | Qual latência é aceitável? Qual taxa de erro tolerada? |
+| "rápido" | Quantos ms de resposta? P50 ou P95? |
+| "muitos usuários" | Quantos usuários simultâneos? 100, 10 mil, 1 milhão? |
+| "integrar com X" | Via API REST, webhook, ou import manual? Sync ou async? |
+| "seguro" | Quem pode acessar o quê? Precisa de auditoria ou criptografia em repouso? |
+| "de alguma forma" | Quais são as 2-3 formas possíveis e qual o critério de escolha? |
+
 **Não usar** para: tasks mecânicas claras, bugs com causa conhecida, extensões triviais com padrão estabelecido.
 
 ---

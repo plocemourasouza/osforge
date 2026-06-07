@@ -1,6 +1,6 @@
 ---
 name: api-patterns
-description: API design principles and decision-making. REST vs GraphQL vs tRPC selection, response formats, versioning, pagination.
+description: "Princípios de design de APIs: escolha de estilo, formato de resposta, versionamento, paginação, autenticação e rate limiting. ACIONE quando: escolher entre REST, GraphQL e tRPC, padronizar envelope de resposta e formato de erro, planejar versionamento (URI, header, query), definir auth com JWT, OAuth, Passkey ou API keys, implementar paginação ou rate limiting (token bucket, sliding window), auditar API contra OWASP API Top 10. Keywords: API, REST, GraphQL, tRPC, endpoint, versionamento, paginação, rate limiting, JWT, OpenAPI. Não acione para: implementação de lógica de negócio do backend ou modelagem de banco de dados."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

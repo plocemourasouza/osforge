@@ -155,6 +155,36 @@ const result = await prisma.$transaction(async (tx) => {
 }, { timeout: 5000, isolationLevel: 'Serializable' })
 ```
 
+## Debugging com Logs do Prisma
+
+### Habilitar log de queries
+```typescript
+// Ver todas as queries SQL geradas (essencial para detectar N+1)
+const prisma = new PrismaClient({
+  log: ['query', 'warn', 'error'],
+})
+```
+
+### Profiling com event listeners
+```typescript
+// Capturar duração de cada query para identificar as lentas
+const prisma = new PrismaClient({
+  log: [{ emit: 'event', level: 'query' }],
+})
+
+prisma.$on('query', (e) => {
+  if (e.duration > 100) {
+    console.warn(`SLOW QUERY (${e.duration}ms): ${e.query}`, e.params)
+  }
+})
+```
+
+### Dicas de diagnóstico
+- **N+1**: se o log mostra a mesma query repetida em loop, falta `include`/`select` com relation
+- **`DEBUG="prisma:*"`**: variável de ambiente para logs internos detalhados (engine, pool de conexões)
+- **EXPLAIN ANALYZE**: copie a query do log e rode `prisma.$queryRaw` com `EXPLAIN ANALYZE` para ver o plano de execução
+- Desabilite `log: ['query']` em produção — gera overhead e pode vazar dados sensíveis nos params
+
 ## Prisma + Supabase Integration
 - Use `directUrl` for migrations, `url` (pooled) for queries
 - RLS policies apply at DB level, Prisma bypasses via service role

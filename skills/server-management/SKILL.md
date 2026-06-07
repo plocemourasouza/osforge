@@ -1,6 +1,6 @@
 ---
 name: server-management
-description: Server management principles and decision-making. Process management, monitoring strategy, and scaling decisions. Teaches thinking, not commands.
+description: "Princípios de operação de servidores: gerenciamento de processos (PM2, systemd, Docker), monitoramento, logs, scaling, health checks e troubleshooting. ACIONE quando: app cai e não reinicia sozinho, CPU ou memória alta no servidor, disco cheio por logs sem rotação, resposta lenta e dúvida entre scaling vertical e horizontal, configurar health check para load balancer, investigar serviço fora do ar (processo, logs, recursos, rede). Keywords: servidor, server, PM2, systemd, monitoring, logs, scaling, health check, uptime, Grafana. Não acione para: deploy de novas versões (use deployment-procedures) ou provisionamento de infraestrutura cloud."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"
