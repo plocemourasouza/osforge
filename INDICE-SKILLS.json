@@ -7700,6 +7700,276 @@
     "skill_dir": "security-review"
   },
   {
+    "name": "offensive-ai-security",
+    "description": "AI/LLM security offensive checklist: prompt injection, jailbreaking, model extraction, training data poisoning, adversarial inputs, LLM-assisted attack automation, and AI system reconnaissance. Use when assessing AI/ML systems, red-teaming LLMs, or researching AI attack vectors. Trigger keywords: `A",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-ai-security",
+    "skill_dir": "offensive-ai-security"
+  },
+  {
+    "name": "offensive-bug-identification",
+    "description": "Systematic bug identification methodology: source code review patterns, black-box testing strategies, taint analysis, dangerous function hunting, data flow tracing, and automated scanning setup. Use for code audits, bug bounty triage, or building vulnerability identification pipelines. Trigger keywo",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-bug-identification",
+    "skill_dir": "offensive-bug-identification"
+  },
+  {
+    "name": "offensive-business-logic",
+    "description": "Business logic vulnerability testing for web/mobile/API engagements. Covers workflow bypass, state machine violations, multi-step process abuse, price/quantity/discount manipulation, currency confusion, coupon stacking, refund/chargeback abuse, race conditions on logic boundaries, parameter tamperin",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-business-logic",
+    "skill_dir": "offensive-business-logic"
+  },
+  {
+    "name": "offensive-cloud",
+    "description": "Cloud security attack methodology across AWS, Azure, and GCP. Covers credential harvesting (IMDS, ~/.aws, env vars, leaked CI secrets, instance roles), enumeration (pacu, ScoutSuite, Prowler, ROADtools), IAM privilege escalation (PassRole, AssumeRole chains, Lambda/Functions privilege flips, GCP ser",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-cloud",
+    "skill_dir": "offensive-cloud"
+  },
+  {
+    "name": "offensive-deserialization",
+    "description": "Insecure deserialization attack checklist: identifying deserialization sinks, Java/PHP/.NET/Python deserialization exploitation, ysoserial gadget chains, magic method abuse, and detection evasion. Use when testing deserialization endpoints or developing deserialization exploits. Trigger keywords: `d",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-deserialization",
+    "skill_dir": "offensive-deserialization"
+  },
+  {
+    "name": "offensive-fast-checking",
+    "description": "Speed-optimized offensive checklist for rapid assessment: quick-win vulnerability patterns, fast recon shortcuts, automated scanner configurations, and triage shortcuts. Use for time-boxed assessments, CTF-speed engagements, or initial rapid surface mapping. Trigger keywords: `fast check, quick reco",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-fast-checking",
+    "skill_dir": "offensive-fast-checking"
+  },
+  {
+    "name": "offensive-file-upload",
+    "description": "File upload vulnerability checklist: MIME type bypass, extension bypass, magic byte manipulation, path traversal in filenames, stored XSS via SVG/HTML upload, server-side processing attacks, and race conditions. Use for assessing file upload endpoints in web app pentests or bug bounty. Trigger keywo",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-file-upload",
+    "skill_dir": "offensive-file-upload"
+  },
+  {
+    "name": "offensive-fuzzing",
+    "description": "Practical offensive fuzzing methodology covering target identification, fuzzer selection (AFL++, libFuzzer, Honggfuzz, Boofuzz, syzkaller), harness writing, corpus curation, mutation strategies, coverage measurement, and crash triage. Use when setting up or running fuzz campaigns against any target:",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-fuzzing",
+    "skill_dir": "offensive-fuzzing"
+  },
+  {
+    "name": "offensive-graphql",
+    "description": "GraphQL security testing checklist: introspection abuse, batching attacks, query depth/complexity DoS, field suggestion enumeration, IDOR via GraphQL, injection through arguments, authorization bypass. Use when assessing GraphQL endpoints in web app tests or bug bounty. Trigger keywords: `GraphQL, i",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-graphql",
+    "skill_dir": "offensive-graphql"
+  },
+  {
+    "name": "offensive-idor",
+    "description": "IDOR (Insecure Direct Object Reference) testing checklist: object ID enumeration, horizontal/vertical privilege escalation, GUID predictability, indirect references via hashes, chained IDOR, and API endpoint IDOR. Use for web app pentests and bug bounty IDOR discovery. Trigger keywords: `IDOR, insec",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-idor",
+    "skill_dir": "offensive-idor"
+  },
+  {
+    "name": "offensive-jwt",
+    "description": "JWT attack methodology for penetration testers. Covers algorithm confusion (alg:none, RS256→HS256), weak HMAC secret brute force, kid parameter injection (SQLi, path traversal), jku/x5u/jwk header injection, JWKS cache poisoning, JWS/JWE confusion, timing attacks, and mobile JWT storage extraction. ",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-jwt",
+    "skill_dir": "offensive-jwt"
+  },
+  {
+    "name": "offensive-mobile",
+    "description": "Mobile (Android + iOS) application penetration testing methodology. Covers static analysis (apktool/jadx for Android, class-dump/Hopper/IDA for iOS), dynamic instrumentation with Frida and Objection, SSL pinning bypass strategies, root/jailbreak detection bypass, deep-link / URL-scheme abuse, export",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-mobile",
+    "skill_dir": "offensive-mobile"
+  },
+  {
+    "name": "offensive-oauth",
+    "description": "OAuth 2.0 attack checklist: authorization code interception, redirect_uri bypass, CSRF on OAuth flow, state parameter abuse, open redirector chaining, token leakage via Referer, PKCE bypass, and scope escalation. Use when testing OAuth implementations in web apps or bug bounty. Trigger keywords: `OA",
+    "category": "🧪 Testing",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-oauth",
+    "skill_dir": "offensive-oauth"
+  },
+  {
+    "name": "offensive-open-redirect",
+    "description": "Open redirect vulnerability checklist: parameter identification, bypass techniques (URL encoding, double slashes, CRLF injection, protocol handlers), chaining with OAuth/SSRF, and impact escalation paths. Use for web app testing and bug bounty open redirect discovery. Trigger keywords: `open redirec",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-open-redirect",
+    "skill_dir": "offensive-open-redirect"
+  },
+  {
+    "name": "offensive-osint",
+    "description": "Comprehensive OSINT methodology skill for offensive security, red team intelligence gathering, and bug bounty reconnaissance. Covers domain recon, email harvesting, social media profiling, GitHub/code leaks, Shodan/Censys enumeration, breach data lookup, employee profiling, infrastructure mapping, c",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-osint",
+    "skill_dir": "offensive-osint"
+  },
+  {
+    "name": "offensive-parameter-pollution",
+    "description": "HTTP parameter pollution (HPP) checklist: duplicate parameter injection, backend vs frontend parsing differences, WAF bypass via HPP, server-side vs client-side HPP, and practical exploitation patterns. Use when testing web applications for parameter handling flaws. Trigger keywords: `parameter poll",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-parameter-pollution",
+    "skill_dir": "offensive-parameter-pollution"
+  },
+  {
+    "name": "offensive-race-condition",
+    "description": "Race condition (TOCTOU) testing checklist: identifying timing windows, Burp Suite Turbo Intruder, Last-Byte sync technique, rate limit bypass, double-spend attacks, and concurrent request exploitation. Use for web app race condition testing or bug bounty time-of-check-to-time-of-use bugs. Trigger ke",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-race-condition",
+    "skill_dir": "offensive-race-condition"
+  },
+  {
+    "name": "offensive-rce",
+    "description": "Remote Code Execution testing checklist: OS command injection, SSTI-to-RCE, deserialization RCE, file upload RCE, XXE with SSRF to RCE, RCE via dependency confusion, and CVE-based RCE patterns. Use for web app pentests and bug bounty RCE discovery. Trigger keywords: `RCE, remote code execution, comm",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-rce",
+    "skill_dir": "offensive-rce"
+  },
+  {
+    "name": "offensive-reporting",
+    "description": "Penetration test and red team report writing methodology. Covers executive summary structuring (risk-led narrative for non-technical readers), technical finding format (title, severity, affected scope, narrative, reproduction steps, impact, remediation, references), CVSS v3.1 / v4.0 scoring with vec",
+    "category": "🧪 Testing",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-reporting",
+    "skill_dir": "offensive-reporting"
+  },
+  {
+    "name": "offensive-request-smuggling",
+    "description": "HTTP request smuggling checklist: CL.TE, TE.CL, TE.TE variants, detection with timing and differential responses, WAF bypass, cache poisoning, credential hijacking, and request smuggling via HTTP/2. Use when testing reverse proxy/load balancer configurations. Trigger keywords: `request smuggling, HT",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-request-smuggling",
+    "skill_dir": "offensive-request-smuggling"
+  },
+  {
+    "name": "offensive-sqli",
+    "description": "SQL injection testing skill for offensive security assessments and bug bounty hunting. Covers error-based, UNION-based, boolean/time-based blind, out-of-band, second-order, NoSQL, GraphQL, WebSocket, and JSON-operator SQLi. Includes WAF bypass techniques, database-specific exploitation (MySQL, MSSQL",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-sqli",
+    "skill_dir": "offensive-sqli"
+  },
+  {
+    "name": "offensive-ssrf",
+    "description": "Server-Side Request Forgery testing checklist: SSRF discovery, blind SSRF with out-of-band, cloud metadata endpoints (AWS/GCP/Azure), SSRF filter bypass techniques (IP encoding, DNS rebinding, redirect chains), and SSRF to RCE escalation. Use for web app SSRF testing and bug bounty. Trigger keywords",
+    "category": "🧪 Testing",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-ssrf",
+    "skill_dir": "offensive-ssrf"
+  },
+  {
+    "name": "offensive-ssti",
+    "description": "Server-Side Template Injection testing checklist: template engine identification (Jinja2, Twig, Freemarker, Pebble, Velocity), polyglot detection payloads, engine-specific RCE payloads, blind SSTI, and filter bypass. Use when testing web apps for template injection vulnerabilities. Trigger keywords:",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-ssti",
+    "skill_dir": "offensive-ssti"
+  },
+  {
+    "name": "offensive-toctou",
+    "description": "Time-of-Check / Time-of-Use (TOCTOU) race condition exploitation methodology across binary, kernel, filesystem, web, and container layers. Covers symbolic-link races (open/access/stat split), file-descriptor races, fopen/realpath traversal races, /proc and procfs races, FUSE-backed slow-fs races to ",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-toctou",
+    "skill_dir": "offensive-toctou"
+  },
+  {
+    "name": "offensive-waf-bypass",
+    "description": "WAF bypass techniques checklist: encoding bypass (URL/HTML/Unicode/double encoding), case variation, comment injection, HTTP header manipulation, chunked encoding, IP rotation, timing attacks, and payload obfuscation per WAF vendor. Use when WAF is blocking payloads during web app tests. Trigger key",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-waf-bypass",
+    "skill_dir": "offensive-waf-bypass"
+  },
+  {
+    "name": "offensive-xss",
+    "description": "Cross-Site Scripting testing checklist: stored/reflected/DOM/blind XSS discovery, polyglot payloads, CSP bypass, XSS filter bypass, event handler injection, DOM clobbering, mutation XSS, and impact escalation (session hijack, phishing, keylogging). Use for web app XSS testing and bug bounty. Trigger",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-xss",
+    "skill_dir": "offensive-xss"
+  },
+  {
+    "name": "offensive-xxe",
+    "description": "XML External Entity injection testing checklist: classic XXE, blind XXE (out-of-band), XXE via file upload (SVG/docx), XXE in SOAP/REST, error-based XXE, XInclude attacks, and XXE filter bypass. Use for web app XXE testing and bug bounty. Trigger keywords: `XXE, XML external entity, blind XXE, out-o",
+    "category": "🔒 Security",
+    "source": "Claude-Red (Offensive Security)",
+    "source_emoji": "🛡️",
+    "source_url": "https://github.com/SnailSploit/Claude-Red",
+    "local_path": "13-claude-red/offensive-xxe",
+    "skill_dir": "offensive-xxe"
+  },
+  {
     "name": "agent-skills-search",
     "description": "Search and install Agent Skills from the local consolidated repository at ~/Development/agent-skills-consolidado/. Use when looking for specialized skills, best practices, or domain-specific patterns for security, React, PostgreSQL, testing, mobile, Cloudflare, or any technical domain. Triggers when",
     "category": "🔒 Security",
@@ -7790,8 +8060,28 @@
     "skill_dir": "accessibility"
   },
   {
+    "name": "aesthetic-boost",
+    "description": "Boost estético anti-AI-slop. Invoque junto com qualquer skill de frontend para elevar a qualidade visual. Ative quando o usuário pedir \"design bonito\", \"visual marcante\", \"landing page\", \"hero section\", \"melhorar design\", \"identidade visual forte\", ou qualquer task que exija output visualmente disti",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/aesthetic-boost",
+    "skill_dir": "aesthetic-boost"
+  },
+  {
+    "name": "aesthetic-modes",
+    "description": "Três modos visuais distintos para projetos com identidade forte: EDITORIAL_MINIMALIST (Notion/Linear, warm monochrome), INDUSTRIAL_BRUTALIST (Swiss + CRT terminal), SOFT_PREMIUM (Apple-tier, glassmorphism nested cards). ACIONE quando: usuário pede \"estilo minimalista editorial\", \"brutalist\", \"indust",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/aesthetic-modes",
+    "skill_dir": "aesthetic-modes"
+  },
+  {
     "name": "agency",
-    "description": "> Skill de roteamento on-demand. 121 agentes especializados sem custo de contexto permanente.",
+    "description": "Índice geral dos 121 agentes especialistas da The Agency, organizado em 10 divisões com roteamento on-demand. ACIONE quando:",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -7800,9 +8090,9 @@
     "skill_dir": "agency"
   },
   {
-    "name": "design",
-    "description": "Quando usar: UI/UX, sistemas de design, identidade visual, pesquisa com usuarios, prompts de imagem",
-    "category": "📱 Mobile",
+    "name": "agency-design",
+    "description": "Índice dos 8 agentes de Design da Agency (Brand Guardian, UI Designer, UX Architect, UX Researcher, Image Prompt Engineer, Visual Storyteller, Whimsy Injector). ACIONE quando:",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -7810,9 +8100,9 @@
     "skill_dir": "design"
   },
   {
-    "name": "engineering",
-    "description": "Quando usar: Construir, revisar ou depurar codigo, arquitetura, seguranca, DevOps, SRE, documentacao tecnica",
-    "category": "📝 Documentation / Writing",
+    "name": "agency-engineering",
+    "description": "Índice dos 23 agentes de Engenharia da Agency (Backend Architect, Code Reviewer, Security Engineer, SRE, DevOps Automator, AI Engineer, Database Optimizer, etc.). ACIONE quando:",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -7820,9 +8110,9 @@
     "skill_dir": "engineering"
   },
   {
-    "name": "marketing",
-    "description": "Quando usar: Conteudo, SEO, redes sociais, growth hacking, ASO, estrategia de plataformas",
-    "category": "💼 Business / Marketing",
+    "name": "agency-marketing",
+    "description": "Índice dos 26 agentes e 25 workflows de Marketing da Agency (Growth Hacker, Content Creator, SEO Specialist, estrategistas por plataforma, CRO, mercados China/Ásia). ACIONE quando:",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -7830,8 +8120,8 @@
     "skill_dir": "marketing"
   },
   {
-    "name": "paid-media",
-    "description": "Quando usar: Google/Meta Ads, campanhas PPC, tracking e atribuicao, auditoria de contas",
+    "name": "agency-paid-media",
+    "description": "Índice dos 7 agentes e 4 workflows de Mídia Paga da Agency (PPC Strategist, Paid Social Strategist, Creative Strategist, Tracking Specialist, Programmatic Buyer, Auditor). ACIONE quando:",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -7840,9 +8130,9 @@
     "skill_dir": "paid-media"
   },
   {
-    "name": "product",
-    "description": "Quando usar: Roadmap, priorizacao de sprint, pesquisa de mercado, sintese de feedback",
-    "category": "🔄 Workflow / Process",
+    "name": "agency-product",
+    "description": "Índice dos 5 agentes de Produto da Agency (Product Manager, Sprint Prioritizer, Feedback Synthesizer, Trend Researcher, Behavioral Nudge Engine). ACIONE quando:",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -7850,9 +8140,9 @@
     "skill_dir": "product"
   },
   {
-    "name": "project-management",
-    "description": "Quando usar: Planejamento, coordenacao de times, workflows Git/Jira, rastreamento de experimentos",
-    "category": "🔄 Workflow / Process",
+    "name": "agency-project-management",
+    "description": "Índice dos 6 agentes de Gestão de Projetos da Agency (Project Shepherd, Studio Producer, Studio Operations, Jira Workflow Steward, Experiment Tracker, Senior Project Manager). ACIONE quando:",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -7860,9 +8150,9 @@
     "skill_dir": "project-management"
   },
   {
-    "name": "sales",
-    "description": "Quando usar: Prospeccao outbound, discovery, qualificacao MEDDPICC, propostas, pipeline, coaching",
-    "category": "🔄 Workflow / Process",
+    "name": "agency-sales",
+    "description": "Índice dos 8 agentes e 3 workflows de Vendas da Agency (Outbound Strategist, Discovery Coach, Deal Strategist, Proposal Strategist, Pipeline Analyst, Account Strategist, Sales Coach, Sales Engineer). ACIONE quando:",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -7870,9 +8160,9 @@
     "skill_dir": "sales"
   },
   {
-    "name": "specialized",
-    "description": "Quando usar: Orquestracao de agentes, compliance SOC2/ISO/HIPAA, blockchain, MCP builder, supply chain",
-    "category": "🤖 AI / ML / Agents",
+    "name": "agency-specialized",
+    "description": "Índice dos 24 agentes Especialistas da Agency (Agents Orchestrator, Compliance Auditor, Blockchain Security Auditor, MCP Builder, Document Generator, Workflow Architect, Supply Chain Strategist, ZK Steward, etc.). ACIONE quando:",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -7880,8 +8170,8 @@
     "skill_dir": "specialized"
   },
   {
-    "name": "support",
-    "description": "Quando usar: Atendimento, analytics, compliance legal, resumos executivos, infraestrutura",
+    "name": "agency-support",
+    "description": "Índice dos 6 agentes de Suporte e Operações da Agency (Support Responder, Analytics Reporter, Executive Summary Generator, Finance Tracker, Legal Compliance Checker, Infrastructure Maintainer). ACIONE quando:",
     "category": "☁️ Infrastructure / DevOps",
     "source": "skills",
     "source_emoji": "📦",
@@ -7890,9 +8180,9 @@
     "skill_dir": "support"
   },
   {
-    "name": "testing",
-    "description": "Quando usar: QA, testes de API, acessibilidade WCAG, performance, validacao de entregaveis",
-    "category": "🧪 Testing",
+    "name": "agency-testing",
+    "description": "Índice dos 8 agentes de Qualidade e Testes da Agency (Accessibility Auditor, API Tester, Performance Benchmarker, Reality Checker, Evidence Collector, Test Results Analyzer, Tool Evaluator, Workflow Optimizer). ACIONE quando:",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -7910,8 +8200,68 @@
     "skill_dir": "agent-skills-search"
   },
   {
+    "name": "api-patterns",
+    "description": "Princípios de design de APIs: escolha de estilo, formato de resposta, versionamento, paginação, autenticação e rate limiting. ACIONE quando: escolher entre REST, GraphQL e tRPC, padronizar envelope de resposta e formato de erro, planejar versionamento (URI, header, query), definir auth com JWT, OAut",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/api-patterns",
+    "skill_dir": "api-patterns"
+  },
+  {
+    "name": "app-builder",
+    "description": "Orquestrador de criação de aplicações full-stack a partir de pedidos em linguagem natural, com 13 templates de scaffolding e coordenação de agentes. ACIONE quando: cria um app novo do zero, qual stack usar para este projeto, scaffolding de Next.js/FastAPI/Expo/Electron/Astro, montar um SaaS, landing",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/app-builder",
+    "skill_dir": "app-builder"
+  },
+  {
+    "name": "architecture",
+    "description": "Framework de decisão arquitetural com análise de requisitos, avaliação de trade-offs e documentação em ADRs. ACIONE quando: decidir entre X e Y (monolito vs microservices, REST vs eventos), escrever ou revisar um ADR, escolher padrões de arquitetura para um sistema novo, avaliar se a complexidade pr",
+    "category": "🏗️ Architecture",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/architecture",
+    "skill_dir": "architecture"
+  },
+  {
+    "name": "autorefine-skill",
+    "description": "Refinamento autônomo iterativo com loop autoresearch + meta-otimização + transferência cross-domínio. ACIONE quando (ex.:",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/autorefine-skill",
+    "skill_dir": "autorefine-skill"
+  },
+  {
+    "name": "bash-linux",
+    "description": "Padrões de terminal Bash para Linux e macOS: comandos essenciais, pipes, processos, processamento de texto e scripts seguros. ACIONE quando: script bash com erro ou comportamento inesperado, porta ocupada e precisa matar processo (lsof, kill), buscar e transformar texto com grep, sed e awk, escrever",
+    "category": "🏗️ Architecture",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/bash-linux",
+    "skill_dir": "bash-linux"
+  },
+  {
+    "name": "behavioral-modes",
+    "description": "AI operational modes (brainstorm, implement, debug, review, teach, ship, orchestrate). Use to adapt behavior based on task type.",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/behavioral-modes",
+    "skill_dir": "behavioral-modes"
+  },
+  {
     "name": "best-practices",
-    "description": "Apply modern web development best practices for security, compatibility, and code quality. Use when asked to \"apply best practices\", \"security audit\", \"modernize code\", \"code quality review\", or \"check for vulnerabilities\".",
+    "description": "Apply modern web development best practices for security, compatibility, and code quality. Use when asked to \"apply best practices\", \"security audit\", \"modernize code\", \"code quality review\", \"check for vulnerabilities\", \"run a Lighthouse best-practices audit\", \"fix Lighthouse warnings\", \"check agai",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -7920,8 +8270,28 @@
     "skill_dir": "best-practices"
   },
   {
+    "name": "brainstorming",
+    "description": "Refinamento socrático de ideia ANTES de qualquer código ou spec técnica. ACIONE quando: usuário descreve uma ideia vaga, quer explorar alternativas antes de comprometer, diz",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/brainstorming",
+    "skill_dir": "brainstorming"
+  },
+  {
+    "name": "brandkit",
+    "description": "Gera imagens de brand-kit premium: boards de brand guidelines, sistemas de logo, identity decks e apresentações de universo visual com grids limpos, tipografia esparsa e metáfora de marca forte. ACIONE quando:",
+    "category": "📝 Documentation / Writing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/brandkit",
+    "skill_dir": "brandkit"
+  },
+  {
     "name": "bun-development",
-    "description": "Bun runtime patterns, bundler configuration, and Bun-specific APIs. Trigger on Bun FFI, Bun.serve, Bun.file, Bun shell, workspace configuration, Bun-specific test patterns, or runtime edge cases that differ from Node.js.",
+    "description": "Bun runtime patterns, bundler configuration, and Bun-specific APIs. Trigger on Bun FFI, Bun.serve, Bun.file, Bun shell, workspace configuration, Bun-specific test patterns, or runtime edge cases that differ from Node.js. Common error triggers:",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
@@ -7950,14 +8320,104 @@
     "skill_dir": "claude-ci-actions"
   },
   {
+    "name": "clean-code",
+    "description": "Padrões pragmáticos de código limpo: conciso, direto, sem over-engineering e sem comentários desnecessários. ACIONE quando: código over-engineered ou com abstrações prematuras, pedido para simplifica isso, revisar nomes/funções/estrutura, função gigante ou aninhamento profundo demais, remover coment",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/clean-code",
+    "skill_dir": "clean-code"
+  },
+  {
+    "name": "code-review-checklist",
+    "description": "Checklist de code review cobrindo correção, segurança, performance, qualidade, testes e padrões específicos de código gerado por IA. ACIONE quando: pedirem revisar este PR, antes de aprovar um merge, checar injeção SQL/XSS/secrets hardcoded, avaliar código gerado por LLM (prompt injection, hallucina",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/code-review-checklist",
+    "skill_dir": "code-review-checklist"
+  },
+  {
     "name": "coding-guidelines",
-    "description": "Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code changes, refactoring, bug fixes, or feature development.",
+    "description": "Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code changes, refactoring, bug fixes, or feature development. Trigger phrases:",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
     "local_path": "skills/coding-guidelines",
     "skill_dir": "coding-guidelines"
+  },
+  {
+    "name": "config-critique",
+    "description": "Lint LLM-powered de customizações do usuário no OSForge — valida novas SKILL.md, rules .mdc, hooks customizados, agents adicionais, e overrides de CLAUDE.md em 4 eixos (Clarity / Completeness / Conflicts / Actionability). ACIONE quando: \"revisar minha skill\", \"validar minha rule\", \"verificar conflit",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/config-critique",
+    "skill_dir": "config-critique"
+  },
+  {
+    "name": "context-distillator",
+    "description": "Compressão lossless de documentos longos para consumo otimizado por LLMs, preservando 100% da informação factual e eliminando overhead textual. ACIONE quando: comprime esse doc longo, destila o contexto antes de passar para outra skill, PRD/spec/architecture grande demais para a janela de contexto, ",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/context/context-distillator",
+    "skill_dir": "context-distillator"
+  },
+  {
+    "name": "db-state-sync",
+    "description": "Gerencia estado de projetos no banco SQLite local do OSForge (~/.osforge/osforge.db). ACIONE quando: salvar progresso de uma fase, registrar decisão arquitetural, adicionar/resolver blocker, retomar sessão anterior, buscar decisões passadas. Keywords: salvar estado, registrar decisão, add-decision, ",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/context/db-state-sync",
+    "skill_dir": "db-state-sync"
+  },
+  {
+    "name": "doc-shard",
+    "description": "Divide documentos markdown grandes em arquivos menores organizados com index. Use quando documento exceder context window ou para organizar docs extensos — ex. um guia de 10k tokens, uma spec com múltiplas seções, um PRD extenso. Use com \"shard doc\", \"dividir documento\".",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/context/doc-shard",
+    "skill_dir": "doc-shard"
+  },
+  {
+    "name": "editorial-review",
+    "description": "Revisão editorial de documentos técnicos em 2 modos: prose (copy-editing clínico) e structure (reorganização e simplificação). Use com \"editorial review\", \"review prose\", \"review structure\", \"revisar redação\", \"documento confuso\", \"redação flácida\", \"texto prolixo\", \"esse doc está mal organizado\".",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/context/editorial-review",
+    "skill_dir": "editorial-review"
+  },
+  {
+    "name": "project-context-generator",
+    "description": "Analisa codebase e gera project-context.md + constitution.md — os documentos governantes do projeto. ACIONE quando: iniciar em projeto novo, projeto não tem project-context.md, precisar atualizar contexto após mudanças de stack, criar princípios do projeto. Keywords: project context, gerar contexto,",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/context/project-context-generator",
+    "skill_dir": "project-context-generator"
+  },
+  {
+    "name": "context-compact",
+    "description": "Compactação estruturada de conversação quando atinge ~70% da janela de contexto. ACIONE quando: usuário diz \"comprimir contexto\", \"compactar\", \"summary\", \"perto do limite\", \"context full\", \"save state\", \"/compact\", \"/clear\", ou quando o contador de tokens passar de 140k. Produz summary em 9 seções c",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/context-compact",
+    "skill_dir": "context-compact"
   },
   {
     "name": "context7-docs-first",
@@ -7980,6 +8440,46 @@
     "skill_dir": "core-web-vitals"
   },
   {
+    "name": "database-design",
+    "description": "Princípios de design de banco de dados: escolha de banco e ORM, schema, índices, otimização e migrations. ACIONE quando: query lenta ou N+1 em produção, escolher entre PostgreSQL, Neon, Turso e SQLite, escolher entre Drizzle, Prisma e Kysely, modelar schema e relacionamentos de nova feature, criar í",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/database-design",
+    "skill_dir": "database-design"
+  },
+  {
+    "name": "deployment-procedures",
+    "description": "Workflows seguros de deploy em produção com backup, verificação pós-deploy e rollback para Vercel, Railway, VPS+PM2, Docker e Kubernetes. ACIONE quando: deploy falhou ou quebrou produção, serviço caiu após release e precisa de rollback rápido, decidir entre rolling, blue-green e canary, montar check",
+    "category": "☁️ Infrastructure / DevOps",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/deployment-procedures",
+    "skill_dir": "deployment-procedures"
+  },
+  {
+    "name": "design-taste-frontend",
+    "description": "Anti-slop frontend skill for landing pages, portfolios, and redesigns. Trigger on phrases like \"build a landing page\", \"create my portfolio site\", \"redesign this site so it doesn't look like a template\", \"make it not look AI-generated\", or \"Awwwards/Linear-style page\". The agent reads the brief, inf",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/design-taste-frontend",
+    "skill_dir": "design-taste-frontend"
+  },
+  {
+    "name": "design-taste-frontend-v1",
+    "description": "Versão legada v1 da taste-skill de frontend premium com dials fixos (variance 8, motion 6, density 4), anti-slop, ban de Inter e roxo-AI, e micro-física magnética com Framer Motion. ACIONE quando:",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/design-taste-frontend-v1",
+    "skill_dir": "design-taste-frontend-v1"
+  },
+  {
     "name": "differential-review",
     "description": "Security-focused code review of diffs and PRs. Trigger on PR security review, git diff analysis, change impact assessment, or when reviewing commits that touch auth, payments, permissions, or data access patterns.",
     "category": "🔒 Security",
@@ -7991,8 +8491,8 @@
   },
   {
     "name": "dispatching-parallel-agents",
-    "description": "Orchestrate parallel subagent tasks for independent workloads. Trigger when facing 2+ independent tasks without shared state, large refactoring across multiple files, or when task decomposition reveals parallelizable work units.",
-    "category": "⚛️ React / Frontend",
+    "description": "Orquestra tasks paralelas em subagents independentes. ACIONE quando: 2+ tasks sem estado compartilhado, refatoração em múltiplos arquivos não relacionados, decomposição revela trabalho paralelizável, ou tasks com dependências parciais. Keywords: parallel, wave, dispatch, parallel agents, multiple ta",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -8001,7 +8501,7 @@
   },
   {
     "name": "doc-sanitization",
-    "description": "Clean up, consolidate, and organize project documentation. Removes obsolete specs, merges duplicates, enforces lifecycle rules. Use when triggered by /clean-docs command, when docs accumulate over 5 files in specs/ or plans/, when documents are older than 30 days, or when the user mentions organizin",
+    "description": "Clean up, consolidate, and organize project documentation. Removes obsolete specs, merges duplicates, enforces lifecycle rules. Trigger on phrases like \"tenho muita documentação desorganizada\", \"limpar os docs do projeto\", \"consolidar specs antigas\", or \"esses arquivos .md estão uma bagunça\". Use wh",
     "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
@@ -8011,7 +8511,7 @@
   },
   {
     "name": "docs-writer",
-    "description": "Use this skill for writing, reviewing, and editing documentation (`/docs` directory or any .md file).",
+    "description": "Escreve, revisa e edita documentação técnica verificando o código-fonte e seguindo style guide do projeto. ACIONE quando: documentar uma feature/comando/API a partir do código, reescrever ou melhorar uma seção existente de docs, revisar clareza/tom/consistência de arquivos .md, atualizar docs desatu",
     "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
@@ -8020,14 +8520,44 @@
     "skill_dir": "docs-writer"
   },
   {
+    "name": "documentation-templates",
+    "description": "Templates prontos e guias de estrutura para documentação: README, API docs, comentários de código e docs AI-friendly. ACIONE quando: criar README do zero com estrutura padrão, montar esqueleto de documentação de API, definir seções e ordem de um doc novo, padronizar comentários de código, estruturar",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/documentation-templates",
+    "skill_dir": "documentation-templates"
+  },
+  {
     "name": "e2e-testing-patterns",
-    "description": "End-to-end testing with Playwright for Next.js applications. Trigger on E2E test setup, cross-page flow testing (checkout, onboarding, multi-step forms), visual regression, or Playwright debugging.",
+    "description": "End-to-end testing with Playwright for Next.js applications. Trigger on E2E test setup, cross-page flow testing (checkout, onboarding, multi-step forms), visual regression, or Playwright debugging. Keywords: E2E test, Playwright, test failure, flaky test, browser test, integration test, page.goto, l",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
     "local_path": "skills/e2e-testing-patterns",
     "skill_dir": "e2e-testing-patterns"
+  },
+  {
+    "name": "finishing-a-development-branch",
+    "description": "Workflow de finalização de branch de desenvolvimento. ACIONE quando: todas as tasks de uma branch estão completas, usuário quer mergear ou abrir PR, pronto para ship. Keywords: finalizar branch, merge, pull request, PR, ship, branch completa, done, concluído, terminar feature, fechar branch.",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/finishing-a-development-branch",
+    "skill_dir": "finishing-a-development-branch"
+  },
+  {
+    "name": "frontend-design",
+    "description": "Design thinking and decision-making for web UI. ACTIVATE whenever the user asks to design or style UI components, build page layouts, choose color palettes, or pick typography — e.g. \"design this component\", \"create a layout\", \"choose a color scheme\", \"what font should I use\". Teaches principles, no",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/frontend-design",
+    "skill_dir": "frontend-design"
   },
   {
     "name": "frontend-ui-system",
@@ -8040,6 +8570,126 @@
     "skill_dir": "frontend-ui-system"
   },
   {
+    "name": "full-output-enforcement",
+    "description": "Regra base anti-truncamento: proíbe placeholders e omissões, exige geração completa de cada deliverable e gerencia splits por limite de token com marcador PAUSED. ACIONE quando: resposta veio truncada, código saiu com // ... ou rest of code, usuário pede o arquivo completo ou me dá tudo sem resumir,",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/full-output-enforcement",
+    "skill_dir": "full-output-enforcement"
+  },
+  {
+    "name": "2d-games",
+    "description": "Princípios de jogos 2D: sprites, atlases, tilemaps, física 2D, câmeras e padrões de gênero (platformer, top-down). ACIONE quando: estou fazendo um platformer 2D e o pulo parece travado (coyote time, jump buffering); como organizar sprites e animações no Godot, Unity 2D ou Phaser; preciso montar tile",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development/2d-games",
+    "skill_dir": "2d-games"
+  },
+  {
+    "name": "3d-games",
+    "description": "Princípios de jogos 3D: pipeline de rendering, shaders, física e colisão 3D, câmeras, iluminação e LOD. ACIONE quando: meu jogo 3D está com draw calls demais e preciso de culling/batching/LOD; quando vale escrever um shader customizado (água, toon, efeitos); qual collider usar para personagens e ter",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development/3d-games",
+    "skill_dir": "3d-games"
+  },
+  {
+    "name": "game-development",
+    "description": "Orquestrador de desenvolvimento de jogos que ensina princípios universais (game loop, padrões, performance, IA, colisão) e roteia para sub-skills de plataforma e especialidade. ACIONE quando: quero fazer um jogo mas não sei por onde começar; estou estruturando a arquitetura do meu jogo (game loop, s",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development",
+    "skill_dir": "game-development"
+  },
+  {
+    "name": "game-art",
+    "description": "Princípios de arte para jogos: pipeline de assets, otimização de texturas, animação (sprite, skeletal, procedural), VFX e direção de arte. ACIONE quando: como organizar o pipeline de assets do Blender/Aseprite para a engine (FBX, glTF, PNG); minhas texturas estão pesadas e preciso de atlases, mipmap",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development/game-art",
+    "skill_dir": "game-art"
+  },
+  {
+    "name": "game-audio",
+    "description": "Princípios de áudio para jogos: SFX, música, formatos e compressão, áudio adaptativo, performance e acessibilidade sonora. ACIONE quando: quero adicionar sons e música ao meu jogo e não sei quais formatos usar (WAV, OGG, MP3); como fazer música adaptativa que muda com combate, vida ou local (layers,",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development/game-audio",
+    "skill_dir": "game-audio"
+  },
+  {
+    "name": "game-design",
+    "description": "Princípios de game design: core loop, estrutura de GDD, psicologia do jogador, balanceamento de dificuldade e progressão. ACIONE quando: meu jogo não está divertido e quero analisar o core loop de 30 segundos; preciso escrever um GDD (game design document) para o meu jogo; como balancear dificuldade",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development/game-design",
+    "skill_dir": "game-design"
+  },
+  {
+    "name": "mobile-games",
+    "description": "Princípios de jogos mobile: touch input, bateria e thermal, requisitos de App Store e Google Play, monetização. ACIONE quando: estou portando ou criando um jogo para iOS/Android e os controles de touch estão ruins; meu jogo mobile esquenta o aparelho ou drena bateria (thermal throttling, 30 vs 60 FP",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development/mobile-games",
+    "skill_dir": "mobile-games"
+  },
+  {
+    "name": "multiplayer",
+    "description": "Princípios de jogos multiplayer: arquitetura de rede (dedicated server, P2P, host-based), sincronização, lag compensation, anti-cheat e matchmaking. ACIONE quando: quero adicionar multiplayer ao meu jogo e não sei qual arquitetura usar; os jogadores remotos ficam teleportando ou com lag (prediction,",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development/multiplayer",
+    "skill_dir": "multiplayer"
+  },
+  {
+    "name": "pc-games",
+    "description": "Princípios de jogos para PC (Windows, Mac, Linux): publicação na Steam, configurações gráficas, rebinding de controles, modding e acessibilidade desktop. ACIONE quando: vou lançar meu jogo na Steam (ou Epic, GOG, itch.io) e preciso preparar a store page; como estruturar opções gráficas em tiers (res",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development/pc-games",
+    "skill_dir": "pc-games"
+  },
+  {
+    "name": "vr-ar",
+    "description": "Princípios de jogos VR/AR: conforto e prevenção de motion sickness, locomoção, hand tracking, anchoring AR e metas de performance por headset. ACIONE quando: jogadores estão passando mal no meu jogo VR (motion sickness, locomoção teleport vs smooth); estou desenvolvendo para Meta Quest, PSVR2 ou Ste",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development/vr-ar",
+    "skill_dir": "vr-ar"
+  },
+  {
+    "name": "web-games",
+    "description": "Princípios de jogos para navegador: escolha de framework (Phaser, PixiJS, Three.js, Babylon.js), WebGPU vs WebGL, compressão de assets, PWA e áudio no browser. ACIONE quando: quero fazer um jogo que roda no navegador e não sei qual framework escolher; devo usar WebGPU ou WebGL no meu projeto novo; m",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/game-development/web-games",
+    "skill_dir": "web-games"
+  },
+  {
     "name": "gdpr-data-handling",
     "description": "GDPR/LGPD compliance patterns for data handling. Trigger on consent management, data subject rights (access, deletion, portability), privacy policies, data retention, audit logging, or LGPD compliance requirements.",
     "category": "🔒 Security",
@@ -8048,6 +8698,16 @@
     "source_url": "",
     "local_path": "skills/gdpr-data-handling",
     "skill_dir": "gdpr-data-handling"
+  },
+  {
+    "name": "genai-optimization",
+    "description": "Generative Engine Optimization (GEO) para conteúdo ser citado por motores de busca com IA. ACIONE quando: fazer conteúdo ser citado pelo ChatGPT/Perplexity/Claude/Gemini, otimizar para busca por IA (AI search), estruturar conteúdo para retrieval RAG, aumentar taxa de citação em respostas geradas, co",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/genai-optimization",
+    "skill_dir": "genai-optimization"
   },
   {
     "name": "git-workflow",
@@ -8060,14 +8720,74 @@
     "skill_dir": "git-workflow"
   },
   {
+    "name": "gpt-taste",
+    "description": "Engenharia de design award-winning com motion GSAP avançado: randomização de layouts, estrutura AIDA, hero de no máximo 2-3 linhas, bento grids sem células vazias e ScrollTrigger com pinning, scrubbing e card stacking. ACIONE quando:",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/gpt-taste",
+    "skill_dir": "gpt-taste"
+  },
+  {
+    "name": "high-end-visual-design",
+    "description": "Faz o site parecer caro nível agência: fontes premium, cards double-bezel, sombras ultra-difusas, nav em pílula de vidro flutuante e coreografia de motion com spring physics estilo Apple/Linear. ACIONE quando:",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/high-end-visual-design",
+    "skill_dir": "high-end-visual-design"
+  },
+  {
     "name": "i18n-localization",
-    "description": "Internationalization for Next.js applications. Trigger on multi-language support, locale routing, translation management, date/currency formatting, RTL support, or next-intl/i18next configuration.",
+    "description": "Internationalization for Next.js applications. Trigger on multi-language support (\"set up multiple languages\", \"add English/Spanish support\", \"translate the app\"), locale routing (\"/en routes\", \"detect user language\"), translation management, date/currency formatting (\"format prices in BRL\", \"locali",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
     "local_path": "skills/i18n-localization",
     "skill_dir": "i18n-localization"
+  },
+  {
+    "name": "image-to-code",
+    "description": "Elite website image-to-code skill for Codex. Trigger on requests like \"design a stunning hero section\", \"build a premium landing page\", or \"redesign this site with strong visuals\". For visually important web tasks, it must first generate the design image(s) itself, deeply analyze them, then implemen",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/image-to-code",
+    "skill_dir": "image-to-code"
+  },
+  {
+    "name": "imagegen-frontend-mobile",
+    "description": "Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Keywords - mobile UI design, iOS app design, Android app design, app mockups, mobile screens, app flow concepts. Designed for iOS, Android, and cross-platform mobile products. Prioritizes clean hierar",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/imagegen-frontend-mobile",
+    "skill_dir": "imagegen-frontend-mobile"
+  },
+  {
+    "name": "imagegen-frontend-web",
+    "description": "Direção de arte para gerar mockups de sites premium via geração de imagem: uma imagem horizontal separada por seção, variedade de composição de hero e paleta única consistente entre todas as imagens. ACIONE quando:",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/imagegen-frontend-web",
+    "skill_dir": "imagegen-frontend-web"
+  },
+  {
+    "name": "industrial-brutalist-ui",
+    "description": "Gera interfaces brutalistas industriais que fundem print tipográfico suíço com terminais militares/CRT: grids rígidos, monospace, tipografia gigante, vermelho hazard, scanlines e halftone. ACIONE quando:",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/industrial-brutalist-ui",
+    "skill_dir": "industrial-brutalist-ui"
   },
   {
     "name": "insecure-defaults",
@@ -8078,6 +8798,16 @@
     "source_url": "",
     "local_path": "skills/insecure-defaults",
     "skill_dir": "insecure-defaults"
+  },
+  {
+    "name": "lint-and-validate",
+    "description": "Controle de qualidade automático após cada modificação de código: lint, type-check e análise estática (eslint, tsc, ruff, mypy, bandit, npm audit). ACIONE quando: acabou de editar ou criar código, antes de commitar ou marcar tarefa como done, apareceu erro de lint ou de tipos, configurar validação e",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/lint-and-validate",
+    "skill_dir": "lint-and-validate"
   },
   {
     "name": "llmfit-advisor",
@@ -8091,7 +8821,7 @@
   },
   {
     "name": "mcp-builder",
-    "description": "Build custom MCP (Model Context Protocol) servers. Trigger on creating MCP tools for internal services, exposing APIs as MCP resources, MCP server architecture, or integrating custom data sources with Claude Code/Cursor.",
+    "description": "Constrói servidores MCP (Model Context Protocol) customizados em TypeScript ou Python. ACIONE quando: criar servidor MCP do zero, expor API interna como tool MCP, transformar banco de dados ou serviço em resource para Claude Code/Cursor, definir tools/resources/prompts com transporte stdio ou SSE, d",
     "category": "📱 Mobile",
     "source": "skills",
     "source_emoji": "📦",
@@ -8100,14 +8830,434 @@
     "skill_dir": "mcp-builder"
   },
   {
+    "name": "minimalist-ui",
+    "description": "Gera interfaces ultra-minimalistas estilo editorial/documento (tipo Notion) com paleta monocromática quente, serifas editoriais, bento grids flat, pastéis lavados e sombras quase inexistentes. ACIONE quando:",
+    "category": "📝 Documentation / Writing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/minimalist-ui",
+    "skill_dir": "minimalist-ui"
+  },
+  {
+    "name": "mobile-design",
+    "description": "Princípios de design mobile-first para apps iOS e Android: interação touch, thumb zone, performance 60fps, convenções de plataforma (HIG, Material 3), offline-first e navegação nativa. ACIONE quando:",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/mobile-design",
+    "skill_dir": "mobile-design"
+  },
+  {
+    "name": "nextjs-react-expert",
+    "description": "React and Next.js performance optimization from Vercel Engineering. Use when building React components, optimizing performance, eliminating waterfalls, reducing bundle size, reviewing code for performance issues, or implementing server/client-side optimizations. Specific symptoms: TTI > 3s, First Lo",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/nextjs-react-expert",
+    "skill_dir": "nextjs-react-expert"
+  },
+  {
     "name": "nextjs-supabase-auth",
-    "description": "Authentication patterns for Next.js App Router + Supabase Auth. Trigger on auth middleware, multi-org RBAC, session management, token refresh, RLS-by-tenant, OAuth flows, or Supabase Auth debugging in Next.js context.",
+    "description": "Padrões de autenticação Next.js App Router + Supabase Auth. ACIONE quando: configurando middleware de auth, RBAC multi-org, gerenciamento de sessão, refresh de token, RLS por tenant, OAuth flows, debugging de Supabase Auth. Keywords: auth, login, session, middleware, RBAC, role, permission, supabase",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
     "local_path": "skills/nextjs-supabase-auth",
     "skill_dir": "nextjs-supabase-auth"
+  },
+  {
+    "name": "nodejs-best-practices",
+    "description": "Princípios de desenvolvimento Node.js: escolha de framework, padrões async, arquitetura em camadas, validação, error handling e segurança. ACIONE quando: escolher entre Hono, Fastify, NestJS e Express para novo projeto, async/await travando ou event loop bloqueado por trabalho CPU-bound, decidir ent",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/nodejs-best-practices",
+    "skill_dir": "nodejs-best-practices"
+  },
+  {
+    "name": "offensive-ai-security",
+    "description": "AI/LLM security offensive checklist: prompt injection, jailbreaking, model extraction, training data poisoning, adversarial inputs, LLM-assisted attack automation, and AI system reconnaissance. Use when assessing AI/ML systems, red-teaming LLMs, or researching AI attack vectors. Trigger keywords: `A",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-ai-security",
+    "skill_dir": "offensive-ai-security"
+  },
+  {
+    "name": "offensive-bug-identification",
+    "description": "Systematic bug identification methodology: source code review patterns, black-box testing strategies, taint analysis, dangerous function hunting, data flow tracing, and automated scanning setup. Use for code audits, bug bounty triage, or building vulnerability identification pipelines. Trigger keywo",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-bug-identification",
+    "skill_dir": "offensive-bug-identification"
+  },
+  {
+    "name": "offensive-business-logic",
+    "description": "Business logic vulnerability testing for web/mobile/API engagements. Covers workflow bypass, state machine violations, multi-step process abuse, price/quantity/discount manipulation, currency confusion, coupon stacking, refund/chargeback abuse, race conditions on logic boundaries, parameter tamperin",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-business-logic",
+    "skill_dir": "offensive-business-logic"
+  },
+  {
+    "name": "offensive-cloud",
+    "description": "Cloud security attack methodology across AWS, Azure, and GCP. Covers credential harvesting (IMDS, ~/.aws, env vars, leaked CI secrets, instance roles), enumeration (pacu, ScoutSuite, Prowler, ROADtools), IAM privilege escalation (PassRole, AssumeRole chains, Lambda/Functions privilege flips, GCP ser",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-cloud",
+    "skill_dir": "offensive-cloud"
+  },
+  {
+    "name": "offensive-deserialization",
+    "description": "Insecure deserialization attack checklist: identifying deserialization sinks, Java/PHP/.NET/Python deserialization exploitation, ysoserial gadget chains, magic method abuse, and detection evasion. Use when testing deserialization endpoints or developing deserialization exploits. Trigger keywords: `d",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-deserialization",
+    "skill_dir": "offensive-deserialization"
+  },
+  {
+    "name": "offensive-fast-checking",
+    "description": "Speed-optimized offensive checklist for rapid assessment: quick-win vulnerability patterns, fast recon shortcuts, automated scanner configurations, and triage shortcuts. Use for time-boxed assessments, CTF-speed engagements, or initial rapid surface mapping. Trigger keywords: `fast check, quick reco",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-fast-checking",
+    "skill_dir": "offensive-fast-checking"
+  },
+  {
+    "name": "offensive-file-upload",
+    "description": "File upload vulnerability checklist: MIME type bypass, extension bypass, magic byte manipulation, path traversal in filenames, stored XSS via SVG/HTML upload, server-side processing attacks, and race conditions. Use for assessing file upload endpoints in web app pentests or bug bounty. Trigger keywo",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-file-upload",
+    "skill_dir": "offensive-file-upload"
+  },
+  {
+    "name": "offensive-fuzzing",
+    "description": "Practical offensive fuzzing methodology covering target identification, fuzzer selection (AFL++, libFuzzer, Honggfuzz, Boofuzz, syzkaller), harness writing, corpus curation, mutation strategies, coverage measurement, and crash triage. Use when setting up or running fuzz campaigns against any target:",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-fuzzing",
+    "skill_dir": "offensive-fuzzing"
+  },
+  {
+    "name": "offensive-graphql",
+    "description": "GraphQL security testing checklist: introspection abuse, batching attacks, query depth/complexity DoS, field suggestion enumeration, IDOR via GraphQL, injection through arguments, authorization bypass. Use when assessing GraphQL endpoints in web app tests or bug bounty. Trigger keywords: `GraphQL, i",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-graphql",
+    "skill_dir": "offensive-graphql"
+  },
+  {
+    "name": "offensive-idor",
+    "description": "IDOR (Insecure Direct Object Reference) testing checklist: object ID enumeration, horizontal/vertical privilege escalation, GUID predictability, indirect references via hashes, chained IDOR, and API endpoint IDOR. Use for web app pentests and bug bounty IDOR discovery. Trigger keywords: `IDOR, insec",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-idor",
+    "skill_dir": "offensive-idor"
+  },
+  {
+    "name": "offensive-jwt",
+    "description": "JWT attack methodology for penetration testers. Covers algorithm confusion (alg:none, RS256→HS256), weak HMAC secret brute force, kid parameter injection (SQLi, path traversal), jku/x5u/jwk header injection, JWKS cache poisoning, JWS/JWE confusion, timing attacks, and mobile JWT storage extraction. ",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-jwt",
+    "skill_dir": "offensive-jwt"
+  },
+  {
+    "name": "offensive-mobile",
+    "description": "Mobile (Android + iOS) application penetration testing methodology. Covers static analysis (apktool/jadx for Android, class-dump/Hopper/IDA for iOS), dynamic instrumentation with Frida and Objection, SSL pinning bypass strategies, root/jailbreak detection bypass, deep-link / URL-scheme abuse, export",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-mobile",
+    "skill_dir": "offensive-mobile"
+  },
+  {
+    "name": "offensive-oauth",
+    "description": "OAuth 2.0 attack checklist: authorization code interception, redirect_uri bypass, CSRF on OAuth flow, state parameter abuse, open redirector chaining, token leakage via Referer, PKCE bypass, and scope escalation. Use when testing OAuth implementations in web apps or bug bounty. Trigger keywords: `OA",
+    "category": "🧪 Testing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-oauth",
+    "skill_dir": "offensive-oauth"
+  },
+  {
+    "name": "offensive-open-redirect",
+    "description": "Open redirect vulnerability checklist: parameter identification, bypass techniques (URL encoding, double slashes, CRLF injection, protocol handlers), chaining with OAuth/SSRF, and impact escalation paths. Use for web app testing and bug bounty open redirect discovery. Trigger keywords: `open redirec",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-open-redirect",
+    "skill_dir": "offensive-open-redirect"
+  },
+  {
+    "name": "offensive-osint",
+    "description": "Comprehensive OSINT methodology skill for offensive security, red team intelligence gathering, and bug bounty reconnaissance. Covers domain recon, email harvesting, social media profiling, GitHub/code leaks, Shodan/Censys enumeration, breach data lookup, employee profiling, infrastructure mapping, c",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-osint",
+    "skill_dir": "offensive-osint"
+  },
+  {
+    "name": "offensive-parameter-pollution",
+    "description": "HTTP parameter pollution (HPP) checklist: duplicate parameter injection, backend vs frontend parsing differences, WAF bypass via HPP, server-side vs client-side HPP, and practical exploitation patterns. Use when testing web applications for parameter handling flaws. Trigger keywords: `parameter poll",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-parameter-pollution",
+    "skill_dir": "offensive-parameter-pollution"
+  },
+  {
+    "name": "offensive-race-condition",
+    "description": "Race condition (TOCTOU) testing checklist: identifying timing windows, Burp Suite Turbo Intruder, Last-Byte sync technique, rate limit bypass, double-spend attacks, and concurrent request exploitation. Use for web app race condition testing or bug bounty time-of-check-to-time-of-use bugs. Trigger ke",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-race-condition",
+    "skill_dir": "offensive-race-condition"
+  },
+  {
+    "name": "offensive-rce",
+    "description": "Remote Code Execution testing checklist: OS command injection, SSTI-to-RCE, deserialization RCE, file upload RCE, XXE with SSRF to RCE, RCE via dependency confusion, and CVE-based RCE patterns. Use for web app pentests and bug bounty RCE discovery. Trigger keywords: `RCE, remote code execution, comm",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-rce",
+    "skill_dir": "offensive-rce"
+  },
+  {
+    "name": "offensive-reporting",
+    "description": "Penetration test and red team report writing methodology. Covers executive summary structuring (risk-led narrative for non-technical readers), technical finding format (title, severity, affected scope, narrative, reproduction steps, impact, remediation, references), CVSS v3.1 / v4.0 scoring with vec",
+    "category": "🧪 Testing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-reporting",
+    "skill_dir": "offensive-reporting"
+  },
+  {
+    "name": "offensive-request-smuggling",
+    "description": "HTTP request smuggling checklist: CL.TE, TE.CL, TE.TE variants, detection with timing and differential responses, WAF bypass, cache poisoning, credential hijacking, and request smuggling via HTTP/2. Use when testing reverse proxy/load balancer configurations. Trigger keywords: `request smuggling, HT",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-request-smuggling",
+    "skill_dir": "offensive-request-smuggling"
+  },
+  {
+    "name": "offensive-sqli",
+    "description": "SQL injection testing skill for offensive security assessments and bug bounty hunting. Covers error-based, UNION-based, boolean/time-based blind, out-of-band, second-order, NoSQL, GraphQL, WebSocket, and JSON-operator SQLi. Includes WAF bypass techniques, database-specific exploitation (MySQL, MSSQL",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-sqli",
+    "skill_dir": "offensive-sqli"
+  },
+  {
+    "name": "offensive-ssrf",
+    "description": "Server-Side Request Forgery testing checklist: SSRF discovery, blind SSRF with out-of-band, cloud metadata endpoints (AWS/GCP/Azure), SSRF filter bypass techniques (IP encoding, DNS rebinding, redirect chains), and SSRF to RCE escalation. Use for web app SSRF testing and bug bounty. Trigger keywords",
+    "category": "🧪 Testing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-ssrf",
+    "skill_dir": "offensive-ssrf"
+  },
+  {
+    "name": "offensive-ssti",
+    "description": "Server-Side Template Injection testing checklist: template engine identification (Jinja2, Twig, Freemarker, Pebble, Velocity), polyglot detection payloads, engine-specific RCE payloads, blind SSTI, and filter bypass. Use when testing web apps for template injection vulnerabilities. Trigger keywords:",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-ssti",
+    "skill_dir": "offensive-ssti"
+  },
+  {
+    "name": "offensive-toctou",
+    "description": "Time-of-Check / Time-of-Use (TOCTOU) race condition exploitation methodology across binary, kernel, filesystem, web, and container layers. Covers symbolic-link races (open/access/stat split), file-descriptor races, fopen/realpath traversal races, /proc and procfs races, FUSE-backed slow-fs races to ",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-toctou",
+    "skill_dir": "offensive-toctou"
+  },
+  {
+    "name": "offensive-waf-bypass",
+    "description": "WAF bypass techniques checklist: encoding bypass (URL/HTML/Unicode/double encoding), case variation, comment injection, HTTP header manipulation, chunked encoding, IP rotation, timing attacks, and payload obfuscation per WAF vendor. Use when WAF is blocking payloads during web app tests. Trigger key",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-waf-bypass",
+    "skill_dir": "offensive-waf-bypass"
+  },
+  {
+    "name": "offensive-xss",
+    "description": "Cross-Site Scripting testing checklist: stored/reflected/DOM/blind XSS discovery, polyglot payloads, CSP bypass, XSS filter bypass, event handler injection, DOM clobbering, mutation XSS, and impact escalation (session hijack, phishing, keylogging). Use for web app XSS testing and bug bounty. Trigger",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-xss",
+    "skill_dir": "offensive-xss"
+  },
+  {
+    "name": "offensive-xxe",
+    "description": "XML External Entity injection testing checklist: classic XXE, blind XXE (out-of-band), XXE via file upload (SVG/docx), XXE in SOAP/REST, error-based XXE, XInclude attacks, and XXE filter bypass. Use for web app XXE testing and bug bounty. Trigger keywords: `XXE, XML external entity, blind XXE, out-o",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/offensive-xxe",
+    "skill_dir": "offensive-xxe"
+  },
+  {
+    "name": "openui-genui-layout",
+    "description": "Planejamento e geração de UI em Next.js. ACIONE quando: criando qualquer página, tela, dashboard, formulário, tabela, componente com layout, scaffold de rota. Produce um plano OpenUI Lang ANTES de qualquer código. Keywords: create page, scaffold, layout, screen, dashboard, form, table, component, UI",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/openui-genui-layout",
+    "skill_dir": "openui-genui-layout"
+  },
+  {
+    "name": "output-enforcement",
+    "description": "Camada de enhancement OSForge sobre full-output-enforcement: além do output completo, exige verification gate antes de declarar done e proteção TDD (nunca enfraquecer testes). ACIONE quando: pedirem completo, todo o arquivo, exaustivo, sem placeholders ou não corte, refactor multi-arquivo, gerar vár",
+    "category": "🧪 Testing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/output-enforcement",
+    "skill_dir": "output-enforcement"
+  },
+  {
+    "name": "performance-profiling",
+    "description": "Princípios de profiling de performance: medir, analisar e otimizar usando Core Web Vitals, Lighthouse e ferramentas de profiling. ACIONE quando: página lenta ou LCP/INP/CLS ruins, suspeita de memory leak, jank no scroll ou animações travando, bundle JavaScript muito grande, API ou operação demorada ",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/performance-profiling",
+    "skill_dir": "performance-profiling"
+  },
+  {
+    "name": "plan-writing",
+    "description": "Planejamento estruturado de trabalho com breakdown em tarefas pequenas, dependências e critérios de verificação. ACIONE quando: planeja a implementação de uma feature, quebra em tarefas um trabalho multi-step, criar plano curto e específico antes de codar, ordenar dependências e caminho crítico, def",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/plan-writing",
+    "skill_dir": "plan-writing"
+  },
+  {
+    "name": "arch-builder",
+    "description": "Facilitação de decisões arquiteturais com ADRs. Stack-aware — respeita project-context.md e otimiza para Next.js/Prisma/Supabase. ACIONE com frases como:",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/planning/arch-builder",
+    "skill_dir": "arch-builder"
+  },
+  {
+    "name": "epic-decomposer",
+    "description": "Decompõe specs, PRDs ou requisitos em épicos e stories implementáveis. Cada story com ACs testáveis, tasks com file paths, e dependências mapeadas.",
+    "category": "🧪 Testing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/planning/epic-decomposer",
+    "skill_dir": "epic-decomposer"
+  },
+  {
+    "name": "phase-discussion",
+    "description": "Captura decisões de implementação de uma fase ANTES do planejamento técnico. ACIONE antes de planejar qualquer fase com UI, API, sistema de conteúdo ou reorganização de dados. Keywords: discutir fase, discuss phase, decisões da fase, contexto da fase, antes de planejar, o que decidir antes, fase N, ",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/planning/phase-discussion",
+    "skill_dir": "phase-discussion"
+  },
+  {
+    "name": "prd-builder",
+    "description": "Facilitação colaborativa de Product Requirements Document. Guia o usuário por definição de problema, usuários, requisitos, métricas e escopo MVP. Use com \"prd\", \"requisitos\", \"requirements\", \"product requirements\".",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/planning/prd-builder",
+    "skill_dir": "prd-builder"
+  },
+  {
+    "name": "requirements-clarify",
+    "description": "Clarificação estruturada de requisitos ANTES do plano técnico. ACIONE quando: spec tem áreas vagas ou underspecificadas, usuário disse",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/planning/requirements-clarify",
+    "skill_dir": "requirements-clarify"
+  },
+  {
+    "name": "spec-builder",
+    "description": "Facilitação colaborativa de tech spec com ACs testáveis. ACIONE quando: especificar uma feature, definir o que construir, escrever spec técnica, detalhar requisitos antes de implementar. Keywords: spec, especificar, definir feature, tech spec, acceptance criteria, escrever spec, o que construir, req",
+    "category": "🧪 Testing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/planning/spec-builder",
+    "skill_dir": "spec-builder"
+  },
+  {
+    "name": "story-executor",
+    "description": "Executa implementação de uma story seguindo suas tasks e ACs. ACIONE quando: executar story, implementar story, dev story, run story. Coordena invocação dos skills de execução corretos do OSForge. Keywords: executar story, implementar story, dev story, run story, execute story, implement story.",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/planning/story-executor",
+    "skill_dir": "story-executor"
   },
   {
     "name": "postgres-optimization",
@@ -8118,6 +9268,16 @@
     "source_url": "",
     "local_path": "skills/postgres-optimization",
     "skill_dir": "postgres-optimization"
+  },
+  {
+    "name": "powershell-windows",
+    "description": "Padrões e armadilhas críticas de PowerShell no Windows: sintaxe de operadores, null checks, JSON, paths e error handling. ACIONE quando: script PowerShell falhando com erro de parameter or ou Unexpected token, condicional if com -or/-and quebrando por falta de parênteses em cmdlets, JSON truncado po",
+    "category": "🏗️ Architecture",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/powershell-windows",
+    "skill_dir": "powershell-windows"
   },
   {
     "name": "predictive-failure",
@@ -8131,13 +9291,83 @@
   },
   {
     "name": "prisma-expert",
-    "description": "Advanced Prisma ORM patterns for schema design, migrations, query optimization, and relations. Trigger on complex schema changes (>10 models), migration strategies, query performance issues, relation patterns (many-to-many, polymorphic), multi-tenant data isolation, or Prisma-specific debugging.",
+    "description": "Padrões avançados de Prisma ORM. ACIONE quando: mudanças de schema com >3 models, estratégias de migration, queries lentas ou N+1, relações many-to-many ou polimórficas, isolamento multi-tenant, debugging de Prisma. Keywords: prisma, schema, migration, query, relation, database, orm, model, seed, in",
     "category": "🗄️ Database / Backend",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
     "local_path": "skills/prisma-expert",
     "skill_dir": "prisma-expert"
+  },
+  {
+    "name": "python-patterns",
+    "description": "Princípios de desenvolvimento Python: escolha de framework, async vs sync, type hints, Pydantic, estrutura de projeto e background tasks. ACIONE quando: escolher entre FastAPI, Django e Flask, async def bloqueando ou misturando lib sync em código async, N+1 no Django ORM (select_related, prefetch_re",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/python-patterns",
+    "skill_dir": "python-patterns"
+  },
+  {
+    "name": "adversarial-review",
+    "description": "Revisão cínica e adversarial de qualquer artefato. ACIONE quando: revisar spec antes de implementar, validar PRD, criticar schema, revisar código com ceticismo máximo. Keywords: adversarial, revisão cínica, review cínico, critica isso, critique, o que está errado, encontre problemas, worst case.",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/quality/adversarial-review",
+    "skill_dir": "adversarial-review"
+  },
+  {
+    "name": "code-review",
+    "description": "Review estruturado de código com checklist adaptado ao stack OSForge. ACIONE quando: code review, revisar código, review PR, CR. Integra adversarial-review e edge-case-hunter automaticamente. Keywords: code review, revisar código, review PR, CR, pull request, diff, changes, revisar mudanças.",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/quality/code-review",
+    "skill_dir": "code-review"
+  },
+  {
+    "name": "edge-case-hunter",
+    "description": "Caça exaustiva de edge cases por enumeração sistemática de branches e boundaries, reportando em JSON apenas caminhos sem handling. ACIONE quando: pedirem edge cases ou boundary conditions de um diff/arquivo/função, verificar inputs null/vazios e off-by-one antes de mergear, checar race conditions e ",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/quality/edge-case-hunter",
+    "skill_dir": "edge-case-hunter"
+  },
+  {
+    "name": "elicitation-engine",
+    "description": "Refinamento iterativo de outputs (specs, PRDs, decisões arquiteturais, qualquer artefato) via menu interativo de técnicas de elicitação estruturadas. ACIONE quando: pedirem refine isso, melhorar ou aprofundar uma spec/PRD, dig deeper numa decisão de design, que perguntas estou ignorando, fortalecer ",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/quality/elicitation-engine",
+    "skill_dir": "elicitation-engine"
+  },
+  {
+    "name": "readiness-gate",
+    "description": "Quality gate pré-implementação. Valida que PRD, Architecture e Épicos estão alinhados e completos antes de iniciar o sprint loop. Use com:",
+    "category": "🏗️ Architecture",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/quality/readiness-gate",
+    "skill_dir": "readiness-gate"
+  },
+  {
+    "name": "ui-audit",
+    "description": "Auditoria retroativa de qualidade visual em código frontend já implementado. ACIONE após qualquer fase de UI/UX, ou quando:",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/quality/ui-audit",
+    "skill_dir": "ui-audit"
   },
   {
     "name": "react-performance",
@@ -8148,6 +9378,56 @@
     "source_url": "",
     "local_path": "skills/react-performance",
     "skill_dir": "react-performance"
+  },
+  {
+    "name": "receiving-code-review",
+    "description": "Como responder ao feedback de um code review. ACIONE quando: recebeu feedback de review, PR tem comments, revisor pediu mudanças, CHANGES_REQUESTED. Keywords: responder review, feedback de review, changes requested, responder PR, tratar comments, resolver feedback, revisor pediu mudanças.",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/receiving-code-review",
+    "skill_dir": "receiving-code-review"
+  },
+  {
+    "name": "red-team-tactics",
+    "description": "Táticas de red team baseadas em MITRE ATT&CK para simulação de adversário autorizada. ACIONE quando: planejar simulação de ataque/pentest autorizado, estruturar exercício de red team por fases ATT&CK (recon, initial access, lateral movement, exfiltration), avaliar evasão de detecção para testar defe",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/red-team-tactics",
+    "skill_dir": "red-team-tactics"
+  },
+  {
+    "name": "redesign-audit",
+    "description": "OSForge enhancement layer sobre redesign-existing-projects. Audita projeto existente, identifica padrões AI-genéricos, aplica upgrades cirúrgicos + regras estruturais OSForge (4 estados, footer slots, i18n, RSC). ACIONE com redesign-existing-projects quando: \"redesenhar\", \"modernizar UI\", \"upgrade v",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/redesign-audit",
+    "skill_dir": "redesign-audit"
+  },
+  {
+    "name": "redesign-existing-projects",
+    "description": "Eleva sites e apps existentes a qualidade premium: audita o design atual, identifica padrões genéricos de IA e aplica upgrades de tipografia, cor e layout sem quebrar funcionalidade. ACIONE quando: herdei código com design genérico, moderniza o visual deste projeto, página parece feita por IA (gradi",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/redesign-existing-projects",
+    "skill_dir": "redesign-existing-projects"
+  },
+  {
+    "name": "rust-pro",
+    "description": "Especialista em Rust 1.75+ para sistemas de alta performance: async com Tokio, ownership, lifetimes, traits avançados, unsafe/FFI e web services com axum. ACIONE quando: erro de borrow checker ou lifetime em código genérico, desenhar serviço web async com Tokio, axum ou tonic, otimizar performance e",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/rust-pro",
+    "skill_dir": "rust-pro"
   },
   {
     "name": "security-best-practices",
@@ -8171,13 +9451,33 @@
   },
   {
     "name": "seo",
-    "description": "Optimize for search engine visibility and ranking. Use when asked to \"improve SEO\", \"optimize for search\", \"fix meta tags\", \"add structured data\", \"sitemap optimization\", or \"search engine optimization\".",
+    "description": "Optimize for search engine visibility and ranking. Use when asked to \"improve SEO\", \"optimize for search\", \"fix meta tags\", \"add structured data\", \"sitemap optimization\", \"search engine optimization\", \"keyword research\", or \"keyword gap analysis\".",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
     "local_path": "skills/seo",
     "skill_dir": "seo"
+  },
+  {
+    "name": "seo-fundamentals",
+    "description": "Fundamentos de SEO para Google com E-E-A-T, Core Web Vitals e SEO técnico. ACIONE quando: melhorar ranking de página no Google, implementar schema markup/dados estruturados, otimizar Core Web Vitals (LCP, INP, CLS) para SEO, configurar sitemap/robots.txt/canonical, otimizar title/meta description/he",
+    "category": "💼 Business / Marketing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/seo-fundamentals",
+    "skill_dir": "seo-fundamentals"
+  },
+  {
+    "name": "server-management",
+    "description": "Princípios de operação de servidores: gerenciamento de processos (PM2, systemd, Docker), monitoramento, logs, scaling, health checks e troubleshooting. ACIONE quando: app cai e não reinicia sozinho, CPU ou memória alta no servidor, disco cheio por logs sem rotação, resposta lenta e dúvida entre scal",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/server-management",
+    "skill_dir": "server-management"
   },
   {
     "name": "skill-creator",
@@ -8201,13 +9501,33 @@
   },
   {
     "name": "smart-model-dispatch",
-    "description": "Automatically routes tasks to optimal Claude models (opus/sonnet/haiku) based on complexity, cost, and task type. TRIGGER when: implementing features with multiple subtasks, dispatching parallel agents, planning sprints with mixed complexity, or when the user mentions cost optimization, model routin",
+    "description": "Roteador de modelos Claude. ACIONE quando: spawning de subagents via Agent tool, implementando feature com múltiplas subtasks de complexidade mista, otimizando custo de API, planejando sprint com tarefas paralelas. Keywords: model routing, opus sonnet haiku, cost optimization, smart dispatch, parall",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
     "local_path": "skills/smart-model-dispatch",
     "skill_dir": "smart-model-dispatch"
+  },
+  {
+    "name": "stitch-design-export",
+    "description": "OSForge enhancement layer sobre stitch-design-taste. Gera DESIGN.md para Google Stitch com tokens de osforge.config.json + Impeccable. ACIONE com stitch-design-taste quando:",
+    "category": "📱 Mobile",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/stitch-design-export",
+    "skill_dir": "stitch-design-export"
+  },
+  {
+    "name": "stitch-design-taste",
+    "description": "Gera arquivos DESIGN.md semânticos para o Google Stitch, codificando atmosfera, paleta calibrada, tipografia, componentes e anti-padrões em linguagem natural que o agente do Stitch interpreta para gerar telas premium. ACIONE quando:",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/stitch-design-taste",
+    "skill_dir": "stitch-design-taste"
   },
   {
     "name": "stripe-integration",
@@ -8218,6 +9538,46 @@
     "source_url": "",
     "local_path": "skills/stripe-integration",
     "skill_dir": "stripe-integration"
+  },
+  {
+    "name": "stuck-recovery",
+    "description": "Detecta agent stuck patterns (loops, repetições, drift do escopo, ferramenta falhando 3x+) e executa recovery cirúrgico: salva estado em osforge-db, identifica causa raiz, propõe reset com contexto mínimo preservado. ACIONE quando: usuário diz \"stuck\", \"travado\", \"loop\", \"não está funcionando\", \"ten",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/stuck-recovery",
+    "skill_dir": "stuck-recovery"
+  },
+  {
+    "name": "systematic-debugging",
+    "description": "Debugging sistemático em 4 fases com análise de causa raiz. ACIONE quando: bug difícil de reproduzir, crash sem stacktrace claro, comportamento intermitente, regressão sem causa óbvia, investigação profunda de root cause. Keywords: debug, bug, error, crash, fix, issue, not working, broken, regressio",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/systematic-debugging",
+    "skill_dir": "systematic-debugging"
+  },
+  {
+    "name": "tailwind-patterns",
+    "description": "Padrões técnicos de Tailwind CSS v4: configuração CSS-first com @theme, engine Oxide, container queries nativas, design tokens como CSS variables e migração de v3 para v4. ACIONE quando:",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/tailwind-patterns",
+    "skill_dir": "tailwind-patterns"
+  },
+  {
+    "name": "taste-design-dials",
+    "description": "Camada de enhancement OSForge sobre a taste-skill com 3 dials ajustáveis (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY) mais regras Next.js App Router e constraints estruturais OSForge. ACIONE quando:",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/taste-design-dials",
+    "skill_dir": "taste-design-dials"
   },
   {
     "name": "tdd-workflow",
@@ -8240,6 +9600,16 @@
     "skill_dir": "technical-design-doc-creator"
   },
   {
+    "name": "testing-patterns",
+    "description": "Padrões e princípios de testes unitários e de integração: pirâmide de testes, padrão AAA, estratégias de mocking, organização e dados de teste. ACIONE quando: escrever testes unitários ou de integração, configurar mocks/stubs/spies/fakes, corrigir teste flaky, decidir o que testar vs o que mockar, o",
+    "category": "🧪 Testing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/testing-patterns",
+    "skill_dir": "testing-patterns"
+  },
+  {
     "name": "tlc-spec-driven",
     "description": "Product-driven planning with 5 phases - Discover, Specify, Design, Tasks, Implement+Validate+Measure. Creates atomic tasks with verification criteria and maintains persistent memory across sessions. Stack-agnostic. Use when starting projects, planning features, implementing with verification, tracki",
     "category": "🤖 AI / ML / Agents",
@@ -8250,9 +9620,39 @@
     "skill_dir": "tlc-spec-driven"
   },
   {
+    "name": "tool-safety-classifier",
+    "description": "Classifier LLM-powered de segurança pra auto-aprovação de tool calls em modos autônomos (CI, headless, agent-of-agents). ACIONE quando: usuário roda em \"modo automático\", \"yolo mode\", \"headless\", \"CI mode\", \"auto-approve\", \"sem confirmação\". Avalia toda tool call em 3 categorias (allow / soft_deny /",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/tool-safety-classifier",
+    "skill_dir": "tool-safety-classifier"
+  },
+  {
+    "name": "ui-design-intelligence",
+    "description": "Spec de design system adaptado ao produto e indústria. ACIONE quando: usuário menciona estilo visual, identidade, paleta, tipografia, tom visual, tipo de produto ou indústria (fintech, healthcare, saas, e-commerce, etc). Produz design system spec completo. Keywords: estilo visual, identidade visual,",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/ui-design-intelligence",
+    "skill_dir": "ui-design-intelligence"
+  },
+  {
+    "name": "using-git-worktrees",
+    "description": "Setup e uso de git worktrees para desenvolvimento paralelo. ACIONE quando: trabalhar em múltiplas features simultaneamente, precisar de branches isoladas para cada agente paralelo, testar hotfix sem interromper desenvolvimento de feature. Keywords: git worktree, worktrees, parallel development, mult",
+    "category": "🧪 Testing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/using-git-worktrees",
+    "skill_dir": "using-git-worktrees"
+  },
+  {
     "name": "vercel-deploy",
-    "description": "Deploy applications and websites to Vercel. Use when the user requests deployment actions like \"deploy my app\", \"deploy and give me the link\", \"push this live\", or \"create a preview deployment\".",
-    "category": "☁️ Infrastructure / DevOps",
+    "description": "Deploy applications and websites to Vercel. Use when the user requests deployment actions like \"deploy my app\", \"deploy and give me the link\", \"push this live\", \"create a preview deployment\", \"deploy to preview\", \"deploy to staging\", \"test this before production\", \"ship to prod\", or \"deploy this to ",
+    "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -8270,493 +9670,43 @@
     "skill_dir": "verification-before-completion"
   },
   {
-    "name": "spec-builder",
-    "description": "Collaborative technical specification facilitation. Produces tech-spec with testable ACs, ordered tasks, and risks. Stack-aware.",
-    "category": "🔄 Workflow / Process",
-    "local_path": "skills/planning/spec-builder",
-    "skill_dir": "spec-builder",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "prd-builder",
-    "description": "Collaborative Product Requirements Document facilitation. Guides problem definition, users, requirements, metrics, and MVP scope.",
-    "category": "🔄 Workflow / Process",
-    "local_path": "skills/planning/prd-builder",
-    "skill_dir": "prd-builder",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "arch-builder",
-    "description": "Architectural decision facilitation with ADRs. Stack-aware for Next.js/Prisma/Supabase. Evaluates options with explicit trade-offs.",
-    "category": "🏗️ Architecture",
-    "local_path": "skills/planning/arch-builder",
-    "skill_dir": "arch-builder",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "epic-decomposer",
-    "description": "Decomposes specs, PRDs or requirements into implementable epics and stories with testable ACs, file paths, and dependency mapping.",
-    "category": "🔄 Workflow / Process",
-    "local_path": "skills/planning/epic-decomposer",
-    "skill_dir": "epic-decomposer",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "story-executor",
-    "description": "Executes story implementation following tasks and ACs. Coordinates invocation of correct OSForge execution skills in order.",
-    "category": "🔄 Workflow / Process",
-    "local_path": "skills/planning/story-executor",
-    "skill_dir": "story-executor",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "adversarial-review",
-    "description": "Cynical adversarial review of any artifact: code, specs, PRDs, schemas, configs. Finds what is wrong AND what is missing.",
-    "category": "🧪 Testing",
-    "local_path": "skills/quality/adversarial-review",
-    "skill_dir": "adversarial-review",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "osforge-code-review",
-    "description": "Structured code review with checklist adapted to OSForge stack. Integrates adversarial-review and edge-case-hunter automatically.",
-    "category": "🧪 Testing",
-    "local_path": "skills/quality/code-review",
-    "skill_dir": "code-review",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "edge-case-hunter",
-    "description": "Exhaustive edge case hunting through systematic path enumeration: null, empty, boundary, concurrent, timing, encoding, overflow, auth bypass.",
-    "category": "🧪 Testing",
-    "local_path": "skills/quality/edge-case-hunter",
-    "skill_dir": "edge-case-hunter",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "elicitation-engine",
-    "description": "Iterative output refinement using structured elicitation techniques: 5 Whys, Assumption Surfacing, Scenario Planning, Pre-Mortem, Socratic Questioning.",
-    "category": "🔄 Workflow / Process",
-    "local_path": "skills/quality/elicitation-engine",
-    "skill_dir": "elicitation-engine",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "readiness-gate",
-    "description": "Pre-implementation quality gate. Validates PRD, Architecture and Epics alignment and completeness before sprint loop. GO/NO-GO.",
-    "category": "🧪 Testing",
-    "local_path": "skills/quality/readiness-gate",
-    "skill_dir": "readiness-gate",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "context-distillator",
-    "description": "Lossless document compression for LLM-optimized consumption. Preserves 100% factual information eliminating textual overhead. Target: 40-60%.",
-    "category": "📝 Documentation / Writing",
-    "local_path": "skills/context/context-distillator",
-    "skill_dir": "context-distillator",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "project-context-generator",
-    "description": "Analyzes existing codebase and generates project-context.md — the project constitution that feeds all other skills and agents.",
-    "category": "🔄 Workflow / Process",
-    "local_path": "skills/context/project-context-generator",
-    "skill_dir": "project-context-generator",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "doc-shard",
-    "description": "Splits large markdown documents into smaller organized files with index. Preserves cross-references and generates table of contents.",
-    "category": "📝 Documentation / Writing",
-    "local_path": "skills/context/doc-shard",
-    "skill_dir": "doc-shard",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "editorial-review",
-    "description": "Editorial review of technical documents in 2 modes: prose (clinical copy-editing) and structure (reorganization and simplification).",
-    "category": "📝 Documentation / Writing",
-    "local_path": "skills/context/editorial-review",
-    "skill_dir": "editorial-review",
-    "source": "OSForge (Orchestrator)",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge"
-  },
-  {
-    "name": "workflow-page-cro",
-    "description": "Otimizar conversões em qualquer página de marketing — homepage, landing pages, pricing, features. Análise de value proposition, headlines, CTAs, prova social e layout.",
-    "category": "📢 Marketing / CRO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/page-cro.md",
-    "skill_dir": "marketing-workflows/page-cro"
-  },
-  {
-    "name": "workflow-signup-flow-cro",
-    "description": "Otimizar fluxo de cadastro, registro e ativação de trial. Reduzir fricção no signup.",
-    "category": "📢 Marketing / CRO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/signup-flow-cro.md",
-    "skill_dir": "marketing-workflows/signup-flow-cro"
-  },
-  {
-    "name": "workflow-onboarding-cro",
-    "description": "Otimizar ativação pós-cadastro, first-run experience e time-to-value.",
-    "category": "📢 Marketing / CRO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/onboarding-cro.md",
-    "skill_dir": "marketing-workflows/onboarding-cro"
-  },
-  {
-    "name": "workflow-form-cro",
-    "description": "Otimizar formulários de captura de leads e contato (exceto signup).",
-    "category": "📢 Marketing / CRO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/form-cro.md",
-    "skill_dir": "marketing-workflows/form-cro"
-  },
-  {
-    "name": "workflow-popup-cro",
-    "description": "Criar e otimizar popups, modais, overlays e slide-ins para conversão.",
-    "category": "📢 Marketing / CRO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/popup-cro.md",
-    "skill_dir": "marketing-workflows/popup-cro"
-  },
-  {
-    "name": "workflow-paywall-upgrade-cro",
-    "description": "Criar e otimizar paywalls, telas de upgrade e feature gates in-app.",
-    "category": "📢 Marketing / CRO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/paywall-upgrade-cro.md",
-    "skill_dir": "marketing-workflows/paywall-upgrade-cro"
-  },
-  {
-    "name": "workflow-copywriting",
-    "description": "Escrever copy de marketing para páginas — headlines, CTAs, value propositions, hero sections.",
-    "category": "📢 Marketing / Conteúdo",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/copywriting.md",
-    "skill_dir": "marketing-workflows/copywriting"
-  },
-  {
-    "name": "workflow-copy-editing",
-    "description": "Revisar e melhorar copy de marketing existente. Edição linha por linha.",
-    "category": "📢 Marketing / Conteúdo",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/copy-editing.md",
-    "skill_dir": "marketing-workflows/copy-editing"
-  },
-  {
-    "name": "workflow-content-strategy",
-    "description": "Planejar estratégia de conteúdo, tópicos e calendário editorial.",
-    "category": "📢 Marketing / Conteúdo",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/content-strategy.md",
-    "skill_dir": "marketing-workflows/content-strategy"
-  },
-  {
-    "name": "workflow-email-sequence",
-    "description": "Criar sequências de email automatizadas — welcome, onboarding, nurture, re-engagement.",
-    "category": "📢 Marketing / Conteúdo",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/email-sequence.md",
-    "skill_dir": "marketing-workflows/email-sequence"
-  },
-  {
-    "name": "workflow-lead-magnets",
-    "description": "Criar lead magnets para captura de email e geração de leads.",
-    "category": "📢 Marketing / Conteúdo",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/lead-magnets.md",
-    "skill_dir": "marketing-workflows/lead-magnets"
-  },
-  {
-    "name": "workflow-social-content",
-    "description": "Conteúdo para redes sociais — LinkedIn, Twitter/X, Instagram, TikTok, Reddit.",
-    "category": "📢 Marketing / Conteúdo",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/social-content.md",
-    "skill_dir": "marketing-workflows/social-content"
-  },
-  {
-    "name": "workflow-seo-audit",
-    "description": "Auditoria completa de SEO técnico e on-page. Crawlability, indexação, Core Web Vitals.",
-    "category": "📢 Marketing / SEO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/seo-audit.md",
-    "skill_dir": "marketing-workflows/seo-audit"
-  },
-  {
-    "name": "workflow-ai-seo",
-    "description": "Otimizar conteúdo para buscas via IA — AEO, GEO, LLMO. Aparecer em respostas do ChatGPT/Perplexity.",
-    "category": "📢 Marketing / SEO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/ai-seo.md",
-    "skill_dir": "marketing-workflows/ai-seo"
-  },
-  {
-    "name": "workflow-programmatic-seo",
-    "description": "Criar páginas SEO em escala usando templates e dados. pSEO.",
-    "category": "📢 Marketing / SEO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/programmatic-seo.md",
-    "skill_dir": "marketing-workflows/programmatic-seo"
-  },
-  {
-    "name": "workflow-site-architecture",
-    "description": "Planejar hierarquia de páginas, navegação, URLs e internal linking.",
-    "category": "📢 Marketing / SEO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/site-architecture.md",
-    "skill_dir": "marketing-workflows/site-architecture"
-  },
-  {
-    "name": "workflow-schema-markup",
-    "description": "Adicionar e otimizar dados estruturados (schema.org) para rich results.",
-    "category": "📢 Marketing / SEO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/schema-markup.md",
-    "skill_dir": "marketing-workflows/schema-markup"
-  },
-  {
-    "name": "workflow-competitor-alternatives",
-    "description": "Criar páginas de comparação com concorrentes e alternativas para SEO e vendas.",
-    "category": "📢 Marketing / SEO",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/competitor-alternatives.md",
-    "skill_dir": "marketing-workflows/competitor-alternatives"
-  },
-  {
-    "name": "workflow-churn-prevention",
-    "description": "Reduzir churn com cancel flows, save offers, dunning e recuperação de pagamento.",
-    "category": "📢 Marketing / Retenção",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/churn-prevention.md",
-    "skill_dir": "marketing-workflows/churn-prevention"
-  },
-  {
-    "name": "workflow-free-tool-strategy",
-    "description": "Planejar ferramentas gratuitas de marketing para lead gen e SEO.",
-    "category": "📢 Marketing / Growth",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/free-tool-strategy.md",
-    "skill_dir": "marketing-workflows/free-tool-strategy"
-  },
-  {
-    "name": "workflow-referral-program",
-    "description": "Criar e otimizar programas de indicação e afiliados.",
-    "category": "📢 Marketing / Growth",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/referral-program.md",
-    "skill_dir": "marketing-workflows/referral-program"
-  },
-  {
-    "name": "workflow-marketing-ideas",
-    "description": "140+ ideias de marketing para SaaS e software. Brainstorm estruturado.",
-    "category": "📢 Marketing / Estratégia",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/marketing-ideas.md",
-    "skill_dir": "marketing-workflows/marketing-ideas"
-  },
-  {
-    "name": "workflow-marketing-psychology",
-    "description": "Aplicar psicologia e modelos mentais ao marketing. Ciência comportamental.",
-    "category": "📢 Marketing / Estratégia",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/marketing-psychology.md",
-    "skill_dir": "marketing-workflows/marketing-psychology"
-  },
-  {
-    "name": "workflow-launch-strategy",
-    "description": "Planejar lançamento de produto, feature ou release. Playbook completo.",
-    "category": "📢 Marketing / Estratégia",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/launch-strategy.md",
-    "skill_dir": "marketing-workflows/launch-strategy"
-  },
-  {
-    "name": "workflow-pricing-strategy",
-    "description": "Definir precificação, empacotamento e monetização.",
-    "category": "📢 Marketing / Estratégia",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/pricing-strategy.md",
-    "skill_dir": "marketing-workflows/pricing-strategy"
-  },
-  {
-    "name": "workflow-product-marketing-context",
-    "description": "Criar contexto de marketing do projeto. Fonte de verdade para todos os workflows.",
-    "category": "📢 Marketing / Contexto",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "📢",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/marketing/workflows/product-marketing-context.md",
-    "skill_dir": "marketing-workflows/product-marketing-context"
-  },
-  {
-    "name": "workflow-paid-ads",
-    "description": "Campanhas Google Ads, Meta Ads, LinkedIn Ads. Estratégia, setup e otimização.",
-    "category": "💰 Mídia Paga",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "💰",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/paid-media/workflows/paid-ads.md",
-    "skill_dir": "paid-media-workflows/paid-ads"
-  },
-  {
-    "name": "workflow-ad-creative",
-    "description": "Gerar e iterar criativos de anúncios em escala — headlines, descrições, textos.",
-    "category": "💰 Mídia Paga",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "💰",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/paid-media/workflows/ad-creative.md",
-    "skill_dir": "paid-media-workflows/ad-creative"
-  },
-  {
-    "name": "workflow-analytics-tracking",
-    "description": "Configurar GA4, GTM, eventos, UTMs, tracking de conversão e atribuição.",
-    "category": "💰 Mídia Paga",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "💰",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/paid-media/workflows/analytics-tracking.md",
-    "skill_dir": "paid-media-workflows/analytics-tracking"
-  },
-  {
-    "name": "workflow-ab-test-setup",
-    "description": "Planejar e implementar testes A/B e experimentos. Hipóteses, sample size, duração.",
-    "category": "💰 Mídia Paga",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "💰",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/paid-media/workflows/ab-test-setup.md",
-    "skill_dir": "paid-media-workflows/ab-test-setup"
-  },
-  {
-    "name": "workflow-cold-email",
-    "description": "Emails frios B2B e sequências de follow-up que geram respostas.",
-    "category": "💼 Vendas",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "💼",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/sales/workflows/cold-email.md",
-    "skill_dir": "sales-workflows/cold-email"
-  },
-  {
-    "name": "workflow-sales-enablement",
-    "description": "Decks de vendas, one-pagers, docs de objeções, scripts de demo.",
-    "category": "💼 Vendas",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "💼",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/sales/workflows/sales-enablement.md",
-    "skill_dir": "sales-workflows/sales-enablement"
-  },
-  {
-    "name": "workflow-revops",
-    "description": "Revenue operations — lead lifecycle, scoring, routing, handoff MQL→SQL.",
-    "category": "💼 Vendas",
-    "source": "Corey Haines (marketingskills)",
-    "source_emoji": "💼",
-    "source_url": "https://github.com/coreyhaines31/marketingskills",
-    "local_path": "skills/agency/sales/workflows/revops.md",
-    "skill_dir": "sales-workflows/revops"
-  },
-  {
     "name": "visual-planner",
-    "description": "Transforma documentos de planejamento (PRD, spec, épico, ADR) em breakdowns HTML single-page interativos com flow diagrams, expandable cards, stat badges, e review system embutido. Camada de apresentação do pipeline de planejamento.",
-    "category": "📋 Planejamento",
-    "source": "ethanplusai/visualplanner (adapted)",
-    "source_emoji": "📋",
-    "source_url": "https://github.com/ethanplusai/visualplanner",
-    "local_path": "skills/visual-planner/SKILL.md",
+    "description": "Transforma documentos de planejamento em breakdowns HTML visuais e interativos. ACIONE quando: visualizar um plano, transformar spec em HTML, criar breakdown visual, apresentar PRD visualmente, gerar HTML interativo de arquitetura, tornar spec mais fácil de seguir. Keywords: visualizar plano, breakd",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/visual-planner",
     "skill_dir": "visual-planner"
   },
   {
-    "name": "autorefine-skill",
-    "description": "Loop autônomo de refinamento iterativo v3 com meta-otimização e transferência cross-domínio. Inspirado no Karpathy autoresearch e HyperAgents (Meta). Verify+guard, osforge-db memory, domain generalization, meta self-improvement, cross-project knowledge propagation.",
-    "category": "🔄 Workflow / Process",
-    "source": "OSForge (Orchestrator) + karpathy/autoresearch + facebookresearch/HyperAgents",
-    "source_emoji": "🔵",
-    "source_url": "https://github.com/plocemourasouza/osforge",
-    "local_path": "skills/autorefine-skill/SKILL.md",
-    "skill_dir": "autorefine-skill"
+    "name": "vulnerability-scanner",
+    "description": "Análise avançada de vulnerabilidades com OWASP Top 10:2025, supply chain security e priorização de risco. ACIONE quando: mapear superfície de ataque de um projeto, auditar dependências e supply chain (lockfiles, CI/CD), revisar código em busca de vulnerabilidades OWASP (IDOR, SSRF, injection), prior",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/vulnerability-scanner",
+    "skill_dir": "vulnerability-scanner"
+  },
+  {
+    "name": "web-design-guidelines",
+    "description": "Review UI code for Web Interface Guidelines compliance. Use when asked to \"review my UI\", \"check accessibility\", \"audit design\", \"review UX\", or \"check my site against best practices\".",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/web-design-guidelines",
+    "skill_dir": "web-design-guidelines"
+  },
+  {
+    "name": "webapp-testing",
+    "description": "Testes E2E de aplicações web com Playwright, auditoria profunda de rotas/endpoints e testes visuais, com script runner de browser incluso. ACIONE quando: testar fluxo com Playwright, escrever E2E de login/checkout/fluxo crítico, auditar todas as rotas e APIs de um webapp, configurar Playwright no CI",
+    "category": "🔒 Security",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/webapp-testing",
+    "skill_dir": "webapp-testing"
   }
 ]

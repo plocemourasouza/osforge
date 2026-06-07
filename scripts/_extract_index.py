@@ -22,6 +22,7 @@ SOURCE_LABELS = {
     "10-cloudflare": {"label": "Cloudflare", "emoji": "☁️", "url": "https://github.com/cloudflare/skills"},
     "11-sentry": {"label": "Sentry", "emoji": "🔴", "url": "https://github.com/getsentry/skills"},
     "12-curadoria": {"label": "Curadoria", "emoji": "📋", "url": ""},
+    "13-claude-red": {"label": "Claude-Red (Offensive Security)", "emoji": "🛡️", "url": "https://github.com/SnailSploit/Claude-Red"},
 }
 
 def extract_frontmatter(content):

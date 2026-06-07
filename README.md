@@ -14,7 +14,7 @@ OSForge is a production-grade AI development framework with **126 on-demand skil
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 126 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 153 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Core skills tailored for Next.js App Router + Prisma + Supabase + shadcn/ui, with expanded coverage for mobile, game dev, Rust, Python, and cross-platform.
 3. **Quality gates built-in** — TDD enforcement, security auditing, red team tactics, insecure defaults detection, Reality Check + Quality Control Loop in every agent, and Python hooks at zero token cost.
 4. **Local SQLite state** — `osforge-db` CLI persists project state, architectural decisions, and blockers locally. Session resumption in ~50 tokens via `osforge-db resume`. FTS5 full-text search across all decisions cross-project.
@@ -35,7 +35,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 
 ## What's Inside
 
-### 126 Skills (on-demand)
+### 153 Skills (on-demand)
 
 #### Core & Workflow
 | # | Skill | Category |
@@ -99,6 +99,18 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 | 36 | Insecure Defaults Detection | Security |
 | 37 | Security Threat Model | Security |
 | 38 | GDPR / LGPD Data Handling | Compliance |
+
+#### Offensive Security — claude-red (27, on-demand)
+> Curated/converted subset of [SnailSploit/Claude-Red](https://github.com/SnailSploit/Claude-Red) for our web/mobile/cloud AppSec. All passed the skill-metrics audit (median 11.96/12). Authorized testing only.
+
+| Area | Skills |
+|---|---|
+| Web (16) | offensive-sqli, offensive-xss, offensive-ssrf, offensive-idor, offensive-file-upload, offensive-rce, offensive-race-condition, offensive-business-logic, offensive-graphql, offensive-ssti, offensive-xxe, offensive-deserialization, offensive-request-smuggling, offensive-open-redirect, offensive-parameter-pollution, offensive-waf-bypass |
+| Auth (2) | offensive-jwt, offensive-oauth |
+| Cloud / AI (2) | offensive-cloud, offensive-ai-security |
+| Mobile / Recon (2) | offensive-mobile, offensive-osint |
+| Code review / Fuzzing (2) | offensive-bug-identification, offensive-fuzzing |
+| Exploit-dev / Utility (3) | offensive-toctou, offensive-reporting, offensive-fast-checking |
 
 #### Testing & Quality
 | # | Skill | Category |
