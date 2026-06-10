@@ -174,6 +174,15 @@ deploy_claude() {
   copy_dir "$REPO/commands" "$CLAUDE/commands"
 
   echo ""
+  log "OSForge Canvas (server + viewer):"
+  if $DRY_RUN; then skip "cp scripts/canvas/{server.ts,viewer.html} → ~/.claude/canvas/"
+  else
+    mkdir -p "$CLAUDE/canvas"
+    cp "$REPO/scripts/canvas/server.ts" "$REPO/scripts/canvas/viewer.html" "$CLAUDE/canvas/"
+    ok "canvas deployado em $CLAUDE/canvas/ (autostart via SessionStart hook)"
+  fi
+
+  echo ""
   log "Hook scripts e Python hooks:"
   mkdir -p "$CLAUDE/hooks"
   for f in "$REPO/hooks/"*.sh "$REPO/hooks/"*.py; do

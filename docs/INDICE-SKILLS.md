@@ -564,7 +564,7 @@
 | **high-end-visual-design** | 📦 skills | Faz o site parecer caro nível agência: fontes premium, cards double-bezel, sombras ultra-difusas, nav em pílula de vidro flutuante e coreografia de mo… | `skills/high-end-visual-design/` |
 | **image-to-code** | 📦 skills | Elite website image-to-code skill for Codex. Trigger on requests like "design a stunning hero section", "build a premium landing page", or "redesign t… | `skills/image-to-code/` |
 | **industrial-brutalist-ui** | 📦 skills | Gera interfaces brutalistas industriais que fundem print tipográfico suíço com terminais militares/CRT: grids rígidos, monospace, tipografia gigante, … | `skills/industrial-brutalist-ui/` |
-| **osforge-canvas** | 📦 skills | UI generativa local para revisão interativa de planos, specs e breakdowns no browser, com feedback estruturado nativo. ACIONE quando: usuário pede "ab… | `skills/osforge-canvas/` |
+| **osforge-canvas** | 📦 skills | UI generativa local para revisão interativa de planos, specs e breakdowns no browser, com feedback estruturado nativo. CANAL DEFAULT para apresentação… | `skills/osforge-canvas/` |
 | **receiving-code-review** | 📦 skills | Como responder ao feedback de um code review. ACIONE quando: recebeu feedback de review, PR tem comments, revisor pediu mudanças, CHANGES_REQUESTED. K… | `skills/receiving-code-review/` |
 | **requirements-clarify** | 📦 skills | Clarificação estruturada de requisitos ANTES do plano técnico. ACIONE quando: spec tem áreas vagas ou underspecificadas, usuário disse | `skills/planning/requirements-clarify/` |
 | **rust-pro** | 📦 skills | Especialista em Rust 1.75+ para sistemas de alta performance: async com Tokio, ownership, lifetimes, traits avançados, unsafe/FFI e web services com a… | `skills/rust-pro/` |

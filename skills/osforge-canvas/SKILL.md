@@ -2,16 +2,18 @@
 name: osforge-canvas
 description: >
   UI generativa local para revisão interativa de planos, specs e breakdowns no
-  browser, com feedback estruturado nativo. ACIONE quando: usuário pede "abre no
-  canvas", "mostra no browser", "quero revisar interativamente", "preciso aprovar
-  antes de implementar", "canvas", ou ao atingir checkpoints de aprovação em
-  triage STANDARD/COMPLEX (planos, specs, breakdowns que precisam de aprovação
-  por seção, edição iterativa, input de formulário, ou revisão item a item).
-  Keywords: canvas, revisão interativa, aprovar plano, feedback estruturado,
+  browser, com feedback estruturado nativo. CANAL DEFAULT para apresentação de
+  qualquer spec ou plano: o servidor é iniciado automaticamente por SessionStart
+  hook — não espere o usuário pedir. ACIONE quando: for apresentar um plano, spec
+  ou breakdown (default), checkpoints de aprovação em triage STANDARD/COMPLEX,
+  ou usuário pede "abre no canvas", "mostra no browser", "quero revisar
+  interativamente", "preciso aprovar antes de implementar", "canvas".
+  Keywords: canvas, revisão interativa, aprovar plano, spec, feedback estruturado,
   checkpoint, approve, review interativo, open canvas. Não acione para: respostas
   rápidas em texto que não requerem round-trip; documento apresentável one-shot
-  sem coleta de feedback → usar visual-planner.
-version: 1.0.0
+  sem coleta de feedback → usar visual-planner; usuário pediu explicitamente
+  "só texto" / "no terminal".
+version: 1.1.0
 metadata:
   category: "planning"
   position: "interactive-review-layer"
@@ -29,23 +31,31 @@ para o próximo turno do Claude.
 | Situação | Ferramenta |
 |---|---|
 | Resposta rápida / status / pergunta | texto no terminal |
-| Plano / spec que precisa aprovação, edição por seção, formulário ou revisão item a item | **CANVAS** |
-| Documento apresentável standalone sem round-trip de feedback | `visual-planner` HTML |
+| **Qualquer apresentação de plano, spec ou breakdown** (default — não precisa de pedido) | **CANVAS** |
+| Documento apresentável standalone sem round-trip de feedback (pedido explícito) | `visual-planner` HTML |
+| Usuário pediu "só texto" / "no terminal" | texto no terminal |
+
+Ao emitir no canvas, incluir também um resumo curto (5-10 linhas) no terminal —
+o canvas é o documento completo, o terminal é o TL;DR.
 
 ## Workflow operacional
 
-### 1. Health-check do servidor
+### 1. Health-check do servidor (normalmente já está rodando)
+
+O servidor é iniciado automaticamente pelo SessionStart hook
+(`hooks/canvas-autostart.sh`) com data dir **global** `~/.osforge/canvas/`.
+Confirme e capture o data dir real:
 
 ```bash
 curl -sf http://localhost:4242/api/health
+# → {"ok":true,...,"dir":"<DATA_DIR>"}  ← use SEMPRE este dir para artifacts/feedback
 ```
 
-Se retornar erro (conexão recusada ou status não-2xx): iniciar o servidor em background
-**a partir do diretório do projeto atual** — o `DATA_DIR` padrão é `<cwd>/outputs/canvas/`.
+Se retornar erro (hook não rodou / bun ausente): iniciar manualmente em background:
 
 ```bash
-# Substitua <osforge-repo> pelo caminho absoluto do repositório OSForge
-bun <osforge-repo>/scripts/canvas/server.ts &
+bun ~/.claude/canvas/server.ts --dir="$HOME/.osforge/canvas" &
+# fallback se não deployado: bun <osforge-repo>/scripts/canvas/server.ts --dir="$HOME/.osforge/canvas" &
 ```
 
 Porta padrão: `4242`. Override via `CANVAS_PORT=<porta>` antes do comando.
@@ -53,12 +63,14 @@ Re-checar health após iniciar.
 
 ### 2. Escrever o artefato
 
-Gravar `outputs/canvas/artifacts/<slug>.json` seguindo o schema em
-`skills/osforge-canvas/references/schema.md`.
+Gravar `<DATA_DIR>/artifacts/<slug>.json` (DATA_DIR vem do health — global por
+default) seguindo o schema em `skills/osforge-canvas/references/schema.md`.
 
 Regras rápidas:
 - `$schema`: `"osforge-canvas/v1"` (literal)
-- `id`: kebab-case único — mesmo valor que o nome do arquivo sem `.json`
+- `id`: kebab-case único — mesmo valor que o nome do arquivo sem `.json`.
+  **Prefixar com o slug do projeto** (ex.: `meuapp-auth-refactor-plan`) — o
+  data dir é compartilhado entre todos os projetos da máquina
 - `revision`: começa em `1`, incrementa a cada sobrescrita
 - `createdAt`: ISO 8601, não alterar em revisões
 - `blocks`: array de até 8 tipos (`heading`, `markdown`, `cards`, `table`,
@@ -83,7 +95,7 @@ Quando terminar, submeta o feedback no browser — lerei na sequência.
 ### 4. Próximo turno — ler feedback antes de continuar
 
 **Toda vez que o usuário enviar qualquer mensagem após um artefato ativo**, ler
-`outputs/canvas/feedback/<slug>.json` antes de qualquer outra ação.
+`<DATA_DIR>/feedback/<slug>.json` antes de qualquer outra ação.
 
 Verificações obrigatórias:
 - Arquivo existe? Se não: feedback ainda não submetido — avisar o usuário.

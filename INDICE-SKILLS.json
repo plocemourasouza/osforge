@@ -9161,7 +9161,7 @@
   },
   {
     "name": "osforge-canvas",
-    "description": "UI generativa local para revisão interativa de planos, specs e breakdowns no browser, com feedback estruturado nativo. ACIONE quando: usuário pede \"abre no canvas\", \"mostra no browser\", \"quero revisar interativamente\", \"preciso aprovar antes de implementar\", \"canvas\", ou ao atingir checkpoints de ap",
+    "description": "UI generativa local para revisão interativa de planos, specs e breakdowns no browser, com feedback estruturado nativo. CANAL DEFAULT para apresentação de qualquer spec ou plano: o servidor é iniciado automaticamente por SessionStart hook — não espere o usuário pedir. ACIONE quando: for apresentar um",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",

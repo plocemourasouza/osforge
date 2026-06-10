@@ -138,12 +138,17 @@ Prefere prosseguir direto ou estruturar o plano?
 
 ## 5. Post-Planning Visual Pipeline (Agency-Style Delivery)
 
-Após qualquer skill de planejamento gerar artefato, encadear apresentação visual:
+Após qualquer skill de planejamento gerar artefato, encadear apresentação visual.
+**Default: toda apresentação de spec ou plano vai para o OSForge Canvas** (servidor
+auto-iniciado por SessionStart hook; skill `skills/osforge-canvas`). Terminal recebe
+só um resumo curto com a URL. Exceções: usuário pediu "só texto"/"no terminal", ou
+pediu explicitamente documento standalone (→ `visual-planner`).
 
 | Gatilho | Ação automática |
 |---------|-----------------|
-| Output de `spec-builder`, `prd-builder`, `arch-builder`, `epic-decomposer` em triage STANDARD/COMPLEX | Executar `skills/visual-planner` automaticamente; se o plano/spec requer aprovação por seção ou edição iterativa, oferecer também `skills/osforge-canvas` como checkpoint de aprovação |
-| Output de planning skill em triage QUICK | Oferecer: "Quer visualizar como HTML interativo?" |
+| Apresentação de qualquer plano, spec ou breakdown (qualquer triage) | **Emitir artefato `skills/osforge-canvas` por default** + resumo curto no terminal com a URL |
+| Output de `spec-builder`, `prd-builder`, `arch-builder`, `epic-decomposer` em triage STANDARD/COMPLEX | Canvas (default acima); `skills/visual-planner` adicionalmente apenas se o usuário pedir documento standalone |
+| Usuário pede "só texto", "no terminal", "sem canvas" | Texto no terminal, sem canvas |
 | Usuário diz "visualizar", "breakdown visual", "apresentar", "tornar visual" | Executar `skills/visual-planner` + `skills/aesthetic-boost` |
 | Usuário diz "entrega de agência", "agency delivery", "apresentação profissional" | Pipeline completo: `visual-planner` → `aesthetic-boost` → `ui-design-intelligence` → `web-design-guidelines` |
 

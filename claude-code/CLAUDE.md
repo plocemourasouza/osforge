@@ -184,6 +184,9 @@ Categorias para lessons.md:
 - 🧠 **Context:** algo específico deste projeto que afeta futuras decisões
 
 ## Core Rules
+- Specs e planos: apresentar via **OSForge Canvas** por default (servidor auto-iniciado
+  por SessionStart hook em `localhost:4242`; skill `osforge-canvas`) — terminal recebe
+  só resumo curto + URL. Exceção: usuário pedir "só texto".
 - Read before Write/Edit — always confirm current state first
 - Absolute paths only — never relative paths in scripts or automations
 - Never auto-commit — always wait for explicit approval
