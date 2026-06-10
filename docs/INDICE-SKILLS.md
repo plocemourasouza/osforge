@@ -1,11 +1,10 @@
 # 📚 Índice Completo de Agent Skills
 
 > **Total:** 964 skills indexadas de 12 repositórios
-> **Pasta local:** `~/Development/agent-skills-consolidado/`
-> **Atualizado em:** 05/02/2026
+> **Pasta local:** `~/Development/osforge/sources/` (fontes) e `~/Development/osforge/skills/` (curadas)
 >
 > 💡 **Dica de busca:** Use `Ctrl+F` / `Cmd+F` para pesquisar por palavra-chave.
-> Para instalar uma skill: `cp -R ~/Development/agent-skills-consolidado/<path_local> .claude/skills/`
+> Para instalar uma skill: `cp -R ~/Development/osforge/<path_local> .claude/skills/`
 
 ---
 
@@ -214,7 +213,7 @@
 | **agency-paid-media** | 📦 skills | Índice dos 7 agentes e 4 workflows de Mídia Paga da Agency (PPC Strategist, Paid Social Strategist, Creative Strategist, Tracking Specialist, Programm… | `skills/agency/paid-media/` |
 | **agency-specialized** | 📦 skills | Índice dos 24 agentes Especialistas da Agency (Agents Orchestrator, Compliance Auditor, Blockchain Security Auditor, MCP Builder, Document Generator, … | `skills/agency/specialized/` |
 | **agency-testing** | 📦 skills | Índice dos 8 agentes de Qualidade e Testes da Agency (Accessibility Auditor, API Tester, Performance Benchmarker, Reality Checker, Evidence Collector,… | `skills/agency/testing/` |
-| **agent-skills-search** | 📦 skills | Search and install Agent Skills from the local consolidated repository at ~/Development/agent-skills-consolidado/. Use when looking for specialized sk… | `skills/agent-skills-search/` |
+| **agent-skills-search** | 📦 skills | Search and install Agent Skills from the local sources at ~/Development/osforge/sources/. Use when looking for specialized skills, best practices, or … | `skills/agent-skills-search/` |
 | **best-practices** | 📦 skills | Apply modern web development best practices for security, compatibility, and code quality. Use when asked to "apply best practices", "security audit",… | `skills/best-practices/` |
 | **code-review-checklist** | 📦 skills | Checklist de code review cobrindo correção, segurança, performance, qualidade, testes e padrões específicos de código gerado por IA. ACIONE quando: pe… | `skills/code-review-checklist/` |
 | **database-design** | 📦 skills | Princípios de design de banco de dados: escolha de banco e ORM, schema, índices, otimização e migrations. ACIONE quando: query lenta ou N+1 em produçã… | `skills/database-design/` |

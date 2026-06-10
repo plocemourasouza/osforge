@@ -27,11 +27,10 @@ source_priority = {
 L = []
 L.append("# 📚 Índice Completo de Agent Skills\n")
 L.append(f"> **Total:** {len(skills)} skills indexadas de {len(by_source)} repositórios")
-L.append("> **Pasta local:** `~/Development/agent-skills-consolidado/`")
-L.append("> **Atualizado em:** 05/02/2026")
+L.append("> **Pasta local:** `~/Development/osforge/sources/` (fontes) e `~/Development/osforge/skills/` (curadas)")
 L.append(">")
 L.append("> 💡 **Dica de busca:** Use `Ctrl+F` / `Cmd+F` para pesquisar por palavra-chave.")
-L.append("> Para instalar uma skill: `cp -R ~/Development/agent-skills-consolidado/<path_local> .claude/skills/`\n")
+L.append("> Para instalar uma skill: `cp -R ~/Development/osforge/<path_local> .claude/skills/`\n")
 L.append("---\n")
 
 # Stats

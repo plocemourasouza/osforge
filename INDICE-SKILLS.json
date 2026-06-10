@@ -141,7 +141,7 @@
   },
   {
     "name": "agent-skills-search",
-    "description": "Search and install Agent Skills from the local consolidated repository at ~/Development/agent-skills-consolidado/. Use when looking for specialized skills, best practices, or domain-specific patterns for security, React, PostgreSQL, testing, mobile, Cloudflare, or any technical domain. Triggers when",
+    "description": "Search and install Agent Skills from the local sources at ~/Development/osforge/sources/. Use when looking for specialized skills, best practices, or domain-specific patterns for security, React, PostgreSQL, testing, mobile, Cloudflare, or any technical domain. Triggers when the user asks about avai",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",

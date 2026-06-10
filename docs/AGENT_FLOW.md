@@ -27,18 +27,22 @@ Leitura rápida — sem precisar abrir o AGENT.md completo.
                                 ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │  1. INTAKE                                                      │
-│  ├─ Ler .osforge/status.yaml (work in progress?)               │
-│  ├─ Ler .osforge/STATE.md (decisões e blockers anteriores)     │
+│  ├─ osforge-db list-projects --status=active (work in progress?)│
+│  ├─ osforge-db resume <slug>  (fase atual + resume point)       │
+│  │   fallback: .osforge/status.yaml + STATE.md (markdown)       │
 │  ├─ Carregar project-context.md                                 │
-│  └─ Clarificar (máx 5 perguntas) → loop até clareza           │
+│  └─ Clarificar (máx 5 perguntas) → loop até clareza            │
 └───────────────────────────────┬─────────────────────────────────┘
                                 │
                                 ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │  2. TRIAGE                                                      │
 │  ├─ QUICK   → 1-3 arquivos, zero ambiguidade                   │
-│  ├─ STANDARD → multi-arquivo, domínio conhecido                │
+│  ├─ STANDARD → multi-arquivo, domínio conhecido                 │
 │  └─ COMPLEX  → novo sistema, requisitos ambíguos               │
+│                                                                 │
+│  STANDARD / COMPLEX: declarar na 1ª linha da resposta:         │
+│  "Triage: STANDARD — <justificativa 1-2 frases>"               │
 └───────────────────────────────┬─────────────────────────────────┘
                                 │
                                 ▼
@@ -46,6 +50,11 @@ Leitura rápida — sem precisar abrir o AGENT.md completo.
 │  3. PLAN                                                        │
 │  └─ Gerar plano multi-fase com skills mapeados                 │
 │     → [A] Aprovar / [E] Editar / [S] Simplificar              │
+│                                                                 │
+│  APRESENTAÇÃO (Canvas default):                                 │
+│  └─ Emitir artefato skills/osforge-canvas (localhost:4242,     │
+│     auto-start via SessionStart hook) + resumo curto terminal  │
+│     Exceção: usuário pediu "só texto" → texto no terminal      │
 └───────────────────────────────┬─────────────────────────────────┘
                                 │
                                 ▼
@@ -63,13 +72,24 @@ Leitura rápida — sem precisar abrir o AGENT.md completo.
 │                     │adv-review      │      │code-review    │  │
 │                     └────────────────┘      │adv-review     │  │
 │                      *se schema/API         └───────────────┘  │
+│                                                                 │
+│  Tasks com bloco YAML (id/depends_on/wave/parallel_ok):        │
+│  waves montadas automaticamente por dispatching-parallel-agents │
+│                                                                 │
+│  Cada worker despachado via delegation-brief.md:               │
+│  objetivo / skills / escopo / critério de pronto / modelo      │
 └───────────────────────────────┬─────────────────────────────────┘
                                 │
                                 ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  5. TRACK                                                       │
-│  ├─ .osforge/status.yaml — fases, artefatos, pipeline          │
-│  └─ .osforge/STATE.md — decisões, blockers, ponto de retomada  │
+│  5. TRACK (osforge-db — SQLite primário)                        │
+│  ├─ osforge-db set-phase <slug> <fase> complete <skill> <art>   │
+│  ├─ osforge-db add-task / set-task / list-tasks / board         │
+│  ├─ osforge-db add-decision <slug> "<decisão>" --category=arch  │
+│  └─ osforge-db set-resume <slug> "Próximo: <fase> — <detalhe>" │
+│     (OBRIGATÓRIO ao encerrar sessão com work in progress)       │
+│                                                                 │
+│  Fallback markdown: .osforge/status.yaml + STATE.md            │
 └───────────────────────────────┬─────────────────────────────────┘
                                 │
                                 ▼
@@ -85,7 +105,7 @@ Leitura rápida — sem precisar abrir o AGENT.md completo.
 
 ```
 Request detectado           →  Agente/Skill invocado
-──────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────
 Frontend (UI, componente)   →  frontend-engineer
                                + ui-design-intelligence (estilo)
                                + openui-genui-layout (estrutura)
@@ -118,23 +138,26 @@ UI com intenção visual      →  ui-design-intelligence (primeiro)
 ## Exemplo: "Build a Next.js dashboard with authentication"
 
 ```
-Detectado: Frontend + Backend + Auth (3 domínios) → Orchestrator
+Triage: COMPLEX — novo sistema com Frontend + Backend + Auth
 
-1. INTAKE    → entender escopo, carregar project-context.md
+1. INTAKE    → entender escopo, osforge-db resume / carregar project-context.md
 2. TRIAGE    → COMPLEX (novo sistema, múltiplos domínios)
 3. PLAN      → 5 fases: PRD → Arch → Stories → Impl → Review
+               → Canvas: http://localhost:4242/?a=<slug>  +  resumo terminal
 4. ROUTE:
    Fase 1: prd-builder         → REQUIREMENTS.md
    Fase 2: arch-builder        → ADR (auth strategy, schema)
    Fase 3: phase-discussion    → CONTEXT.md (decisões UI/UX)
             ui-design-intelligence → design system spec
-   Fase 4: epic-decomposer     → 3 épicos, 12 stories
-            story-executor (waves):
-              Wave 1 || User schema + Product schema
-              Wave 2 || Auth API  + Dashboard API
+   Fase 4: epic-decomposer     → 3 épicos, 12 stories (YAML: id/wave/parallel_ok)
+            story-executor (waves via dispatching-parallel-agents):
+              Wave 1 || User schema + Product schema  (parallel_ok: true)
+              Wave 2 || Auth API  + Dashboard API     (parallel_ok: true)
               Wave 3 →  Checkout UI (depende das APIs)
+            Cada worker: delegation-brief.md completo
    Fase 5: code-reviewer + adversarial-review + ui-audit
-5. TRACK     → status.yaml + STATE.md atualizados
+5. TRACK     → osforge-db set-phase / add-task / add-decision / set-resume
+               fallback: .osforge/status.yaml + STATE.md atualizados
 ```
 
 ---
@@ -153,8 +176,9 @@ Detectado: Frontend + Backend + Auth (3 domínios) → Orchestrator
 | Validação do projeto | `python3 .scripts/validate.py --quick` |
 | Design system spec | `ui-design-intelligence` |
 | Routing automático | `rules/intelligent-routing.mdc` (always-on) |
+| Multi-projeto (sede/satélite) | `USAGE.md §10` |
 
 ---
 
 *Ver `agents/orchestrator/AGENT.md` para especificação completa.*
-*Ver `claude-code/SKILLS.md` para lista de todos os 51 skills disponíveis.*
+*Ver `~/.claude/SKILLS.md` para lista de todos os skills disponíveis.*

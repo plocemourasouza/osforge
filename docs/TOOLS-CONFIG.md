@@ -1,5 +1,5 @@
 # TOOLS-CONFIG.md
-## O que cada ferramenta carrega — Fonte única: agent-skills-consolidado/
+## O que cada ferramenta carrega — Fonte única: osforge/
 
 **Atualizado automaticamente pelo `deploy.sh`. Não edite manualmente.**
 
@@ -17,7 +17,7 @@
 | Hooks config | `hooks/hooks-claude-code.json` | merged em `~/.claude/settings.json` |
 
 **MCPs** (configurados em `~/.claude.json`, bloco `mcpServers`):
-- Context7, Github, Supabase, Prisma-Local, Prisma-Remote, Shadcn, Browsermcp
+- Context7, Github, Supabase, Prisma-Local, Prisma-Remote, Shadcn, Browsermcp, next-devtools
 
 **Cadeia de carregamento:**
 1. Claude Code lê `~/.claude/CLAUDE.md` ao iniciar sessão global
@@ -74,7 +74,7 @@ O que projetos **podem ter**:
 
 ```bash
 # Sincronizar tudo (repositório → ~/.claude/ e ~/.cursor/)
-cd ~/Development/agent-skills-consolidado
+cd ~/Development/osforge
 ./deploy.sh
 
 # Apenas Claude Code

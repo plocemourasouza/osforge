@@ -6,7 +6,7 @@ alwaysApply: true
 
 # Repositório Local de Agent Skills
 
-Existe um repositório consolidado com 770+ Agent Skills em `~/Development/agent-skills-consolidado/`.
+As coleções upstream com 770+ Agent Skills vivem em `~/Development/osforge/sources/` (ADR-009; gitignored, disco apenas).
 
 Skills são referências de melhores práticas extraídas de repositórios oficiais (Anthropic, Vercel, Supabase, Trail of Bits, Cloudflare, Expo, Sentry) e da comunidade.
 
@@ -47,22 +47,18 @@ Skills são referências de melhores práticas extraídas de repositórios ofici
 
 ```bash
 # Skill específica
-cp -R ~/Development/agent-skills-consolidado/<pasta>/<skill> .claude/skills/
-
-# Tier 1 completo (recomendado para novos projetos)
-bash ~/Development/agent-skills-consolidado/install-tier1.sh /caminho/do/projeto
+cp -R ~/Development/osforge/sources/<pasta>/<skill> .claude/skills/
 
 # Buscar skill por termo
-python3 ~/Development/agent-skills-consolidado/buscar-skill.py <termo>
-python3 ~/Development/agent-skills-consolidado/buscar-skill.py --cat security
-python3 ~/Development/agent-skills-consolidado/buscar-skill.py --install prisma
+python3 ~/Development/osforge/scripts/buscar-skill.py <termo>
+python3 ~/Development/osforge/scripts/buscar-skill.py --cat security
+python3 ~/Development/osforge/scripts/buscar-skill.py --install prisma
 ```
 
 ## Índice Completo
 
-- **JSON (programático):** `~/Development/agent-skills-consolidado/INDICE-SKILLS.json`
-- **Markdown (legível):** `~/Development/agent-skills-consolidado/INDICE-SKILLS.md`
-- **Síntese detalhada:** `~/Development/agent-skills-consolidado/SINTESE-REPOSITORIOS.md`
+- **JSON (programático):** `~/Development/osforge/INDICE-SKILLS.json`
+- **Markdown (legível):** `~/Development/osforge/docs/INDICE-SKILLS.md`
 
 ---
 
