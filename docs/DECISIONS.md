@@ -35,11 +35,11 @@
 
 **Decisão:** Sistema unificado com dois componentes complementares:
 1. `tlc-spec-driven` SKILL — especificação de comportamento e templates canônicos
-2. Commands `spec:*` — interface de execução, reescritos sem dependências bash
+2. Commands `spec-*` — interface de execução, reescritos sem dependências bash
 
-Os speckit foram renomeados para `spec:*` e reescritos para operar sobre `.specs/` (estrutura do tlc-spec-driven). A pasta `.specify/` e os scripts bash foram eliminados.
+Os speckit foram renomeados para `spec-*` e reescritos para operar sobre `.specs/` (estrutura do tlc-spec-driven). A pasta `.specify/` e os scripts bash foram eliminados.
 
-**Mapeamento:** speckit.specify→spec:discover, speckit.plan→spec:specify, speckit.tasks→spec:design, speckit.implement→spec:tasks, speckit.analyze→spec:implement, speckit.clarify→spec:clarify, speckit.checklist→spec:checklist, speckit.constitution→spec:constitution. Novo: `spec:measure` (fase 5, ausente nos speckit).
+**Mapeamento:** speckit.specify→spec-discover, speckit.plan→spec-specify, speckit.tasks→spec-design, speckit.implement→spec-tasks, speckit.analyze→spec-implement, speckit.clarify→spec-clarify, speckit.checklist→spec-checklist, speckit.constitution→spec-constitution. Novo: `spec-measure` (fase 5, ausente nos speckit).
 
 ---
 
@@ -84,3 +84,15 @@ Os speckit foram renomeados para `spec:*` e reescritos para operar sobre `.specs
 **Contexto:** Projetos `members` e `members-app` tinham `.cursorrules` com contexto projeto-específico valiosos (stack, padrões, arquitetura). `.cursorrules` é lido apenas pelo Cursor; `CLAUDE.md` é lido por ambas as ferramentas.
 
 **Decisão:** Converter `.cursorrules` para `CLAUDE.md` estruturado em cada projeto. Remover `.cursorrules` após conversão. Manter toda informação contextual relevante.
+
+---
+
+## ADR-008: Rename spec:* → spec-* (Windows filename compatibility)
+
+**Status:** Aceito
+
+**Contexto:** O caractere `:` é ilegal em nomes de arquivo no sistema de arquivos NTFS (Windows); `git clone` em Windows falhava ao tentar criar os 9 arquivos `commands/spec:*.md`. Adicionalmente, Claude Code reserva `:` como separador de namespace de plugins (e.g. `caveman:cavecrew`) — um arquivo chamado `spec:discover.md` não é acessível via `/spec:discover` como comando slash; o frontmatter `name` não altera a invocação, que é sempre derivada do filename. Subdiretórios com `:` no nome também não são suportados.
+
+**Decisão:** Renomear os 9 arquivos `commands/spec:*.md` para `commands/spec-*.md`. A invocação passa de `/spec:X` para `/spec-X` em todos os documentos, tabelas de comandos e referências textuais. O `deploy.sh` inclui passo idempotente de remoção dos legados (arquivos com `:` no nome) antes do copy, garantindo que instâncias já deployadas fiquem limpas na próxima execução.
+
+**Data:** 2026-06-10.

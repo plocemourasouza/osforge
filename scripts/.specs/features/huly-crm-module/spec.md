@@ -553,4 +553,4 @@ Equipes de vendas e marketing que usam Huly precisam gerenciar leads de forma es
 ---
 
 **Autor:** Claude (spec:specify)
-**Próximo passo:** `/spec:design huly-crm-module`
+**Próximo passo:** `/spec-design huly-crm-module`

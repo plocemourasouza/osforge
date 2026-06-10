@@ -1,5 +1,5 @@
 ---
-description: Phase 1 — Cria a especificação técnica detalhada de uma feature: requisitos funcionais, não-funcionais, acceptance criteria e casos de uso. Use após /spec:discover ou quando o problema já está validado. Gatilhos: "specify", "especificar feature", "escrever spec", "requisitos técnicos", "/spec:specify [feature]".
+description: Phase 1 — Cria a especificação técnica detalhada de uma feature: requisitos funcionais, não-funcionais, acceptance criteria e casos de uso. Use após /spec-discover ou quando o problema já está validado. Gatilhos: "specify", "especificar feature", "escrever spec", "requisitos técnicos", "/spec-specify [feature]".
 ---
 
 ## Contexto necessário
@@ -15,7 +15,7 @@ Leia antes de executar:
 
 ## Processo
 
-1. **Identificar feature**: Se o argumento após `/spec:specify` nomeia a feature, use-o. Caso contrário, verifique qual feature tem `discovery.md` mais recente ou pergunte.
+1. **Identificar feature**: Se o argumento após `/spec-specify` nomeia a feature, use-o. Caso contrário, verifique qual feature tem `discovery.md` mais recente ou pergunte.
 
 2. **Verificar constitution**: Se `.specs/memory/constitution.md` existe, verifique se a feature respeita os princípios definidos. Se violar algum, sinalize antes de continuar.
 
@@ -71,10 +71,10 @@ Dado que [contexto], quando [ação], então [resultado esperado].
 - [ ] Não introduz exceções aos padrões de qualidade definidos
 ```
 
-5. **Confirmar**: Apresente a spec criada. Sinalize qualquer ambiguidade que ficou não-resolvida. Sugira próximo passo: `/spec:design [feature-name]`.
+5. **Confirmar**: Apresente a spec criada. Sinalize qualquer ambiguidade que ficou não-resolvida. Sugira próximo passo: `/spec-design [feature-name]`.
 
 ## Regras
 - Acceptance Criteria devem ser verificáveis — nada de "o sistema deve ser rápido"
 - Cada AC deve mapear para um teste que pode ser escrito
 - Constitution check é obrigatório se constitution.md existe
-- Não especifique implementação — isso é para /spec:design
+- Não especifique implementação — isso é para /spec-design

@@ -1,5 +1,5 @@
 ---
-description: Phase 4 — Executa a implementação e validação da feature seguindo TDD e o plano de tasks.md. Processa tasks em ordem de dependência, escreve testes antes do código, e valida ao concluir. Gatilhos: "implement", "implementar", "executar tasks", "desenvolver", "codificar", "/spec:implement [feature]".
+description: Phase 4 — Executa a implementação e validação da feature seguindo TDD e o plano de tasks.md. Processa tasks em ordem de dependência, escreve testes antes do código, e valida ao concluir. Gatilhos: "implement", "implementar", "executar tasks", "desenvolver", "codificar", "/spec-implement [feature]".
 ---
 
 ## Contexto necessário
@@ -18,12 +18,12 @@ Leia antes de executar:
 
 ## Processo
 
-O argumento passado após `/spec:implement` é a feature. Se vazio, pergunte qual feature implementar. Se não houver `tasks.md`, execute `/spec:tasks` antes.
+O argumento passado após `/spec-implement` é a feature. Se vazio, pergunte qual feature implementar. Se não houver `tasks.md`, execute `/spec-tasks` antes.
 
 ### Antes de iniciar
 1. Leia `tasks.md` e identifique a primeira task não concluída
 2. Verifique se há dependências externas não resolvidas (migrations pendentes, serviços, aprovações)
-3. Se houver tasks com "NEEDS CLARIFICATION", execute `/spec:clarify` antes de prosseguir
+3. Se houver tasks com "NEEDS CLARIFICATION", execute `/spec-clarify` antes de prosseguir
 
 ### Por task
 Execute cada task rigorosamente em ordem de dependência:
@@ -73,7 +73,7 @@ Execute cada task rigorosamente em ordem de dependência:
 - [item pendente e motivo]
 ```
 
-5. Sugira `/spec:measure` para registrar métricas pós-deploy.
+5. Sugira `/spec-measure` para registrar métricas pós-deploy.
 
 ## Regras
 - **NUNCA declare concluído sem evidência de verificação fresca**

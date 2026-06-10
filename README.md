@@ -248,19 +248,19 @@ All agents include **Reality Check** (anti-self-deception) and **Quality Control
 
 ### 9 Spec Commands (Claude Code)
 
-Slash commands for spec-driven development (`/spec:*`):
+Slash commands for spec-driven development (`/spec-*`):
 
 | Command | Purpose |
 |---|---|
-| `/spec:discover` | Explore problem space and gather requirements |
-| `/spec:specify` | Write formal specification |
-| `/spec:design` | Technical design and ADR |
-| `/spec:tasks` | Break down into implementable tasks |
-| `/spec:implement` | Execute implementation with guardrails |
-| `/spec:clarify` | Clarification loop for ambiguous specs |
-| `/spec:checklist` | Pre-ship quality checklist |
-| `/spec:constitution` | Define project principles and constraints |
-| `/spec:measure` | Define and track success metrics |
+| `/spec-discover` | Explore problem space and gather requirements |
+| `/spec-specify` | Write formal specification |
+| `/spec-design` | Technical design and ADR |
+| `/spec-tasks` | Break down into implementable tasks |
+| `/spec-implement` | Execute implementation with guardrails |
+| `/spec-clarify` | Clarification loop for ambiguous specs |
+| `/spec-checklist` | Pre-ship quality checklist |
+| `/spec-constitution` | Define project principles and constraints |
+| `/spec-measure` | Define and track success metrics |
 
 ### Python Hooks (zero token cost)
 
@@ -486,7 +486,7 @@ osforge/
 ├── rules/                 # 12 always-on rules (.mdc + .md) for Cursor
 │   ├── intelligent-routing.mdc  # 27 domains, design taste sub-routing, automatic skill bundling
 │   └── anti-ai-slop.mdc        # 40 enforced rules vs generic AI design
-├── commands/              # 9 spec:* slash commands for Claude Code
+├── commands/              # 9 spec-* slash commands for Claude Code
 ├── skills/                # On-demand skill library (122 SKILL.md files)
 │   ├── agency/            # 121 AI specialists — The Agency (10 divisions) + 32 marketing workflows
 │   ├── app-builder/       # 13 project templates (Next.js, FastAPI, Flutter, Electron...)

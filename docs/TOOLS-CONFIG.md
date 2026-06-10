@@ -92,28 +92,28 @@ cd ~/Development/agent-skills-consolidado
 ## Sistema Spec Unificado
 
 ```
-Interface de execução:  /spec:discover, /spec:specify, /spec:design,
-                        /spec:tasks, /spec:implement, /spec:clarify,
-                        /spec:checklist, /spec:constitution, /spec:measure
+Interface de execução:  /spec-discover, /spec-specify, /spec-design,
+                        /spec-tasks, /spec-implement, /spec-clarify,
+                        /spec-checklist, /spec-constitution, /spec-measure
 
 Especificação:          skills/tlc-spec-driven/SKILL.md (via @SKILLS.md)
 
 Estrutura de pastas:    .specs/
                         ├── memory/
-                        │   └── constitution.md   (spec:constitution)
+                        │   └── constitution.md   (spec-constitution)
                         ├── project/
                         │   ├── PROJECT.md
                         │   ├── STATE.md           (gerenciado manualmente)
                         │   └── DECISIONS.md
                         └── features/
                             └── [feature-name]/
-                                ├── discovery.md   (spec:discover)
-                                ├── spec.md        (spec:specify)
-                                ├── design.md      (spec:design)
-                                ├── tasks.md       (spec:tasks)
-                                ├── validation.md  (spec:implement)
-                                ├── measure.md     (spec:measure)
-                                └── checklist.md   (spec:checklist)
+                                ├── discovery.md   (spec-discover)
+                                ├── spec.md        (spec-specify)
+                                ├── design.md      (spec-design)
+                                ├── tasks.md       (spec-tasks)
+                                ├── validation.md  (spec-implement)
+                                ├── measure.md     (spec-measure)
+                                └── checklist.md   (spec-checklist)
 ```
 
 > **Nota:** `$HOME` em `hooks.json` e `settings.json` é literal intencional.

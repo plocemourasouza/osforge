@@ -1,5 +1,5 @@
 ---
-description: Phase 0 — Descobre e valida o problema do usuário antes de especificar qualquer solução. Garante que estamos construindo a coisa certa. Use ao iniciar qualquer feature que afete o usuário final. Gatilhos: "discover", "qual problema resolver", "por que construir", "validar hipótese", "problema do usuário", "/spec:discover [feature]".
+description: Phase 0 — Descobre e valida o problema do usuário antes de especificar qualquer solução. Garante que estamos construindo a coisa certa. Use ao iniciar qualquer feature que afete o usuário final. Gatilhos: "discover", "qual problema resolver", "por que construir", "validar hipótese", "problema do usuário", "/spec-discover [feature]".
 ---
 
 ## Contexto necessário
@@ -15,7 +15,7 @@ Leia antes de executar:
 
 ## Processo
 
-O argumento passado após `/spec:discover` é a descrição da feature. Se vazio, pergunte: "Qual feature ou problema você quer explorar?"
+O argumento passado após `/spec-discover` é a descrição da feature. Se vazio, pergunte: "Qual feature ou problema você quer explorar?"
 
 1. **Gerar nome da feature**: 2-4 palavras em kebab-case extraindo as keywords mais significativas.
    - "adicionar autenticação com Google" → `google-auth`
@@ -69,7 +69,7 @@ Score: [calcule: H=3, M=2, L=1 → (Impacto × Confiança) / Esforço]
 - [Alternativa A]: descartada porque [razão]
 ```
 
-5. **Confirmar**: Apresente o discovery criado. Pergunte se deseja prosseguir para `/spec:specify` ou se há ajustes.
+5. **Confirmar**: Apresente o discovery criado. Pergunte se deseja prosseguir para `/spec-specify` ou se há ajustes.
 
 ## Regras
 - NUNCA pule esta fase para features que tocam o usuário final

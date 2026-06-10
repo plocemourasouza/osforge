@@ -68,18 +68,18 @@ python3 ~/Development/agent-skills-consolidado/buscar-skill.py --install prisma
 
 ## Sistema Spec Unificado (spec:*)
 
-O workflow de especificação e implementação de features é executado via commands `spec:*` disponíveis globalmente:
+O workflow de especificação e implementação de features é executado via commands `spec-*` disponíveis globalmente:
 
 | Command | Fase | Artefato gerado |
 |---|---|---|
-| `/spec:constitution` | Pré-projeto | `.specs/memory/constitution.md` |
-| `/spec:discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
-| `/spec:specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
-| `/spec:design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
-| `/spec:tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
-| `/spec:implement` | Phase 4 — Implement+Validate | (análise + validação) |
-| `/spec:clarify` | Auxiliar | Resolve ambiguidades em spec.md |
-| `/spec:checklist` | Auxiliar | Critérios de aceite da feature |
-| `/spec:measure` | Phase 5 — Measure | `.specs/features/[f]/metrics.md` |
+| `/spec-constitution` | Pré-projeto | `.specs/memory/constitution.md` |
+| `/spec-discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
+| `/spec-specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
+| `/spec-design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
+| `/spec-tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
+| `/spec-implement` | Phase 4 — Implement+Validate | (análise + validação) |
+| `/spec-clarify` | Auxiliar | Resolve ambiguidades em spec.md |
+| `/spec-checklist` | Auxiliar | Critérios de aceite da feature |
+| `/spec-measure` | Phase 5 — Measure | `.specs/features/[f]/metrics.md` |
 
 A especificação de comportamento completa está na SKILL `tlc-spec-driven` (em `~/.claude/SKILLS.md` ou `~/.cursor/skills/tlc-spec-driven/SKILL.md`).

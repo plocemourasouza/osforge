@@ -168,7 +168,9 @@ deploy_claude() {
   fi
 
   echo ""
-  log "Commands spec:* (9):"
+  log "Commands spec-* (9):"
+  # Remover legados com ':' no nome (pré-ADR-008, ilegal em NTFS/Windows)
+  rm -f "$CLAUDE/commands/spec:"*.md 2>/dev/null || true
   copy_dir "$REPO/commands" "$CLAUDE/commands"
 
   echo ""

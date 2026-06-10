@@ -1,5 +1,5 @@
 ---
-description: Auxiliar — Resolve ambiguidades e lacunas na especificação ou no design antes de prosseguir para a próxima fase. Use sempre que um artefato de .specs/ tiver campos marcados como "NEEDS CLARIFICATION", "?", ou "A definir". Gatilhos: "clarify", "esclarecer", "lacunas", "ambiguidade", "o que significa", "/spec:clarify [feature]".
+description: Auxiliar — Resolve ambiguidades e lacunas na especificação ou no design antes de prosseguir para a próxima fase. Use sempre que um artefato de .specs/ tiver campos marcados como "NEEDS CLARIFICATION", "?", ou "A definir". Gatilhos: "clarify", "esclarecer", "lacunas", "ambiguidade", "o que significa", "/spec-clarify [feature]".
 ---
 
 ## Contexto necessário
@@ -16,7 +16,7 @@ Atualização in-place dos artefatos em `.specs/features/[feature]/` com as lacu
 
 ## Processo
 
-O argumento passado após `/spec:clarify` é a feature alvo. Se vazio, pergunte qual feature clarificar.
+O argumento passado após `/spec-clarify` é a feature alvo. Se vazio, pergunte qual feature clarificar.
 
 1. **Varredura de lacunas**: Leia todos os artefatos da feature e identifique:
    - Campos com "NEEDS CLARIFICATION", "A definir", "?", "TODO", "TBD"

@@ -1,5 +1,5 @@
 ---
-description: Auxiliar — Gera checklist customizado de critérios de aceite para a feature atual, baseado no spec.md e no design.md. Use antes de considerar a implementação concluída ou para gerar critérios de QA. Gatilhos: "checklist", "critérios de aceite", "QA checklist", "pronto para testar", "/spec:checklist [feature]".
+description: Auxiliar — Gera checklist customizado de critérios de aceite para a feature atual, baseado no spec.md e no design.md. Use antes de considerar a implementação concluída ou para gerar critérios de QA. Gatilhos: "checklist", "critérios de aceite", "QA checklist", "pronto para testar", "/spec-checklist [feature]".
 ---
 
 ## Contexto necessário
@@ -16,7 +16,7 @@ Leia antes de executar:
 
 ## Processo
 
-O argumento passado após `/spec:checklist` é a feature. Se vazio, pergunte qual feature.
+O argumento passado após `/spec-checklist` é a feature. Se vazio, pergunte qual feature.
 
 1. **Leia spec.md na íntegra** e extraia todos os Acceptance Criteria.
 

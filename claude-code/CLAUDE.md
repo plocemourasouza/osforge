@@ -25,7 +25,7 @@ Specialized agents available in ~/.claude/agents/:
 @SKILLS.md
 
 The spec workflow is powered by the **tlc-spec-driven** SKILL (included in @SKILLS.md).
-Execute each phase via the `spec:*` commands listed below.
+Execute each phase via the `spec-*` commands listed below.
 
 ## Prompt Cache Strategy
 
@@ -74,20 +74,20 @@ Loading order (último carregado = maior prioridade):
 Ver `rules/memory-hierarchy.mdc` para detalhes completos sobre `@include`,
 frontmatter `paths` (conditional injection), e resolução de conflitos.
 
-## Commands (spec:* system)
-Available in ~/.claude/commands/. Execute with `/spec:discover`, `/spec:specify`, etc.
+## Commands (spec-* system)
+Available in ~/.claude/commands/. Execute with `/spec-discover`, `/spec-specify`, etc.
 
 | Command | Phase | Output |
 |---------|-------|--------|
-| `/spec:constitution` | Pré-projeto | `.specs/memory/constitution.md` |
-| `/spec:discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
-| `/spec:specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
-| `/spec:design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
-| `/spec:tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
-| `/spec:implement` | Phase 4 — Implement+Validate | atualiza `tasks.md` + cria `validation.md` |
-| `/spec:measure` | Phase 5 — Measure | `.specs/features/[f]/measure.md` |
-| `/spec:clarify` | Auxiliar | atualiza artefatos in-place |
-| `/spec:checklist` | Auxiliar | `.specs/features/[f]/checklist.md` |
+| `/spec-constitution` | Pré-projeto | `.specs/memory/constitution.md` |
+| `/spec-discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
+| `/spec-specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
+| `/spec-design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
+| `/spec-tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
+| `/spec-implement` | Phase 4 — Implement+Validate | atualiza `tasks.md` + cria `validation.md` |
+| `/spec-measure` | Phase 5 — Measure | `.specs/features/[f]/measure.md` |
+| `/spec-clarify` | Auxiliar | atualiza artefatos in-place |
+| `/spec-checklist` | Auxiliar | `.specs/features/[f]/checklist.md` |
 
 ## MCP Servers
 - **Shadcn** — Component discovery: search components, get installation commands, browse docs
@@ -152,21 +152,21 @@ INTAKE → TRIAGE → PLAN → [APPROVE] → ROUTE → TRACK → [CORRECT]
 3. security-auditor     → re-audit
 ```
 
-### Fluxo Alternativo: spec:* Commands (legacy, compatível)
+### Fluxo Alternativo: spec-* Commands (legacy, compatível)
 
 Comandos slash disponíveis em `~/.claude/commands/`. Usam o sistema `tlc-spec-driven`.
 
 | Command | Phase | Output |
 |---------|-------|--------|
-| `/spec:constitution` | Pré-projeto | `.specs/memory/constitution.md` |
-| `/spec:discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
-| `/spec:specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
-| `/spec:design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
-| `/spec:tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
-| `/spec:implement` | Phase 4 — Implement | atualiza `tasks.md` + `validation.md` |
-| `/spec:measure` | Phase 5 — Measure | `.specs/features/[f]/measure.md` |
-| `/spec:clarify` | Auxiliar | atualiza artefatos in-place |
-| `/spec:checklist` | Auxiliar | `.specs/features/[f]/checklist.md` |
+| `/spec-constitution` | Pré-projeto | `.specs/memory/constitution.md` |
+| `/spec-discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
+| `/spec-specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
+| `/spec-design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
+| `/spec-tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
+| `/spec-implement` | Phase 4 — Implement | atualiza `tasks.md` + `validation.md` |
+| `/spec-measure` | Phase 5 — Measure | `.specs/features/[f]/measure.md` |
+| `/spec-clarify` | Auxiliar | atualiza artefatos in-place |
+| `/spec-checklist` | Auxiliar | `.specs/features/[f]/checklist.md` |
 
 ### Regra: Não pule etapas. Se a feature é trivial, o ciclo é rápido.
 Se é complexa, pular etapas custa mais que seguir o ciclo.

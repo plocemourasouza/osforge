@@ -1,5 +1,5 @@
 ---
-description: Phase 2 — Cria o design técnico: arquitetura, modelo de dados, contratos de API e decisões técnicas com trade-offs documentados. Use após /spec:specify. Gatilhos: "design", "arquitetura da feature", "modelo de dados", "contratos de API", "/spec:design [feature]".
+description: Phase 2 — Cria o design técnico: arquitetura, modelo de dados, contratos de API e decisões técnicas com trade-offs documentados. Use após /spec-specify. Gatilhos: "design", "arquitetura da feature", "modelo de dados", "contratos de API", "/spec-design [feature]".
 ---
 
 ## Contexto necessário
@@ -90,7 +90,7 @@ type [Nome] = {
 - [ ] Não há exceção não-documentada aos padrões definidos
 ```
 
-4. **Confirmar**: Apresente o design. Para decisões com trade-offs significativos, apresente as opções explicitamente e aguarde confirmação antes de gravar a decisão no arquivo. Sugira próximo passo: `/spec:tasks [feature-name]`.
+4. **Confirmar**: Apresente o design. Para decisões com trade-offs significativos, apresente as opções explicitamente e aguarde confirmação antes de gravar a decisão no arquivo. Sugira próximo passo: `/spec-tasks [feature-name]`.
 
 ## Regras
 - Toda decisão com alternativas não-triviais deve ser documentada como ADR (Architecture Decision Record)

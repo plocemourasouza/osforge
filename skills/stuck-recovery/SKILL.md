@@ -212,7 +212,7 @@ O `stuck-recovery` complementa skills existentes:
 Em sessão saudável: **0-1 invocação por 2-3 horas de trabalho intenso**.
 
 Mais que isso indica:
-- Spec mal definido (precisa `spec:clarify`)
+- Spec mal definido (precisa `spec-clarify`)
 - Codebase mal mapeada (precisa `explorer-agent`)
 - Approach fundamentalmente errado (precisa `brainstorming`)
 

@@ -132,9 +132,9 @@ Form
 
 ## Próximos Passos
 
-1. `/spec:specify` — Detalhar requisitos funcionais e não-funcionais
-2. `/spec:design` — Arquitetura técnica, modelo de dados, APIs
-3. `/spec:tasks` — Decomposição em tasks atômicas com ordem de dependência
+1. `/spec-specify` — Detalhar requisitos funcionais e não-funcionais
+2. `/spec-design` — Arquitetura técnica, modelo de dados, APIs
+3. `/spec-tasks` — Decomposição em tasks atômicas com ordem de dependência
 
 ---
 

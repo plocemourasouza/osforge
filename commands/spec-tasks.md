@@ -1,5 +1,5 @@
 ---
-description: Phase 3 — Gera o plano de tarefas atômicas com ordem de dependência e critérios de verificação por task. Use após /spec:design. Gatilhos: "tasks", "gerar tarefas", "plano de implementação", "decompor em tasks", "/spec:tasks [feature]".
+description: Phase 3 — Gera o plano de tarefas atômicas com ordem de dependência e critérios de verificação por task. Use após /spec-design. Gatilhos: "tasks", "gerar tarefas", "plano de implementação", "decompor em tasks", "/spec-tasks [feature]".
 ---
 
 ## Contexto necessário

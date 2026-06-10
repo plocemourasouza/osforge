@@ -1,5 +1,5 @@
 ---
-description: Phase 5 — Mede o impacto real da feature contra as métricas definidas no discovery.md. Execute após deploy em produção ou ao final de um ciclo de validação. Gatilhos: "measure", "medir impacto", "métricas pós-deploy", "resultado da feature", "ROI", "/spec:measure [feature]".
+description: Phase 5 — Mede o impacto real da feature contra as métricas definidas no discovery.md. Execute após deploy em produção ou ao final de um ciclo de validação. Gatilhos: "measure", "medir impacto", "métricas pós-deploy", "resultado da feature", "ROI", "/spec-measure [feature]".
 ---
 
 ## Contexto necessário
@@ -15,7 +15,7 @@ Leia antes de executar:
 
 ## Processo
 
-O argumento passado após `/spec:measure` é a feature. Se vazio, pergunte qual feature medir.
+O argumento passado após `/spec-measure` é a feature. Se vazio, pergunte qual feature medir.
 
 1. **Leia `discovery.md`** e extraia as métricas de sucesso definidas na tabela "Métricas de Sucesso".
 

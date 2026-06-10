@@ -64,4 +64,4 @@ Leia antes de executar:
 ## Notas
 - Não pergunte por cada campo individualmente — use o contexto existente e inferência do README/package.json
 - Se o usuário forneceu input, use-o diretamente sem reconfirmar cada item
-- A constituição é referenciada pelos commands `/spec:specify` e `/spec:design`
+- A constituição é referenciada pelos commands `/spec-specify` e `/spec-design`
