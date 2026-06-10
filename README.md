@@ -2,7 +2,7 @@
 
 **Curated agent skills, agents, rules, hooks, commands, and a full AI specialist library for AI-powered development.**
 
-OSForge is a production-grade AI development framework with **126 on-demand skills**, **26 specialized agents**, **13 always-on rules**, **9 spec commands**, **Python hooks**, **SQLite local state backend**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
+OSForge is a production-grade AI development framework with **167 on-demand skills**, **26 specialized agents**, **13 always-on rules**, **9 spec commands**, **OSForge Canvas** (local generative UI for interactive plan/spec review), **Python hooks**, **SQLite local state backend with a cross-project task board**, **121 business specialists**, and **32 marketing execution workflows** — optimized for the **Next.js + TypeScript + Prisma + Supabase + Bun** stack, with expanded support for mobile, game dev, Rust, Python, and more. Built for Claude Code and Cursor.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -14,10 +14,11 @@ OSForge is a production-grade AI development framework with **126 on-demand skil
 
 AI coding agents are only as good as the context they receive. OSForge solves three problems:
 
-1. **Context efficiency** — 153 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
+1. **Context efficiency** — 167 skills in ~12K base tokens (~6% of 200K window). Everything else loads on-demand.
 2. **Stack-specific patterns** — Core skills tailored for Next.js App Router + Prisma + Supabase + shadcn/ui, with expanded coverage for mobile, game dev, Rust, Python, and cross-platform.
 3. **Quality gates built-in** — TDD enforcement, security auditing, red team tactics, insecure defaults detection, Reality Check + Quality Control Loop in every agent, and Python hooks at zero token cost.
-4. **Local SQLite state** — `osforge-db` CLI persists project state, architectural decisions, and blockers locally. Session resumption in ~50 tokens via `osforge-db resume`. FTS5 full-text search across all decisions cross-project.
+4. **Local SQLite state** — `osforge-db` CLI persists project state, decisions, blockers, and a **task board** (waves, dependencies, priorities) with a cross-project `board` view. Session resumption in ~50 tokens via `osforge-db resume`. FTS5 full-text search across all decisions cross-project.
+5. **OSForge Canvas** — a local Thesys-style generative UI: every spec and plan is presented as an interactive browser artifact (cards, tables, dependency graphs, gantt, checklists, approve/edit/reject buttons) instead of terminal markdown. Feedback flows back to the agent as structured JSON. Auto-starts on every Claude Code and Cursor session — zero external APIs.
 
 ---
 
@@ -35,7 +36,7 @@ The `deploy.sh` script syncs everything to `~/.claude/` and `~/.cursor/` automat
 
 ## What's Inside
 
-### 153 Skills (on-demand)
+### 167 Skills (on-demand)
 
 #### Core & Workflow
 | # | Skill | Category |
@@ -426,6 +427,7 @@ Persistent project state management via a local SQLite database (`~/.osforge/osf
 | `state` | current phase + resume point (session continuity) |
 | `decisions` | architectural, product, UX, data, security decisions |
 | `blockers` | active impediments + what they're waiting on |
+| `tasks` | task board: status, wave, depends_on, priority — `osforge-db board` gives a cross-project view |
 
 `decisions` is backed by an **FTS5 virtual table** — full-text search across all decisions from all projects in milliseconds.
 
@@ -472,7 +474,7 @@ osforge/
 ├── .osforge/              # Project status tracking (status.yaml)
 ├── claude-code/
 │   ├── CLAUDE.md          # Entry point for Claude Code sessions
-│   ├── SKILLS.md          # 122 skill triggers (~12K base tokens)
+│   ├── SKILLS.md          # 167 skill triggers (~12K base tokens)
 │   └── agents/            # 26 agent definitions (.md)
 ├── agents/                # 26 agent source files (with Reality Check + Quality Control Loop)
 │   ├── orchestrator/      # Meta-agent: AGENT.md + triage-rules + plan-templates
@@ -487,7 +489,7 @@ osforge/
 │   ├── intelligent-routing.mdc  # 27 domains, design taste sub-routing, automatic skill bundling
 │   └── anti-ai-slop.mdc        # 40 enforced rules vs generic AI design
 ├── commands/              # 9 spec-* slash commands for Claude Code
-├── skills/                # On-demand skill library (122 SKILL.md files)
+├── skills/                # On-demand skill library (167 SKILL.md files)
 │   ├── agency/            # 121 AI specialists — The Agency (10 divisions) + 32 marketing workflows
 │   ├── app-builder/       # 13 project templates (Next.js, FastAPI, Flutter, Electron...)
 │   ├── api-patterns/      # REST/GraphQL/tRPC + 10 reference modules
@@ -512,7 +514,7 @@ osforge/
 │   ├── planning/          # 6 planning skills (spec, prd, arch, epics, story, phase)
 │   ├── quality/           # 6 quality skills (adversarial, code-review, edge-case, elicitation, readiness, ui-audit)
 │   ├── context/           # 4 context skills (distillator, project-context, doc-shard, editorial)
-│   └── ... (122 SKILL.md files total)
+│   └── ... (167 SKILL.md files total)
 ├── hooks/                 # Python hooks + shell scripts + config
 ├── mcp/                   # MCP server configs (claude-code.json, cursor.json)
 ├── scripts/               # Utility scripts
@@ -526,7 +528,7 @@ osforge/
 
 | Component | Tokens | Loaded |
 |---|---|---|
-| SKILLS.md (122 triggers + 12 rules) | ~12,000 | Always |
+| SKILLS.md (167 triggers + 13 rules) | ~12,000 | Always |
 | Agent definitions (26) | ~1,500–3,000 | On invoke |
 | Agency router (SKILL.md) | ~2,000 | On invoke |
 | Agency division index (1 of 10) | ~1,500 | On invoke |
@@ -538,6 +540,26 @@ osforge/
 | Orchestrator AGENT.md (full routing tables) | ~5,500 | On invoke |
 | Planning/Quality/Context skills | ~500–2,000 each | On invoke |
 | **Base context usage** | **~12,000** | **6% of 200K** |
+
+---
+
+## 🖼️ OSForge Canvas — Local Generative UI
+
+A Thesys-style generative UI, fully local, zero external APIs. The agent writes versioned JSON artifacts; a zero-dependency Bun server (`127.0.0.1:4242`) renders them as interactive UI in the browser; your feedback flows back as structured JSON the agent reads on its next turn.
+
+```
+Claude/Cursor agent ──writes──▶ ~/.osforge/canvas/artifacts/<id>.json
+        ▲                                   │ fs.watch + SSE (live reload)
+        │                                   ▼
+  reads feedback ◀──writes── Browser viewer (cards, tables, mermaid graphs,
+  next turn                  gantt, checklists, forms, approve/edit/reject)
+```
+
+- **Default presentation channel** — every spec and plan is emitted as a canvas artifact; the terminal gets a short TL;DR + URL. Opt out with "só texto".
+- **Auto-start** — `SessionStart` hooks (Claude Code and Cursor) health-check port 4242 and boot the server if down. Never blocks the session; silent no-op without Bun.
+- **8 block types** — heading, markdown, card grids, tables, checklists, forms, decision buttons (with required comments), mermaid (dependency graphs + gantt).
+- **Pseudo-streaming** — the agent overwrites the artifact as sections complete (`revision+1`); SSE updates the browser live, no reload.
+- Server: `scripts/canvas/server.ts` (deployed to `~/.claude/canvas/`). Skill: `skills/osforge-canvas/` (schema in `references/schema.md`).
 
 ---
 
