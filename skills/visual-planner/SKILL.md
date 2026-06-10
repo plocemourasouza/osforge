@@ -254,6 +254,13 @@ Todo plano tem relações entre partes. Se não incluiu pelo menos um flow diagr
 
 ---
 
+## Quando usar visual-planner vs osforge-canvas
+
+Para loops de revisão e aprovação interativos (feedback estruturado, formulários,
+decisões por seção, round-trip Claude ↔ browser), prefira a skill `osforge-canvas`.
+O visual-planner permanece a escolha certa para documentos HTML one-shot apresentáveis
+sem coleta de feedback.
+
 ## Arquivos de Referência
 
 Leia estes ANTES de escrever qualquer HTML:

@@ -4,7 +4,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-BASE = Path(__file__).parent
+BASE = Path(__file__).parent.parent  # raiz do repo (extract grava o JSON lá)
 with open(BASE / "INDICE-SKILLS.json", 'r', encoding='utf-8') as f:
     skills = json.load(f)
 
@@ -99,7 +99,7 @@ L.append("\n---\n")
 L.append("*Índice gerado automaticamente por Claude Opus 4.6 a partir de 770 SKILL.md files.*")
 
 content = '\n'.join(L)
-out = BASE / "INDICE-SKILLS.md"
+out = BASE / "docs" / "INDICE-SKILLS.md"
 with open(out, 'w', encoding='utf-8') as f:
     f.write(content)
 

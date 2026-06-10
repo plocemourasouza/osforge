@@ -1,6 +1,6 @@
 # 📚 Índice Completo de Agent Skills
 
-> **Total:** 770 skills indexadas de 10 repositórios
+> **Total:** 972 skills indexadas de 13 repositórios
 > **Pasta local:** `~/Development/agent-skills-consolidado/`
 > **Atualizado em:** 05/02/2026
 >
@@ -15,34 +15,37 @@
 
 | Categoria | Qtd | % |
 |-----------|-----|---|
-| 🔒 Security | 134 | 17.4% |
-| 🤖 AI / ML / Agents | 120 | 15.6% |
-| 🔄 Workflow / Process | 114 | 14.8% |
-| ⚛️ React / Frontend | 75 | 9.7% |
-| 🧪 Testing | 64 | 8.3% |
-| 🏗️ Architecture | 58 | 7.5% |
-| 📝 Documentation / Writing | 55 | 7.1% |
-| ☁️ Infrastructure / DevOps | 45 | 5.8% |
-| 📦 General | 38 | 4.9% |
-| 🗄️ Database / Backend | 35 | 4.5% |
-| 📱 Mobile | 14 | 1.8% |
-| 🎨 Design / Creative | 12 | 1.6% |
-| 💼 Business / Marketing | 5 | 0.6% |
+| 🔒 Security | 207 | 21.3% |
+| 🤖 AI / ML / Agents | 142 | 14.6% |
+| 🔄 Workflow / Process | 136 | 14.0% |
+| ⚛️ React / Frontend | 97 | 10.0% |
+| 🧪 Testing | 85 | 8.7% |
+| 🏗️ Architecture | 62 | 6.4% |
+| 📝 Documentation / Writing | 60 | 6.2% |
+| ☁️ Infrastructure / DevOps | 48 | 4.9% |
+| 🗄️ Database / Backend | 39 | 4.0% |
+| 📱 Mobile | 39 | 4.0% |
+| 📦 General | 38 | 3.9% |
+| 🎨 Design / Creative | 12 | 1.2% |
+| 💼 Business / Marketing | 6 | 0.6% |
 | 🐍 Languages / Frameworks | 1 | 0.1% |
-| **TOTAL** | **770** | **100%** |
+| **TOTAL** | **972** | **100%** |
 
 ### Por Origem
 
 | Origem | Repo | Qtd |
 |--------|------|-----|
 | Antigravity (634+) | [Link](https://github.com/sickn33/antigravity-awesome-skills) | 634 |
+| skills | — | 167 |
 | Trail of Bits | [Link](https://github.com/trailofbits/skills) | 51 |
+| Claude-Red (Offensive Security) | [Link](https://github.com/SnailSploit/Claude-Red) | 27 |
 | Context Engineering | [Link](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering) | 18 |
 | Anthropic (Oficial) | [Link](https://github.com/anthropics/skills) | 17 |
 | Superpowers (obra) | [Link](https://github.com/obra/superpowers) | 14 |
 | Sentry | [Link](https://github.com/getsentry/skills) | 13 |
 | Expo | [Link](https://github.com/expo/skills) | 9 |
 | Cloudflare | [Link](https://github.com/cloudflare/skills) | 8 |
+| archive | — | 8 |
 | Vercel Labs | [Link](https://github.com/vercel-labs/agent-skills) | 5 |
 | Supabase | [Link](https://github.com/supabase/agent-skills) | 1 |
 
@@ -50,26 +53,26 @@
 
 ## 🗂️ Sumário por Categoria
 
-- [🔒 Security (134)](#)
-- [🤖 AI / ML / Agents (120)](#)
-- [🔄 Workflow / Process (114)](#)
-- [⚛️ React / Frontend (75)](#)
-- [🧪 Testing (64)](#)
-- [🏗️ Architecture (58)](#)
-- [📝 Documentation / Writing (55)](#)
-- [☁️ Infrastructure / DevOps (45)](#)
+- [🔒 Security (207)](#)
+- [🤖 AI / ML / Agents (142)](#)
+- [🔄 Workflow / Process (136)](#)
+- [⚛️ React / Frontend (97)](#)
+- [🧪 Testing (85)](#)
+- [🏗️ Architecture (62)](#)
+- [📝 Documentation / Writing (60)](#)
+- [☁️ Infrastructure / DevOps (48)](#)
+- [🗄️ Database / Backend (39)](#)
+- [📱 Mobile (39)](#)
 - [📦 General (38)](#)
-- [🗄️ Database / Backend (35)](#)
-- [📱 Mobile (14)](#)
 - [🎨 Design / Creative (12)](#)
-- [💼 Business / Marketing (5)](#)
+- [💼 Business / Marketing (6)](#)
 - [🐍 Languages / Frameworks (1)](#)
 
 ---
 
 ## 🔒 Security
 
-**134 skills**
+**207 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -207,10 +210,83 @@
 | **web-design-guidelines** | 🌌 Antigravity (634+) | Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "chec… | `06-antigravity/web-design-guidelines/` |
 | **Windows Privilege Escalation** | 🌌 Antigravity (634+) | This skill should be used when the user asks to "escalate privileges on Windows," "find Windows privesc vectors," "enumerate Windows for privilege esc… | `06-antigravity/windows-privilege-escalation/` |
 | **WordPress Penetration Testing** | 🌌 Antigravity (634+) | This skill should be used when the user asks to "pentest WordPress sites", "scan WordPress for vulnerabilities", "enumerate WordPress users, themes, o… | `06-antigravity/wordpress-penetration-testing/` |
+| **accessibility** | 📦 skills | Audit and improve web accessibility following WCAG 2.1 guidelines. Use when asked to "improve accessibility", "a11y audit", "WCAG compliance", "screen… | `skills/accessibility/` |
+| **agency-engineering** | 📦 skills | Índice dos 23 agentes de Engenharia da Agency (Backend Architect, Code Reviewer, Security Engineer, SRE, DevOps Automator, AI Engineer, Database Optim… | `skills/agency/engineering/` |
+| **agency-paid-media** | 📦 skills | Índice dos 7 agentes e 4 workflows de Mídia Paga da Agency (PPC Strategist, Paid Social Strategist, Creative Strategist, Tracking Specialist, Programm… | `skills/agency/paid-media/` |
+| **agency-specialized** | 📦 skills | Índice dos 24 agentes Especialistas da Agency (Agents Orchestrator, Compliance Auditor, Blockchain Security Auditor, MCP Builder, Document Generator, … | `skills/agency/specialized/` |
+| **agency-testing** | 📦 skills | Índice dos 8 agentes de Qualidade e Testes da Agency (Accessibility Auditor, API Tester, Performance Benchmarker, Reality Checker, Evidence Collector,… | `skills/agency/testing/` |
+| **agent-skills-search** | 📦 archive | Search and install Agent Skills from the local consolidated repository at ~/Development/agent-skills-consolidado/. Use when looking for specialized sk… | `archive/_cursor-global-archived/skills/agent-skills-search/` |
+| **agent-skills-search** | 📦 skills | Search and install Agent Skills from the local consolidated repository at ~/Development/agent-skills-consolidado/. Use when looking for specialized sk… | `skills/agent-skills-search/` |
+| **best-practices** | 📦 skills | Apply modern web development best practices for security, compatibility, and code quality. Use when asked to "apply best practices", "security audit",… | `skills/best-practices/` |
+| **code-review-checklist** | 📦 skills | Checklist de code review cobrindo correção, segurança, performance, qualidade, testes e padrões específicos de código gerado por IA. ACIONE quando: pe… | `skills/code-review-checklist/` |
+| **database-design** | 📦 skills | Princípios de design de banco de dados: escolha de banco e ORM, schema, índices, otimização e migrations. ACIONE quando: query lenta ou N+1 em produçã… | `skills/database-design/` |
+| **db-state-sync** | 📦 skills | Gerencia estado de projetos no banco SQLite local do OSForge (~/.osforge/osforge.db). ACIONE quando: salvar progresso de uma fase, registrar decisão a… | `skills/context/db-state-sync/` |
+| **differential-review** | 📦 skills | Security-focused code review of diffs and PRs. Trigger on PR security review, git diff analysis, change impact assessment, or when reviewing commits t… | `skills/differential-review/` |
+| **gdpr-data-handling** | 📦 skills | GDPR/LGPD compliance patterns for data handling. Trigger on consent management, data subject rights (access, deletion, portability), privacy policies,… | `skills/gdpr-data-handling/` |
+| **insecure-defaults** | 📦 skills | Detect fail-open patterns and insecure default configurations. Trigger on security hardening, env variable audit, default config review, permission ch… | `skills/insecure-defaults/` |
+| **lint-and-validate** | 📦 skills | Controle de qualidade automático após cada modificação de código: lint, type-check e análise estática (eslint, tsc, ruff, mypy, bandit, npm audit). AC… | `skills/lint-and-validate/` |
+| **offensive-ai-security** | 🛡️ Claude-Red (Offensive Security) | AI/LLM security offensive checklist: prompt injection, jailbreaking, model extraction, training data poisoning, adversarial inputs, LLM-assisted attac… | `13-claude-red/offensive-ai-security/` |
+| **offensive-ai-security** | 📦 skills | AI/LLM security offensive checklist: prompt injection, jailbreaking, model extraction, training data poisoning, adversarial inputs, LLM-assisted attac… | `skills/offensive-ai-security/` |
+| **offensive-bug-identification** | 🛡️ Claude-Red (Offensive Security) | Systematic bug identification methodology: source code review patterns, black-box testing strategies, taint analysis, dangerous function hunting, data… | `13-claude-red/offensive-bug-identification/` |
+| **offensive-bug-identification** | 📦 skills | Systematic bug identification methodology: source code review patterns, black-box testing strategies, taint analysis, dangerous function hunting, data… | `skills/offensive-bug-identification/` |
+| **offensive-business-logic** | 🛡️ Claude-Red (Offensive Security) | Business logic vulnerability testing for web/mobile/API engagements. Covers workflow bypass, state machine violations, multi-step process abuse, price… | `13-claude-red/offensive-business-logic/` |
+| **offensive-business-logic** | 📦 skills | Business logic vulnerability testing for web/mobile/API engagements. Covers workflow bypass, state machine violations, multi-step process abuse, price… | `skills/offensive-business-logic/` |
+| **offensive-cloud** | 🛡️ Claude-Red (Offensive Security) | Cloud security attack methodology across AWS, Azure, and GCP. Covers credential harvesting (IMDS, ~/.aws, env vars, leaked CI secrets, instance roles)… | `13-claude-red/offensive-cloud/` |
+| **offensive-cloud** | 📦 skills | Cloud security attack methodology across AWS, Azure, and GCP. Covers credential harvesting (IMDS, ~/.aws, env vars, leaked CI secrets, instance roles)… | `skills/offensive-cloud/` |
+| **offensive-deserialization** | 🛡️ Claude-Red (Offensive Security) | Insecure deserialization attack checklist: identifying deserialization sinks, Java/PHP/.NET/Python deserialization exploitation, ysoserial gadget chai… | `13-claude-red/offensive-deserialization/` |
+| **offensive-deserialization** | 📦 skills | Insecure deserialization attack checklist: identifying deserialization sinks, Java/PHP/.NET/Python deserialization exploitation, ysoserial gadget chai… | `skills/offensive-deserialization/` |
+| **offensive-fast-checking** | 🛡️ Claude-Red (Offensive Security) | Speed-optimized offensive checklist for rapid assessment: quick-win vulnerability patterns, fast recon shortcuts, automated scanner configurations, an… | `13-claude-red/offensive-fast-checking/` |
+| **offensive-fast-checking** | 📦 skills | Speed-optimized offensive checklist for rapid assessment: quick-win vulnerability patterns, fast recon shortcuts, automated scanner configurations, an… | `skills/offensive-fast-checking/` |
+| **offensive-file-upload** | 🛡️ Claude-Red (Offensive Security) | File upload vulnerability checklist: MIME type bypass, extension bypass, magic byte manipulation, path traversal in filenames, stored XSS via SVG/HTML… | `13-claude-red/offensive-file-upload/` |
+| **offensive-file-upload** | 📦 skills | File upload vulnerability checklist: MIME type bypass, extension bypass, magic byte manipulation, path traversal in filenames, stored XSS via SVG/HTML… | `skills/offensive-file-upload/` |
+| **offensive-fuzzing** | 🛡️ Claude-Red (Offensive Security) | Practical offensive fuzzing methodology covering target identification, fuzzer selection (AFL++, libFuzzer, Honggfuzz, Boofuzz, syzkaller), harness wr… | `13-claude-red/offensive-fuzzing/` |
+| **offensive-fuzzing** | 📦 skills | Practical offensive fuzzing methodology covering target identification, fuzzer selection (AFL++, libFuzzer, Honggfuzz, Boofuzz, syzkaller), harness wr… | `skills/offensive-fuzzing/` |
+| **offensive-graphql** | 🛡️ Claude-Red (Offensive Security) | GraphQL security testing checklist: introspection abuse, batching attacks, query depth/complexity DoS, field suggestion enumeration, IDOR via GraphQL,… | `13-claude-red/offensive-graphql/` |
+| **offensive-graphql** | 📦 skills | GraphQL security testing checklist: introspection abuse, batching attacks, query depth/complexity DoS, field suggestion enumeration, IDOR via GraphQL,… | `skills/offensive-graphql/` |
+| **offensive-idor** | 🛡️ Claude-Red (Offensive Security) | IDOR (Insecure Direct Object Reference) testing checklist: object ID enumeration, horizontal/vertical privilege escalation, GUID predictability, indir… | `13-claude-red/offensive-idor/` |
+| **offensive-idor** | 📦 skills | IDOR (Insecure Direct Object Reference) testing checklist: object ID enumeration, horizontal/vertical privilege escalation, GUID predictability, indir… | `skills/offensive-idor/` |
+| **offensive-jwt** | 🛡️ Claude-Red (Offensive Security) | JWT attack methodology for penetration testers. Covers algorithm confusion (alg:none, RS256→HS256), weak HMAC secret brute force, kid parameter inject… | `13-claude-red/offensive-jwt/` |
+| **offensive-jwt** | 📦 skills | JWT attack methodology for penetration testers. Covers algorithm confusion (alg:none, RS256→HS256), weak HMAC secret brute force, kid parameter inject… | `skills/offensive-jwt/` |
+| **offensive-mobile** | 🛡️ Claude-Red (Offensive Security) | Mobile (Android + iOS) application penetration testing methodology. Covers static analysis (apktool/jadx for Android, class-dump/Hopper/IDA for iOS), … | `13-claude-red/offensive-mobile/` |
+| **offensive-mobile** | 📦 skills | Mobile (Android + iOS) application penetration testing methodology. Covers static analysis (apktool/jadx for Android, class-dump/Hopper/IDA for iOS), … | `skills/offensive-mobile/` |
+| **offensive-open-redirect** | 🛡️ Claude-Red (Offensive Security) | Open redirect vulnerability checklist: parameter identification, bypass techniques (URL encoding, double slashes, CRLF injection, protocol handlers), … | `13-claude-red/offensive-open-redirect/` |
+| **offensive-open-redirect** | 📦 skills | Open redirect vulnerability checklist: parameter identification, bypass techniques (URL encoding, double slashes, CRLF injection, protocol handlers), … | `skills/offensive-open-redirect/` |
+| **offensive-osint** | 🛡️ Claude-Red (Offensive Security) | Comprehensive OSINT methodology skill for offensive security, red team intelligence gathering, and bug bounty reconnaissance. Covers domain recon, ema… | `13-claude-red/offensive-osint/` |
+| **offensive-osint** | 📦 skills | Comprehensive OSINT methodology skill for offensive security, red team intelligence gathering, and bug bounty reconnaissance. Covers domain recon, ema… | `skills/offensive-osint/` |
+| **offensive-parameter-pollution** | 🛡️ Claude-Red (Offensive Security) | HTTP parameter pollution (HPP) checklist: duplicate parameter injection, backend vs frontend parsing differences, WAF bypass via HPP, server-side vs c… | `13-claude-red/offensive-parameter-pollution/` |
+| **offensive-parameter-pollution** | 📦 skills | HTTP parameter pollution (HPP) checklist: duplicate parameter injection, backend vs frontend parsing differences, WAF bypass via HPP, server-side vs c… | `skills/offensive-parameter-pollution/` |
+| **offensive-race-condition** | 🛡️ Claude-Red (Offensive Security) | Race condition (TOCTOU) testing checklist: identifying timing windows, Burp Suite Turbo Intruder, Last-Byte sync technique, rate limit bypass, double-… | `13-claude-red/offensive-race-condition/` |
+| **offensive-race-condition** | 📦 skills | Race condition (TOCTOU) testing checklist: identifying timing windows, Burp Suite Turbo Intruder, Last-Byte sync technique, rate limit bypass, double-… | `skills/offensive-race-condition/` |
+| **offensive-rce** | 🛡️ Claude-Red (Offensive Security) | Remote Code Execution testing checklist: OS command injection, SSTI-to-RCE, deserialization RCE, file upload RCE, XXE with SSRF to RCE, RCE via depend… | `13-claude-red/offensive-rce/` |
+| **offensive-rce** | 📦 skills | Remote Code Execution testing checklist: OS command injection, SSTI-to-RCE, deserialization RCE, file upload RCE, XXE with SSRF to RCE, RCE via depend… | `skills/offensive-rce/` |
+| **offensive-request-smuggling** | 🛡️ Claude-Red (Offensive Security) | HTTP request smuggling checklist: CL.TE, TE.CL, TE.TE variants, detection with timing and differential responses, WAF bypass, cache poisoning, credent… | `13-claude-red/offensive-request-smuggling/` |
+| **offensive-request-smuggling** | 📦 skills | HTTP request smuggling checklist: CL.TE, TE.CL, TE.TE variants, detection with timing and differential responses, WAF bypass, cache poisoning, credent… | `skills/offensive-request-smuggling/` |
+| **offensive-sqli** | 🛡️ Claude-Red (Offensive Security) | SQL injection testing skill for offensive security assessments and bug bounty hunting. Covers error-based, UNION-based, boolean/time-based blind, out-… | `13-claude-red/offensive-sqli/` |
+| **offensive-sqli** | 📦 skills | SQL injection testing skill for offensive security assessments and bug bounty hunting. Covers error-based, UNION-based, boolean/time-based blind, out-… | `skills/offensive-sqli/` |
+| **offensive-ssti** | 🛡️ Claude-Red (Offensive Security) | Server-Side Template Injection testing checklist: template engine identification (Jinja2, Twig, Freemarker, Pebble, Velocity), polyglot detection payl… | `13-claude-red/offensive-ssti/` |
+| **offensive-ssti** | 📦 skills | Server-Side Template Injection testing checklist: template engine identification (Jinja2, Twig, Freemarker, Pebble, Velocity), polyglot detection payl… | `skills/offensive-ssti/` |
+| **offensive-toctou** | 🛡️ Claude-Red (Offensive Security) | Time-of-Check / Time-of-Use (TOCTOU) race condition exploitation methodology across binary, kernel, filesystem, web, and container layers. Covers symb… | `13-claude-red/offensive-toctou/` |
+| **offensive-toctou** | 📦 skills | Time-of-Check / Time-of-Use (TOCTOU) race condition exploitation methodology across binary, kernel, filesystem, web, and container layers. Covers symb… | `skills/offensive-toctou/` |
+| **offensive-waf-bypass** | 🛡️ Claude-Red (Offensive Security) | WAF bypass techniques checklist: encoding bypass (URL/HTML/Unicode/double encoding), case variation, comment injection, HTTP header manipulation, chun… | `13-claude-red/offensive-waf-bypass/` |
+| **offensive-waf-bypass** | 📦 skills | WAF bypass techniques checklist: encoding bypass (URL/HTML/Unicode/double encoding), case variation, comment injection, HTTP header manipulation, chun… | `skills/offensive-waf-bypass/` |
+| **offensive-xss** | 🛡️ Claude-Red (Offensive Security) | Cross-Site Scripting testing checklist: stored/reflected/DOM/blind XSS discovery, polyglot payloads, CSP bypass, XSS filter bypass, event handler inje… | `13-claude-red/offensive-xss/` |
+| **offensive-xss** | 📦 skills | Cross-Site Scripting testing checklist: stored/reflected/DOM/blind XSS discovery, polyglot payloads, CSP bypass, XSS filter bypass, event handler inje… | `skills/offensive-xss/` |
+| **offensive-xxe** | 🛡️ Claude-Red (Offensive Security) | XML External Entity injection testing checklist: classic XXE, blind XXE (out-of-band), XXE via file upload (SVG/docx), XXE in SOAP/REST, error-based X… | `13-claude-red/offensive-xxe/` |
+| **offensive-xxe** | 📦 skills | XML External Entity injection testing checklist: classic XXE, blind XXE (out-of-band), XXE via file upload (SVG/docx), XXE in SOAP/REST, error-based X… | `skills/offensive-xxe/` |
+| **red-team-tactics** | 📦 skills | Táticas de red team baseadas em MITRE ATT&CK para simulação de adversário autorizada. ACIONE quando: planejar simulação de ataque/pentest autorizado, … | `skills/red-team-tactics/` |
+| **redesign-audit** | 📦 skills | OSForge enhancement layer sobre redesign-existing-projects. Audita projeto existente, identifica padrões AI-genéricos, aplica upgrades cirúrgicos + re… | `skills/redesign-audit/` |
+| **redesign-existing-projects** | 📦 skills | Eleva sites e apps existentes a qualidade premium: audita o design atual, identifica padrões genéricos de IA e aplica upgrades de tipografia, cor e la… | `skills/redesign-existing-projects/` |
+| **security-best-practices** | 📦 skills | Perform language and framework specific security best-practice reviews and suggest improvements. Trigger only when the user explicitly requests securi… | `skills/security-best-practices/` |
+| **security-check** | 📦 archive | Detects insecure defaults, fail-open patterns, hardcoded secrets, weak auth, and permissive security configurations. Use when writing Server Actions, … | `archive/_cursor-global-archived/skills/security-check/` |
+| **security-threat-model** | 📦 skills | Repository-grounded threat modeling that enumerates trust boundaries, assets, attacker capabilities, abuse paths, and mitigations, and writes a concis… | `skills/security-threat-model/` |
+| **ui-audit** | 📦 skills | Auditoria retroativa de qualidade visual em código frontend já implementado. ACIONE após qualquer fase de UI/UX, ou quando: | `skills/quality/ui-audit/` |
+| **vulnerability-scanner** | 📦 skills | Análise avançada de vulnerabilidades com OWASP Top 10:2025, supply chain security e priorização de risco. ACIONE quando: mapear superfície de ataque d… | `skills/vulnerability-scanner/` |
+| **web-design-guidelines** | 📦 skills | Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "chec… | `skills/web-design-guidelines/` |
+| **webapp-testing** | 📦 skills | Testes E2E de aplicações web com Playwright, auditoria profunda de rotas/endpoints e testes visuais, com script runner de browser incluso. ACIONE quan… | `skills/webapp-testing/` |
 
 ## 🤖 AI / ML / Agents
 
-**120 skills**
+**142 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -334,14 +410,35 @@
 | **vexor** | 🌌 Antigravity (634+) | Vector-powered CLI for semantic file search with a Claude/Codex skill | `06-antigravity/vexor/` |
 | **voice-agents** | 🌌 Antigravity (634+) | Voice agents represent the frontier of AI interaction - humans speaking naturally with AI systems. The challenge isn | `06-antigravity/voice-agents/` |
 | **writing-skills** | 🌌 Antigravity (634+) | Use when creating, updating, or improving agent skills. | `06-antigravity/writing-skills/` |
+| **agency** | 📦 skills | Índice geral dos 121 agentes especialistas da The Agency, organizado em 10 divisões com roteamento on-demand. ACIONE quando: | `skills/agency/` |
+| **agency-design** | 📦 skills | Índice dos 8 agentes de Design da Agency (Brand Guardian, UI Designer, UX Architect, UX Researcher, Image Prompt Engineer, Visual Storyteller, Whimsy … | `skills/agency/design/` |
+| **agency-marketing** | 📦 skills | Índice dos 26 agentes e 25 workflows de Marketing da Agency (Growth Hacker, Content Creator, SEO Specialist, estrategistas por plataforma, CRO, mercad… | `skills/agency/marketing/` |
+| **agency-product** | 📦 skills | Índice dos 5 agentes de Produto da Agency (Product Manager, Sprint Prioritizer, Feedback Synthesizer, Trend Researcher, Behavioral Nudge Engine). ACIO… | `skills/agency/product/` |
+| **agency-project-management** | 📦 skills | Índice dos 6 agentes de Gestão de Projetos da Agency (Project Shepherd, Studio Producer, Studio Operations, Jira Workflow Steward, Experiment Tracker,… | `skills/agency/project-management/` |
+| **agency-sales** | 📦 skills | Índice dos 8 agentes e 3 workflows de Vendas da Agency (Outbound Strategist, Discovery Coach, Deal Strategist, Proposal Strategist, Pipeline Analyst, … | `skills/agency/sales/` |
+| **claude-api-typescript** | 📦 skills | Build apps with the Claude API, Anthropic TypeScript SDK, and Agent SDK. TRIGGER when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent… | `skills/claude-api-typescript/` |
+| **coding-guidelines** | 📦 skills | Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code c… | `skills/coding-guidelines/` |
+| **config-critique** | 📦 skills | Lint LLM-powered de customizações do usuário no OSForge — valida novas SKILL.md, rules .mdc, hooks customizados, agents adicionais, e overrides de CLA… | `skills/config-critique/` |
+| **context-compact** | 📦 skills | Compactação estruturada de conversação quando atinge ~70% da janela de contexto. ACIONE quando: usuário diz "comprimir contexto", "compactar", "summar… | `skills/context-compact/` |
+| **context-distillator** | 📦 skills | Compressão lossless de documentos longos para consumo otimizado por LLMs, preservando 100% da informação factual e eliminando overhead textual. ACIONE… | `skills/context/context-distillator/` |
+| **dispatching-parallel-agents** | 📦 skills | Orquestra tasks paralelas em subagents independentes. ACIONE quando: 2+ tasks sem estado compartilhado, refatoração em múltiplos arquivos não relacion… | `skills/dispatching-parallel-agents/` |
+| **doc-shard** | 📦 skills | Divide documentos markdown grandes em arquivos menores organizados com index. Use quando documento exceder context window ou para organizar docs exten… | `skills/context/doc-shard/` |
+| **editorial-review** | 📦 skills | Revisão editorial de documentos técnicos em 2 modos: prose (copy-editing clínico) e structure (reorganização e simplificação). Use com "editorial revi… | `skills/context/editorial-review/` |
+| **genai-optimization** | 📦 skills | Generative Engine Optimization (GEO) para conteúdo ser citado por motores de busca com IA. ACIONE quando: fazer conteúdo ser citado pelo ChatGPT/Perpl… | `skills/genai-optimization/` |
+| **git-workflow** | 📦 skills | Git workflow patterns for AI agent development: worktrees for parallel agents, branching strategy, commit discipline, and merge workflows. Use when cr… | `skills/git-workflow/` |
+| **llmfit-advisor** | 📦 skills | Detecta o hardware da máquina (RAM, CPU, GPU/VRAM) e recomenda os melhores LLMs locais com quantização ideal, estimativa de velocidade e scoring de fi… | `skills/llmfit-advisor/` |
+| **phase-discussion** | 📦 skills | Captura decisões de implementação de uma fase ANTES do planejamento técnico. ACIONE antes de planejar qualquer fase com UI, API, sistema de conteúdo o… | `skills/planning/phase-discussion/` |
+| **smart-model-dispatch** | 📦 skills | Roteador de modelos Claude. ACIONE quando: spawning de subagents via Agent tool, implementando feature com múltiplas subtasks de complexidade mista, o… | `skills/smart-model-dispatch/` |
+| **stuck-recovery** | 📦 skills | Detecta agent stuck patterns (loops, repetições, drift do escopo, ferramenta falhando 3x+) e executa recovery cirúrgico: salva estado em osforge-db, i… | `skills/stuck-recovery/` |
+| **tlc-spec-driven** | 📦 skills | Product-driven planning with 5 phases - Discover, Specify, Design, Tasks, Implement+Validate+Measure. Creates atomic tasks with verification criteria … | `skills/tlc-spec-driven/` |
+| **tool-safety-classifier** | 📦 skills | Classifier LLM-powered de segurança pra auto-aprovação de tool calls em modos autônomos (CI, headless, agent-of-agents). ACIONE quando: usuário roda e… | `skills/tool-safety-classifier/` |
 
 ## 🔄 Workflow / Process
 
-**114 skills**
+**136 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
-| **skill-creator** | 🟣 Anthropic (Oficial) | Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude… | `01-anthropic/skill-creator/` |
 | **xlsx** | 🟣 Anthropic (Oficial) | Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an ex… | `01-anthropic/xlsx/` |
 | **executing-plans** | 🔵 Superpowers (obra) | Use when you have a written implementation plan to execute in a separate session with review checkpoints | `02-superpowers/executing-plans/` |
 | **receiving-code-review** | 🔵 Superpowers (obra) | Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires … | `02-superpowers/receiving-code-review/` |
@@ -455,10 +552,33 @@
 | **Wireshark Network Traffic Analysis** | 🌌 Antigravity (634+) | This skill should be used when the user asks to "analyze network traffic with Wireshark", "capture packets for troubleshooting", "filter PCAP files", … | `06-antigravity/wireshark-analysis/` |
 | **xlsx** | 🌌 Antigravity (634+) | Comprehensive spreadsheet creation, editing, and analysis with support for formulas, formatting, data analysis, and visualization. When Claude needs t… | `06-antigravity/xlsx-official/` |
 | **youtube-summarizer** | 🌌 Antigravity (634+) | Extract transcripts from YouTube videos and generate comprehensive, detailed summaries using intelligent analysis frameworks | `06-antigravity/youtube-summarizer/` |
+| **adversarial-review** | 📦 skills | Revisão cínica e adversarial de qualquer artefato. ACIONE quando: revisar spec antes de implementar, validar PRD, criticar schema, revisar código com … | `skills/quality/adversarial-review/` |
+| **aesthetic-modes** | 📦 skills | Três modos visuais distintos para projetos com identidade forte: EDITORIAL_MINIMALIST (Notion/Linear, warm monochrome), INDUSTRIAL_BRUTALIST (Swiss + … | `skills/aesthetic-modes/` |
+| **behavioral-modes** | 📦 skills | AI operational modes (brainstorm, implement, debug, review, teach, ship, orchestrate). Use to adapt behavior based on task type. | `skills/behavioral-modes/` |
+| **brainstorming** | 📦 skills | Refinamento socrático de ideia ANTES de qualquer código ou spec técnica. ACIONE quando: usuário descreve uma ideia vaga, quer explorar alternativas an… | `skills/brainstorming/` |
+| **code-review** | 📦 skills | Review estruturado de código com checklist adaptado ao stack OSForge. ACIONE quando: code review, revisar código, review PR, CR. Integra adversarial-r… | `skills/quality/code-review/` |
+| **core-web-vitals** | 📦 skills | Optimize Core Web Vitals (LCP, INP, CLS) for better page experience and search ranking. Use when asked to "improve Core Web Vitals", "fix LCP", "reduc… | `skills/core-web-vitals/` |
+| **elicitation-engine** | 📦 skills | Refinamento iterativo de outputs (specs, PRDs, decisões arquiteturais, qualquer artefato) via menu interativo de técnicas de elicitação estruturadas. … | `skills/quality/elicitation-engine/` |
+| **finishing-a-development-branch** | 📦 skills | Workflow de finalização de branch de desenvolvimento. ACIONE quando: todas as tasks de uma branch estão completas, usuário quer mergear ou abrir PR, p… | `skills/finishing-a-development-branch/` |
+| **full-output-enforcement** | 📦 skills | Regra base anti-truncamento: proíbe placeholders e omissões, exige geração completa de cada deliverable e gerencia splits por limite de token com marc… | `skills/full-output-enforcement/` |
+| **high-end-visual-design** | 📦 skills | Faz o site parecer caro nível agência: fontes premium, cards double-bezel, sombras ultra-difusas, nav em pílula de vidro flutuante e coreografia de mo… | `skills/high-end-visual-design/` |
+| **image-to-code** | 📦 skills | Elite website image-to-code skill for Codex. Trigger on requests like "design a stunning hero section", "build a premium landing page", or "redesign t… | `skills/image-to-code/` |
+| **industrial-brutalist-ui** | 📦 skills | Gera interfaces brutalistas industriais que fundem print tipográfico suíço com terminais militares/CRT: grids rígidos, monospace, tipografia gigante, … | `skills/industrial-brutalist-ui/` |
+| **osforge-canvas** | 📦 skills | UI generativa local para revisão interativa de planos, specs e breakdowns no browser, com feedback estruturado nativo. ACIONE quando: usuário pede "ab… | `skills/osforge-canvas/` |
+| **receiving-code-review** | 📦 skills | Como responder ao feedback de um code review. ACIONE quando: recebeu feedback de review, PR tem comments, revisor pediu mudanças, CHANGES_REQUESTED. K… | `skills/receiving-code-review/` |
+| **requirements-clarify** | 📦 skills | Clarificação estruturada de requisitos ANTES do plano técnico. ACIONE quando: spec tem áreas vagas ou underspecificadas, usuário disse | `skills/planning/requirements-clarify/` |
+| **rust-pro** | 📦 skills | Especialista em Rust 1.75+ para sistemas de alta performance: async com Tokio, ownership, lifetimes, traits avançados, unsafe/FFI e web services com a… | `skills/rust-pro/` |
+| **seo** | 📦 skills | Optimize for search engine visibility and ranking. Use when asked to "improve SEO", "optimize for search", "fix meta tags", "add structured data", "si… | `skills/seo/` |
+| **story-executor** | 📦 skills | Executa implementação de uma story seguindo suas tasks e ACs. ACIONE quando: executar story, implementar story, dev story, run story. Coordena invocaç… | `skills/planning/story-executor/` |
+| **stripe-integration** | 📦 skills | Stripe payment processing for SaaS applications. Trigger on checkout implementation, subscription billing, webhook handling, pricing page, payment for… | `skills/stripe-integration/` |
+| **systematic-debugging** | 📦 skills | Debugging sistemático em 4 fases com análise de causa raiz. ACIONE quando: bug difícil de reproduzir, crash sem stacktrace claro, comportamento interm… | `skills/systematic-debugging/` |
+| **ui-design-intelligence** | 📦 skills | Spec de design system adaptado ao produto e indústria. ACIONE quando: usuário menciona estilo visual, identidade, paleta, tipografia, tom visual, tipo… | `skills/ui-design-intelligence/` |
+| **verification-before-completion** | 📦 archive | Requires running verification commands and confirming output before making any success claims. Use when about to claim work is complete, fixed, passin… | `archive/_cursor-global-archived/skills/verification-before-completion/` |
+| **verification-before-completion** | 📦 skills | Requires running verification commands and confirming output before making any success claims. Use when about to claim work is complete, fixed, passin… | `skills/verification-before-completion/` |
 
 ## ⚛️ React / Frontend
 
-**75 skills**
+**97 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -537,13 +657,36 @@
 | **vercel-deployment** | 🌌 Antigravity (634+) | Expert knowledge for deploying to Vercel with Next.js Use when: vercel, deploy, deployment, hosting, production. | `06-antigravity/vercel-deployment/` |
 | **vercel-react-best-practices** | 🌌 Antigravity (634+) | React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React… | `06-antigravity/react-best-practices/` |
 | **web-artifacts-builder** | 🌌 Antigravity (634+) | Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (React, Tailwind CSS, shadcn/ui… | `06-antigravity/web-artifacts-builder/` |
+| **aesthetic-boost** | 📦 skills | Boost estético anti-AI-slop. Invoque junto com qualquer skill de frontend para elevar a qualidade visual. Ative quando o usuário pedir "design bonito"… | `skills/aesthetic-boost/` |
+| **app-builder** | 📦 skills | Orquestrador de criação de aplicações full-stack a partir de pedidos em linguagem natural, com 13 templates de scaffolding e coordenação de agentes. A… | `skills/app-builder/` |
+| **arch-builder** | 📦 skills | Facilitação de decisões arquiteturais com ADRs. Stack-aware — respeita project-context.md e otimiza para Next.js/Prisma/Supabase. ACIONE com frases co… | `skills/planning/arch-builder/` |
+| **autorefine-skill** | 📦 skills | Refinamento autônomo iterativo com loop autoresearch + meta-otimização + transferência cross-domínio. ACIONE quando (ex.: | `skills/autorefine-skill/` |
+| **design-taste-frontend** | 📦 skills | Anti-slop frontend skill for landing pages, portfolios, and redesigns. Trigger on phrases like "build a landing page", "create my portfolio site", "re… | `skills/design-taste-frontend/` |
+| **design-taste-frontend-v1** | 📦 skills | Versão legada v1 da taste-skill de frontend premium com dials fixos (variance 8, motion 6, density 4), anti-slop, ban de Inter e roxo-AI, e micro-físi… | `skills/design-taste-frontend-v1/` |
+| **frontend-design** | 📦 skills | Design thinking and decision-making for web UI. ACTIVATE whenever the user asks to design or style UI components, build page layouts, choose color pal… | `skills/frontend-design/` |
+| **frontend-ui-system** | 📦 archive | Frontend UI development using shadcn/ui ecosystem with extended registries (Magic UI, Aceternity UI, mapcn). Leverages shadcn MCP and shadcn Studio ex… | `archive/_cursor-global-archived/skills/frontend-ui-system/` |
+| **frontend-ui-system** | 📦 skills | Frontend UI development using shadcn/ui ecosystem with extended registries (Magic UI, Aceternity UI, mapcn). Leverages shadcn MCP and shadcn Studio ex… | `skills/frontend-ui-system/` |
+| **gpt-taste** | 📦 skills | Engenharia de design award-winning com motion GSAP avançado: randomização de layouts, estrutura AIDA, hero de no máximo 2-3 linhas, bento grids sem cé… | `skills/gpt-taste/` |
+| **i18n-localization** | 📦 skills | Internationalization for Next.js applications. Trigger on multi-language support ("set up multiple languages", "add English/Spanish support", "transla… | `skills/i18n-localization/` |
+| **imagegen-frontend-mobile** | 📦 skills | Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Keywords - mobile UI design, iOS app design, Andro… | `skills/imagegen-frontend-mobile/` |
+| **imagegen-frontend-web** | 📦 skills | Direção de arte para gerar mockups de sites premium via geração de imagem: uma imagem horizontal separada por seção, variedade de composição de hero e… | `skills/imagegen-frontend-web/` |
+| **nextjs-react-expert** | 📦 skills | React and Next.js performance optimization from Vercel Engineering. Use when building React components, optimizing performance, eliminating waterfalls… | `skills/nextjs-react-expert/` |
+| **nextjs-supabase-auth** | 📦 skills | Padrões de autenticação Next.js App Router + Supabase Auth. ACIONE quando: configurando middleware de auth, RBAC multi-org, gerenciamento de sessão, r… | `skills/nextjs-supabase-auth/` |
+| **openui-genui-layout** | 📦 skills | Planejamento e geração de UI em Next.js. ACIONE quando: criando qualquer página, tela, dashboard, formulário, tabela, componente com layout, scaffold … | `skills/openui-genui-layout/` |
+| **react-performance** | 📦 archive | React and Next.js performance optimization rules from Vercel Engineering. Use when writing, reviewing, or refactoring React components, Next.js pages,… | `archive/_cursor-global-archived/skills/react-performance/` |
+| **react-performance** | 📦 skills | React and Next.js performance optimization rules from Vercel Engineering. Use when writing, reviewing, or refactoring React components, Next.js pages,… | `skills/react-performance/` |
+| **stitch-design-taste** | 📦 skills | Gera arquivos DESIGN.md semânticos para o Google Stitch, codificando atmosfera, paleta calibrada, tipografia, componentes e anti-padrões em linguagem … | `skills/stitch-design-taste/` |
+| **tailwind-patterns** | 📦 skills | Padrões técnicos de Tailwind CSS v4: configuração CSS-first com @theme, engine Oxide, container queries nativas, design tokens como CSS variables e mi… | `skills/tailwind-patterns/` |
+| **taste-design-dials** | 📦 skills | Camada de enhancement OSForge sobre a taste-skill com 3 dials ajustáveis (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY) mais regras Next.js App R… | `skills/taste-design-dials/` |
+| **visual-planner** | 📦 skills | Transforma documentos de planejamento em breakdowns HTML visuais e interativos. ACIONE quando: visualizar um plano, transformar spec em HTML, criar br… | `skills/visual-planner/` |
 
 ## 🧪 Testing
 
-**64 skills**
+**85 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
+| **skill-creator** | 🟣 Anthropic (Oficial) | Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, update or op… | `01-anthropic/skill-creator/` |
 | **webapp-testing** | 🟣 Anthropic (Oficial) | Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, ca… | `01-anthropic/webapp-testing/` |
 | **finishing-a-development-branch** | 🔵 Superpowers (obra) | Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by prese… | `02-superpowers/finishing-a-development-branch/` |
 | **systematic-debugging** | 🔵 Superpowers (obra) | Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes | `02-superpowers/systematic-debugging/` |
@@ -608,10 +751,30 @@
 | **web3-testing** | 🌌 Antigravity (634+) | Test smart contracts comprehensively using Hardhat and Foundry with unit tests, integration tests, and mainnet forking. Use when testing Solidity cont… | `06-antigravity/web3-testing/` |
 | **webapp-testing** | 🌌 Antigravity (634+) | Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, ca… | `06-antigravity/webapp-testing/` |
 | **workflow-patterns** | 🌌 Antigravity (634+) | Use this skill when implementing tasks according to Conductor's TDD | `06-antigravity/workflow-patterns/` |
+| **bun-development** | 📦 skills | Bun runtime patterns, bundler configuration, and Bun-specific APIs. Trigger on Bun FFI, Bun.serve, Bun.file, Bun shell, workspace configuration, Bun-s… | `skills/bun-development/` |
+| **context7-docs-first** | 📦 skills | Ground all platform and library answers in current official documentation by using Context7 MCP tools before responding. TRIGGER when: user asks about… | `skills/context7-docs-first/` |
+| **e2e-testing-patterns** | 📦 skills | End-to-end testing with Playwright for Next.js applications. Trigger on E2E test setup, cross-page flow testing (checkout, onboarding, multi-step form… | `skills/e2e-testing-patterns/` |
+| **epic-decomposer** | 📦 skills | Decompõe specs, PRDs ou requisitos em épicos e stories implementáveis. Cada story com ACs testáveis, tasks com file paths, e dependências mapeadas. | `skills/planning/epic-decomposer/` |
+| **offensive-oauth** | 🛡️ Claude-Red (Offensive Security) | OAuth 2.0 attack checklist: authorization code interception, redirect_uri bypass, CSRF on OAuth flow, state parameter abuse, open redirector chaining,… | `13-claude-red/offensive-oauth/` |
+| **offensive-oauth** | 📦 skills | OAuth 2.0 attack checklist: authorization code interception, redirect_uri bypass, CSRF on OAuth flow, state parameter abuse, open redirector chaining,… | `skills/offensive-oauth/` |
+| **offensive-reporting** | 🛡️ Claude-Red (Offensive Security) | Penetration test and red team report writing methodology. Covers executive summary structuring (risk-led narrative for non-technical readers), technic… | `13-claude-red/offensive-reporting/` |
+| **offensive-reporting** | 📦 skills | Penetration test and red team report writing methodology. Covers executive summary structuring (risk-led narrative for non-technical readers), technic… | `skills/offensive-reporting/` |
+| **offensive-ssrf** | 🛡️ Claude-Red (Offensive Security) | Server-Side Request Forgery testing checklist: SSRF discovery, blind SSRF with out-of-band, cloud metadata endpoints (AWS/GCP/Azure), SSRF filter bypa… | `13-claude-red/offensive-ssrf/` |
+| **offensive-ssrf** | 📦 skills | Server-Side Request Forgery testing checklist: SSRF discovery, blind SSRF with out-of-band, cloud metadata endpoints (AWS/GCP/Azure), SSRF filter bypa… | `skills/offensive-ssrf/` |
+| **output-enforcement** | 📦 skills | Camada de enhancement OSForge sobre full-output-enforcement: além do output completo, exige verification gate antes de declarar done e proteção TDD (n… | `skills/output-enforcement/` |
+| **predictive-failure** | 📦 skills | Analyze implemented code to predict potential failure points that tests may not catch. Uses pattern matching against common production failure modes. … | `skills/predictive-failure/` |
+| **skill-creator** | 📦 skills | Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, update or op… | `skills/skill-creator/` |
+| **spec-builder** | 📦 skills | Facilitação colaborativa de tech spec com ACs testáveis. ACIONE quando: especificar uma feature, definir o que construir, escrever spec técnica, detal… | `skills/planning/spec-builder/` |
+| **tdd-workflow** | 📦 archive | Enforces Test-Driven Development (RED-GREEN-REFACTOR) workflow. Use when implementing any feature, bugfix, or behavior change. Ensures tests are writt… | `archive/_cursor-global-archived/skills/tdd-workflow/` |
+| **tdd-workflow** | 📦 skills | Enforces Test-Driven Development (RED-GREEN-REFACTOR) workflow. Use when implementing any feature, bugfix, or behavior change. Ensures tests are writt… | `skills/tdd-workflow/` |
+| **technical-design-doc-creator** | 📦 skills | Creates comprehensive Technical Design Documents (TDD) following industry standards with mandatory sections, optional sections, and interactive gather… | `skills/technical-design-doc-creator/` |
+| **testing-patterns** | 📦 skills | Padrões e princípios de testes unitários e de integração: pirâmide de testes, padrão AAA, estratégias de mocking, organização e dados de teste. ACIONE… | `skills/testing-patterns/` |
+| **using-git-worktrees** | 📦 skills | Setup e uso de git worktrees para desenvolvimento paralelo. ACIONE quando: trabalhar em múltiplas features simultaneamente, precisar de branches isola… | `skills/using-git-worktrees/` |
+| **vercel-deploy** | 📦 skills | Deploy applications and websites to Vercel. Use when the user requests deployment actions like "deploy my app", "deploy and give me the link", "push t… | `skills/vercel-deploy/` |
 
 ## 🏗️ Architecture
 
-**58 skills**
+**62 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -673,10 +836,14 @@
 | **unreal-engine-cpp-pro** | 🌌 Antigravity (634+) | Expert guide for Unreal Engine 5.x C++ development, covering UObject hygiene, performance patterns, and best practices. | `06-antigravity/unreal-engine-cpp-pro/` |
 | **workflow-orchestration-patterns** | 🌌 Antigravity (634+) | Design durable workflows with Temporal for distributed systems. Covers workflow vs activity separation, saga patterns, state management, and determini… | `06-antigravity/workflow-orchestration-patterns/` |
 | **zapier-make-patterns** | 🌌 Antigravity (634+) | No-code automation democratizes workflow building. Zapier and Make (formerly Integromat) let non-developers automate business processes without writin… | `06-antigravity/zapier-make-patterns/` |
+| **architecture** | 📦 skills | Framework de decisão arquitetural com análise de requisitos, avaliação de trade-offs e documentação em ADRs. ACIONE quando: decidir entre X e Y (monol… | `skills/architecture/` |
+| **bash-linux** | 📦 skills | Padrões de terminal Bash para Linux e macOS: comandos essenciais, pipes, processos, processamento de texto e scripts seguros. ACIONE quando: script ba… | `skills/bash-linux/` |
+| **powershell-windows** | 📦 skills | Padrões e armadilhas críticas de PowerShell no Windows: sintaxe de operadores, null checks, JSON, paths e error handling. ACIONE quando: script PowerS… | `skills/powershell-windows/` |
+| **readiness-gate** | 📦 skills | Quality gate pré-implementação. Valida que PRD, Architecture e Épicos estão alinhados e completos antes de iniciar o sprint loop. Use com: | `skills/quality/readiness-gate/` |
 
 ## 📝 Documentation / Writing
 
-**55 skills**
+**60 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -735,10 +902,15 @@
 | **tavily-web** | 🌌 Antigravity (634+) | Web search, content extraction, crawling, and research capabilities using Tavily API | `06-antigravity/tavily-web/` |
 | **tutorial-engineer** | 🌌 Antigravity (634+) | Creates step-by-step tutorials and educational content from code. | `06-antigravity/tutorial-engineer/` |
 | **writing-plans** | 🌌 Antigravity (634+) | Use when you have a spec or requirements for a multi-step task, before touching code | `06-antigravity/writing-plans/` |
+| **brandkit** | 📦 skills | Gera imagens de brand-kit premium: boards de brand guidelines, sistemas de logo, identity decks e apresentações de universo visual com grids limpos, t… | `skills/brandkit/` |
+| **doc-sanitization** | 📦 archive | Clean up, consolidate, and organize project documentation. Removes obsolete specs, merges duplicates, enforces lifecycle rules. Use when triggered by … | `archive/_cursor-global-archived/skills/doc-sanitization/` |
+| **doc-sanitization** | 📦 skills | Clean up, consolidate, and organize project documentation. Removes obsolete specs, merges duplicates, enforces lifecycle rules. Trigger on phrases lik… | `skills/doc-sanitization/` |
+| **docs-writer** | 📦 skills | Escreve, revisa e edita documentação técnica verificando o código-fonte e seguindo style guide do projeto. ACIONE quando: documentar uma feature/coman… | `skills/docs-writer/` |
+| **minimalist-ui** | 📦 skills | Gera interfaces ultra-minimalistas estilo editorial/documento (tipo Notion) com paleta monocromática quente, serifas editoriais, bento grids flat, pas… | `skills/minimalist-ui/` |
 
 ## ☁️ Infrastructure / DevOps
 
-**45 skills**
+**48 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -787,6 +959,101 @@
 | **voice-ai-development** | 🌌 Antigravity (634+) | Expert in building voice AI applications - from real-time voice agents to voice-enabled apps. Covers OpenAI Realtime API, Vapi for voice agents, Deepg… | `06-antigravity/voice-ai-development/` |
 | **voice-ai-engine-development** | 🌌 Antigravity (634+) | Build real-time conversational AI voice engines using async worker pipelines, streaming transcription, LLM agents, and TTS synthesis with interrupt ha… | `06-antigravity/voice-ai-engine-development/` |
 | **workflow-automation** | 🌌 Antigravity (634+) | Workflow automation is the infrastructure that makes AI agents reliable. Without durable execution, a network hiccup during a 10-step payment flow mea… | `06-antigravity/workflow-automation/` |
+| **agency-support** | 📦 skills | Índice dos 6 agentes de Suporte e Operações da Agency (Support Responder, Analytics Reporter, Executive Summary Generator, Finance Tracker, Legal Comp… | `skills/agency/support/` |
+| **claude-ci-actions** | 📦 skills | Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. TRIGGER when: setting up @claude in PRs/issues, configuring automat… | `skills/claude-ci-actions/` |
+| **deployment-procedures** | 📦 skills | Workflows seguros de deploy em produção com backup, verificação pós-deploy e rollback para Vercel, Railway, VPS+PM2, Docker e Kubernetes. ACIONE quand… | `skills/deployment-procedures/` |
+
+## 🗄️ Database / Backend
+
+**39 skills**
+
+| Skill | Origem | Descrição | Path Local |
+|-------|--------|-----------|-----------|
+| **supabase-postgres-best-practices** | 🟩 Supabase | Postgres performance optimization and best practices from Supabase. Use this skill when writing, reviewing, or optimizing Postgres queries, schema des… | `08-supabase/supabase-postgres-best-practices/` |
+| **api-design-principles** | 🌌 Antigravity (634+) | Master REST and GraphQL API design principles to build intuitive, scalable, and maintainable APIs that delight developers. Use when designing new APIs… | `06-antigravity/api-design-principles/` |
+| **api-patterns** | 🌌 Antigravity (634+) | API design principles and decision-making. REST vs GraphQL vs tRPC selection, response formats, versioning, pagination. | `06-antigravity/api-patterns/` |
+| **automate-whatsapp** | 🌌 Antigravity (634+) | Build WhatsApp automations with Kapso workflows: configure WhatsApp triggers, edit workflow graphs, manage executions, deploy functions, and use datab… | `06-antigravity/automate-whatsapp/` |
+| **clickhouse-io** | 🌌 Antigravity (634+) | ClickHouse database patterns, query optimization, analytics, and data engineering best practices for high-performance analytical workloads. | `06-antigravity/cc-skill-clickhouse-io/` |
+| **database-admin** | 🌌 Antigravity (634+) | Expert database administrator specializing in modern cloud | `06-antigravity/database-admin/` |
+| **database-architect** | 🌌 Antigravity (634+) | Expert database architect specializing in data layer design from | `06-antigravity/database-architect/` |
+| **database-cloud-optimization-cost-optimize** | 🌌 Antigravity (634+) | You are a cloud cost optimization expert specializing in reducing infrastructure expenses while maintaining performance and reliability. Analyze cloud… | `06-antigravity/database-cloud-optimization-cost-optimize/` |
+| **database-design** | 🌌 Antigravity (634+) | Database design principles and decision-making. Schema design, indexing strategy, ORM selection, serverless databases. | `06-antigravity/database-design/` |
+| **database-migration** | 🌌 Antigravity (634+) | Execute database migrations across ORMs and platforms with zero-downtime strategies, data transformation, and rollback procedures. Use when migrating … | `06-antigravity/database-migration/` |
+| **database-migrations-migration-observability** | 🌌 Antigravity (634+) | Migration monitoring, CDC, and observability infrastructure | `06-antigravity/database-migrations-migration-observability/` |
+| **database-migrations-sql-migrations** | 🌌 Antigravity (634+) | SQL database migrations with zero-downtime strategies for | `06-antigravity/database-migrations-sql-migrations/` |
+| **database-optimizer** | 🌌 Antigravity (634+) | Expert database optimizer specializing in modern performance | `06-antigravity/database-optimizer/` |
+| **django-pro** | 🌌 Antigravity (634+) | Master Django 5.x with async views, DRF, Celery, and Django | `06-antigravity/django-pro/` |
+| **fastapi-pro** | 🌌 Antigravity (634+) | Build high-performance async APIs with FastAPI, SQLAlchemy 2.0, and | `06-antigravity/fastapi-pro/` |
+| **graphql** | 🌌 Antigravity (634+) | GraphQL gives clients exactly the data they need - no more, no less. One endpoint, typed schema, introspection. But the flexibility that makes it powe… | `06-antigravity/graphql/` |
+| **graphql-architect** | 🌌 Antigravity (634+) | Master modern GraphQL with federation, performance optimization, | `06-antigravity/graphql-architect/` |
+| **moodle-external-api-development** | 🌌 Antigravity (634+) | Create custom external web service APIs for Moodle LMS. Use when implementing web services for course management, user tracking, quiz operations, or c… | `06-antigravity/moodle-external-api-development/` |
+| **neon-postgres** | 🌌 Antigravity (634+) | Expert patterns for Neon serverless Postgres, branching, connection pooling, and Prisma/Drizzle integration Use when: neon database, serverless postgr… | `06-antigravity/neon-postgres/` |
+| **nodejs-backend-patterns** | 🌌 Antigravity (634+) | Build production-ready Node.js backend services with Express/Fastify, implementing middleware patterns, error handling, authentication, database integ… | `06-antigravity/nodejs-backend-patterns/` |
+| **nosql-expert** | 🌌 Antigravity (634+) | Expert guidance for distributed NoSQL databases (Cassandra, DynamoDB). Focuses on mental models, query-first modeling, single-table design, and avoidi… | `06-antigravity/nosql-expert/` |
+| **postgresql** | 🌌 Antigravity (634+) | Design a PostgreSQL-specific schema. Covers best-practices, data types, indexing, constraints, performance patterns, and advanced features | `06-antigravity/postgresql/` |
+| **prisma-expert** | 🌌 Antigravity (634+) | Prisma ORM expert for schema design, migrations, query optimization, relations modeling, and database operations. Use PROACTIVELY for Prisma schema is… | `06-antigravity/prisma-expert/` |
+| **python-development-python-scaffold** | 🌌 Antigravity (634+) | You are a Python project architecture expert specializing in scaffolding production-ready Python applications. Generate complete project structures wi… | `06-antigravity/python-development-python-scaffold/` |
+| **rag-engineer** | 🌌 Antigravity (634+) | Expert in building Retrieval-Augmented Generation systems. Masters embedding models, vector databases, chunking strategies, and retrieval optimization… | `06-antigravity/rag-engineer/` |
+| **rag-implementation** | 🌌 Antigravity (634+) | Build Retrieval-Augmented Generation (RAG) systems for LLM applications with vector databases and semantic search. Use when implementing knowledge-gro… | `06-antigravity/rag-implementation/` |
+| **ruby-pro** | 🌌 Antigravity (634+) | Write idiomatic Ruby code with metaprogramming, Rails patterns, and | `06-antigravity/ruby-pro/` |
+| **shopify-development** | 🌌 Antigravity (634+) | Build Shopify apps, extensions, themes using GraphQL Admin API, Shopify CLI, Polaris UI, and Liquid. TRIGGER: "shopify", "shopify app", "checkout exte… | `06-antigravity/shopify-development/` |
+| **similarity-search-patterns** | 🌌 Antigravity (634+) | Implement efficient similarity search with vector databases. Use when building semantic search, implementing nearest neighbor queries, or optimizing r… | `06-antigravity/similarity-search-patterns/` |
+| **skill-rails-upgrade** | 🌌 Antigravity (634+) | Analyze Rails apps and provide upgrade assessments | `06-antigravity/skill-rails-upgrade/` |
+| **sql-optimization-patterns** | 🌌 Antigravity (634+) | Master SQL query optimization, indexing strategies, and EXPLAIN analysis to dramatically improve database performance and eliminate slow queries. Use … | `06-antigravity/sql-optimization-patterns/` |
+| **sql-pro** | 🌌 Antigravity (634+) | Master modern SQL with cloud-native databases, OLTP/OLAP | `06-antigravity/sql-pro/` |
+| **supabase-postgres-best-practices** | 🌌 Antigravity (634+) | Postgres performance optimization and best practices from Supabase. Use this skill when writing, reviewing, or optimizing Postgres queries, schema des… | `06-antigravity/postgres-best-practices/` |
+| **using-neon** | 🌌 Antigravity (634+) | Guides and best practices for working with Neon Serverless Postgres. Covers getting started, local development with Neon, choosing a connection method… | `06-antigravity/using-neon/` |
+| **vector-database-engineer** | 🌌 Antigravity (634+) | Expert in vector databases, embedding strategies, and semantic search implementation. Masters Pinecone, Weaviate, Qdrant, Milvus, and pgvector for RAG… | `06-antigravity/vector-database-engineer/` |
+| **postgres-optimization** | 📦 archive | PostgreSQL and Supabase optimization best practices for queries, indexes, RLS policies, and connection management. Use when writing complex queries, c… | `archive/_cursor-global-archived/skills/postgres-optimization/` |
+| **postgres-optimization** | 📦 skills | PostgreSQL and Supabase optimization best practices for queries, indexes, RLS policies, and connection management. Use when writing complex queries, c… | `skills/postgres-optimization/` |
+| **prisma-expert** | 📦 skills | Padrões avançados de Prisma ORM. ACIONE quando: mudanças de schema com >3 models, estratégias de migration, queries lentas ou N+1, relações many-to-ma… | `skills/prisma-expert/` |
+| **smart-hooks** | 📦 skills | Production-grade Python hooks for Claude Code quality gates, safety rails, and developer experience. TRIGGER when: setting up hooks for a project, con… | `skills/smart-hooks/` |
+
+## 📱 Mobile
+
+**39 skills**
+
+| Skill | Origem | Descrição | Path Local |
+|-------|--------|-----------|-----------|
+| **expo-api-routes** | 📱 Expo | Guidelines for creating API routes in Expo Router with EAS Hosting | `09-expo/expo-app-design/skills/expo-api-routes/` |
+| **expo-cicd-workflows** | 📱 Expo | Helps understand and write EAS workflow YAML files for Expo projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS con… | `09-expo/expo-deployment/skills/expo-cicd-workflows/` |
+| **expo-deployment** | 📱 Expo | Deploying Expo apps to iOS App Store, Android Play Store, web hosting, and API routes | `09-expo/expo-deployment/skills/expo-deployment/` |
+| **upgrading-expo** | 📱 Expo | Guidelines for upgrading Expo SDK versions and fixing dependency issues | `09-expo/upgrading-expo/skills/upgrading-expo/` |
+| **app-store-optimization** | 🌌 Antigravity (634+) | Complete App Store Optimization (ASO) toolkit for researching, optimizing, and tracking mobile app performance on Apple App Store and Google Play Stor… | `06-antigravity/app-store-optimization/` |
+| **expo-deployment** | 🌌 Antigravity (634+) | Deploy Expo apps to production | `06-antigravity/expo-deployment/` |
+| **flutter-expert** | 🌌 Antigravity (634+) | Master Flutter development with Dart 3, advanced widgets, and | `06-antigravity/flutter-expert/` |
+| **interactive-portfolio** | 🌌 Antigravity (634+) | Expert in building portfolios that actually land jobs and clients - not just showing work, but creating memorable experiences. Covers developer portfo… | `06-antigravity/interactive-portfolio/` |
+| **ios-developer** | 🌌 Antigravity (634+) | Develop native iOS applications with Swift/SwiftUI. Masters iOS 18, | `06-antigravity/ios-developer/` |
+| **mobile-games** | 🌌 Antigravity (634+) | Mobile game development principles. Touch input, battery, performance, app stores. | `06-antigravity/game-development/mobile-games/` |
+| **multi-platform-apps-multi-platform** | 🌌 Antigravity (634+) | Build and deploy the same feature consistently across web, mobile, and desktop platforms using API-first architecture and parallel implementation stra… | `06-antigravity/multi-platform-apps-multi-platform/` |
+| **stitch-ui-design** | 🌌 Antigravity (634+) | Expert guide for creating effective prompts for Google Stitch AI UI design tool. Use when user wants to design UI/UX in Stitch, create app interfaces,… | `06-antigravity/stitch-ui-design/` |
+| **upgrading-expo** | 🌌 Antigravity (634+) | Upgrade Expo SDK versions | `06-antigravity/upgrading-expo/` |
+| **varlock-claude-skill** | 🌌 Antigravity (634+) | Secure environment variable management ensuring secrets are never exposed in Claude sessions, terminals, logs, or git commits | `06-antigravity/varlock-claude-skill/` |
+| **2d-games** | 📦 skills | Princípios de jogos 2D: sprites, atlases, tilemaps, física 2D, câmeras e padrões de gênero (platformer, top-down). ACIONE quando: estou fazendo um pla… | `skills/game-development/2d-games/` |
+| **3d-games** | 📦 skills | Princípios de jogos 3D: pipeline de rendering, shaders, física e colisão 3D, câmeras, iluminação e LOD. ACIONE quando: meu jogo 3D está com draw calls… | `skills/game-development/3d-games/` |
+| **api-patterns** | 📦 skills | Princípios de design de APIs: escolha de estilo, formato de resposta, versionamento, paginação, autenticação e rate limiting. ACIONE quando: escolher … | `skills/api-patterns/` |
+| **clean-code** | 📦 skills | Padrões pragmáticos de código limpo: conciso, direto, sem over-engineering e sem comentários desnecessários. ACIONE quando: código over-engineered ou … | `skills/clean-code/` |
+| **documentation-templates** | 📦 skills | Templates prontos e guias de estrutura para documentação: README, API docs, comentários de código e docs AI-friendly. ACIONE quando: criar README do z… | `skills/documentation-templates/` |
+| **edge-case-hunter** | 📦 skills | Caça exaustiva de edge cases por enumeração sistemática de branches e boundaries, reportando em JSON apenas caminhos sem handling. ACIONE quando: pedi… | `skills/quality/edge-case-hunter/` |
+| **game-art** | 📦 skills | Princípios de arte para jogos: pipeline de assets, otimização de texturas, animação (sprite, skeletal, procedural), VFX e direção de arte. ACIONE quan… | `skills/game-development/game-art/` |
+| **game-audio** | 📦 skills | Princípios de áudio para jogos: SFX, música, formatos e compressão, áudio adaptativo, performance e acessibilidade sonora. ACIONE quando: quero adicio… | `skills/game-development/game-audio/` |
+| **game-design** | 📦 skills | Princípios de game design: core loop, estrutura de GDD, psicologia do jogador, balanceamento de dificuldade e progressão. ACIONE quando: meu jogo não … | `skills/game-development/game-design/` |
+| **game-development** | 📦 skills | Orquestrador de desenvolvimento de jogos que ensina princípios universais (game loop, padrões, performance, IA, colisão) e roteia para sub-skills de p… | `skills/game-development/` |
+| **mcp-builder** | 📦 skills | Constrói servidores MCP (Model Context Protocol) customizados em TypeScript ou Python. ACIONE quando: criar servidor MCP do zero, expor API interna co… | `skills/mcp-builder/` |
+| **mobile-design** | 📦 skills | Princípios de design mobile-first para apps iOS e Android: interação touch, thumb zone, performance 60fps, convenções de plataforma (HIG, Material 3),… | `skills/mobile-design/` |
+| **mobile-games** | 📦 skills | Princípios de jogos mobile: touch input, bateria e thermal, requisitos de App Store e Google Play, monetização. ACIONE quando: estou portando ou crian… | `skills/game-development/mobile-games/` |
+| **multiplayer** | 📦 skills | Princípios de jogos multiplayer: arquitetura de rede (dedicated server, P2P, host-based), sincronização, lag compensation, anti-cheat e matchmaking. A… | `skills/game-development/multiplayer/` |
+| **nodejs-best-practices** | 📦 skills | Princípios de desenvolvimento Node.js: escolha de framework, padrões async, arquitetura em camadas, validação, error handling e segurança. ACIONE quan… | `skills/nodejs-best-practices/` |
+| **pc-games** | 📦 skills | Princípios de jogos para PC (Windows, Mac, Linux): publicação na Steam, configurações gráficas, rebinding de controles, modding e acessibilidade deskt… | `skills/game-development/pc-games/` |
+| **performance-profiling** | 📦 skills | Princípios de profiling de performance: medir, analisar e otimizar usando Core Web Vitals, Lighthouse e ferramentas de profiling. ACIONE quando: págin… | `skills/performance-profiling/` |
+| **plan-writing** | 📦 skills | Planejamento estruturado de trabalho com breakdown em tarefas pequenas, dependências e critérios de verificação. ACIONE quando: planeja a implementaçã… | `skills/plan-writing/` |
+| **prd-builder** | 📦 skills | Facilitação colaborativa de Product Requirements Document. Guia o usuário por definição de problema, usuários, requisitos, métricas e escopo MVP. Use … | `skills/planning/prd-builder/` |
+| **project-context-generator** | 📦 skills | Analisa codebase e gera project-context.md + constitution.md — os documentos governantes do projeto. ACIONE quando: iniciar em projeto novo, projeto n… | `skills/context/project-context-generator/` |
+| **python-patterns** | 📦 skills | Princípios de desenvolvimento Python: escolha de framework, async vs sync, type hints, Pydantic, estrutura de projeto e background tasks. ACIONE quand… | `skills/python-patterns/` |
+| **server-management** | 📦 skills | Princípios de operação de servidores: gerenciamento de processos (PM2, systemd, Docker), monitoramento, logs, scaling, health checks e troubleshooting… | `skills/server-management/` |
+| **stitch-design-export** | 📦 skills | OSForge enhancement layer sobre stitch-design-taste. Gera DESIGN.md para Google Stitch com tokens de osforge.config.json + Impeccable. ACIONE com stit… | `skills/stitch-design-export/` |
+| **vr-ar** | 📦 skills | Princípios de jogos VR/AR: conforto e prevenção de motion sickness, locomoção, hand tracking, anchoring AR e metas de performance por headset. ACIONE … | `skills/game-development/vr-ar/` |
+| **web-games** | 📦 skills | Princípios de jogos para navegador: escolha de framework (Phaser, PixiJS, Three.js, Babylon.js), WebGPU vs WebGL, compressão de assets, PWA e áudio no… | `skills/game-development/web-games/` |
 
 ## 📦 General
 
@@ -833,69 +1100,6 @@
 | **unity-developer** | 🌌 Antigravity (634+) | Build Unity games with optimized C# scripts, efficient rendering, | `06-antigravity/unity-developer/` |
 | **web-performance-optimization** | 🌌 Antigravity (634+) | Optimize website and web application performance including loading speed, Core Web Vitals, bundle size, caching strategies, and runtime performance | `06-antigravity/web-performance-optimization/` |
 
-## 🗄️ Database / Backend
-
-**35 skills**
-
-| Skill | Origem | Descrição | Path Local |
-|-------|--------|-----------|-----------|
-| **supabase-postgres-best-practices** | 🟩 Supabase | Postgres performance optimization and best practices from Supabase. Use this skill when writing, reviewing, or optimizing Postgres queries, schema des… | `08-supabase/supabase-postgres-best-practices/` |
-| **api-design-principles** | 🌌 Antigravity (634+) | Master REST and GraphQL API design principles to build intuitive, scalable, and maintainable APIs that delight developers. Use when designing new APIs… | `06-antigravity/api-design-principles/` |
-| **api-patterns** | 🌌 Antigravity (634+) | API design principles and decision-making. REST vs GraphQL vs tRPC selection, response formats, versioning, pagination. | `06-antigravity/api-patterns/` |
-| **automate-whatsapp** | 🌌 Antigravity (634+) | Build WhatsApp automations with Kapso workflows: configure WhatsApp triggers, edit workflow graphs, manage executions, deploy functions, and use datab… | `06-antigravity/automate-whatsapp/` |
-| **clickhouse-io** | 🌌 Antigravity (634+) | ClickHouse database patterns, query optimization, analytics, and data engineering best practices for high-performance analytical workloads. | `06-antigravity/cc-skill-clickhouse-io/` |
-| **database-admin** | 🌌 Antigravity (634+) | Expert database administrator specializing in modern cloud | `06-antigravity/database-admin/` |
-| **database-architect** | 🌌 Antigravity (634+) | Expert database architect specializing in data layer design from | `06-antigravity/database-architect/` |
-| **database-cloud-optimization-cost-optimize** | 🌌 Antigravity (634+) | You are a cloud cost optimization expert specializing in reducing infrastructure expenses while maintaining performance and reliability. Analyze cloud… | `06-antigravity/database-cloud-optimization-cost-optimize/` |
-| **database-design** | 🌌 Antigravity (634+) | Database design principles and decision-making. Schema design, indexing strategy, ORM selection, serverless databases. | `06-antigravity/database-design/` |
-| **database-migration** | 🌌 Antigravity (634+) | Execute database migrations across ORMs and platforms with zero-downtime strategies, data transformation, and rollback procedures. Use when migrating … | `06-antigravity/database-migration/` |
-| **database-migrations-migration-observability** | 🌌 Antigravity (634+) | Migration monitoring, CDC, and observability infrastructure | `06-antigravity/database-migrations-migration-observability/` |
-| **database-migrations-sql-migrations** | 🌌 Antigravity (634+) | SQL database migrations with zero-downtime strategies for | `06-antigravity/database-migrations-sql-migrations/` |
-| **database-optimizer** | 🌌 Antigravity (634+) | Expert database optimizer specializing in modern performance | `06-antigravity/database-optimizer/` |
-| **django-pro** | 🌌 Antigravity (634+) | Master Django 5.x with async views, DRF, Celery, and Django | `06-antigravity/django-pro/` |
-| **fastapi-pro** | 🌌 Antigravity (634+) | Build high-performance async APIs with FastAPI, SQLAlchemy 2.0, and | `06-antigravity/fastapi-pro/` |
-| **graphql** | 🌌 Antigravity (634+) | GraphQL gives clients exactly the data they need - no more, no less. One endpoint, typed schema, introspection. But the flexibility that makes it powe… | `06-antigravity/graphql/` |
-| **graphql-architect** | 🌌 Antigravity (634+) | Master modern GraphQL with federation, performance optimization, | `06-antigravity/graphql-architect/` |
-| **moodle-external-api-development** | 🌌 Antigravity (634+) | Create custom external web service APIs for Moodle LMS. Use when implementing web services for course management, user tracking, quiz operations, or c… | `06-antigravity/moodle-external-api-development/` |
-| **neon-postgres** | 🌌 Antigravity (634+) | Expert patterns for Neon serverless Postgres, branching, connection pooling, and Prisma/Drizzle integration Use when: neon database, serverless postgr… | `06-antigravity/neon-postgres/` |
-| **nodejs-backend-patterns** | 🌌 Antigravity (634+) | Build production-ready Node.js backend services with Express/Fastify, implementing middleware patterns, error handling, authentication, database integ… | `06-antigravity/nodejs-backend-patterns/` |
-| **nosql-expert** | 🌌 Antigravity (634+) | Expert guidance for distributed NoSQL databases (Cassandra, DynamoDB). Focuses on mental models, query-first modeling, single-table design, and avoidi… | `06-antigravity/nosql-expert/` |
-| **postgresql** | 🌌 Antigravity (634+) | Design a PostgreSQL-specific schema. Covers best-practices, data types, indexing, constraints, performance patterns, and advanced features | `06-antigravity/postgresql/` |
-| **prisma-expert** | 🌌 Antigravity (634+) | Prisma ORM expert for schema design, migrations, query optimization, relations modeling, and database operations. Use PROACTIVELY for Prisma schema is… | `06-antigravity/prisma-expert/` |
-| **python-development-python-scaffold** | 🌌 Antigravity (634+) | You are a Python project architecture expert specializing in scaffolding production-ready Python applications. Generate complete project structures wi… | `06-antigravity/python-development-python-scaffold/` |
-| **rag-engineer** | 🌌 Antigravity (634+) | Expert in building Retrieval-Augmented Generation systems. Masters embedding models, vector databases, chunking strategies, and retrieval optimization… | `06-antigravity/rag-engineer/` |
-| **rag-implementation** | 🌌 Antigravity (634+) | Build Retrieval-Augmented Generation (RAG) systems for LLM applications with vector databases and semantic search. Use when implementing knowledge-gro… | `06-antigravity/rag-implementation/` |
-| **ruby-pro** | 🌌 Antigravity (634+) | Write idiomatic Ruby code with metaprogramming, Rails patterns, and | `06-antigravity/ruby-pro/` |
-| **shopify-development** | 🌌 Antigravity (634+) | Build Shopify apps, extensions, themes using GraphQL Admin API, Shopify CLI, Polaris UI, and Liquid. TRIGGER: "shopify", "shopify app", "checkout exte… | `06-antigravity/shopify-development/` |
-| **similarity-search-patterns** | 🌌 Antigravity (634+) | Implement efficient similarity search with vector databases. Use when building semantic search, implementing nearest neighbor queries, or optimizing r… | `06-antigravity/similarity-search-patterns/` |
-| **skill-rails-upgrade** | 🌌 Antigravity (634+) | Analyze Rails apps and provide upgrade assessments | `06-antigravity/skill-rails-upgrade/` |
-| **sql-optimization-patterns** | 🌌 Antigravity (634+) | Master SQL query optimization, indexing strategies, and EXPLAIN analysis to dramatically improve database performance and eliminate slow queries. Use … | `06-antigravity/sql-optimization-patterns/` |
-| **sql-pro** | 🌌 Antigravity (634+) | Master modern SQL with cloud-native databases, OLTP/OLAP | `06-antigravity/sql-pro/` |
-| **supabase-postgres-best-practices** | 🌌 Antigravity (634+) | Postgres performance optimization and best practices from Supabase. Use this skill when writing, reviewing, or optimizing Postgres queries, schema des… | `06-antigravity/postgres-best-practices/` |
-| **using-neon** | 🌌 Antigravity (634+) | Guides and best practices for working with Neon Serverless Postgres. Covers getting started, local development with Neon, choosing a connection method… | `06-antigravity/using-neon/` |
-| **vector-database-engineer** | 🌌 Antigravity (634+) | Expert in vector databases, embedding strategies, and semantic search implementation. Masters Pinecone, Weaviate, Qdrant, Milvus, and pgvector for RAG… | `06-antigravity/vector-database-engineer/` |
-
-## 📱 Mobile
-
-**14 skills**
-
-| Skill | Origem | Descrição | Path Local |
-|-------|--------|-----------|-----------|
-| **expo-api-routes** | 📱 Expo | Guidelines for creating API routes in Expo Router with EAS Hosting | `09-expo/expo-app-design/skills/expo-api-routes/` |
-| **expo-cicd-workflows** | 📱 Expo | Helps understand and write EAS workflow YAML files for Expo projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS con… | `09-expo/expo-deployment/skills/expo-cicd-workflows/` |
-| **expo-deployment** | 📱 Expo | Deploying Expo apps to iOS App Store, Android Play Store, web hosting, and API routes | `09-expo/expo-deployment/skills/expo-deployment/` |
-| **upgrading-expo** | 📱 Expo | Guidelines for upgrading Expo SDK versions and fixing dependency issues | `09-expo/upgrading-expo/skills/upgrading-expo/` |
-| **app-store-optimization** | 🌌 Antigravity (634+) | Complete App Store Optimization (ASO) toolkit for researching, optimizing, and tracking mobile app performance on Apple App Store and Google Play Stor… | `06-antigravity/app-store-optimization/` |
-| **expo-deployment** | 🌌 Antigravity (634+) | Deploy Expo apps to production | `06-antigravity/expo-deployment/` |
-| **flutter-expert** | 🌌 Antigravity (634+) | Master Flutter development with Dart 3, advanced widgets, and | `06-antigravity/flutter-expert/` |
-| **interactive-portfolio** | 🌌 Antigravity (634+) | Expert in building portfolios that actually land jobs and clients - not just showing work, but creating memorable experiences. Covers developer portfo… | `06-antigravity/interactive-portfolio/` |
-| **ios-developer** | 🌌 Antigravity (634+) | Develop native iOS applications with Swift/SwiftUI. Masters iOS 18, | `06-antigravity/ios-developer/` |
-| **mobile-games** | 🌌 Antigravity (634+) | Mobile game development principles. Touch input, battery, performance, app stores. | `06-antigravity/game-development/mobile-games/` |
-| **multi-platform-apps-multi-platform** | 🌌 Antigravity (634+) | Build and deploy the same feature consistently across web, mobile, and desktop platforms using API-first architecture and parallel implementation stra… | `06-antigravity/multi-platform-apps-multi-platform/` |
-| **stitch-ui-design** | 🌌 Antigravity (634+) | Expert guide for creating effective prompts for Google Stitch AI UI design tool. Use when user wants to design UI/UX in Stitch, create app interfaces,… | `06-antigravity/stitch-ui-design/` |
-| **upgrading-expo** | 🌌 Antigravity (634+) | Upgrade Expo SDK versions | `06-antigravity/upgrading-expo/` |
-| **varlock-claude-skill** | 🌌 Antigravity (634+) | Secure environment variable management ensuring secrets are never exposed in Claude sessions, terminals, logs, or git commits | `06-antigravity/varlock-claude-skill/` |
-
 ## 🎨 Design / Creative
 
 **12 skills**
@@ -917,7 +1121,7 @@
 
 ## 💼 Business / Marketing
 
-**5 skills**
+**6 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -926,6 +1130,7 @@
 | **email-systems** | 🌌 Antigravity (634+) | Email has the highest ROI of any marketing channel. $36 for every $1 spent. Yet most startups treat it as an afterthought - bulk blasts, no personaliz… | `06-antigravity/email-systems/` |
 | **paid-ads** | 🌌 Antigravity (634+) | When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X, or other ad platforms. Also us… | `06-antigravity/paid-ads/` |
 | **seo-meta-optimizer** | 🌌 Antigravity (634+) | Creates optimized meta titles, descriptions, and URL suggestions | `06-antigravity/seo-meta-optimizer/` |
+| **seo-fundamentals** | 📦 skills | Fundamentos de SEO para Google com E-E-A-T, Core Web Vitals e SEO técnico. ACIONE quando: melhorar ranking de página no Google, implementar schema mar… | `skills/seo-fundamentals/` |
 
 ## 🐍 Languages / Frameworks
 
@@ -944,23 +1149,42 @@ Lista compacta para busca rápida com `Ctrl+F`:
 
 **#**
 - `2d-games` — Antigravity — `06-antigravity/game-development/2d-games/`
+- `2d-games` — skills — `skills/game-development/2d-games/`
 - `3d-games` — Antigravity — `06-antigravity/game-development/3d-games/`
+- `3d-games` — skills — `skills/game-development/3d-games/`
 - `3d-web-experience` — Antigravity — `06-antigravity/3d-web-experience/`
 
 **A**
 - `ab-test-setup` — Antigravity — `06-antigravity/ab-test-setup/`
+- `accessibility` — skills — `skills/accessibility/`
 - `accessibility-compliance-accessibility-audit` — Antigravity — `06-antigravity/accessibility-compliance-accessibility-audit/`
 - `Active Directory Attacks` — Antigravity — `06-antigravity/active-directory-attacks/`
 - `address-github-comments` — Antigravity — `06-antigravity/address-github-comments/`
 - `address-sanitizer` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/address-sanitizer/`
 - `advanced-evaluation` — Context Enginee — `05-context-engineering/advanced-evaluation/`
+- `adversarial-review` — skills — `skills/quality/adversarial-review/`
+- `aesthetic-boost` — skills — `skills/aesthetic-boost/`
+- `aesthetic-modes` — skills — `skills/aesthetic-modes/`
 - `aflpp` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/aflpp/`
+- `agency` — skills — `skills/agency/`
+- `agency-design` — skills — `skills/agency/design/`
+- `agency-engineering` — skills — `skills/agency/engineering/`
+- `agency-marketing` — skills — `skills/agency/marketing/`
+- `agency-paid-media` — skills — `skills/agency/paid-media/`
+- `agency-product` — skills — `skills/agency/product/`
+- `agency-project-management` — skills — `skills/agency/project-management/`
+- `agency-sales` — skills — `skills/agency/sales/`
+- `agency-specialized` — skills — `skills/agency/specialized/`
+- `agency-support` — skills — `skills/agency/support/`
+- `agency-testing` — skills — `skills/agency/testing/`
 - `agent-evaluation` — Antigravity — `06-antigravity/agent-evaluation/`
 - `agent-manager-skill` — Antigravity — `06-antigravity/agent-manager-skill/`
 - `agent-memory-mcp` — Antigravity — `06-antigravity/agent-memory-mcp/`
 - `agent-memory-systems` — Antigravity — `06-antigravity/agent-memory-systems/`
 - `agent-orchestration-improve-agent` — Antigravity — `06-antigravity/agent-orchestration-improve-agent/`
 - `agent-orchestration-multi-agent-optimize` — Antigravity — `06-antigravity/agent-orchestration-multi-agent-optimize/`
+- `agent-skills-search` — archive — `archive/_cursor-global-archived/skills/agent-skills-search/`
+- `agent-skills-search` — skills — `skills/agent-skills-search/`
 - `agent-tool-builder` — Antigravity — `06-antigravity/agent-tool-builder/`
 - `agents-md` — Sentry — `11-sentry/agents-md/`
 - `agents-sdk` — Cloudflare — `10-cloudflare/agents-sdk/`
@@ -985,13 +1209,17 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `api-documentation-generator` — Antigravity — `06-antigravity/api-documentation-generator/`
 - `api-documenter` — Antigravity — `06-antigravity/api-documenter/`
 - `api-patterns` — Antigravity — `06-antigravity/api-patterns/`
+- `api-patterns` — skills — `skills/api-patterns/`
 - `api-security-best-practices` — Antigravity — `06-antigravity/api-security-best-practices/`
 - `api-testing-observability-api-mock` — Antigravity — `06-antigravity/api-testing-observability-api-mock/`
 - `app-builder` — Antigravity — `06-antigravity/app-builder/`
+- `app-builder` — skills — `skills/app-builder/`
 - `app-store-optimization` — Antigravity — `06-antigravity/app-store-optimization/`
 - `application-performance-performance-optimization` — Antigravity — `06-antigravity/application-performance-performance-optimization/`
+- `arch-builder` — skills — `skills/planning/arch-builder/`
 - `architect-review` — Antigravity — `06-antigravity/architect-review/`
 - `architecture` — Antigravity — `06-antigravity/architecture/`
+- `architecture` — skills — `skills/architecture/`
 - `architecture-decision-records` — Antigravity — `06-antigravity/architecture-decision-records/`
 - `architecture-patterns` — Antigravity — `06-antigravity/architecture-patterns/`
 - `arm-cortex-expert` — Antigravity — `06-antigravity/arm-cortex-expert/`
@@ -1006,6 +1234,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `automate-whatsapp` — Antigravity — `06-antigravity/automate-whatsapp/`
 - `autonomous-agent-patterns` — Antigravity — `06-antigravity/autonomous-agent-patterns/`
 - `autonomous-agents` — Antigravity — `06-antigravity/autonomous-agents/`
+- `autorefine-skill` — skills — `skills/autorefine-skill/`
 - `avalonia-layout-zafiro` — Antigravity — `06-antigravity/avalonia-layout-zafiro/`
 - `avalonia-viewmodels-zafiro` — Antigravity — `06-antigravity/avalonia-viewmodels-zafiro/`
 - `avalonia-zafiro-development` — Antigravity — `06-antigravity/avalonia-zafiro-development/`
@@ -1023,12 +1252,15 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `backtesting-frameworks` — Antigravity — `06-antigravity/backtesting-frameworks/`
 - `bash-defensive-patterns` — Antigravity — `06-antigravity/bash-defensive-patterns/`
 - `bash-linux` — Antigravity — `06-antigravity/bash-linux/`
+- `bash-linux` — skills — `skills/bash-linux/`
 - `bash-pro` — Antigravity — `06-antigravity/bash-pro/`
 - `bats-testing-patterns` — Antigravity — `06-antigravity/bats-testing-patterns/`
 - `bazel-build-optimization` — Antigravity — `06-antigravity/bazel-build-optimization/`
 - `bdi-mental-states` — Context Enginee — `05-context-engineering/bdi-mental-states/`
 - `beautiful-prose` — Antigravity — `06-antigravity/beautiful-prose/`
 - `behavioral-modes` — Antigravity — `06-antigravity/behavioral-modes/`
+- `behavioral-modes` — skills — `skills/behavioral-modes/`
+- `best-practices` — skills — `skills/best-practices/`
 - `billing-automation` — Antigravity — `06-antigravity/billing-automation/`
 - `binary-analysis-patterns` — Antigravity — `06-antigravity/binary-analysis-patterns/`
 - `blockchain-developer` — Antigravity — `06-antigravity/blockchain-developer/`
@@ -1036,10 +1268,12 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `book-sft-pipeline` — Context Enginee — `05-context-engineering/_examples/book-sft-pipeline/`
 - `brainstorming` — Superpowers — `02-superpowers/brainstorming/`
 - `brainstorming` — Antigravity — `06-antigravity/brainstorming/`
+- `brainstorming` — skills — `skills/brainstorming/`
 - `brand-guidelines` — Anthropic — `01-anthropic/brand-guidelines/`
 - `brand-guidelines` — Antigravity — `06-antigravity/brand-guidelines-anthropic/`
 - `brand-guidelines` — Antigravity — `06-antigravity/brand-guidelines-community/`
 - `brand-guidelines` — Sentry — `11-sentry/brand-guidelines/`
+- `brandkit` — skills — `skills/brandkit/`
 - `Broken Authentication Testing` — Antigravity — `06-antigravity/broken-authentication/`
 - `browser-automation` — Antigravity — `06-antigravity/browser-automation/`
 - `browser-extension-builder` — Antigravity — `06-antigravity/browser-extension-builder/`
@@ -1048,6 +1282,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `building-native-ui` — Expo — `09-expo/expo-app-design/skills/building-native-ui/`
 - `bullmq-specialist` — Antigravity — `06-antigravity/bullmq-specialist/`
 - `bun-development` — Antigravity — `06-antigravity/bun-development/`
+- `bun-development` — skills — `skills/bun-development/`
 - `Burp Suite Web Application Testing` — Antigravity — `06-antigravity/burp-suite-testing/`
 - `burpsuite-project-parser` — Trail of Bits — `07-trailofbits/burpsuite-project-parser/skills/`
 - `business-analyst` — Antigravity — `06-antigravity/business-analyst/`
@@ -1072,12 +1307,15 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `clarity-gate` — Antigravity — `06-antigravity/clarity-gate/`
 - `Claude Code Guide` — Antigravity — `06-antigravity/claude-code-guide/`
 - `claude-ally-health` — Antigravity — `06-antigravity/claude-ally-health/`
+- `claude-api-typescript` — skills — `skills/claude-api-typescript/`
+- `claude-ci-actions` — skills — `skills/claude-ci-actions/`
 - `claude-in-chrome-troubleshooting` — Trail of Bits — `07-trailofbits/claude-in-chrome-troubleshooting/skills/claude-in-chrome-troubleshooting/`
 - `claude-scientific-skills` — Antigravity — `06-antigravity/claude-scientific-skills/`
 - `claude-settings-audit` — Sentry — `11-sentry/claude-settings-audit/`
 - `claude-speed-reader` — Antigravity — `06-antigravity/claude-speed-reader/`
 - `claude-win11-speckit-update-skill` — Antigravity — `06-antigravity/claude-win11-speckit-update-skill/`
 - `clean-code` — Antigravity — `06-antigravity/clean-code/`
+- `clean-code` — skills — `skills/clean-code/`
 - `clerk-auth` — Antigravity — `06-antigravity/clerk-auth/`
 - `clickhouse-io` — Antigravity — `06-antigravity/cc-skill-clickhouse-io/`
 - `Cloud Penetration Testing` — Antigravity — `06-antigravity/cloud-penetration-testing/`
@@ -1090,8 +1328,10 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `code-refactoring-refactor-clean` — Antigravity — `06-antigravity/code-refactoring-refactor-clean/`
 - `code-refactoring-tech-debt` — Antigravity — `06-antigravity/code-refactoring-tech-debt/`
 - `code-review` — Sentry — `11-sentry/code-review/`
+- `code-review` — skills — `skills/quality/code-review/`
 - `code-review-ai-ai-review` — Antigravity — `06-antigravity/code-review-ai-ai-review/`
 - `code-review-checklist` — Antigravity — `06-antigravity/code-review-checklist/`
+- `code-review-checklist` — skills — `skills/code-review-checklist/`
 - `code-review-excellence` — Antigravity — `06-antigravity/code-review-excellence/`
 - `code-reviewer` — Antigravity — `06-antigravity/code-reviewer/`
 - `code-simplifier` — Sentry — `11-sentry/code-simplifier/`
@@ -1101,6 +1341,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `codeql` — Trail of Bits — `07-trailofbits/static-analysis/skills/codeql/`
 - `codeql` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/codeql/`
 - `codex-review` — Antigravity — `06-antigravity/codex-review/`
+- `coding-guidelines` — skills — `skills/coding-guidelines/`
 - `coding-standards` — Antigravity — `06-antigravity/cc-skill-coding-standards/`
 - `commit` — Antigravity — `06-antigravity/commit/`
 - `commit` — Sentry — `11-sentry/commit/`
@@ -1119,14 +1360,17 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `conductor-setup` — Antigravity — `06-antigravity/conductor-setup/`
 - `conductor-status` — Antigravity — `06-antigravity/conductor-status/`
 - `conductor-validator` — Antigravity — `06-antigravity/conductor-validator/`
+- `config-critique` — skills — `skills/config-critique/`
 - `constant-time-analysis` — Trail of Bits — `07-trailofbits/constant-time-analysis/skills/constant-time-analysis/`
 - `constant-time-testing` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/constant-time-testing/`
 - `content-creator` — Antigravity — `06-antigravity/content-creator/`
 - `content-marketer` — Antigravity — `06-antigravity/content-marketer/`
+- `context-compact` — skills — `skills/context-compact/`
 - `context-compression` — Context Enginee — `05-context-engineering/context-compression/`
 - `context-compression` — Antigravity — `06-antigravity/context-compression/`
 - `context-degradation` — Context Enginee — `05-context-engineering/context-degradation/`
 - `context-degradation` — Antigravity — `06-antigravity/context-degradation/`
+- `context-distillator` — skills — `skills/context/context-distillator/`
 - `context-driven-development` — Antigravity — `06-antigravity/context-driven-development/`
 - `context-fundamentals` — Context Enginee — `05-context-engineering/context-fundamentals/`
 - `context-fundamentals` — Antigravity — `06-antigravity/context-fundamentals/`
@@ -1137,10 +1381,12 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `context-optimization` — Antigravity — `06-antigravity/context-optimization/`
 - `context-window-management` — Antigravity — `06-antigravity/context-window-management/`
 - `context7-auto-research` — Antigravity — `06-antigravity/context7-auto-research/`
+- `context7-docs-first` — skills — `skills/context7-docs-first/`
 - `conversation-memory` — Antigravity — `06-antigravity/conversation-memory/`
 - `copy-editing` — Antigravity — `06-antigravity/copy-editing/`
 - `copywriting` — Antigravity — `06-antigravity/copywriting/`
 - `core-components` — Antigravity — `06-antigravity/core-components/`
+- `core-web-vitals` — skills — `skills/core-web-vitals/`
 - `cosmos-vulnerability-scanner` — Trail of Bits — `07-trailofbits/building-secure-contracts/skills/cosmos-vulnerability-scanner/`
 - `cost-optimization` — Antigravity — `06-antigravity/cost-optimization/`
 - `coverage-analysis` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/coverage-analysis/`
@@ -1167,10 +1413,12 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `database-architect` — Antigravity — `06-antigravity/database-architect/`
 - `database-cloud-optimization-cost-optimize` — Antigravity — `06-antigravity/database-cloud-optimization-cost-optimize/`
 - `database-design` — Antigravity — `06-antigravity/database-design/`
+- `database-design` — skills — `skills/database-design/`
 - `database-migration` — Antigravity — `06-antigravity/database-migration/`
 - `database-migrations-migration-observability` — Antigravity — `06-antigravity/database-migrations-migration-observability/`
 - `database-migrations-sql-migrations` — Antigravity — `06-antigravity/database-migrations-sql-migrations/`
 - `database-optimizer` — Antigravity — `06-antigravity/database-optimizer/`
+- `db-state-sync` — skills — `skills/context/db-state-sync/`
 - `dbt-transformation-patterns` — Antigravity — `06-antigravity/dbt-transformation-patterns/`
 - `debugger` — Antigravity — `06-antigravity/debugger/`
 - `debugging-strategies` — Antigravity — `06-antigravity/debugging-strategies/`
@@ -1182,15 +1430,20 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `deployment-engineer` — Antigravity — `06-antigravity/deployment-engineer/`
 - `deployment-pipeline-design` — Antigravity — `06-antigravity/deployment-pipeline-design/`
 - `deployment-procedures` — Antigravity — `06-antigravity/deployment-procedures/`
+- `deployment-procedures` — skills — `skills/deployment-procedures/`
 - `deployment-validation-config-validate` — Antigravity — `06-antigravity/deployment-validation-config-validate/`
 - `design-md` — Antigravity — `06-antigravity/design-md/`
 - `design-orchestration` — Antigravity — `06-antigravity/design-orchestration/`
+- `design-taste-frontend` — skills — `skills/design-taste-frontend/`
+- `design-taste-frontend-v1` — skills — `skills/design-taste-frontend-v1/`
 - `devops-troubleshooter` — Antigravity — `06-antigravity/devops-troubleshooter/`
 - `differential-review` — Trail of Bits — `07-trailofbits/differential-review/skills/differential-review/`
+- `differential-review` — skills — `skills/differential-review/`
 - `digital-brain` — Context Enginee — `05-context-engineering/_examples/digital-brain-skill/`
 - `discord-bot-architect` — Antigravity — `06-antigravity/discord-bot-architect/`
 - `dispatching-parallel-agents` — Superpowers — `02-superpowers/dispatching-parallel-agents/`
 - `dispatching-parallel-agents` — Antigravity — `06-antigravity/dispatching-parallel-agents/`
+- `dispatching-parallel-agents` — skills — `skills/dispatching-parallel-agents/`
 - `distributed-debugging-debug-trace` — Antigravity — `06-antigravity/distributed-debugging-debug-trace/`
 - `distributed-tracing` — Antigravity — `06-antigravity/distributed-tracing/`
 - `django-access-review` — Sentry — `11-sentry/django-access-review/`
@@ -1199,10 +1452,15 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `doc-coauthoring` — Anthropic — `01-anthropic/doc-coauthoring/`
 - `doc-coauthoring` — Antigravity — `06-antigravity/doc-coauthoring/`
 - `doc-coauthoring` — Sentry — `11-sentry/doc-coauthoring/`
+- `doc-sanitization` — archive — `archive/_cursor-global-archived/skills/doc-sanitization/`
+- `doc-sanitization` — skills — `skills/doc-sanitization/`
+- `doc-shard` — skills — `skills/context/doc-shard/`
 - `docker-expert` — Antigravity — `06-antigravity/docker-expert/`
 - `docs-architect` — Antigravity — `06-antigravity/docs-architect/`
+- `docs-writer` — skills — `skills/docs-writer/`
 - `documentation-generation-doc-generate` — Antigravity — `06-antigravity/documentation-generation-doc-generate/`
 - `documentation-templates` — Antigravity — `06-antigravity/documentation-templates/`
+- `documentation-templates` — skills — `skills/documentation-templates/`
 - `docx` — Anthropic — `01-anthropic/docx/`
 - `docx` — Antigravity — `06-antigravity/docx-official/`
 - `dotnet-architect` — Antigravity — `06-antigravity/dotnet-architect/`
@@ -1213,6 +1471,10 @@ Lista compacta para busca rápida com `Ctrl+F`:
 
 **E**
 - `e2e-testing-patterns` — Antigravity — `06-antigravity/e2e-testing-patterns/`
+- `e2e-testing-patterns` — skills — `skills/e2e-testing-patterns/`
+- `edge-case-hunter` — skills — `skills/quality/edge-case-hunter/`
+- `editorial-review` — skills — `skills/context/editorial-review/`
+- `elicitation-engine` — skills — `skills/quality/elicitation-engine/`
 - `elixir-pro` — Antigravity — `06-antigravity/elixir-pro/`
 - `email-sequence` — Antigravity — `06-antigravity/email-sequence/`
 - `email-systems` — Antigravity — `06-antigravity/email-systems/`
@@ -1220,6 +1482,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `employment-contract-templates` — Antigravity — `06-antigravity/employment-contract-templates/`
 - `entry-point-analyzer` — Trail of Bits — `07-trailofbits/entry-point-analyzer/skills/entry-point-analyzer/`
 - `environment-setup-guide` — Antigravity — `06-antigravity/environment-setup-guide/`
+- `epic-decomposer` — skills — `skills/planning/epic-decomposer/`
 - `error-debugging-error-analysis` — Antigravity — `06-antigravity/error-debugging-error-analysis/`
 - `error-debugging-error-trace` — Antigravity — `06-antigravity/error-debugging-error-trace/`
 - `error-debugging-multi-agent-review` — Antigravity — `06-antigravity/error-debugging-multi-agent-review/`
@@ -1261,6 +1524,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `find-bugs` — Sentry — `11-sentry/find-bugs/`
 - `finishing-a-development-branch` — Superpowers — `02-superpowers/finishing-a-development-branch/`
 - `finishing-a-development-branch` — Antigravity — `06-antigravity/finishing-a-development-branch/`
+- `finishing-a-development-branch` — skills — `skills/finishing-a-development-branch/`
 - `firebase` — Antigravity — `06-antigravity/firebase/`
 - `firebase-apk-scanner` — Trail of Bits — `07-trailofbits/firebase-apk-scanner/skills/firebase-apk-scanner/`
 - `firecrawl-scraper` — Antigravity — `06-antigravity/firecrawl-scraper/`
@@ -1278,6 +1542,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `free-tool-strategy` — Antigravity — `06-antigravity/free-tool-strategy/`
 - `frontend-design` — Anthropic — `01-anthropic/frontend-design/`
 - `frontend-design` — Antigravity — `06-antigravity/frontend-design/`
+- `frontend-design` — skills — `skills/frontend-design/`
 - `frontend-dev-guidelines` — Antigravity — `06-antigravity/frontend-dev-guidelines/`
 - `frontend-developer` — Antigravity — `06-antigravity/frontend-developer/`
 - `frontend-mobile-development-component-scaffold` — Antigravity — `06-antigravity/frontend-mobile-development-component-scaffold/`
@@ -1285,23 +1550,33 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `frontend-patterns` — Antigravity — `06-antigravity/cc-skill-frontend-patterns/`
 - `frontend-security-coder` — Antigravity — `06-antigravity/frontend-security-coder/`
 - `frontend-slides` — Antigravity — `06-antigravity/frontend-slides/`
+- `frontend-ui-system` — archive — `archive/_cursor-global-archived/skills/frontend-ui-system/`
+- `frontend-ui-system` — skills — `skills/frontend-ui-system/`
+- `full-output-enforcement` — skills — `skills/full-output-enforcement/`
 - `full-stack-orchestration-full-stack-feature` — Antigravity — `06-antigravity/full-stack-orchestration-full-stack-feature/`
 - `fuzzing-dictionary` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/fuzzing-dictionary/`
 - `fuzzing-obstacles` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/fuzzing-obstacles/`
 
 **G**
 - `game-art` — Antigravity — `06-antigravity/game-development/game-art/`
+- `game-art` — skills — `skills/game-development/game-art/`
 - `game-audio` — Antigravity — `06-antigravity/game-development/game-audio/`
+- `game-audio` — skills — `skills/game-development/game-audio/`
 - `game-design` — Antigravity — `06-antigravity/game-development/game-design/`
+- `game-design` — skills — `skills/game-development/game-design/`
 - `game-development` — Antigravity — `06-antigravity/game-development/`
+- `game-development` — skills — `skills/game-development/`
 - `gcp-cloud-run` — Antigravity — `06-antigravity/gcp-cloud-run/`
 - `gdpr-data-handling` — Antigravity — `06-antigravity/gdpr-data-handling/`
+- `gdpr-data-handling` — skills — `skills/gdpr-data-handling/`
+- `genai-optimization` — skills — `skills/genai-optimization/`
 - `geo-fundamentals` — Antigravity — `06-antigravity/geo-fundamentals/`
 - `git-advanced-workflows` — Antigravity — `06-antigravity/git-advanced-workflows/`
 - `git-pr-workflows-git-workflow` — Antigravity — `06-antigravity/git-pr-workflows-git-workflow/`
 - `git-pr-workflows-onboard` — Antigravity — `06-antigravity/git-pr-workflows-onboard/`
 - `git-pr-workflows-pr-enhance` — Antigravity — `06-antigravity/git-pr-workflows-pr-enhance/`
 - `git-pushing` — Antigravity — `06-antigravity/git-pushing/`
+- `git-workflow` — skills — `skills/git-workflow/`
 - `github-actions-templates` — Antigravity — `06-antigravity/github-actions-templates/`
 - `github-workflow-automation` — Antigravity — `06-antigravity/github-workflow-automation/`
 - `gitlab-ci-patterns` — Antigravity — `06-antigravity/gitlab-ci-patterns/`
@@ -1309,6 +1584,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `go-concurrency-patterns` — Antigravity — `06-antigravity/go-concurrency-patterns/`
 - `godot-gdscript-patterns` — Antigravity — `06-antigravity/godot-gdscript-patterns/`
 - `golang-pro` — Antigravity — `06-antigravity/golang-pro/`
+- `gpt-taste` — skills — `skills/gpt-taste/`
 - `grafana-dashboards` — Antigravity — `06-antigravity/grafana-dashboards/`
 - `graphql` — Antigravity — `06-antigravity/graphql/`
 - `graphql-architect` — Antigravity — `06-antigravity/graphql-architect/`
@@ -1318,6 +1594,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `harness-writing` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/harness-writing/`
 - `haskell-pro` — Antigravity — `06-antigravity/haskell-pro/`
 - `helm-chart-scaffolding` — Antigravity — `06-antigravity/helm-chart-scaffolding/`
+- `high-end-visual-design` — skills — `skills/high-end-visual-design/`
 - `hosted-agents` — Context Enginee — `05-context-engineering/hosted-agents/`
 - `hr-pro` — Antigravity — `06-antigravity/hr-pro/`
 - `HTML Injection Testing` — Antigravity — `06-antigravity/html-injection-testing/`
@@ -1330,15 +1607,21 @@ Lista compacta para busca rápida com `Ctrl+F`:
 
 **I**
 - `i18n-localization` — Antigravity — `06-antigravity/i18n-localization/`
+- `i18n-localization` — skills — `skills/i18n-localization/`
 - `IDOR Vulnerability Testing` — Antigravity — `06-antigravity/idor-testing/`
+- `image-to-code` — skills — `skills/image-to-code/`
+- `imagegen-frontend-mobile` — skills — `skills/imagegen-frontend-mobile/`
+- `imagegen-frontend-web` — skills — `skills/imagegen-frontend-web/`
 - `imagen` — Antigravity — `06-antigravity/imagen/`
 - `incident-responder` — Antigravity — `06-antigravity/incident-responder/`
 - `incident-response-incident-response` — Antigravity — `06-antigravity/incident-response-incident-response/`
 - `incident-response-smart-fix` — Antigravity — `06-antigravity/incident-response-smart-fix/`
 - `incident-runbook-templates` — Antigravity — `06-antigravity/incident-runbook-templates/`
+- `industrial-brutalist-ui` — skills — `skills/industrial-brutalist-ui/`
 - `Infinite Gratitude` — Antigravity — `06-antigravity/infinite-gratitude/`
 - `inngest` — Antigravity — `06-antigravity/inngest/`
 - `insecure-defaults` — Trail of Bits — `07-trailofbits/insecure-defaults/skills/insecure-defaults/`
+- `insecure-defaults` — skills — `skills/insecure-defaults/`
 - `interactive-portfolio` — Antigravity — `06-antigravity/interactive-portfolio/`
 - `internal-comms` — Anthropic — `01-anthropic/internal-comms/`
 - `internal-comms` — Antigravity — `06-antigravity/internal-comms-anthropic/`
@@ -1377,6 +1660,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `linear-claude-skill` — Antigravity — `06-antigravity/linear-claude-skill/`
 - `linkerd-patterns` — Antigravity — `06-antigravity/linkerd-patterns/`
 - `lint-and-validate` — Antigravity — `06-antigravity/lint-and-validate/`
+- `lint-and-validate` — skills — `skills/lint-and-validate/`
 - `Linux Privilege Escalation` — Antigravity — `06-antigravity/linux-privilege-escalation/`
 - `Linux Production Shell Scripts` — Antigravity — `06-antigravity/linux-shell-scripting/`
 - `llm-app-patterns` — Antigravity — `06-antigravity/llm-app-patterns/`
@@ -1384,6 +1668,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `llm-application-dev-langchain-agent` — Antigravity — `06-antigravity/llm-application-dev-langchain-agent/`
 - `llm-application-dev-prompt-optimize` — Antigravity — `06-antigravity/llm-application-dev-prompt-optimize/`
 - `llm-evaluation` — Antigravity — `06-antigravity/llm-evaluation/`
+- `llmfit-advisor` — skills — `skills/llmfit-advisor/`
 - `loki-mode` — Antigravity — `06-antigravity/loki-mode/`
 
 **M**
@@ -1395,6 +1680,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `marketing-psychology` — Antigravity — `06-antigravity/marketing-psychology/`
 - `mcp-builder` — Anthropic — `01-anthropic/mcp-builder/`
 - `mcp-builder` — Antigravity — `06-antigravity/mcp-builder/`
+- `mcp-builder` — skills — `skills/mcp-builder/`
 - `memory-forensics` — Antigravity — `06-antigravity/memory-forensics/`
 - `memory-safety-patterns` — Antigravity — `06-antigravity/memory-safety-patterns/`
 - `memory-systems` — Context Enginee — `05-context-engineering/memory-systems/`
@@ -1404,12 +1690,15 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `micro-saas-launcher` — Antigravity — `06-antigravity/micro-saas-launcher/`
 - `microservices-patterns` — Antigravity — `06-antigravity/microservices-patterns/`
 - `minecraft-bukkit-pro` — Antigravity — `06-antigravity/minecraft-bukkit-pro/`
+- `minimalist-ui` — skills — `skills/minimalist-ui/`
 - `ml-engineer` — Antigravity — `06-antigravity/ml-engineer/`
 - `ml-pipeline-workflow` — Antigravity — `06-antigravity/ml-pipeline-workflow/`
 - `mlops-engineer` — Antigravity — `06-antigravity/mlops-engineer/`
 - `mobile-design` — Antigravity — `06-antigravity/mobile-design/`
+- `mobile-design` — skills — `skills/mobile-design/`
 - `mobile-developer` — Antigravity — `06-antigravity/mobile-developer/`
 - `mobile-games` — Antigravity — `06-antigravity/game-development/mobile-games/`
+- `mobile-games` — skills — `skills/game-development/mobile-games/`
 - `mobile-security-coder` — Antigravity — `06-antigravity/mobile-security-coder/`
 - `modern-javascript-patterns` — Antigravity — `06-antigravity/modern-javascript-patterns/`
 - `modern-python` — Trail of Bits — `07-trailofbits/modern-python/skills/modern-python/`
@@ -1423,6 +1712,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `multi-cloud-architecture` — Antigravity — `06-antigravity/multi-cloud-architecture/`
 - `multi-platform-apps-multi-platform` — Antigravity — `06-antigravity/multi-platform-apps-multi-platform/`
 - `multiplayer` — Antigravity — `06-antigravity/game-development/multiplayer/`
+- `multiplayer` — skills — `skills/game-development/multiplayer/`
 
 **N**
 - `n8n-code-python` — Antigravity — `06-antigravity/n8n-code-python/`
@@ -1436,10 +1726,13 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `network-engineer` — Antigravity — `06-antigravity/network-engineer/`
 - `nextjs-app-router-patterns` — Antigravity — `06-antigravity/nextjs-app-router-patterns/`
 - `nextjs-best-practices` — Antigravity — `06-antigravity/nextjs-best-practices/`
+- `nextjs-react-expert` — skills — `skills/nextjs-react-expert/`
 - `nextjs-supabase-auth` — Antigravity — `06-antigravity/nextjs-supabase-auth/`
+- `nextjs-supabase-auth` — skills — `skills/nextjs-supabase-auth/`
 - `nft-standards` — Antigravity — `06-antigravity/nft-standards/`
 - `nodejs-backend-patterns` — Antigravity — `06-antigravity/nodejs-backend-patterns/`
 - `nodejs-best-practices` — Antigravity — `06-antigravity/nodejs-best-practices/`
+- `nodejs-best-practices` — skills — `skills/nodejs-best-practices/`
 - `nosql-expert` — Antigravity — `06-antigravity/nosql-expert/`
 - `notebooklm` — Antigravity — `06-antigravity/notebooklm/`
 - `notion-template-business` — Antigravity — `06-antigravity/notion-template-business/`
@@ -1451,11 +1744,68 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `observability-monitoring-slo-implement` — Antigravity — `06-antigravity/observability-monitoring-slo-implement/`
 - `observe-whatsapp` — Antigravity — `06-antigravity/observe-whatsapp/`
 - `obsidian-clipper-template-creator` — Antigravity — `06-antigravity/obsidian-clipper-template-creator/`
+- `offensive-ai-security` — Claude-Red — `13-claude-red/offensive-ai-security/`
+- `offensive-ai-security` — skills — `skills/offensive-ai-security/`
+- `offensive-bug-identification` — Claude-Red — `13-claude-red/offensive-bug-identification/`
+- `offensive-bug-identification` — skills — `skills/offensive-bug-identification/`
+- `offensive-business-logic` — Claude-Red — `13-claude-red/offensive-business-logic/`
+- `offensive-business-logic` — skills — `skills/offensive-business-logic/`
+- `offensive-cloud` — Claude-Red — `13-claude-red/offensive-cloud/`
+- `offensive-cloud` — skills — `skills/offensive-cloud/`
+- `offensive-deserialization` — Claude-Red — `13-claude-red/offensive-deserialization/`
+- `offensive-deserialization` — skills — `skills/offensive-deserialization/`
+- `offensive-fast-checking` — Claude-Red — `13-claude-red/offensive-fast-checking/`
+- `offensive-fast-checking` — skills — `skills/offensive-fast-checking/`
+- `offensive-file-upload` — Claude-Red — `13-claude-red/offensive-file-upload/`
+- `offensive-file-upload` — skills — `skills/offensive-file-upload/`
+- `offensive-fuzzing` — Claude-Red — `13-claude-red/offensive-fuzzing/`
+- `offensive-fuzzing` — skills — `skills/offensive-fuzzing/`
+- `offensive-graphql` — Claude-Red — `13-claude-red/offensive-graphql/`
+- `offensive-graphql` — skills — `skills/offensive-graphql/`
+- `offensive-idor` — Claude-Red — `13-claude-red/offensive-idor/`
+- `offensive-idor` — skills — `skills/offensive-idor/`
+- `offensive-jwt` — Claude-Red — `13-claude-red/offensive-jwt/`
+- `offensive-jwt` — skills — `skills/offensive-jwt/`
+- `offensive-mobile` — Claude-Red — `13-claude-red/offensive-mobile/`
+- `offensive-mobile` — skills — `skills/offensive-mobile/`
+- `offensive-oauth` — Claude-Red — `13-claude-red/offensive-oauth/`
+- `offensive-oauth` — skills — `skills/offensive-oauth/`
+- `offensive-open-redirect` — Claude-Red — `13-claude-red/offensive-open-redirect/`
+- `offensive-open-redirect` — skills — `skills/offensive-open-redirect/`
+- `offensive-osint` — Claude-Red — `13-claude-red/offensive-osint/`
+- `offensive-osint` — skills — `skills/offensive-osint/`
+- `offensive-parameter-pollution` — Claude-Red — `13-claude-red/offensive-parameter-pollution/`
+- `offensive-parameter-pollution` — skills — `skills/offensive-parameter-pollution/`
+- `offensive-race-condition` — Claude-Red — `13-claude-red/offensive-race-condition/`
+- `offensive-race-condition` — skills — `skills/offensive-race-condition/`
+- `offensive-rce` — Claude-Red — `13-claude-red/offensive-rce/`
+- `offensive-rce` — skills — `skills/offensive-rce/`
+- `offensive-reporting` — Claude-Red — `13-claude-red/offensive-reporting/`
+- `offensive-reporting` — skills — `skills/offensive-reporting/`
+- `offensive-request-smuggling` — Claude-Red — `13-claude-red/offensive-request-smuggling/`
+- `offensive-request-smuggling` — skills — `skills/offensive-request-smuggling/`
+- `offensive-sqli` — Claude-Red — `13-claude-red/offensive-sqli/`
+- `offensive-sqli` — skills — `skills/offensive-sqli/`
+- `offensive-ssrf` — Claude-Red — `13-claude-red/offensive-ssrf/`
+- `offensive-ssrf` — skills — `skills/offensive-ssrf/`
+- `offensive-ssti` — Claude-Red — `13-claude-red/offensive-ssti/`
+- `offensive-ssti` — skills — `skills/offensive-ssti/`
+- `offensive-toctou` — Claude-Red — `13-claude-red/offensive-toctou/`
+- `offensive-toctou` — skills — `skills/offensive-toctou/`
+- `offensive-waf-bypass` — Claude-Red — `13-claude-red/offensive-waf-bypass/`
+- `offensive-waf-bypass` — skills — `skills/offensive-waf-bypass/`
+- `offensive-xss` — Claude-Red — `13-claude-red/offensive-xss/`
+- `offensive-xss` — skills — `skills/offensive-xss/`
+- `offensive-xxe` — Claude-Red — `13-claude-red/offensive-xxe/`
+- `offensive-xxe` — skills — `skills/offensive-xxe/`
 - `on-call-handoff-patterns` — Antigravity — `06-antigravity/on-call-handoff-patterns/`
 - `onboarding-cro` — Antigravity — `06-antigravity/onboarding-cro/`
 - `openapi-spec-generation` — Antigravity — `06-antigravity/openapi-spec-generation/`
+- `openui-genui-layout` — skills — `skills/openui-genui-layout/`
+- `osforge-canvas` — skills — `skills/osforge-canvas/`
 - `oss-hunter` — Antigravity — `06-antigravity/oss-hunter/`
 - `ossfuzz` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/ossfuzz/`
+- `output-enforcement` — skills — `skills/output-enforcement/`
 
 **P**
 - `page-cro` — Antigravity — `06-antigravity/page-cro/`
@@ -1465,6 +1815,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `paypal-integration` — Antigravity — `06-antigravity/paypal-integration/`
 - `paywall-upgrade-cro` — Antigravity — `06-antigravity/paywall-upgrade-cro/`
 - `pc-games` — Antigravity — `06-antigravity/game-development/pc-games/`
+- `pc-games` — skills — `skills/game-development/pc-games/`
 - `pci-compliance` — Antigravity — `06-antigravity/pci-compliance/`
 - `pdf` — Anthropic — `01-anthropic/pdf/`
 - `pdf` — Antigravity — `06-antigravity/pdf-official/`
@@ -1472,27 +1823,37 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `Pentest Commands` — Antigravity — `06-antigravity/pentest-commands/`
 - `performance-engineer` — Antigravity — `06-antigravity/performance-engineer/`
 - `performance-profiling` — Antigravity — `06-antigravity/performance-profiling/`
+- `performance-profiling` — skills — `skills/performance-profiling/`
 - `performance-testing-review-ai-review` — Antigravity — `06-antigravity/performance-testing-review-ai-review/`
 - `performance-testing-review-multi-agent-review` — Antigravity — `06-antigravity/performance-testing-review-multi-agent-review/`
 - `personal-tool-builder` — Antigravity — `06-antigravity/personal-tool-builder/`
+- `phase-discussion` — skills — `skills/planning/phase-discussion/`
 - `php-pro` — Antigravity — `06-antigravity/php-pro/`
 - `plaid-fintech` — Antigravity — `06-antigravity/plaid-fintech/`
 - `plan-writing` — Antigravity — `06-antigravity/plan-writing/`
+- `plan-writing` — skills — `skills/plan-writing/`
 - `planning-with-files` — Antigravity — `06-antigravity/planning-with-files/`
 - `playwright-skill` — Antigravity — `06-antigravity/playwright-skill/`
 - `popup-cro` — Antigravity — `06-antigravity/popup-cro/`
 - `posix-shell-pro` — Antigravity — `06-antigravity/posix-shell-pro/`
+- `postgres-optimization` — archive — `archive/_cursor-global-archived/skills/postgres-optimization/`
+- `postgres-optimization` — skills — `skills/postgres-optimization/`
 - `postgresql` — Antigravity — `06-antigravity/postgresql/`
 - `postmortem-writing` — Antigravity — `06-antigravity/postmortem-writing/`
 - `powershell-windows` — Antigravity — `06-antigravity/powershell-windows/`
+- `powershell-windows` — skills — `skills/powershell-windows/`
 - `pptx` — Anthropic — `01-anthropic/pptx/`
 - `pptx` — Antigravity — `06-antigravity/pptx-official/`
+- `prd-builder` — skills — `skills/planning/prd-builder/`
+- `predictive-failure` — skills — `skills/predictive-failure/`
 - `pricing-strategy` — Antigravity — `06-antigravity/pricing-strategy/`
 - `prisma-expert` — Antigravity — `06-antigravity/prisma-expert/`
+- `prisma-expert` — skills — `skills/prisma-expert/`
 - `Privilege Escalation Methods` — Antigravity — `06-antigravity/privilege-escalation-methods/`
 - `product-manager-toolkit` — Antigravity — `06-antigravity/product-manager-toolkit/`
 - `production-code-audit` — Antigravity — `06-antigravity/production-code-audit/`
 - `programmatic-seo` — Antigravity — `06-antigravity/programmatic-seo/`
+- `project-context-generator` — skills — `skills/context/project-context-generator/`
 - `project-development` — Context Enginee — `05-context-engineering/project-development/`
 - `projection-patterns` — Antigravity — `06-antigravity/projection-patterns/`
 - `prometheus-configuration` — Antigravity — `06-antigravity/prometheus-configuration/`
@@ -1507,6 +1868,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `python-development-python-scaffold` — Antigravity — `06-antigravity/python-development-python-scaffold/`
 - `python-packaging` — Antigravity — `06-antigravity/python-packaging/`
 - `python-patterns` — Antigravity — `06-antigravity/python-patterns/`
+- `python-patterns` — skills — `skills/python-patterns/`
 - `python-performance-optimization` — Antigravity — `06-antigravity/python-performance-optimization/`
 - `python-pro` — Antigravity — `06-antigravity/python-pro/`
 - `python-testing-patterns` — Antigravity — `06-antigravity/python-testing-patterns/`
@@ -1521,19 +1883,27 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `react-modernization` — Antigravity — `06-antigravity/react-modernization/`
 - `react-native-architecture` — Antigravity — `06-antigravity/react-native-architecture/`
 - `react-patterns` — Antigravity — `06-antigravity/react-patterns/`
+- `react-performance` — archive — `archive/_cursor-global-archived/skills/react-performance/`
+- `react-performance` — skills — `skills/react-performance/`
 - `react-state-management` — Antigravity — `06-antigravity/react-state-management/`
 - `react-ui-patterns` — Antigravity — `06-antigravity/react-ui-patterns/`
+- `readiness-gate` — skills — `skills/quality/readiness-gate/`
 - `readme` — Antigravity — `06-antigravity/readme/`
 - `reasoning-trace-optimizer` — Context Enginee — `05-context-engineering/_examples/interleaved_thinking/`
 - `receiving-code-review` — Superpowers — `02-superpowers/receiving-code-review/`
 - `receiving-code-review` — Antigravity — `06-antigravity/receiving-code-review/`
+- `receiving-code-review` — skills — `skills/receiving-code-review/`
 - `Red Team Tools and Methodology` — Antigravity — `06-antigravity/red-team-tools/`
 - `red-team-tactics` — Antigravity — `06-antigravity/red-team-tactics/`
+- `red-team-tactics` — skills — `skills/red-team-tactics/`
+- `redesign-audit` — skills — `skills/redesign-audit/`
+- `redesign-existing-projects` — skills — `skills/redesign-existing-projects/`
 - `reference-builder` — Antigravity — `06-antigravity/reference-builder/`
 - `referral-program` — Antigravity — `06-antigravity/referral-program/`
 - `remotion-best-practices` — Antigravity — `06-antigravity/remotion-best-practices/`
 - `requesting-code-review` — Superpowers — `02-superpowers/requesting-code-review/`
 - `requesting-code-review` — Antigravity — `06-antigravity/requesting-code-review/`
+- `requirements-clarify` — skills — `skills/planning/requirements-clarify/`
 - `research-engineer` — Antigravity — `06-antigravity/research-engineer/`
 - `reverse-engineer` — Antigravity — `06-antigravity/reverse-engineer/`
 - `risk-manager` — Antigravity — `06-antigravity/risk-manager/`
@@ -1541,6 +1911,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `ruby-pro` — Antigravity — `06-antigravity/ruby-pro/`
 - `rust-async-patterns` — Antigravity — `06-antigravity/rust-async-patterns/`
 - `rust-pro` — Antigravity — `06-antigravity/rust-pro/`
+- `rust-pro` — skills — `skills/rust-pro/`
 - `ruzzy` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/ruzzy/`
 
 **S**
@@ -1560,7 +1931,9 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `secure-workflow-guide` — Trail of Bits — `07-trailofbits/building-secure-contracts/skills/secure-workflow-guide/`
 - `Security Scanning Tools` — Antigravity — `06-antigravity/scanning-tools/`
 - `security-auditor` — Antigravity — `06-antigravity/security-auditor/`
+- `security-best-practices` — skills — `skills/security-best-practices/`
 - `security-bluebook-builder` — Antigravity — `06-antigravity/security-bluebook-builder/`
+- `security-check` — archive — `archive/_cursor-global-archived/skills/security-check/`
 - `security-compliance-compliance-check` — Antigravity — `06-antigravity/security-compliance-compliance-check/`
 - `security-requirement-extraction` — Antigravity — `06-antigravity/security-requirement-extraction/`
 - `security-review` — Antigravity — `06-antigravity/cc-skill-security-review/`
@@ -1568,6 +1941,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `security-scanning-security-dependencies` — Antigravity — `06-antigravity/security-scanning-security-dependencies/`
 - `security-scanning-security-hardening` — Antigravity — `06-antigravity/security-scanning-security-hardening/`
 - `security-scanning-security-sast` — Antigravity — `06-antigravity/security-scanning-security-sast/`
+- `security-threat-model` — skills — `skills/security-threat-model/`
 - `segment-cdp` — Antigravity — `06-antigravity/segment-cdp/`
 - `semgrep` — Trail of Bits — `07-trailofbits/static-analysis/skills/semgrep/`
 - `semgrep` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/semgrep/`
@@ -1575,6 +1949,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `semgrep-rule-variant-creator` — Trail of Bits — `07-trailofbits/semgrep-rule-variant-creator/skills/semgrep-rule-variant-creator/`
 - `senior-architect` — Antigravity — `06-antigravity/senior-architect/`
 - `senior-fullstack` — Antigravity — `06-antigravity/senior-fullstack/`
+- `seo` — skills — `skills/seo/`
 - `seo-audit` — Antigravity — `06-antigravity/seo-audit/`
 - `seo-authority-builder` — Antigravity — `06-antigravity/seo-authority-builder/`
 - `seo-cannibalization-detector` — Antigravity — `06-antigravity/seo-cannibalization-detector/`
@@ -1583,11 +1958,13 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `seo-content-refresher` — Antigravity — `06-antigravity/seo-content-refresher/`
 - `seo-content-writer` — Antigravity — `06-antigravity/seo-content-writer/`
 - `seo-fundamentals` — Antigravity — `06-antigravity/seo-fundamentals/`
+- `seo-fundamentals` — skills — `skills/seo-fundamentals/`
 - `seo-keyword-strategist` — Antigravity — `06-antigravity/seo-keyword-strategist/`
 - `seo-meta-optimizer` — Antigravity — `06-antigravity/seo-meta-optimizer/`
 - `seo-snippet-hunter` — Antigravity — `06-antigravity/seo-snippet-hunter/`
 - `seo-structure-architect` — Antigravity — `06-antigravity/seo-structure-architect/`
 - `server-management` — Antigravity — `06-antigravity/server-management/`
+- `server-management` — skills — `skills/server-management/`
 - `service-mesh-expert` — Antigravity — `06-antigravity/service-mesh-expert/`
 - `service-mesh-observability` — Antigravity — `06-antigravity/service-mesh-observability/`
 - `sharp-edges` — Antigravity — `06-antigravity/sharp-edges/`
@@ -1600,6 +1977,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `similarity-search-patterns` — Antigravity — `06-antigravity/similarity-search-patterns/`
 - `skill-creator` — Anthropic — `01-anthropic/skill-creator/`
 - `skill-creator` — Antigravity — `06-antigravity/skill-creator/`
+- `skill-creator` — skills — `skills/skill-creator/`
 - `skill-developer` — Antigravity — `06-antigravity/skill-developer/`
 - `skill-rails-upgrade` — Antigravity — `06-antigravity/skill-rails-upgrade/`
 - `skill-seekers` — Antigravity — `06-antigravity/skill-seekers/`
@@ -1608,12 +1986,15 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `slack-gif-creator` — Anthropic — `01-anthropic/slack-gif-creator/`
 - `slack-gif-creator` — Antigravity — `06-antigravity/slack-gif-creator/`
 - `slo-implementation` — Antigravity — `06-antigravity/slo-implementation/`
+- `smart-hooks` — skills — `skills/smart-hooks/`
+- `smart-model-dispatch` — skills — `skills/smart-model-dispatch/`
 - `SMTP Penetration Testing` — Antigravity — `06-antigravity/smtp-penetration-testing/`
 - `social-content` — Antigravity — `06-antigravity/social-content/`
 - `software-architecture` — Antigravity — `06-antigravity/software-architecture/`
 - `solana-vulnerability-scanner` — Trail of Bits — `07-trailofbits/building-secure-contracts/skills/solana-vulnerability-scanner/`
 - `solidity-security` — Antigravity — `06-antigravity/solidity-security/`
 - `spark-optimization` — Antigravity — `06-antigravity/spark-optimization/`
+- `spec-builder` — skills — `skills/planning/spec-builder/`
 - `spec-to-code-compliance` — Trail of Bits — `07-trailofbits/spec-to-code-compliance/skills/spec-to-code-compliance/`
 - `SQL Injection Testing` — Antigravity — `06-antigravity/sql-injection-testing/`
 - `sql-optimization-patterns` — Antigravity — `06-antigravity/sql-optimization-patterns/`
@@ -1626,9 +2007,14 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `startup-business-analyst-market-opportunity` — Antigravity — `06-antigravity/startup-business-analyst-market-opportunity/`
 - `startup-financial-modeling` — Antigravity — `06-antigravity/startup-financial-modeling/`
 - `startup-metrics-framework` — Antigravity — `06-antigravity/startup-metrics-framework/`
+- `stitch-design-export` — skills — `skills/stitch-design-export/`
+- `stitch-design-taste` — skills — `skills/stitch-design-taste/`
 - `stitch-ui-design` — Antigravity — `06-antigravity/stitch-ui-design/`
+- `story-executor` — skills — `skills/planning/story-executor/`
 - `stride-analysis-patterns` — Antigravity — `06-antigravity/stride-analysis-patterns/`
 - `stripe-integration` — Antigravity — `06-antigravity/stripe-integration/`
+- `stripe-integration` — skills — `skills/stripe-integration/`
+- `stuck-recovery` — skills — `skills/stuck-recovery/`
 - `subagent-driven-development` — Superpowers — `02-superpowers/subagent-driven-development/`
 - `subagent-driven-development` — Antigravity — `06-antigravity/subagent-driven-development/`
 - `substrate-vulnerability-scanner` — Trail of Bits — `07-trailofbits/building-secure-contracts/skills/substrate-vulnerability-scanner/`
@@ -1638,14 +2024,19 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `swiftui-expert-skill` — Antigravity — `06-antigravity/swiftui-expert-skill/`
 - `systematic-debugging` — Superpowers — `02-superpowers/systematic-debugging/`
 - `systematic-debugging` — Antigravity — `06-antigravity/systematic-debugging/`
+- `systematic-debugging` — skills — `skills/systematic-debugging/`
 - `systems-programming-rust-project` — Antigravity — `06-antigravity/systems-programming-rust-project/`
 
 **T**
 - `tailwind-design-system` — Antigravity — `06-antigravity/tailwind-design-system/`
 - `tailwind-patterns` — Antigravity — `06-antigravity/tailwind-patterns/`
+- `tailwind-patterns` — skills — `skills/tailwind-patterns/`
+- `taste-design-dials` — skills — `skills/taste-design-dials/`
 - `tavily-web` — Antigravity — `06-antigravity/tavily-web/`
 - `tdd-orchestrator` — Antigravity — `06-antigravity/tdd-orchestrator/`
 - `tdd-workflow` — Antigravity — `06-antigravity/tdd-workflow/`
+- `tdd-workflow` — archive — `archive/_cursor-global-archived/skills/tdd-workflow/`
+- `tdd-workflow` — skills — `skills/tdd-workflow/`
 - `tdd-workflows-tdd-cycle` — Antigravity — `06-antigravity/tdd-workflows-tdd-cycle/`
 - `tdd-workflows-tdd-green` — Antigravity — `06-antigravity/tdd-workflows-tdd-green/`
 - `tdd-workflows-tdd-red` — Antigravity — `06-antigravity/tdd-workflows-tdd-red/`
@@ -1653,6 +2044,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `team-collaboration-issue` — Antigravity — `06-antigravity/team-collaboration-issue/`
 - `team-collaboration-standup-notes` — Antigravity — `06-antigravity/team-collaboration-standup-notes/`
 - `team-composition-analysis` — Antigravity — `06-antigravity/team-composition-analysis/`
+- `technical-design-doc-creator` — skills — `skills/technical-design-doc-creator/`
 - `telegram-bot-builder` — Antigravity — `06-antigravity/telegram-bot-builder/`
 - `telegram-mini-app` — Antigravity — `06-antigravity/telegram-mini-app/`
 - `template-skill` — Anthropic — `01-anthropic/_template/`
@@ -1668,15 +2060,18 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `test-fixing` — Antigravity — `06-antigravity/test-fixing/`
 - `testing-handbook-generator` — Trail of Bits — `07-trailofbits/testing-handbook-skills/skills/testing-handbook-generator/`
 - `testing-patterns` — Antigravity — `06-antigravity/testing-patterns/`
+- `testing-patterns` — skills — `skills/testing-patterns/`
 - `theme-factory` — Anthropic — `01-anthropic/theme-factory/`
 - `theme-factory` — Antigravity — `06-antigravity/theme-factory/`
 - `threat-mitigation-mapping` — Antigravity — `06-antigravity/threat-mitigation-mapping/`
 - `threat-modeling-expert` — Antigravity — `06-antigravity/threat-modeling-expert/`
 - `threejs-skills` — Antigravity — `06-antigravity/threejs-skills/`
+- `tlc-spec-driven` — skills — `skills/tlc-spec-driven/`
 - `token-integration-analyzer` — Trail of Bits — `07-trailofbits/building-secure-contracts/skills/token-integration-analyzer/`
 - `ton-vulnerability-scanner` — Trail of Bits — `07-trailofbits/building-secure-contracts/skills/ton-vulnerability-scanner/`
 - `tool-design` — Context Enginee — `05-context-engineering/tool-design/`
 - `tool-design` — Antigravity — `06-antigravity/tool-design/`
+- `tool-safety-classifier` — skills — `skills/tool-safety-classifier/`
 - `Top 100 Web Vulnerabilities Reference` — Antigravity — `06-antigravity/top-web-vulnerabilities/`
 - `track-management` — Antigravity — `06-antigravity/track-management/`
 - `trigger-dev` — Antigravity — `06-antigravity/trigger-dev/`
@@ -1688,6 +2083,8 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `typescript-pro` — Antigravity — `06-antigravity/typescript-pro/`
 
 **U**
+- `ui-audit` — skills — `skills/quality/ui-audit/`
+- `ui-design-intelligence` — skills — `skills/ui-design-intelligence/`
 - `ui-skills` — Antigravity — `06-antigravity/ui-skills/`
 - `ui-ux-designer` — Antigravity — `06-antigravity/ui-ux-designer/`
 - `ui-ux-pro-max` — Antigravity — `06-antigravity/ui-ux-pro-max/`
@@ -1702,6 +2099,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `use-dom` — Expo — `09-expo/expo-app-design/skills/use-dom/`
 - `using-git-worktrees` — Superpowers — `02-superpowers/using-git-worktrees/`
 - `using-git-worktrees` — Antigravity — `06-antigravity/using-git-worktrees/`
+- `using-git-worktrees` — skills — `skills/using-git-worktrees/`
 - `using-neon` — Antigravity — `06-antigravity/using-neon/`
 - `using-superpowers` — Superpowers — `02-superpowers/using-superpowers/`
 - `using-superpowers` — Antigravity — `06-antigravity/using-superpowers/`
@@ -1714,6 +2112,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `vector-index-tuning` — Antigravity — `06-antigravity/vector-index-tuning/`
 - `vercel-composition-patterns` — Vercel Labs — `04-vercel/composition-patterns/`
 - `vercel-deploy` — Vercel Labs — `04-vercel/claude.ai/vercel-deploy-claimable/`
+- `vercel-deploy` — skills — `skills/vercel-deploy/`
 - `vercel-deploy-claimable` — Antigravity — `06-antigravity/vercel-deploy-claimable/`
 - `vercel-deployment` — Antigravity — `06-antigravity/vercel-deployment/`
 - `vercel-react-best-practices` — Vercel Labs — `04-vercel/react-best-practices/`
@@ -1721,13 +2120,18 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `vercel-react-native-skills` — Vercel Labs — `04-vercel/react-native-skills/`
 - `verification-before-completion` — Superpowers — `02-superpowers/verification-before-completion/`
 - `verification-before-completion` — Antigravity — `06-antigravity/verification-before-completion/`
+- `verification-before-completion` — archive — `archive/_cursor-global-archived/skills/verification-before-completion/`
+- `verification-before-completion` — skills — `skills/verification-before-completion/`
 - `vexor` — Antigravity — `06-antigravity/vexor/`
 - `viral-generator-builder` — Antigravity — `06-antigravity/viral-generator-builder/`
+- `visual-planner` — skills — `skills/visual-planner/`
 - `voice-agents` — Antigravity — `06-antigravity/voice-agents/`
 - `voice-ai-development` — Antigravity — `06-antigravity/voice-ai-development/`
 - `voice-ai-engine-development` — Antigravity — `06-antigravity/voice-ai-engine-development/`
 - `vr-ar` — Antigravity — `06-antigravity/game-development/vr-ar/`
+- `vr-ar` — skills — `skills/game-development/vr-ar/`
 - `vulnerability-scanner` — Antigravity — `06-antigravity/vulnerability-scanner/`
+- `vulnerability-scanner` — skills — `skills/vulnerability-scanner/`
 
 **W**
 - `wcag-audit-patterns` — Antigravity — `06-antigravity/wcag-audit-patterns/`
@@ -1735,12 +2139,15 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `web-artifacts-builder` — Antigravity — `06-antigravity/web-artifacts-builder/`
 - `web-design-guidelines` — Vercel Labs — `04-vercel/web-design-guidelines/`
 - `web-design-guidelines` — Antigravity — `06-antigravity/web-design-guidelines/`
+- `web-design-guidelines` — skills — `skills/web-design-guidelines/`
 - `web-games` — Antigravity — `06-antigravity/game-development/web-games/`
+- `web-games` — skills — `skills/game-development/web-games/`
 - `web-perf` — Cloudflare — `10-cloudflare/web-perf/`
 - `web-performance-optimization` — Antigravity — `06-antigravity/web-performance-optimization/`
 - `web3-testing` — Antigravity — `06-antigravity/web3-testing/`
 - `webapp-testing` — Anthropic — `01-anthropic/webapp-testing/`
 - `webapp-testing` — Antigravity — `06-antigravity/webapp-testing/`
+- `webapp-testing` — skills — `skills/webapp-testing/`
 - `Windows Privilege Escalation` — Antigravity — `06-antigravity/windows-privilege-escalation/`
 - `Wireshark Network Traffic Analysis` — Antigravity — `06-antigravity/wireshark-analysis/`
 - `WordPress Penetration Testing` — Antigravity — `06-antigravity/wordpress-penetration-testing/`

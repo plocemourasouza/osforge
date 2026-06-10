@@ -1,0 +1,1390 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OSForge Canvas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ── Design tokens — dark theme ported from visual-planner ─────────────── */
+  :root {
+    /* Accent palette (schema-defined). --accent overridden per-artifact in JS. */
+    --vermillion: #D94F30;
+    --teal: #2A7B9B;
+    --coral: #E06B56;
+    --forest: #2D8B55;
+    --amber: #D4A843;
+    --accent: var(--vermillion);
+    --accent-soft: color-mix(in srgb, var(--accent) 16%, transparent);
+    --accent-line: color-mix(in srgb, var(--accent) 38%, transparent);
+
+    /* Dark surfaces — warm-charcoal, not pure black */
+    --bg: #131217;
+    --bg-elev: #1A191F;
+    --bg-elev-2: #211F27;
+    --bg-code: #0F0E12;
+    --surface: #1C1B21;
+    --surface-hover: #25232B;
+
+    --text: #ECE8E1;
+    --text-dim: #A8A29A;
+    --text-faint: #76716A;
+
+    --border: #2C2A33;
+    --border-soft: #232128;
+    --border-strong: #3A3742;
+
+    --ok: #5BBF87;
+    --warn: #E0B84C;
+    --danger: #E0664F;
+
+    --font-display: 'Bricolage Grotesque', Georgia, serif;
+    --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.35);
+
+    --sidebar-w: 308px;
+    --feedbar-h: 0px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.6;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .skip-link {
+    position: absolute;
+    left: -999px;
+    top: 8px;
+    z-index: 100;
+    background: var(--accent);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+  }
+  .skip-link:focus { left: 8px; }
+
+  /* ── Shell layout ──────────────────────────────────────────────────────── */
+  .app {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ───────────────────────────────────────────────────────────── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--bg-elev);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    position: sticky;
+    top: 0;
+    background: var(--bg-elev);
+    z-index: 2;
+  }
+  .brand-mark {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: var(--accent);
+    display: grid; place-items: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: #fff;
+    font-size: 16px;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+  }
+  .brand-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.02rem;
+    letter-spacing: -0.01em;
+  }
+  .brand-sub { font-size: 0.72rem; color: var(--text-faint); letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .artifact-list { list-style: none; margin: 0; padding: 10px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+
+  .artifact-item {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 11px 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+  }
+  .artifact-item:hover { background: var(--surface-hover); color: var(--text); }
+  .artifact-item[aria-current="true"] {
+    background: var(--accent-soft);
+    border-color: var(--accent-line);
+    color: var(--text);
+  }
+  .artifact-item[aria-current="true"] .ai-title { color: var(--text); }
+  .ai-title { font-weight: 600; line-height: 1.3; color: var(--text); }
+  .ai-meta { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--text-faint); }
+  .ai-rev {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    padding: 1px 6px;
+    border-radius: var(--radius-full);
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .badge-answered {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 1px 7px;
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--ok) 20%, transparent);
+    color: var(--ok);
+    border: 1px solid color-mix(in srgb, var(--ok) 35%, transparent);
+  }
+  .sidebar-empty { padding: 24px 16px; color: var(--text-faint); font-size: 0.84rem; }
+
+  /* ── Main panel ────────────────────────────────────────────────────────── */
+  .main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .doc {
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 40px 40px calc(64px + var(--feedbar-h));
+    flex: 1;
+  }
+
+  .doc-header { margin-bottom: 30px; }
+  .doc-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .doc-eyebrow::before {
+    content: "";
+    width: 22px; height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .doc-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 10px;
+  }
+  .doc-submeta { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-faint); }
+  .doc-submeta .mono { font-family: var(--font-mono); }
+
+  /* ── Blocks ────────────────────────────────────────────────────────────── */
+  .block { margin: 0 0 26px; }
+
+  .b-heading { margin: 38px 0 14px; }
+  .b-heading:first-child { margin-top: 0; }
+  h2.b-h {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -0.015em;
+    margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  h2.b-h::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: -1px;
+    width: 54px; height: 2px;
+    background: var(--accent);
+  }
+  h3.b-h {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .b-md { color: var(--text-dim); font-size: 0.95rem; }
+  .b-md > :first-child { margin-top: 0; }
+  .b-md > :last-child { margin-bottom: 0; }
+  .b-md strong { color: var(--text); font-weight: 600; }
+  .b-md code, .cell code, .card-body code {
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    background: var(--bg-code);
+    border: 1px solid var(--border-soft);
+    padding: 1px 6px;
+    border-radius: 6px;
+    color: color-mix(in srgb, var(--accent) 75%, var(--text));
+  }
+  .b-md pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    overflow-x: auto;
+  }
+  .b-md pre code { background: none; border: none; padding: 0; color: var(--text); }
+  .b-md ul, .b-md ol { padding-left: 1.3em; }
+  .b-md li { margin: 4px 0; }
+  .b-md blockquote {
+    border-left: 3px solid var(--accent-line);
+    margin: 12px 0;
+    padding: 4px 0 4px 16px;
+    color: var(--text-dim);
+  }
+
+  /* Cards */
+  .card-grid { display: grid; gap: 14px; }
+  .card-grid[data-cols="2"] { grid-template-columns: repeat(2, 1fr); }
+  .card-grid[data-cols="3"] { grid-template-columns: repeat(3, 1fr); }
+  .card-grid[data-cols="4"] { grid-template-columns: repeat(4, 1fr); }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 16px 14px;
+    position: relative;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+  .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .card-title { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; letter-spacing: -0.01em; }
+  .card-badge {
+    flex-shrink: 0;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: var(--radius-full);
+    background: var(--accent-soft);
+    color: color-mix(in srgb, var(--accent) 85%, var(--text));
+    border: 1px solid var(--accent-line);
+    white-space: nowrap;
+  }
+  .card-body { font-size: 0.86rem; color: var(--text-dim); }
+  .card-body > :first-child { margin-top: 0; }
+  .card-body > :last-child { margin-bottom: 0; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+  table.b-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  table.b-table thead th {
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    background: var(--bg-elev-2);
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0;
+  }
+  table.b-table tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+  table.b-table tbody tr:last-child td { border-bottom: none; }
+  table.b-table tbody tr:hover td { background: var(--surface-hover); }
+  .cell strong { color: var(--text); }
+
+  /* Interactive shell (checklist / form / decision) */
+  .interactive {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+  }
+  .interactive-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0 0 14px;
+  }
+
+  /* Checklist */
+  .check-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .check-row {
+    display: flex; gap: 11px; align-items: flex-start;
+    padding: 9px 10px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background 0.12s ease;
+  }
+  .check-row:hover { background: var(--surface-hover); }
+  .check-box {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    margin-top: 1px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 6px;
+    display: grid; place-items: center;
+    transition: background 0.12s ease, border-color 0.12s ease;
+  }
+  input.check-native { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  input.check-native:checked + .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  input.check-native:focus-visible + .check-box { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .check-box svg { opacity: 0; transition: opacity 0.12s ease; }
+  input.check-native:checked + .check-box svg { opacity: 1; }
+  .check-text { font-size: 0.9rem; color: var(--text-dim); }
+  .check-text code { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg-code); padding: 1px 5px; border-radius: 5px; border: 1px solid var(--border-soft); }
+  input.check-native:checked ~ .check-text { color: var(--text); }
+
+  /* Form */
+  .form-grid { display: flex; flex-direction: column; gap: 16px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field-label { font-size: 0.84rem; font-weight: 600; color: var(--text); }
+  .field-checkbox-row { flex-direction: row; align-items: center; gap: 11px; }
+  .input, .select, .textarea {
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: var(--bg-code);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    padding: 10px 12px;
+    width: 100%;
+    transition: border-color 0.14s ease;
+  }
+  .input:focus, .select:focus, .textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+  .textarea { resize: vertical; min-height: 84px; }
+  .select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23A8A29A' d='M2 4l4 4 4-4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  .switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+  .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .switch-track { position: absolute; inset: 0; background: var(--border-strong); border-radius: var(--radius-full); transition: background 0.16s ease; }
+  .switch-thumb { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--text); transition: transform 0.16s ease; }
+  .switch input:checked + .switch-track { background: var(--accent); }
+  .switch input:checked + .switch-track + .switch-thumb { transform: translateX(18px); background: #fff; }
+  .switch input:focus-visible + .switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Decision */
+  .decision-prompt { font-size: 0.96rem; color: var(--text); margin: 0 0 16px; font-weight: 500; }
+  .decision-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .dbtn {
+    font-family: inherit;
+    font-size: 0.86rem;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.14s ease;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .dbtn:hover { background: var(--surface-hover); color: var(--text); }
+  .dbtn[aria-pressed="true"][data-action="approve"] { background: color-mix(in srgb, var(--ok) 22%, transparent); border-color: var(--ok); color: var(--ok); }
+  .dbtn[aria-pressed="true"][data-action="edit"] { background: color-mix(in srgb, var(--warn) 22%, transparent); border-color: var(--warn); color: var(--warn); }
+  .dbtn[aria-pressed="true"][data-action="reject"] { background: color-mix(in srgb, var(--danger) 22%, transparent); border-color: var(--danger); color: var(--danger); }
+  .decision-comment-wrap { margin-top: 14px; }
+  .decision-comment-label { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px; display: block; }
+  .decision-comment-label .req { color: var(--danger); }
+
+  /* Mermaid */
+  .mermaid-block {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    overflow-x: auto;
+    text-align: center;
+  }
+  .mermaid-block svg { max-width: 100%; height: auto; }
+  .mermaid-error {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--danger);
+    text-align: left;
+    white-space: pre-wrap;
+  }
+
+  /* Unknown block placeholder */
+  .block-unknown {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    background: var(--bg-elev);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+  }
+
+  /* ── Sticky feedback bar ───────────────────────────────────────────────── */
+  .feedbar {
+    position: fixed;
+    bottom: 0;
+    left: var(--sidebar-w);
+    right: 0;
+    background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    padding: 12px 40px;
+    z-index: 30;
+    display: none;
+  }
+  .feedbar.show { display: block; }
+  .feedbar-inner {
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .feedbar-comment {
+    flex: 1;
+    font-family: inherit;
+    font-size: 0.88rem;
+    background: var(--bg-code);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    padding: 10px 13px;
+  }
+  .feedbar-comment:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+  .submit-btn {
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 11px 22px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: filter 0.14s ease, opacity 0.14s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  .submit-btn:hover { filter: brightness(1.08); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Banner */
+  .banner {
+    position: fixed;
+    bottom: 86px;
+    left: 50%;
+    transform: translate(-50%, 16px);
+    background: var(--bg-elev-2);
+    border: 1px solid var(--ok);
+    border-left: 3px solid var(--ok);
+    color: var(--text);
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 40;
+    font-size: 0.88rem;
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    max-width: min(540px, 90vw);
+  }
+  .banner.show { opacity: 1; transform: translate(-50%, 0); }
+  .banner.error { border-color: var(--danger); border-left-color: var(--danger); }
+  .banner-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex-shrink: 0; }
+  .banner.error .banner-dot { background: var(--danger); }
+
+  /* Existing-feedback notice */
+  .feedback-notice {
+    margin: 0 0 24px;
+    background: color-mix(in srgb, var(--ok) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ok) 30%, transparent);
+    border-radius: var(--radius-md);
+    padding: 11px 15px;
+    font-size: 0.84rem;
+    color: var(--text-dim);
+    display: flex; align-items: center; gap: 9px;
+  }
+  .feedback-notice strong { color: var(--ok); }
+
+  /* Connection pill */
+  .conn {
+    position: fixed; top: 12px; right: 16px; z-index: 50;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border);
+    background: var(--bg-elev);
+    color: var(--text-faint);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .conn-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-faint); }
+  .conn[data-state="live"] .conn-dot { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+  .conn[data-state="reconnecting"] .conn-dot { background: var(--warn); animation: pulse 1s infinite; }
+  .conn[data-state="down"] .conn-dot { background: var(--danger); }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .empty-state {
+    display: grid; place-items: center;
+    min-height: 60vh;
+    color: var(--text-faint);
+    text-align: center;
+  }
+  .empty-state h2 { font-family: var(--font-display); color: var(--text-dim); font-weight: 600; }
+
+  /* ── Responsive ────────────────────────────────────────────────────────── */
+  @media (max-width: 860px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border); }
+    .feedbar { left: 0; padding: 12px 18px; }
+    .doc { padding: 24px 18px calc(64px + var(--feedbar-h)); }
+    .card-grid[data-cols="3"], .card-grid[data-cols="4"], .card-grid[data-cols="2"] { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Pular para o conteúdo</a>
+<div class="conn" id="conn" data-state="connecting" role="status" aria-live="polite" aria-label="Estado da conexão">
+  <span class="conn-dot"></span><span id="conn-label">conectando</span>
+</div>
+
+<div class="app">
+  <aside class="sidebar" aria-label="Lista de artefatos">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">O</div>
+      <div>
+        <div class="brand-name">OSForge Canvas</div>
+        <div class="brand-sub">viewer</div>
+      </div>
+    </div>
+    <ul class="artifact-list" id="artifact-list" role="list"></ul>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="doc" id="doc" aria-live="polite"></div>
+  </main>
+</div>
+
+<div class="feedbar" id="feedbar" role="region" aria-label="Enviar feedback">
+  <div class="feedbar-inner">
+    <input
+      type="text"
+      class="feedbar-comment"
+      id="feedbar-comment"
+      placeholder="Comentário geral (opcional)…"
+      aria-label="Comentário geral opcional"
+    />
+    <button class="submit-btn" id="submit-btn" type="button">Enviar feedback</button>
+  </div>
+</div>
+
+<div class="banner" id="banner" role="status" aria-live="assertive">
+  <span class="banner-dot" aria-hidden="true"></span>
+  <span id="banner-text"></span>
+</div>
+
+<script type="module">
+  import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.es.mjs";
+  import { marked } from "https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.esm.js";
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs";
+
+  // ── Mermaid init (dark, sandboxed) ──────────────────────────────────────
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: "dark",
+    securityLevel: "strict",
+    darkMode: true,
+    fontFamily: "'DM Sans', sans-serif",
+    themeVariables: {
+      background: "#1A191F",
+      primaryColor: "#211F27",
+      primaryTextColor: "#ECE8E1",
+      lineColor: "#76716A",
+      fontSize: "14px",
+    },
+  });
+
+  marked.setOptions({ gfm: true, breaks: false });
+
+  // ── Accent resolution ───────────────────────────────────────────────────
+  const ACCENTS = {
+    vermillion: "#D94F30",
+    teal: "#2A7B9B",
+    coral: "#E06B56",
+    forest: "#2D8B55",
+    amber: "#D4A843",
+  };
+
+  // ── State ───────────────────────────────────────────────────────────────
+  const state = {
+    artifacts: [],          // sidebar summaries
+    currentId: null,        // selected artifact id
+    artifact: null,         // full artifact JSON of currentId
+    responses: {},          // in-memory interactive responses, keyed by blockId
+    feedbackExisting: null, // server-loaded feedback if any
+    comment: "",            // general comment
+  };
+
+  // ── DOM refs ────────────────────────────────────────────────────────────
+  const $list = document.getElementById("artifact-list");
+  const $doc = document.getElementById("doc");
+  const $feedbar = document.getElementById("feedbar");
+  const $feedbarComment = document.getElementById("feedbar-comment");
+  const $submit = document.getElementById("submit-btn");
+  const $banner = document.getElementById("banner");
+  const $bannerText = document.getElementById("banner-text");
+  const $conn = document.getElementById("conn");
+  const $connLabel = document.getElementById("conn-label");
+
+  // ── Utilities ───────────────────────────────────────────────────────────
+  function el(tag, attrs = {}, children = []) {
+    const node = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null) continue;
+      if (k === "class") node.className = v;
+      else if (k === "html") node.innerHTML = v;
+      else if (k === "text") node.textContent = v;
+      else if (k.startsWith("data-") || k === "role" || k.startsWith("aria-")) node.setAttribute(k, v);
+      else node.setAttribute(k, v);
+    }
+    for (const c of [].concat(children)) {
+      if (c == null) continue;
+      node.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+    }
+    return node;
+  }
+
+  function mdToHtml(src) {
+    if (typeof src !== "string" || src.length === 0) return "";
+    // Artefatos são autorados localmente (trusted), mas qualquer processo pode
+    // escrever em outputs/canvas/ — sanitizar é defense-in-depth barato.
+    try { return DOMPurify.sanitize(marked.parse(src)); } catch { return escapeHtml(src); }
+  }
+  // Lightweight inline markdown for table cells (bold + inline code only).
+  function inlineMd(src) {
+    if (typeof src !== "string") return "";
+    return escapeHtml(src)
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function setAccent(accentName) {
+    const hex = ACCENTS[accentName] || ACCENTS.vermillion;
+    document.documentElement.style.setProperty("--accent", hex);
+  }
+
+  function showBanner(text, isError = false) {
+    $bannerText.textContent = text;
+    $banner.classList.toggle("error", isError);
+    $banner.querySelector(".banner-dot").style.background = isError ? "var(--danger)" : "var(--ok)";
+    $banner.classList.add("show");
+    clearTimeout(showBanner._t);
+    showBanner._t = setTimeout(() => $banner.classList.remove("show"), isError ? 6000 : 8000);
+  }
+
+  // Keep feedbar height in sync so doc bottom padding clears it.
+  function syncFeedbarHeight() {
+    const h = $feedbar.classList.contains("show") ? $feedbar.offsetHeight : 0;
+    document.documentElement.style.setProperty("--feedbar-h", h + "px");
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  //  Block renderers — each returns a DOM node.
+  // ─────────────────────────────────────────────────────────────────────────
+  const CHECK_SVG =
+    '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2.5 6.8l2.6 2.7L10.5 3.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  const renderers = {
+    heading(b) {
+      const level = b.level === 3 ? 3 : 2;
+      const tag = level === 3 ? "h3" : "h2";
+      return el("div", { class: "block b-heading" }, [
+        el(tag, { class: "b-h", id: typeof b.id === "string" ? `h-${b.id}` : null, text: b.text || "" }),
+      ]);
+    },
+
+    markdown(b) {
+      return el("div", { class: "block b-md", html: mdToHtml(b.md) });
+    },
+
+    cards(b) {
+      const cols = [2, 3, 4].includes(b.columns) ? b.columns : 3;
+      const grid = el("div", { class: "card-grid", "data-cols": String(cols) });
+      for (const item of Array.isArray(b.items) ? b.items : []) {
+        const head = el("div", { class: "card-head" }, [
+          el("div", { class: "card-title", text: item.title || "" }),
+          item.badge ? el("span", { class: "card-badge", text: item.badge }) : null,
+        ]);
+        grid.appendChild(el("div", { class: "card" }, [
+          head,
+          el("div", { class: "card-body", html: mdToHtml(item.md) }),
+        ]));
+      }
+      return el("div", { class: "block" }, [grid]);
+    },
+
+    table(b) {
+      const cols = Array.isArray(b.columns) ? b.columns : [];
+      const rows = Array.isArray(b.rows) ? b.rows : [];
+      const thead = el("thead", {}, [
+        el("tr", {}, cols.map((c) => el("th", { scope: "col", text: c }))),
+      ]);
+      const tbody = el("tbody", {}, rows.map((row) =>
+        el("tr", {}, (Array.isArray(row) ? row : []).map((cell) =>
+          el("td", {}, [el("span", { class: "cell", html: inlineMd(cell) })])))));
+      return el("div", { class: "block" }, [
+        el("div", { class: "table-wrap" }, [el("table", { class: "b-table" }, [thead, tbody])]),
+      ]);
+    },
+
+    checklist(b) {
+      const blockId = b.id;
+      const saved = state.responses[blockId];
+      const checkedSet = new Set(saved && saved.type === "checklist" ? saved.checked : []);
+      const list = el("ul", { class: "check-list", role: "list" });
+      for (const item of Array.isArray(b.items) ? b.items : []) {
+        const isChecked = checkedSet.size ? checkedSet.has(item.id) : !!item.checked;
+        const inputId = `chk-${blockId}-${item.id}`;
+        const native = el("input", {
+          type: "checkbox", class: "check-native", id: inputId,
+          "data-kind": "checklist", "data-block": blockId, "data-item": item.id,
+        });
+        if (isChecked) native.checked = true;
+        const box = el("span", { class: "check-box", html: CHECK_SVG, "aria-hidden": "true" });
+        const label = el("label", { class: "check-row", for: inputId }, [
+          native, box, el("span", { class: "check-text", html: inlineMd(item.text) }),
+        ]);
+        list.appendChild(el("li", {}, [label]));
+        // Seed response state so an untouched checklist still reports defaults.
+        if (isChecked) {
+          const r = ensureChecklist(blockId);
+          if (!r.checked.includes(item.id)) r.checked.push(item.id);
+        } else {
+          ensureChecklist(blockId);
+        }
+      }
+      const inner = [];
+      if (b.title) inner.push(el("h3", { class: "interactive-title", text: b.title }));
+      inner.push(list);
+      return el("div", { class: "block interactive", "data-interactive": "1" }, inner);
+    },
+
+    form(b) {
+      const blockId = b.id;
+      const saved = state.responses[blockId];
+      const savedVals = saved && saved.type === "form" ? saved.values : {};
+      const grid = el("div", { class: "form-grid" });
+      for (const f of Array.isArray(b.fields) ? b.fields : []) {
+        grid.appendChild(renderField(blockId, f, savedVals));
+        // Seed defaults into state.
+        const r = ensureForm(blockId);
+        if (!(f.id in r.values)) {
+          r.values[f.id] = (f.id in savedVals) ? savedVals[f.id] : normalizeFieldValue(f);
+        }
+      }
+      const inner = [];
+      if (b.title) inner.push(el("h3", { class: "interactive-title", text: b.title }));
+      inner.push(grid);
+      return el("div", { class: "block interactive", "data-interactive": "1" }, inner);
+    },
+
+    decision(b) {
+      const blockId = b.id;
+      const opts = (Array.isArray(b.options) ? b.options : []).filter((o) =>
+        ["approve", "edit", "reject"].includes(o));
+      const reqFor = Array.isArray(b.commentRequiredFor) ? b.commentRequiredFor : [];
+      const saved = state.responses[blockId];
+      const chosen = saved && saved.type === "decision" ? saved.action : null;
+
+      const actionsRow = el("div", { class: "decision-actions", role: "group", "aria-label": "Decisão" });
+      const labels = { approve: "Aprovar", edit: "Editar", reject: "Rejeitar" };
+      for (const o of opts) {
+        actionsRow.appendChild(el("button", {
+          type: "button", class: "dbtn", "data-kind": "decision", "data-block": blockId,
+          "data-action": o, "data-req": reqFor.includes(o) ? "1" : "0",
+          "aria-pressed": chosen === o ? "true" : "false",
+          text: labels[o] || o,
+        }));
+      }
+
+      const wrap = el("div", { class: "block interactive", "data-interactive": "1", "data-decision": blockId }, [
+        el("p", { class: "decision-prompt", text: b.prompt || "" }),
+        actionsRow,
+      ]);
+
+      // Inline comment area, shown when a comment-required option is active.
+      const needsComment = chosen && reqFor.includes(chosen);
+      const commentWrap = el("div", {
+        class: "decision-comment-wrap", "data-comment-for": blockId,
+        style: needsComment ? "" : "display:none",
+      }, [
+        el("label", {
+          class: "decision-comment-label", for: `dcomment-${blockId}`,
+          html: `Comentário ${reqFor.length ? '<span class="req" aria-hidden="true">* obrigatório</span>' : "(opcional)"}`,
+        }),
+        (() => {
+          const ta = el("textarea", {
+            class: "textarea", id: `dcomment-${blockId}`,
+            "data-kind": "decision-comment", "data-block": blockId,
+            placeholder: "Descreva o ajuste ou o motivo…", rows: "3",
+            "aria-required": needsComment ? "true" : "false",
+          });
+          if (saved && saved.type === "decision" && saved.comment) ta.value = saved.comment;
+          return ta;
+        })(),
+      ]);
+      wrap.appendChild(commentWrap);
+      return wrap;
+    },
+
+    mermaid(b) {
+      const kind = b.kind === "gantt" ? "gantt" : "graph";
+      const node = el("div", {
+        class: "block mermaid-block", "data-mermaid": "1", "data-kind": kind,
+      });
+      // Stash source; rendered post-mount by renderMermaids().
+      node.dataset.src = typeof b.code === "string" ? b.code : "";
+      node.dataset.id = b.id || `m-${Math.random().toString(36).slice(2)}`;
+      return node;
+    },
+  };
+
+  function renderField(blockId, f, savedVals) {
+    const fid = `f-${blockId}-${f.id}`;
+    const val = (f.id in savedVals) ? savedVals[f.id] : f.value;
+    const kind = f.kind;
+
+    if (kind === "checkbox") {
+      const isOn = val === true || val === "true" || val === "on";
+      const input = el("input", {
+        type: "checkbox", id: fid,
+        "data-kind": "form", "data-block": blockId, "data-field": f.id, "data-field-kind": "checkbox",
+      });
+      if (isOn) input.checked = true;
+      const sw = el("span", { class: "switch" }, [
+        input, el("span", { class: "switch-track", "aria-hidden": "true" }),
+        el("span", { class: "switch-thumb", "aria-hidden": "true" }),
+      ]);
+      return el("div", { class: "field field-checkbox-row" }, [
+        sw, el("label", { class: "field-label", for: fid, text: f.label || "" }),
+      ]);
+    }
+
+    let control;
+    if (kind === "select") {
+      control = el("select", {
+        class: "select", id: fid,
+        "data-kind": "form", "data-block": blockId, "data-field": f.id, "data-field-kind": "select",
+      });
+      for (const o of Array.isArray(f.options) ? f.options : []) {
+        const opt = el("option", { value: o, text: o });
+        if (o === val) opt.selected = true;
+        control.appendChild(opt);
+      }
+    } else if (kind === "textarea") {
+      control = el("textarea", {
+        class: "textarea", id: fid, rows: "3",
+        "data-kind": "form", "data-block": blockId, "data-field": f.id, "data-field-kind": "textarea",
+      });
+      control.value = typeof val === "string" ? val : "";
+    } else {
+      control = el("input", {
+        type: "text", class: "input", id: fid,
+        "data-kind": "form", "data-block": blockId, "data-field": f.id, "data-field-kind": "text",
+      });
+      control.value = typeof val === "string" ? val : (val == null ? "" : String(val));
+    }
+    return el("div", { class: "field" }, [
+      el("label", { class: "field-label", for: fid, text: f.label || "" }),
+      control,
+    ]);
+  }
+
+  function normalizeFieldValue(f) {
+    if (f.kind === "checkbox") return f.value === true || f.value === "true" || f.value === "on";
+    if (typeof f.value === "string") return f.value;
+    if (f.value == null) return "";
+    return String(f.value);
+  }
+
+  function ensureChecklist(blockId) {
+    let r = state.responses[blockId];
+    if (!r || r.type !== "checklist") { r = { type: "checklist", checked: [] }; state.responses[blockId] = r; }
+    return r;
+  }
+  function ensureForm(blockId) {
+    let r = state.responses[blockId];
+    if (!r || r.type !== "form") { r = { type: "form", values: {} }; state.responses[blockId] = r; }
+    return r;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  //  Full document render
+  // ─────────────────────────────────────────────────────────────────────────
+  function renderDoc() {
+    const a = state.artifact;
+    $doc.innerHTML = "";
+    if (!a) {
+      $feedbar.classList.remove("show");
+      syncFeedbarHeight();
+      $doc.appendChild(el("div", { class: "empty-state" }, [
+        el("div", {}, [
+          el("h2", { text: "Nenhum artefato selecionado" }),
+          el("p", { class: "", text: "Selecione um artefato na barra lateral." }),
+        ]),
+      ]));
+      return;
+    }
+
+    setAccent(a.accent);
+
+    // Header
+    const header = el("div", { class: "doc-header" }, [
+      el("div", { class: "doc-eyebrow", text: "osforge canvas" }),
+      el("h1", { class: "doc-title", text: a.title || a.id || "Artefato" }),
+      el("div", { class: "doc-submeta" }, [
+        el("span", { class: "mono", text: `rev ${a.revision ?? "?"}` }),
+        a.createdAt ? el("span", { text: fmtDate(a.createdAt) }) : null,
+        el("span", { class: "mono", text: a.id || "" }),
+      ]),
+    ]);
+    $doc.appendChild(header);
+
+    // Existing-feedback notice
+    if (state.feedbackExisting) {
+      const fb = state.feedbackExisting;
+      const stale = typeof fb.revision === "number" && typeof a.revision === "number" && fb.revision < a.revision;
+      $doc.appendChild(el("div", { class: "feedback-notice" }, [
+        el("span", { class: "banner-dot", "aria-hidden": "true" }),
+        el("span", {
+          html: stale
+            ? `<strong>Feedback enviado</strong> para a revisão ${fb.revision} (esta é a rev ${a.revision} — pode estar desatualizado).`
+            : `<strong>Feedback já enviado</strong> para esta revisão. Suas respostas foram pré-preenchidas.`,
+        }),
+      ]));
+    }
+
+    // Blocks
+    let interactiveCount = 0;
+    for (const block of Array.isArray(a.blocks) ? a.blocks : []) {
+      if (!block || typeof block !== "object") continue;
+      const r = renderers[block.type];
+      if (r) {
+        const node = r(block);
+        if (node.dataset && node.dataset.interactive === "1") interactiveCount++;
+        $doc.appendChild(node);
+      } else {
+        $doc.appendChild(el("div", { class: "block block-unknown", text: `block não suportado (${block.type ?? "sem type"})` }));
+      }
+    }
+
+    // Feedback bar visibility
+    if (interactiveCount > 0) {
+      $feedbar.classList.add("show");
+      $feedbarComment.value = state.comment || "";
+    } else {
+      $feedbar.classList.remove("show");
+    }
+    syncFeedbarHeight();
+
+    renderMermaids();
+  }
+
+  function fmtDate(iso) {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    } catch { return iso; }
+  }
+
+  // Render mermaid blocks after they are in the DOM.
+  async function renderMermaids() {
+    const nodes = [...$doc.querySelectorAll("[data-mermaid='1']")];
+    for (const node of nodes) {
+      const src = node.dataset.src || "";
+      const id = "mmd-" + node.dataset.id.replace(/[^a-z0-9_-]/gi, "");
+      if (!src.trim()) { node.textContent = ""; continue; }
+      try {
+        const { svg, bindFunctions } = await mermaid.render(id + "-svg", src);
+        node.innerHTML = svg;
+        if (bindFunctions) bindFunctions(node);
+      } catch (err) {
+        node.innerHTML = "";
+        node.appendChild(el("div", { class: "mermaid-error", text: "diagrama mermaid inválido:\n" + (err && err.message ? err.message : String(err)) }));
+      }
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  //  Sidebar
+  // ─────────────────────────────────────────────────────────────────────────
+  function renderSidebar() {
+    $list.innerHTML = "";
+    if (!state.artifacts.length) {
+      $list.appendChild(el("li", { class: "sidebar-empty", text: "Nenhum artefato em outputs/canvas/artifacts/." }));
+      return;
+    }
+    for (const art of state.artifacts) {
+      const isCurrent = art.id === state.currentId;
+      const meta = el("div", { class: "ai-meta" }, [
+        el("span", { class: "ai-rev", text: `rev ${art.revision}` }),
+        art.hasFeedback ? el("span", { class: "badge-answered", text: "respondido" }) : null,
+      ]);
+      const btn = el("button", {
+        class: "artifact-item", type: "button", "data-id": art.id,
+        "aria-current": isCurrent ? "true" : "false",
+      }, [
+        el("span", { class: "ai-title", text: art.title || art.id }),
+        meta,
+      ]);
+      $list.appendChild(el("li", {}, [btn]));
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  //  Data loading
+  // ─────────────────────────────────────────────────────────────────────────
+  async function loadArtifactList() {
+    try {
+      const res = await fetch("/api/artifacts");
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      state.artifacts = await res.json();
+    } catch (err) {
+      state.artifacts = [];
+    }
+    renderSidebar();
+  }
+
+  async function selectArtifact(id, { preserveResponses = false } = {}) {
+    if (!id) return;
+    const prevResponses = preserveResponses ? state.responses : {};
+    const prevComment = preserveResponses ? state.comment : "";
+
+    let artifact = null;
+    try {
+      const res = await fetch("/api/artifacts/" + encodeURIComponent(id));
+      if (res.ok) artifact = await res.json();
+    } catch { /* ignore */ }
+
+    if (!artifact) { showBanner("Falha ao carregar o artefato.", true); return; }
+
+    // Load existing feedback (pre-fill).
+    let feedback = null;
+    try {
+      const fres = await fetch("/api/feedback/" + encodeURIComponent(id));
+      if (fres.ok) feedback = await fres.json();
+    } catch { /* ignore */ }
+
+    state.currentId = id;
+    state.artifact = artifact;
+    state.feedbackExisting = feedback;
+
+    // Build responses: start from existing feedback, then overlay preserved
+    // (unsent) responses where block ids still match the new artifact.
+    const seed = {};
+    if (feedback && feedback.responses && typeof feedback.responses === "object") {
+      for (const [bid, val] of Object.entries(feedback.responses)) seed[bid] = structuredClone(val);
+    }
+    if (preserveResponses) {
+      const validIds = new Set((artifact.blocks || []).map((b) => b && b.id).filter(Boolean));
+      for (const [bid, val] of Object.entries(prevResponses)) {
+        if (validIds.has(bid)) seed[bid] = val;
+      }
+    }
+    state.responses = seed;
+    state.comment = (preserveResponses && prevComment) ? prevComment : (feedback && typeof feedback.comment === "string" ? feedback.comment : "");
+
+    // Update deep-link.
+    const url = new URL(location.href);
+    url.searchParams.set("a", id);
+    history.replaceState(null, "", url);
+
+    renderSidebar();
+    renderDoc();
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  //  Event delegation
+  // ─────────────────────────────────────────────────────────────────────────
+  $list.addEventListener("click", (e) => {
+    const btn = e.target.closest(".artifact-item");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    if (id && id !== state.currentId) selectArtifact(id);
+  });
+
+  // Checklist + form changes (change event).
+  $doc.addEventListener("change", (e) => {
+    const t = e.target;
+    if (!(t instanceof HTMLElement)) return;
+    const kind = t.dataset.kind;
+
+    if (kind === "checklist") {
+      const r = ensureChecklist(t.dataset.block);
+      const id = t.dataset.item;
+      if (t.checked) { if (!r.checked.includes(id)) r.checked.push(id); }
+      else { r.checked = r.checked.filter((x) => x !== id); }
+    } else if (kind === "form") {
+      const r = ensureForm(t.dataset.block);
+      const fkind = t.dataset.fieldKind;
+      r.values[t.dataset.field] = fkind === "checkbox" ? t.checked : t.value;
+    }
+  });
+
+  // Form text/textarea live typing.
+  $doc.addEventListener("input", (e) => {
+    const t = e.target;
+    if (!(t instanceof HTMLElement)) return;
+    if (t.dataset.kind === "form" && (t.dataset.fieldKind === "text" || t.dataset.fieldKind === "textarea")) {
+      ensureForm(t.dataset.block).values[t.dataset.field] = t.value;
+    } else if (t.dataset.kind === "decision-comment") {
+      const r = state.responses[t.dataset.block];
+      if (r && r.type === "decision") r.comment = t.value;
+    }
+  });
+
+  // Decision buttons (click).
+  $doc.addEventListener("click", (e) => {
+    const btn = e.target.closest(".dbtn[data-kind='decision']");
+    if (!btn) return;
+    const blockId = btn.dataset.block;
+    const action = btn.dataset.action;
+    const group = btn.closest(".decision-actions");
+
+    // Toggle aria-pressed across the group.
+    group.querySelectorAll(".dbtn").forEach((b) => b.setAttribute("aria-pressed", "false"));
+    btn.setAttribute("aria-pressed", "true");
+
+    const prev = state.responses[blockId];
+    const prevComment = prev && prev.type === "decision" ? prev.comment : "";
+    state.responses[blockId] = { type: "decision", action, ...(prevComment ? { comment: prevComment } : {}) };
+
+    // Show/hide inline comment based on requirement.
+    const wrap = state.artifact.blocks.find((b) => b && b.id === blockId);
+    const reqFor = wrap && Array.isArray(wrap.commentRequiredFor) ? wrap.commentRequiredFor : [];
+    const commentWrap = $doc.querySelector(`[data-comment-for='${cssEscape(blockId)}']`);
+    if (commentWrap) {
+      const required = reqFor.includes(action);
+      commentWrap.style.display = required ? "" : "none";
+      const ta = commentWrap.querySelector("textarea");
+      if (ta) {
+        ta.setAttribute("aria-required", required ? "true" : "false");
+        if (required) { ta.focus(); }
+      }
+    }
+  });
+
+  function cssEscape(s) {
+    return (window.CSS && CSS.escape) ? CSS.escape(s) : String(s).replace(/["\\]/g, "\\$&");
+  }
+
+  $feedbarComment.addEventListener("input", () => { state.comment = $feedbarComment.value; });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  //  Submit feedback
+  // ─────────────────────────────────────────────────────────────────────────
+  $submit.addEventListener("click", submitFeedback);
+
+  async function submitFeedback() {
+    const a = state.artifact;
+    if (!a) return;
+
+    // Validate decisions requiring a comment.
+    for (const block of a.blocks || []) {
+      if (!block || block.type !== "decision") continue;
+      const resp = state.responses[block.id];
+      if (!resp || resp.type !== "decision") continue;
+      const reqFor = Array.isArray(block.commentRequiredFor) ? block.commentRequiredFor : [];
+      if (reqFor.includes(resp.action) && (!resp.comment || !resp.comment.trim())) {
+        showBanner(`A decisão "${block.prompt?.slice(0, 40) || block.id}" exige um comentário.`, true);
+        const ta = $doc.querySelector(`#dcomment-${cssEscape(block.id)}`);
+        if (ta) ta.focus();
+        return;
+      }
+    }
+
+    const payload = {
+      artifactId: a.id,
+      revision: typeof a.revision === "number" ? a.revision : 1,
+      submittedAt: new Date().toISOString(),
+      responses: state.responses,
+    };
+    const comment = ($feedbarComment.value || "").trim();
+    if (comment) payload.comment = comment;
+
+    $submit.disabled = true;
+    try {
+      const res = await fetch("/api/feedback/" + encodeURIComponent(a.id), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        showBanner("Feedback enviado — volte ao terminal.");
+        state.feedbackExisting = payload;
+        // refresh sidebar badge
+        loadArtifactList();
+      } else {
+        const body = await res.json().catch(() => ({}));
+        showBanner("Erro ao enviar: " + (body.error || res.status), true);
+      }
+    } catch (err) {
+      showBanner("Erro de rede ao enviar feedback.", true);
+    } finally {
+      $submit.disabled = false;
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  //  SSE — live updates with backoff reconnect
+  // ─────────────────────────────────────────────────────────────────────────
+  let es = null;
+  let backoff = 1000;
+  const BACKOFF_MAX = 15000;
+
+  function setConn(stateName, label) {
+    $conn.setAttribute("data-state", stateName);
+    $connLabel.textContent = label;
+  }
+
+  function connectSSE() {
+    try { es = new EventSource("/api/events"); }
+    catch { scheduleReconnect(); return; }
+
+    es.onopen = () => { backoff = 1000; setConn("live", "ao vivo"); };
+
+    es.onmessage = (e) => {
+      let evt;
+      try { evt = JSON.parse(e.data); } catch { return; }
+      handleSseEvent(evt);
+    };
+
+    es.onerror = () => {
+      // EventSource auto-reconnects, but we add our own backoff + UI on hard drops.
+      if (es && es.readyState === EventSource.CLOSED) {
+        setConn("down", "desconectado");
+        scheduleReconnect();
+      } else {
+        setConn("reconnecting", "reconectando");
+      }
+    };
+  }
+
+  function scheduleReconnect() {
+    if (es) { try { es.close(); } catch {} es = null; }
+    setConn("reconnecting", "reconectando");
+    setTimeout(() => {
+      connectSSE();
+      backoff = Math.min(backoff * 2, BACKOFF_MAX);
+    }, backoff);
+  }
+
+  function handleSseEvent(evt) {
+    if (!evt || typeof evt !== "object") return;
+    if (evt.kind === "artifact") {
+      if (evt.id === state.currentId) {
+        // Re-fetch + full re-render, preserving unsent responses where ids match.
+        selectArtifact(evt.id, { preserveResponses: true });
+      }
+      // Always refresh sidebar (new artifact or revision bump).
+      loadArtifactList();
+    } else if (evt.kind === "feedback") {
+      if (evt.id === state.currentId) {
+        // Someone (or this client) wrote feedback; refresh notice + badge.
+        loadArtifactList();
+      }
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  //  Boot
+  // ─────────────────────────────────────────────────────────────────────────
+  async function boot() {
+    await loadArtifactList();
+
+    const params = new URLSearchParams(location.search);
+    const deepLink = params.get("a");
+    let target = null;
+    if (deepLink && state.artifacts.some((x) => x.id === deepLink)) target = deepLink;
+    else if (state.artifacts.length) target = state.artifacts[0].id; // newest first (server-sorted)
+
+    if (target) await selectArtifact(target);
+    else renderDoc();
+
+    connectSSE();
+    window.addEventListener("resize", syncFeedbarHeight, { passive: true });
+  }
+
+  boot();
+</script>
+</body>
+</html>

@@ -43,3 +43,7 @@ _taste-skill-source/
 
 # Temp
 /tmp/
+
+# OSForge Canvas runtime scratch (artefatos e feedback gerados em sessão)
+outputs/canvas/
+.playwright-mcp/

@@ -261,6 +261,7 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Behavioral Modes | brainstorm mode, implement mode | `skills/meta/behavioral-modes.md` |
 | DB State Sync | osforge-db, salvar estado | `skills/meta/db-state-sync.md` |
 | Visual Planner | visualizar plano, HTML interativo | `skills/meta/visual-planner.md` |
+| OSForge Canvas | canvas, abre no canvas, mostra no browser, revisar interativamente, aprovar antes de implementar | `skills/osforge-canvas/SKILL.md` |
 | AutoRefine | melhorar skill, autorefine, otimizar | `skills/meta/autorefine.md` |
 | Adversarial Review | adversarial, revisão cínica | `skills/meta/adversarial-review.md` |
 | Edge Case Hunter | edge cases, boundary conditions | `skills/meta/edge-case-hunter.md` |

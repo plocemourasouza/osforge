@@ -8371,7 +8371,7 @@
   },
   {
     "name": "db-state-sync",
-    "description": "Gerencia estado de projetos no banco SQLite local do OSForge (~/.osforge/osforge.db). ACIONE quando: salvar progresso de uma fase, registrar decisão arquitetural, adicionar/resolver blocker, retomar sessão anterior, buscar decisões passadas. Keywords: salvar estado, registrar decisão, add-decision, ",
+    "description": "Gerencia estado de projetos no banco SQLite local do OSForge (~/.osforge/osforge.db). ACIONE quando: salvar progresso de uma fase, registrar decisão arquitetural, adicionar/resolver blocker, rastrear tasks, ver board cross-project, retomar sessão anterior, buscar decisões passadas. Keywords: salvar ",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -9158,6 +9158,16 @@
     "source_url": "",
     "local_path": "skills/openui-genui-layout",
     "skill_dir": "openui-genui-layout"
+  },
+  {
+    "name": "osforge-canvas",
+    "description": "UI generativa local para revisão interativa de planos, specs e breakdowns no browser, com feedback estruturado nativo. ACIONE quando: usuário pede \"abre no canvas\", \"mostra no browser\", \"quero revisar interativamente\", \"preciso aprovar antes de implementar\", \"canvas\", ou ao atingir checkpoints de ap",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/osforge-canvas",
+    "skill_dir": "osforge-canvas"
   },
   {
     "name": "output-enforcement",

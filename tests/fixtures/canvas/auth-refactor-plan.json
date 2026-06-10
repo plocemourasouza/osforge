@@ -1,0 +1,181 @@
+{
+  "$schema": "osforge-canvas/v1",
+  "id": "auth-refactor-plan",
+  "title": "Auth Refactor — Plano de Implementação",
+  "accent": "teal",
+  "createdAt": "2026-06-10T09:00:00Z",
+  "revision": 1,
+  "blocks": [
+    {
+      "type": "heading",
+      "id": "visao-geral",
+      "level": 2,
+      "text": "Visão Geral"
+    },
+    {
+      "type": "markdown",
+      "id": "contexto-geral",
+      "md": "O sistema atual mantém sessões em banco de dados (tabela `sessions`), o que impõe um lookup extra a cada request autenticado. A refatoração migra para **JWT (access token de curta duração) + refresh token rotativo**, eliminando esse lookup e permitindo revogação granular por dispositivo.\n\n**Escopo:** apenas a camada de autenticação e os endpoints relacionados. Sem alterações em autorização (RBAC) nem em regras de negócio.\n\n**Risco principal:** endpoints móveis que cachiam o token de sessão; precisam de atualização coordenada."
+    },
+    {
+      "type": "cards",
+      "id": "beneficios-tecnico",
+      "columns": 3,
+      "items": [
+        {
+          "title": "Performance",
+          "badge": "–1 query/req",
+          "md": "Elimina lookup de sessão no DB a cada request autenticado. Impacto estimado de **-12ms P99** nos endpoints críticos."
+        },
+        {
+          "title": "Segurança",
+          "badge": "Rotação",
+          "md": "Refresh token rotativo com TTL de 30 dias. Revogação imediata por device sem invalidar toda a sessão do usuário."
+        },
+        {
+          "title": "Escalabilidade",
+          "badge": "Stateless",
+          "md": "Servidores de API tornam-se completamente stateless. Horizontalização sem necessidade de sessão sticky."
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "id": "fases-implementacao",
+      "level": 2,
+      "text": "Fases de Implementação"
+    },
+    {
+      "type": "table",
+      "id": "tabela-endpoints",
+      "columns": ["Endpoint", "Método", "Mudança", "Breaking?", "Fase"],
+      "rows": [
+        ["/auth/login", "POST", "Retorna `{ accessToken, refreshToken, expiresIn }` em vez de `{ sessionId }`", "**Sim**", "F1"],
+        ["/auth/refresh", "POST", "Novo endpoint — troca refresh token por novo par de tokens", "Não (novo)", "F1"],
+        ["/auth/logout", "POST", "Revoga refresh token no banco; access token expira naturalmente", "Não", "F1"],
+        ["/auth/logout-all", "POST", "Novo — revoga todos os refresh tokens do usuário", "Não (novo)", "F2"],
+        ["/auth/session", "GET", "**Removido** após período de deprecação", "**Sim**", "F3"],
+        ["/auth/me", "GET", "Sem mudança de contrato; internamente lê JWT sem DB", "Não", "F1"],
+        ["/auth/devices", "GET", "Novo — lista refresh tokens ativos por device", "Não (novo)", "F2"]
+      ]
+    },
+    {
+      "type": "mermaid",
+      "id": "diagrama-dependencias",
+      "kind": "graph",
+      "code": "graph LR\n  A[Schema DB\\nrefresh_tokens] --> B[Endpoints F1\\nlogin / refresh / logout]\n  B --> C[Endpoints F2\\nlogout-all / devices]\n  C --> D[Cutover F3\\nremover /auth/session]\n  A --> E[Migrations]\n  E --> B\n  style A fill:#2A7B9B,color:#fff\n  style D fill:#D94F30,color:#fff"
+    },
+    {
+      "type": "mermaid",
+      "id": "gantt-fases",
+      "kind": "gantt",
+      "code": "gantt\n  title Auth Refactor — Cronograma\n  dateFormat YYYY-MM-DD\n  section Fase 1 — Core JWT\n    Schema + migrations        :f1a, 2026-06-16, 3d\n    Endpoints login/refresh    :f1b, after f1a, 4d\n    Testes unitários F1        :f1c, after f1b, 2d\n  section Fase 2 — Multi-device\n    Endpoints logout-all/devices :f2a, after f1c, 3d\n    Testes integração F2       :f2b, after f2a, 2d\n  section Fase 3 — Cutover\n    Deprecação /auth/session   :f3a, after f2b, 5d\n    Remoção + testes regressão :f3b, after f3a, 3d"
+    },
+    {
+      "type": "heading",
+      "id": "criterios-title",
+      "level": 2,
+      "text": "Critérios de Aceite"
+    },
+    {
+      "type": "checklist",
+      "id": "criterios-aceite",
+      "title": "Antes de fazer merge em main",
+      "items": [
+        {
+          "id": "cobertura-testes",
+          "text": "Cobertura de testes ≥ 80% nos módulos `auth/` e `middleware/`",
+          "checked": false
+        },
+        {
+          "id": "zero-downtime",
+          "text": "Deploy executado sem downtime (estratégia blue-green validada)",
+          "checked": false
+        },
+        {
+          "id": "backward-compat",
+          "text": "Clientes legados com `sessionId` continuam funcionando durante período de transição (F1 + F2)",
+          "checked": false
+        },
+        {
+          "id": "openapi-atualizado",
+          "text": "Spec OpenAPI v3 atualizado com novos endpoints e schemas de resposta",
+          "checked": false
+        },
+        {
+          "id": "rotate-secret",
+          "text": "JWT_SECRET rotacionado e novo valor provisionado em todos os ambientes",
+          "checked": false
+        },
+        {
+          "id": "refresh-table-index",
+          "text": "Índice em `refresh_tokens(user_id, device_id)` criado e EXPLAIN ANALYZE aprovado",
+          "checked": false
+        },
+        {
+          "id": "runbook-rollback",
+          "text": "Runbook de rollback documentado e testado em staging",
+          "checked": false
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "id": "parametros-title",
+      "level": 2,
+      "text": "Parâmetros de Rollout"
+    },
+    {
+      "type": "form",
+      "id": "parametros-rollout",
+      "submitLabel": "Confirmar estratégia de rollout",
+      "fields": [
+        {
+          "id": "estrategia",
+          "label": "Estratégia de rollout",
+          "kind": "select",
+          "options": ["big-bang", "canary", "shadow"],
+          "value": "canary"
+        },
+        {
+          "id": "percentual-inicial",
+          "label": "Percentual inicial de tráfego (apenas para canary/shadow)",
+          "kind": "text",
+          "value": "5%"
+        },
+        {
+          "id": "duracao-monitoramento",
+          "label": "Duração do período de monitoramento antes de expandir",
+          "kind": "select",
+          "options": ["6h", "12h", "24h", "48h", "72h"],
+          "value": "24h"
+        },
+        {
+          "id": "manter-sessoes-legadas",
+          "label": "Manter suporte a sessões legadas durante a transição",
+          "kind": "checkbox",
+          "value": true
+        },
+        {
+          "id": "observacoes",
+          "label": "Observações e restrições de janela de deploy",
+          "kind": "textarea",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "id": "decisao-title",
+      "level": 2,
+      "text": "Aprovação do Plano"
+    },
+    {
+      "type": "decision",
+      "id": "aprovacao-plano",
+      "prompt": "O plano de refatoração de auth (JWT + refresh token rotativo, 3 fases, tabela de endpoints e critérios de aceite) está aprovado para iniciar a implementação?",
+      "options": ["approve", "edit", "reject"],
+      "commentRequiredFor": ["edit", "reject"]
+    }
+  ]
+}
