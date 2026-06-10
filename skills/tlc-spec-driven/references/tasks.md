@@ -67,6 +67,11 @@ Group tasks into phases. Identify what can run in parallel.
 
 ## Template: `.specs/[feature]/tasks.md`
 
+> **Paralelismo machine-readable:** cada task DEVE incluir um bloco YAML de metadados logo após o cabeçalho (`### TN:`). O bloco declara `id`, `depends_on`, `wave` e `parallel_ok`.
+> - **`wave`** é derivada do grafo de `depends_on`: tasks sem predecessoras = wave 1; tasks que dependem de wave N = wave N+1.
+> - Tasks na **mesma wave** com `parallel_ok: true` são despachadas em paralelo pelo orchestrator.
+> - Se duas tasks da mesma wave tocam o mesmo arquivo, coloque-as em waves diferentes ou na mesma task — e marque `parallel_ok: false`.
+
 ```markdown
 # [Feature] Tasks
 
@@ -79,38 +84,41 @@ Group tasks into phases. Identify what can run in parallel.
 
 ### Phase 1: Foundation (Sequential)
 
-Tasks that must be done first, in order.
+Tasks que devem ser feitas primeiro, em ordem.
+
 ```
-
 T1 → T2 → T3
-
 ```
 
 ### Phase 2: Core Implementation (Parallel OK)
-After foundation, these can run in parallel.
+Após a fundação, estas podem rodar em paralelo.
 
 ```
-
      ┌→ T4 ─┐
-
 T3 ──┼→ T5 ─┼──→ T8
-└→ T6 ─┘
+     └→ T6 ─┘
 T7 ──────→
-
 ```
 
 ### Phase 3: Integration (Sequential)
-Bringing it all together.
+Integrando tudo.
 
 ```
-
 T8 → T9
+```
 
 ---
 
 ## Task Breakdown
 
 ### T1: [Create X Interface]
+
+```yaml
+id: T1
+depends_on: []
+wave: 1
+parallel_ok: true
+```
 
 **What**: [One sentence: exact deliverable]
 **Where**: `src/path/to/file.ts`
@@ -132,6 +140,13 @@ T8 → T9
 
 ### T2: [Implement Y Service] [P]
 
+```yaml
+id: T2
+depends_on: [T1]
+wave: 2
+parallel_ok: true
+```
+
 **What**: [Exact deliverable]
 **Where**: `src/services/YService.ts`
 **Depends on**: T1
@@ -152,6 +167,13 @@ T8 → T9
 
 ### T3: [Create Z Component] [P]
 
+```yaml
+id: T3
+depends_on: [T1]
+wave: 2
+parallel_ok: true
+```
+
 **What**: [Exact deliverable]
 **Where**: `src/components/ZComponent.tsx`
 **Depends on**: T1
@@ -171,6 +193,13 @@ T8 → T9
 ---
 
 ### T4: [Add A Feature to Y]
+
+```yaml
+id: T4
+depends_on: [T2, T3]
+wave: 3
+parallel_ok: true
+```
 
 **What**: [Exact deliverable]
 **Where**: `src/services/YService.ts` (modify)
@@ -194,20 +223,15 @@ T8 → T9
 Visual representation of what can run simultaneously:
 
 ```
+Wave 1 (Sequential — foundation):
+  T1
 
-Phase 1 (Sequential):
-  T1 ──→ T2 ──→ T3
+Wave 2 (Parallel — T1 complete):
+  ├── T2 [P]
+  └── T3 [P]  } Dispatched simultaneously
 
-Phase 2 (Parallel):
-  T3 complete, then:
-    ├── T4 [P]
-    ├── T5 [P]  } Can run simultaneously
-    └── T6 [P]
-
-Phase 3 (Sequential):
-  T4, T5, T6 complete, then:
-    T7 ──→ T8
-
+Wave 3 (Sequential — T2 + T3 complete):
+  T4 → T5 → ...
 ```
 
 ---
@@ -261,6 +285,13 @@ Every task MUST include:
 
 ```markdown
 ### T1: [Task name]
+
+```yaml
+id: T1
+depends_on: []
+wave: 1
+parallel_ok: true
+```
 
 **What:** [Deliverable]
 **Where:** [File path]

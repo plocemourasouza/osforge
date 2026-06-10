@@ -287,6 +287,9 @@ de defesa.
 Workers **não podem ver sua conversa com o usuário**. Toda informação que o worker
 precisa deve estar no prompt.
 
+Use o template em `agents/orchestrator/delegation-brief.md` para todo despacho.
+Ele garante que nenhum campo crítico fique faltando.
+
 **Sempre incluir:**
 - Statement de propósito ("This will inform a PR description — focus on user-facing changes")
 - File paths, line numbers, error messages

@@ -53,6 +53,23 @@ Para cada story:
 4. Se aprovado → atualizar status → próxima story
 5. Se changes requested → corrigir e re-review
 
+#### Metadados de paralelismo por task
+
+Cada task gerada para este plano DEVE incluir o bloco YAML abaixo logo após o cabeçalho `### TN:`:
+
+```yaml
+id: T<N>
+depends_on: []      # ids de tasks pré-requisito (ex: [T1, T2])
+wave: 1             # onda de execução derivada de depends_on
+parallel_ok: true   # false se toca arquivo compartilhado com outra task da mesma wave
+```
+
+Regras de derivação:
+- Tasks sem predecessoras → `wave: 1`.
+- Tasks cujo predecessor mais tardio está na wave N → `wave: N+1`.
+- Tasks na mesma wave com `parallel_ok: true` são despachadas em paralelo pelo orchestrator.
+- Duas tasks que editam o mesmo arquivo → `parallel_ok: false` ou waves diferentes.
+
 ### Fase Final: Review de Qualidade
 - **Objetivo:** Revisão adversarial completa + edge case analysis
 - **Skill:** `skills/quality/adversarial-review` + `skills/quality/edge-case-hunter`

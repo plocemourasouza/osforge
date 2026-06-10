@@ -18,6 +18,10 @@ Comandos:
   resolve-blocker <slug> <blocker_id>
   list-blockers <slug>
   list-decisions <slug> [--category=<cat>] [--limit=10]
+  add-task <slug> <title> [--phase=<name>] [--wave=N] [--depends=1,2] [--priority=p0|p1|p2]
+  set-task <slug> <task_id> <status>   status: pending|in-progress|done|blocked|cancelled
+  list-tasks <slug> [--status=<status>]
+  board [--status=active|all]          Visão cross-project de tasks
   search <query> [--project=<slug>] [--limit=5]
   list-projects [--status=active|all]
   import-yaml <yaml_path> <slug>    Migra status.yaml existente
@@ -99,6 +103,21 @@ CREATE TABLE IF NOT EXISTS blockers (
     waiting_for TEXT,
     resolved_at TEXT,
     created_at  TEXT    NOT NULL DEFAULT (datetime('now','utc'))
+);
+
+CREATE TABLE IF NOT EXISTS tasks (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id INTEGER NOT NULL REFERENCES projects(id),
+    phase_id   INTEGER REFERENCES phases(id),
+    title      TEXT    NOT NULL,
+    status     TEXT    NOT NULL DEFAULT 'pending'
+               CHECK(status IN ('pending','in-progress','done','blocked','cancelled')),
+    wave       INTEGER,
+    depends_on TEXT,
+    priority   TEXT    NOT NULL DEFAULT 'p1'
+               CHECK(priority IN ('p0','p1','p2')),
+    created_at TEXT    NOT NULL DEFAULT (datetime('now','utc')),
+    updated_at TEXT    NOT NULL DEFAULT (datetime('now','utc'))
 );
 """
 
@@ -340,6 +359,131 @@ def cmd_list_decisions(conn, slug, category=None, limit=10):
     for r in rows:
         _out(f"[{r['category']}] ({r['created_at'][:10]}) {r['content']}")
 
+TASK_STATUSES = ("pending", "in-progress", "done", "blocked", "cancelled")
+TASK_PRIORITIES = ("p0", "p1", "p2")
+
+def _resolve_phase_id(conn, project_id, phase_name):
+    """Resolve um phase_id por nome dentro do projeto. Erro claro se não existir."""
+    row = conn.execute(
+        "SELECT id FROM phases WHERE project_id=? AND name=?",
+        (project_id, phase_name)).fetchone()
+    if not row:
+        _err(f"Fase '{phase_name}' não encontrada no projeto. "
+             "Crie-a com 'set-phase' antes de vincular a task.")
+    return row["id"]
+
+def cmd_add_task(conn, slug, title, phase_name=None, wave=None,
+                 depends=None, priority="p1"):
+    p = _get_project(conn, slug)
+    if priority not in TASK_PRIORITIES:
+        _err(f"Prioridade inválida: '{priority}'. Use: {', '.join(TASK_PRIORITIES)}")
+    phase_id = _resolve_phase_id(conn, p["id"], phase_name) if phase_name else None
+    wave_val = None
+    if wave is not None:
+        try:
+            wave_val = int(wave)
+        except ValueError:
+            _err(f"Wave inválida: '{wave}'. Use um inteiro.")
+    now = _now()
+    cur = conn.execute("""
+        INSERT INTO tasks (project_id, phase_id, title, status, wave,
+                           depends_on, priority, created_at, updated_at)
+        VALUES (?, ?, ?, 'pending', ?, ?, ?, ?, ?) RETURNING id
+    """, (p["id"], phase_id, title, wave_val, depends, priority, now, now)).fetchone()
+    conn.commit()
+    _ok(f"Task #{cur[0]} criada em '{slug}' ({priority})")
+    if _json_mode:
+        print(json.dumps({"id": cur[0]}, ensure_ascii=False))
+    return cur[0]
+
+def cmd_set_task(conn, slug, task_id, status):
+    p = _get_project(conn, slug)
+    if status not in TASK_STATUSES:
+        _err(f"Status inválido: '{status}'. Use: {', '.join(TASK_STATUSES)}")
+    try:
+        tid = int(task_id)
+    except ValueError:
+        _err(f"task_id inválido: '{task_id}'. Use um inteiro.")
+    cur = conn.execute("""
+        UPDATE tasks SET status=?, updated_at=?
+        WHERE id=? AND project_id=?
+    """, (status, _now(), tid, p["id"]))
+    conn.commit()
+    if cur.rowcount == 0:
+        _err(f"Task #{tid} não encontrada no projeto '{slug}'.")
+    _ok(f"Task #{tid} → {status}")
+
+def cmd_list_tasks(conn, slug, status=None):
+    p = _get_project(conn, slug)
+    q = ("SELECT id, status, priority, wave, depends_on, title "
+         "FROM tasks WHERE project_id=?")
+    params = [p["id"]]
+    if status:
+        if status not in TASK_STATUSES:
+            _err(f"Status inválido: '{status}'. Use: {', '.join(TASK_STATUSES)}")
+        q += " AND status=?"
+        params.append(status)
+    q += " ORDER BY id"
+    rows = conn.execute(q, params).fetchall()
+    if _json_mode:
+        print(json.dumps([dict(r) for r in rows], ensure_ascii=False))
+        return
+    if not rows:
+        _out("Sem tasks")
+        return
+    for r in rows:
+        wave = f" wave:{r['wave']}" if r["wave"] is not None else ""
+        deps = f" (deps: {r['depends_on']})" if r["depends_on"] else ""
+        _out(f"  [{r['id']}] {r['status']:11} {r['priority']}{wave} {r['title']}{deps}")
+
+# Ordem de exibição de status no board
+_BOARD_ORDER = ("in-progress", "blocked", "pending", "done")
+
+def cmd_board(conn, status="active"):
+    """Visão cross-project de tasks, agrupadas por status por projeto."""
+    if status == "all":
+        projects = conn.execute(
+            "SELECT id, slug FROM projects ORDER BY slug").fetchall()
+    else:
+        projects = conn.execute(
+            "SELECT id, slug FROM projects WHERE status=? ORDER BY slug",
+            (status,)).fetchall()
+
+    if _json_mode:
+        out = {}
+        for proj in projects:
+            tasks = conn.execute(
+                "SELECT id, status, priority, wave, depends_on, title "
+                "FROM tasks WHERE project_id=? ORDER BY id",
+                (proj["id"],)).fetchall()
+            out[proj["slug"]] = [dict(t) for t in tasks]
+        print(json.dumps(out, ensure_ascii=False))
+        return
+
+    if not projects:
+        _out("Nenhum projeto")
+        return
+
+    for proj in projects:
+        tasks = conn.execute(
+            "SELECT id, status, priority, wave, title "
+            "FROM tasks WHERE project_id=? ORDER BY id",
+            (proj["id"],)).fetchall()
+        if not tasks:
+            _out(f"{proj['slug']}: sem tasks")
+            continue
+        by_status = {s: [] for s in _BOARD_ORDER}
+        for t in tasks:
+            by_status.setdefault(t["status"], []).append(t)
+        _out(f"{proj['slug']}:")
+        for s in _BOARD_ORDER:
+            group = by_status.get(s) or []
+            if s == "done":
+                group = group[-3:]  # só as 3 últimas done
+            for t in group:
+                wave = f" wave:{t['wave']}" if t["wave"] is not None else ""
+                _out(f"  [{s:11}] #{t['id']} {t['priority']}{wave} {t['title']}")
+
 def _fts_quote(query):
     """Envolve cada termo em aspas para FTS5 — evita interpretação de - como operador."""
     terms = query.strip().split()
@@ -456,11 +600,20 @@ def main():
     proj_arg   = next((a for a in args if a.startswith("--project=")), None)
     limit_arg  = next((a for a in args if a.startswith("--limit=")), None)
     status_arg = next((a for a in args if a.startswith("--status=")), None)
+    phase_arg  = next((a for a in args if a.startswith("--phase=")), None)
+    wave_arg   = next((a for a in args if a.startswith("--wave=")), None)
+    deps_arg   = next((a for a in args if a.startswith("--depends=")), None)
+    prio_arg   = next((a for a in args if a.startswith("--priority=")), None)
     category   = cat_arg.split("=",1)[1]  if cat_arg  else None
     waiting    = wait_arg.split("=",1)[1] if wait_arg  else None
     proj_flt   = proj_arg.split("=",1)[1] if proj_arg  else None
     limit      = int(limit_arg.split("=",1)[1]) if limit_arg else 5
-    st_filter  = status_arg.split("=",1)[1] if status_arg else "active"
+    st_flag    = status_arg.split("=",1)[1] if status_arg else None
+    st_filter  = st_flag if st_flag else "active"
+    phase_flt  = phase_arg.split("=",1)[1] if phase_arg else None
+    wave_flt   = wave_arg.split("=",1)[1]  if wave_arg  else None
+    deps_flt   = deps_arg.split("=",1)[1]  if deps_arg  else None
+    prio_flt   = prio_arg.split("=",1)[1]  if prio_arg  else None
     args = [a for a in args if not a.startswith("--")]
 
     if not args:
@@ -526,6 +679,22 @@ def main():
         if not rest:
             _err("Uso: search <query> [--project=slug] [--limit=5]")
         cmd_search(conn, " ".join(rest), proj_flt, limit)
+    elif cmd == "add-task":
+        if len(rest) < 2:
+            _err("Uso: add-task <slug> <title> [--phase=] [--wave=N] "
+                 "[--depends=1,2] [--priority=p0|p1|p2]")
+        cmd_add_task(conn, rest[0], " ".join(rest[1:]),
+                     phase_flt, wave_flt, deps_flt, prio_flt or "p1")
+    elif cmd == "set-task":
+        if len(rest) < 3:
+            _err("Uso: set-task <slug> <task_id> <status>")
+        cmd_set_task(conn, rest[0], rest[1], rest[2])
+    elif cmd == "list-tasks":
+        if not rest:
+            _err("Uso: list-tasks <slug> [--status=<status>]")
+        cmd_list_tasks(conn, rest[0], st_flag)
+    elif cmd == "board":
+        cmd_board(conn, st_filter)
     elif cmd == "list-projects":
         cmd_list_projects(conn, st_filter)
     elif cmd == "stats":

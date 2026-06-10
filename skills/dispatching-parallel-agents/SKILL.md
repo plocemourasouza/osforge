@@ -151,6 +151,55 @@ WAVE 1 (parallel)           WAVE 2 (parallel)        WAVE 3
 - Depends on: Wave 2 (Orders API + Cart API complete)
 ```
 
+---
+
+### YAML-driven wave assembly (machine-readable plans)
+
+Quando o plano de tasks contém blocos YAML com os campos `id`, `depends_on`, `wave` e `parallel_ok`, as waves DEVEM ser montadas a partir desses dados — não inferidas da prosa.
+
+**Algoritmo de leitura:**
+
+1. Coletar todos os blocos YAML do `tasks.md`.
+2. Agrupar por `wave` (número inteiro).
+3. Dentro de cada wave, separar tasks com `parallel_ok: true` (paralelizáveis) das com `parallel_ok: false` (sequenciais dentro da wave).
+4. Verificar que `depends_on` de cada task aponta para tasks em waves anteriores (consistência).
+5. Despachar cada wave completa antes de iniciar a próxima.
+
+**Exemplo — leitura de YAML para Wave Execution Plan:**
+
+```yaml
+# tasks.md (excerto de blocos YAML)
+- id: T1
+  depends_on: []
+  wave: 1
+  parallel_ok: true
+
+- id: T2
+  depends_on: [T1]
+  wave: 2
+  parallel_ok: true
+
+- id: T3
+  depends_on: [T1]
+  wave: 2
+  parallel_ok: true
+
+- id: T4
+  depends_on: [T2, T3]
+  wave: 3
+  parallel_ok: true
+```
+
+Resultado do dispatch:
+
+```
+Wave 1 → despachar T1 (sozinho)
+Wave 2 → despachar T2 + T3 em paralelo (ambos parallel_ok: true)
+Wave 3 → despachar T4 após T2 e T3 concluírem
+```
+
+**Fallback (planos sem YAML):** se nenhum bloco YAML for encontrado, inferir waves a partir da prosa e dos campos `Depends on:` de cada task (comportamento anterior). Documentar que o plano não é machine-readable e sugerir adição do YAML.
+
 ### When to use waves vs flat parallel
 
 | Scenario | Use |

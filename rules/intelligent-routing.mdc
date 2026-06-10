@@ -107,6 +107,20 @@ Com base nos domínios detectados:
 
 ## 4. Comunicar e agir
 
+### 4.0 Declaração de Triage (STANDARD / COMPLEX obrigatório)
+
+Para demandas FEATURE ou BUG classificadas como STANDARD ou COMPLEX, declarar
+**na primeira linha da resposta**, antes de qualquer plano:
+
+```
+Triage: STANDARD — endpoint novo com validação Zod + persistência Prisma, 3-5 arquivos
+```
+```
+Triage: COMPLEX — refatoração de schema multi-tenant com migrations e RLS, impacto cross-feature
+```
+
+QUICK_FIX e QUESTION ficam **isentos** desta declaração.
+
 Para requests QUICK_FIX com 1 domínio: agir direto, sem anunciar.
 
 Para FEATURE, BUG, REVIEW com domínio claro: informar concisamente no início:
@@ -128,7 +142,7 @@ Após qualquer skill de planejamento gerar artefato, encadear apresentação vis
 
 | Gatilho | Ação automática |
 |---------|-----------------|
-| Output de `spec-builder`, `prd-builder`, `arch-builder`, `epic-decomposer` em triage STANDARD/COMPLEX | Executar `skills/visual-planner` automaticamente |
+| Output de `spec-builder`, `prd-builder`, `arch-builder`, `epic-decomposer` em triage STANDARD/COMPLEX | Executar `skills/visual-planner` automaticamente; se o plano/spec requer aprovação por seção ou edição iterativa, oferecer também `skills/osforge-canvas` como checkpoint de aprovação |
 | Output de planning skill em triage QUICK | Oferecer: "Quer visualizar como HTML interativo?" |
 | Usuário diz "visualizar", "breakdown visual", "apresentar", "tornar visual" | Executar `skills/visual-planner` + `skills/aesthetic-boost` |
 | Usuário diz "entrega de agência", "agency delivery", "apresentação profissional" | Pipeline completo: `visual-planner` → `aesthetic-boost` → `ui-design-intelligence` → `web-design-guidelines` |

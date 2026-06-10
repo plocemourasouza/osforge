@@ -17,8 +17,8 @@ Complete installation, configuration, and day-to-day usage instructions.
 7. [Orchestrator — Intelligent Workflow](#7-orchestrator--intelligent-workflow)
 8. [Python Hooks](#8-python-hooks)
 9. [osforge-db — Local SQLite State](#9-osforge-db--local-sqlite-state)
-10. [The Agency — 121 Specialists](#10-the-agency--121-specialists)
-11. [llmfit Advisor — Local LLMs](#11-llmfit-advisor--local-llms)
+10. [Operação Multi-projeto — Sessão-sede e Satélites](#10-operação-multi-projeto--sessão-sede-e-satélites)
+11. [The Agency — 121 Specialists](#11-the-agency--121-specialists)
 12. [Smart Model Dispatch](#12-smart-model-dispatch)
 13. [Recommended MCPs](#13-recommended-mcps)
 14. [High-Risk Agents](#14-high-risk-agents)
@@ -68,7 +68,7 @@ cargo install llmfit
 **Claude Code (`~/.claude/`)**
 - Copies `CLAUDE.md` and `SKILLS.md`
 - Syncs 12 agents to `~/.claude/agents/`
-- Copies 9 `spec:*` commands to `~/.claude/commands/`
+- Copies 9 `spec-*` commands to `~/.claude/commands/`
 - Installs Python hooks to `~/.claude/hooks/`
 - Non-destructive MCP merge into `~/.claude.json`
 
@@ -278,42 +278,42 @@ The 11 rules are automatically active in all Cursor sessions. No activation need
 
 ## 6. Spec Commands
 
-9 `/spec:*` commands available in Claude Code for spec-driven development.
+9 `/spec-*` commands available in Claude Code for spec-driven development.
 
 ```bash
 # Full feature flow
-/spec:discover    # Explore the problem, gather requirements
-/spec:specify     # Write formal specification
-/spec:design      # Technical design + ADR
-/spec:tasks       # Break down into implementable tasks
-/spec:implement   # Execute implementation with guardrails
-/spec:checklist   # Pre-ship quality checklist
+/spec-discover    # Explore the problem, gather requirements
+/spec-specify     # Write formal specification
+/spec-design      # Technical design + ADR
+/spec-tasks       # Break down into implementable tasks
+/spec-implement   # Execute implementation with guardrails
+/spec-checklist   # Pre-ship quality checklist
 
 # Utilities
-/spec:clarify     # Clarification loop for ambiguous specs
-/spec:constitution # Define project principles and constraints
-/spec:measure     # Define and track success metrics
+/spec-clarify     # Clarification loop for ambiguous specs
+/spec-constitution # Define project principles and constraints
+/spec-measure     # Define and track success metrics
 ```
 
 ### Usage example
 
 ```
-/spec:discover "OFX reconciliation module"
+/spec-discover "OFX reconciliation module"
 → Claude explores requirements, raises questions, maps the domain
 
-/spec:specify
+/spec-specify
 → Generates formal spec with use cases, business rules, acceptance criteria
 
-/spec:design
+/spec-design
 → Prisma schema, Server Actions, data flow, ADR for key decisions
 
-/spec:tasks
+/spec-tasks
 → Prioritized task list ready for implementation
 
-/spec:implement
+/spec-implement
 → Implements following the spec, with continuous verification
 
-/spec:checklist
+/spec-checklist
 → Validates everything was done before the PR
 ```
 
@@ -538,7 +538,92 @@ osforge-db import-yaml .osforge/status.yaml meu-projeto
 
 ---
 
-## 10. The Agency — 121 Specialists
+## 10. Operação Multi-projeto — Sessão-sede e Satélites
+
+Quando você trabalha em vários projetos simultaneamente, misturar tudo em uma única sessão Claude Code polui o contexto com arquivos irrelevantes, mistura permissões de working directories diferentes e aumenta o custo sem ganho. O padrão **sessão-sede / sessões-satélite** resolve isso.
+
+### Conceito
+
+| Sessão | Working directory | Função |
+|---|---|---|
+| **Sede (hub)** | `~/Development/osforge` ou diretório de planejamento | Intake de demandas, brainstorm/specs, triage, visão de portfólio, preparação de briefs |
+| **Satélite** | Diretório do projeto (`~/Development/meu-projeto`) | Execução das tasks — uma sessão por projeto |
+
+A regra é simples: **uma sessão tem um working directory primário**. A sede nunca executa código de projetos externos; os satélites nunca planejam fora do escopo do próprio projeto.
+
+### Papéis detalhados
+
+**Sessão-sede**
+- Mantém visão de portfólio via `osforge-db board`
+- Recebe novas demandas, faz brainstorm, escreve specs
+- Registra projetos e tasks no banco: `upsert-project`, `add-task`
+- Prepara briefs de delegação em `agents/orchestrator/delegation-brief.md`
+- Não toca em código de projetos — acessa apenas o próprio repo osforge
+
+**Sessão-satélite**
+- Abre no diretório do projeto-alvo
+- Ao iniciar: carrega contexto compacto (~50 tokens) com `osforge-db resume <slug>`
+- Executa as tasks registradas pela sede
+- Ao pausar ou concluir: atualiza o banco para a sede enxergar o progresso
+
+### Comandos de handoff
+
+```bash
+# ── SEDE: registrar trabalho para um satélite ──────────────────────────
+osforge-db upsert-project linkme-tur "Portal B2B para agentes de turismo" standard active
+osforge-db add-task linkme-tur "Implementar módulo de reservas" --phase="backend" --priority=p0
+osforge-db add-task linkme-tur "UI da página de listagem de hotéis" --phase="frontend" --priority=p1
+
+# ── SATÉLITE: iniciar sessão no projeto ───────────────────────────────
+# (abrir terminal no diretório do projeto)
+osforge-db resume linkme-tur
+# → fase=backend | resume=Próximo: implementar endpoint POST /reservas
+
+# ── SATÉLITE: atualizar progresso durante a sessão ────────────────────
+osforge-db set-task linkme-tur 1 done
+osforge-db set-task linkme-tur 2 in-progress
+
+# ── SATÉLITE: encerrar sessão — OBRIGATÓRIO antes de fechar ───────────
+osforge-db set-resume linkme-tur "Concluído: POST /reservas. Próximo: validação de disponibilidade"
+
+# ── SEDE: conferir estado de todos os projetos ────────────────────────
+osforge-db board
+```
+
+### Fluxo exemplo completo
+
+```
+SEDE:
+  1. osforge-db upsert-project meu-saas "SaaS de gestão de assinaturas" standard active
+  2. osforge-db add-task meu-saas "Schema Prisma — tabela subscriptions" --priority=p0
+  3. osforge-db add-task meu-saas "Server Action: criar assinatura Stripe" --priority=p0
+  4. osforge-db board   → confirma tasks visíveis
+
+SATÉLITE (abre ~/Development/meu-saas):
+  5. osforge-db resume meu-saas
+     → fase=– | resume=–  (primeira vez)
+  6. [executa task 1 — schema Prisma]
+  7. osforge-db set-task meu-saas 1 done
+  8. osforge-db set-resume meu-saas "Schema concluído. Próximo: task #2 — Server Action"
+  [fecha sessão]
+
+SEDE (retomada):
+  9. osforge-db board
+     → meu-saas:
+       [done       ] #1 p1 Schema Prisma — tabela subscriptions
+       [pending    ] #2 p0 Server Action: criar assinatura Stripe
+```
+
+### Por que não misturar numa sessão só?
+
+- Contexto: arquivos de projetos diferentes competem pela janela de contexto
+- Permissões: Claude Code pede permissão por working directory — misturar gera prompts duplicados
+- Foco: uma sessão por projeto mantém o histórico de decisões limpo e o `resume` preciso
+- Custo: contexto desnecessário consome tokens sem retorno
+
+---
+
+## 11. The Agency — 121 Specialists
 
 Detects the machine's actual hardware and recommends which local models will run well, with optimal quantization and speed estimates.
 
@@ -632,7 +717,7 @@ ollama list   # view installed models
 
 ---
 
-## 11. Smart Model Dispatch
+## 12. Smart Model Dispatch
 
 Routes tasks to the optimal model tier — saving ~65% cost vs using Opus for everything.
 
@@ -663,7 +748,7 @@ Routes tasks to the optimal model tier — saving ~65% cost vs using Opus for ev
 
 ---
 
-## 12. Recommended MCPs
+## 13. Recommended MCPs
 
 ### Claude Code (global — `~/.claude.json`)
 
@@ -700,7 +785,7 @@ See `mcp/cursor.json` in the repository.
 
 ---
 
-## 13. High-Risk Agents
+## 14. High-Risk Agents
 
 Four agents from The Agency can execute autonomous actions with real-world impact. Each has a **mandatory checkpoint block** embedded in its `.md` — they will never act without presenting a plan and waiting for explicit approval.
 

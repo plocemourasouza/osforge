@@ -1,11 +1,11 @@
 ---
 name: db-state-sync
-description: "Gerencia estado de projetos no banco SQLite local do OSForge (~/.osforge/osforge.db). ACIONE quando: salvar progresso de uma fase, registrar decisão arquitetural, adicionar/resolver blocker, retomar sessão anterior, buscar decisões passadas. Keywords: salvar estado, registrar decisão, add-decision, set-phase, resumir sessão, buscar decisão, osforge-db, estado do projeto."
+description: "Gerencia estado de projetos no banco SQLite local do OSForge (~/.osforge/osforge.db). ACIONE quando: salvar progresso de uma fase, registrar decisão arquitetural, adicionar/resolver blocker, rastrear tasks, ver board cross-project, retomar sessão anterior, buscar decisões passadas. Keywords: salvar estado, registrar decisão, add-decision, set-phase, add-task, set-task, list-tasks, board, resumir sessão, buscar decisão, osforge-db, estado do projeto."
 model: haiku
 allowed-tools: Bash
 metadata:
   author: osforge
-  version: '1.0'
+  version: '1.1'
 ---
 
 ## Banco disponível
@@ -80,6 +80,34 @@ osforge-db list-decisions <slug> --category=arch --limit=10
 # Busca FTS5 cross-project (retorna decisões semanticamente relacionadas)
 osforge-db search "Prisma RLS multi-tenant"
 osforge-db search "autenticação OAuth" --project=<slug>
+```
+
+### TASKS — rastrear tarefas + board cross-project
+
+```bash
+# Criar task (status inicial: pending). Flags todas opcionais.
+osforge-db add-task <slug> "<título>"
+osforge-db add-task <slug> "<título>" --phase="<nome da fase>" --wave=1 --depends=1,2 --priority=p0
+# → imprime o id da task criada (ex.: "Task #5 criada")
+# --phase resolve por nome (a fase deve existir; crie com set-phase antes)
+# --depends é CSV de task ids (texto livre, não validado contra FK)
+# --priority: p0 (crítica) | p1 (padrão) | p2
+
+# Atualizar status de uma task
+osforge-db set-task <slug> <task_id> in-progress
+osforge-db set-task <slug> <task_id> done
+# status válidos: pending | in-progress | done | blocked | cancelled
+
+# Listar tasks de um projeto (compacto)
+osforge-db list-tasks <slug>
+osforge-db list-tasks <slug> --status=in-progress
+# formato: [id] status priority wave:N title (deps: ...)
+
+# Board cross-project: tasks de todos os projetos agrupadas por status
+osforge-db board                 # default: só projetos status=active
+osforge-db board --status=all    # inclui projetos arquivados/inativos
+# ordem dos grupos: in-progress → blocked → pending → done (só as 3 últimas)
+# projetos sem tasks aparecem como "<slug>: sem tasks"
 ```
 
 ### BLOCKERS — rastrear impedimentos
