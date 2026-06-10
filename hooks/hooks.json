@@ -1,6 +1,11 @@
 {
   "version": 1,
   "hooks": {
+    "sessionStart": [
+      {
+        "command": "$HOME/.cursor/hooks/canvas-autostart.sh"
+      }
+    ],
     "afterFileEdit": [
       {
         "command": "$HOME/.cursor/hooks/protect-tests.sh"
