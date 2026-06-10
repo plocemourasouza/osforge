@@ -20,26 +20,13 @@ __pycache__/
 # Backups
 *.bak
 *.backup
-superclaude-backup/
-archive/
 
 # Source repositories (raw — not part of the curated package)
-# These contain 770+ skills from 12 sources used for evaluation.
-# The curated output lives in /skills/ and /claude-code/.
-01-anthropic/
-02-superpowers/
-03-claude-mem/
-04-vercel/
-05-context-engineering/
-06-antigravity/
-07-trailofbits/
-08-supabase/
-09-expo/
-10-cloudflare/
-11-sentry/
-12-curadoria/
-_skills/
-_taste-skill-source/
+# 13 coleções upstream usadas para curadoria; o output curado vive em /skills/ e /claude-code/.
+sources/
+
+# MCP/tooling local state
+.serena/
 
 # Temp
 /tmp/

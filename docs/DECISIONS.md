@@ -96,3 +96,23 @@ Os speckit foram renomeados para `spec-*` e reescritos para operar sobre `.specs
 **Decisão:** Renomear os 9 arquivos `commands/spec:*.md` para `commands/spec-*.md`. A invocação passa de `/spec:X` para `/spec-X` em todos os documentos, tabelas de comandos e referências textuais. O `deploy.sh` inclui passo idempotente de remoção dos legados (arquivos com `:` no nome) antes do copy, garantindo que instâncias já deployadas fiquem limpas na próxima execução.
 
 **Data:** 2026-06-10.
+
+---
+
+## ADR-009: Reorganização Estrutural — sources/ e Remoção de Peso Morto
+
+**Status:** Aceito
+
+**Contexto:** A raiz do repositório acumulava 30+ entradas misturando produto deployável com material de curadoria: 13 diretórios de fontes upstream (75MB), `_skills/` (73MB de snapshot desatualizado das mesmas fontes), `_taste-skill-source/`, e ~560KB de material morto versionado (`archive/` e `superclaude-backup/` aposentados desde o ADR-004, spec abandonada `scripts/.specs/huly-crm-module/`, `mcp.json` legacy supersedido por `mcp/claude-code.json`, backups e scripts órfãos). `13-claude-red/` estava trackeado no git, inconsistente com a política de fontes gitignored.
+
+**Decisão:**
+1. Todas as fontes de curadoria (`01-anthropic` … `13-claude-red`, `_taste-skill-source`) movidas para `sources/` (gitignored — entrada única no `.gitignore`). `13-claude-red` untracked para alinhar com a política.
+2. `_skills/` deletado (duplicação pura; regenerável das fontes).
+3. Peso morto removido via `git rm` — o histórico git preserva tudo (incl. o conteúdo de `archive/` referenciado pelo ADR-004): `archive/`, `superclaude-backup/`, `scripts/.specs/`, `mcp.json`, `claude-code/SKILLS.md.backup`, `docs/SETUP-REPORT.md`, `outputs/obsidian-fix-prompt.md`, `scripts/hooks-dashboard.sh`, `scripts/install-tier1.sh`.
+4. `AGENT_FLOW.md` movido para `docs/`.
+5. `scripts/_extract_index.py` ajustado para resolver a coleção-fonte sob o prefixo `sources/`.
+6. `.nojekyll` e `osforge-architecture.html` permanecem na raiz (possível GitHub Pages; README linka o HTML).
+
+**Consequência:** Raiz com ~15 entradas — produto (`skills/ agents/ rules/ commands/ hooks/ mcp/ claude-code/ scripts/`), docs, runtime (`outputs/ .osforge/ tests/`) e `sources/`. Os 14 paths lidos pelo `deploy.sh` não mudaram.
+
+**Data:** 2026-06-10.

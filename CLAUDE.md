@@ -42,11 +42,10 @@ Deploy behavior worth knowing:
 - `scripts/osforge-db.py` — deployed to `~/.local/bin/osforge-db`; SQLite state at `~/.osforge/osforge.db` (global) or `.osforge/osforge.db` (per-project via `--scope=local`). Tracks projects, phases, tasks (`wave`/`depends_on` for parallel dispatch), decisions (FTS5), blockers; `board` = cross-project view.
 - `scripts/canvas/` — OSForge Canvas: local generative-UI service (single-file Bun server + single-file viewer, zero deps). Claude writes JSON artifacts to `<cwd>/outputs/canvas/artifacts/`, the viewer renders them as interactive UI (SSE live-reload), feedback lands in `outputs/canvas/feedback/` (runtime scratch, gitignored). Schema: `skills/osforge-canvas/references/schema.md`.
 
-### Source material (not deployed)
-- `01-anthropic/` … `13-claude-red/` — vendored upstream skill collections, the raw curation sources (Anthropic, superpowers, Vercel, Trail of Bits, Supabase, Expo, Cloudflare, Sentry, Claude-Red, etc.).
-- `_skills/`, `_taste-skill-source/` — source mirrors (taste-skill upstream from Leonxlnx/taste-skill; OSForge enhancement layers compose on top, never replace it).
-- `archive/`, `superclaude-backup/` — retired material.
-- `docs/` — `DECISIONS.md` (ADRs — read before structural changes), `EXAMPLES.md`, `INDICE-SKILLS.md/json` (generated).
+### Source material (not deployed, gitignored)
+- `sources/01-anthropic/` … `sources/13-claude-red/` — vendored upstream skill collections, the raw curation sources (Anthropic, superpowers, Vercel, Trail of Bits, Supabase, Expo, Cloudflare, Sentry, Claude-Red, etc.). Disk-only (ADR-009).
+- `sources/_taste-skill-source/` — taste-skill upstream from Leonxlnx/taste-skill; OSForge enhancement layers compose on top, never replace it.
+- `docs/` — `DECISIONS.md` (ADRs — read before structural changes), `EXAMPLES.md`, `AGENT_FLOW.md`, `INDICE-SKILLS.md` (generated).
 - `INDICE-SKILLS.json` (root) — generated skill index; regenerate, don't hand-edit.
 
 ## Workflow for changes

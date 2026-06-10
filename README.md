@@ -519,7 +519,7 @@ osforge/
 ├── docs/                  # Internal documentation
 ├── osforge-architecture.html  # Interactive visual architecture map
 ├── deploy.sh              # One-command sync to ~/.claude/ and ~/.cursor/
-└── _skills/               # Source repositories index (770+ skills curated)
+└── sources/               # Upstream skill collections (gitignored — curation raw material)
 ```
 
 ### Token Budget

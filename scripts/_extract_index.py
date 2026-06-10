@@ -129,6 +129,11 @@ def main():
             continue
             
         source_folder = parts[0]
+        # Fontes vivem em sources/<colecao>/ (ADR-009) — usar a coleção como source
+        if source_folder == "sources":
+            if len(parts) < 3:
+                continue
+            source_folder = parts[1]
         if source_folder.startswith("_"):
             continue
         
