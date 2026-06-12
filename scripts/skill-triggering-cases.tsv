@@ -1,0 +1,27 @@
+# OSForge Skill Triggering — Seed Cases
+# Formato: skill_name<TAB>prompt ingênuo (sem citar a skill pelo nome)
+# ~12-18 skills críticas. Ponto de partida — expanda conforme necessário.
+# Prompts derivados dos triggers reais em "ACIONE quando:" de cada SKILL.md.
+#
+# Como adicionar novos casos:
+#   1. Leia o SKILL.md da skill alvo (frontmatter "description" / "ACIONE quando:")
+#   2. Escreva um prompt que um usuário real escreveria SEM mencionar a skill
+#   3. Verifique que o prompt não é ambíguo o suficiente para disparar outra skill antes
+#
+tdd-workflow	Preciso implementar a funcionalidade de login com JWT. Por onde começo?
+verification-before-completion	Acabei de corrigir o bug do formulário de cadastro. Posso considerar resolvido?
+security-best-practices	Estou escrevendo um Server Action de pagamento que recebe dados do formulário. Tem algo importante que devo verificar antes de salvar?
+systematic-debugging	Minha API retorna 500 em produção mas funciona localmente. Como investigar isso de forma sistemática?
+osforge-canvas	Quero revisar o plano de implementação antes de começar a codar. Como posso ver tudo organizado?
+output-enforcement	Preciso que você reescreva todos os componentes do módulo de relatórios sem cortar nada.
+context-compact	Estamos quase no limite do contexto. O que fazer para não perder o que já discutimos?
+stuck-recovery	A ferramenta continua falhando nas mesmas etapas e não estamos progredindo. O que fazer?
+aesthetic-boost	Preciso de uma landing page com hero section que seja visualmente marcante, não quero aquele look genérico de IA.
+spec-builder	Preciso escrever a especificação técnica da feature de notificações com critérios de aceitação testáveis.
+epic-decomposer	Tenho a spec pronta da feature de pagamentos. Como quebro isso em épicos e stories menores para o time?
+story-executor	Implementar a story US-14: como usuário quero receber e-mail de confirmação após cadastro.
+adversarial-review	Antes de mergar esse PR de autenticação, quero uma revisão cética que busque os piores cenários.
+frontend-ui	Preciso criar um dashboard com cards de métricas e tabela de dados usando shadcn.
+supabase-auth	Quero implementar login com Google OAuth e controle de acesso por roles no meu projeto Next.js.
+prisma-expert	Preciso criar uma migration para adicionar a tabela de assinaturas com relacionamento para usuários.
+finishing-branch	Terminei a implementação. O que preciso verificar antes de abrir o PR?
