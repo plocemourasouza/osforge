@@ -10,6 +10,7 @@ CURSOR="$HOME/.cursor"
 DRY_RUN=false
 DEPLOY_CLAUDE=true
 DEPLOY_CURSOR=true
+DEPLOY_QDRANT_OVERRIDE=""   # "yes" | "no" | "" (interativo)
 
 # ── Flags ──────────────────────────────────────────────────────────────
 for arg in "$@"; do
@@ -17,8 +18,13 @@ for arg in "$@"; do
     --claude-only) DEPLOY_CURSOR=false ;;
     --cursor-only) DEPLOY_CLAUDE=false ;;
     --dry-run) DRY_RUN=true ;;
+    --with-qdrant) DEPLOY_QDRANT_OVERRIDE="yes" ;;
+    --no-qdrant)   DEPLOY_QDRANT_OVERRIDE="no"  ;;
     --help)
-      echo "Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run]"
+      echo "Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run | --with-qdrant | --no-qdrant]"
+      echo ""
+      echo "  --with-qdrant   Sobe Qdrant via Docker sem prompt interativo"
+      echo "  --no-qdrant     Pula Qdrant; configura SQLite como backend vetorial"
       exit 0 ;;
     *) echo "Flag desconhecida: $arg"; exit 1 ;;
   esac
@@ -267,6 +273,152 @@ deploy_osforge_db() {
   fi
 }
 
+# ── Deploy Qdrant (opcional) ─────────────────────────────────────────────
+deploy_qdrant() {
+  echo ""
+  echo "🔵 Deploy → Qdrant (vector store)"
+
+  local compose_file="$REPO/scripts/qdrant/docker-compose.yml"
+  local cfg_dir="$HOME/.osforge"
+  local cfg_file="$cfg_dir/config.json"
+
+  # Determinar se o usuário quer Qdrant
+  local do_qdrant="$DEPLOY_QDRANT_OVERRIDE"
+  if [ -z "$do_qdrant" ]; then
+    # Modo interativo: só perguntar se TTY disponível
+    if [ -t 0 ]; then
+      printf "  Subir Qdrant via Docker? [y/N] "
+      read -r ans
+      case "$ans" in
+        [Yy]*) do_qdrant="yes" ;;
+        *)     do_qdrant="no"  ;;
+      esac
+    else
+      do_qdrant="no"
+    fi
+  fi
+
+  if [ "$do_qdrant" != "yes" ]; then
+    # Caminho sem Qdrant: configurar SQLite como backend
+    if $DRY_RUN; then
+      skip "Qdrant pulado → backend vetorial: sqlite"
+      skip "write $cfg_file {vector_backend: sqlite}"
+    else
+      mkdir -p "$cfg_dir"
+      # Ler backend atual para distinguir downgrade real de preservação
+      local cur_backend
+      cur_backend=$(python3 -c "import json,pathlib;p=pathlib.Path.home()/'.osforge'/'config.json';print(json.loads(p.read_text()).get('vector_backend','') if p.exists() else '')" 2>/dev/null || echo "")
+      if [ "$cur_backend" = "qdrant" ]; then
+        echo "  ℹ️  config.json já está em vector_backend=qdrant — preservado (nada a fazer)."
+        echo "      Para re-provisionar o Qdrant: ./deploy.sh --with-qdrant"
+      else
+        python3 - <<'PYEOF'
+import json, pathlib
+cfg_path = pathlib.Path.home() / ".osforge" / "config.json"
+cfg = {}
+if cfg_path.exists():
+    try:
+        cfg = json.loads(cfg_path.read_text())
+    except Exception:
+        pass
+cfg["vector_backend"] = "sqlite"
+cfg.setdefault("embed_provider", "ollama")
+cfg_path.write_text(json.dumps(cfg, indent=2, ensure_ascii=False))
+print("  ℹ️  config.json → vector_backend=sqlite")
+PYEOF
+        echo "  ⚠️  Memória vetorial Qdrant NÃO instalada. Backend: SQLite (cosseno brute-force)."
+        echo "      Busca semântica continua funcionando, porém a PERFORMANCE pode DEGRADAR"
+        echo "      em corpus grande (busca O(n) vs índice HNSW do Qdrant)."
+        echo "      Para ativar depois: ./deploy.sh --with-qdrant"
+      fi
+    fi
+    return
+  fi
+
+  # ── Caminho com Qdrant ───────────────────────────────────────────────
+  if $DRY_RUN; then
+    skip "docker compose -f $compose_file up -d"
+    skip "poll http://localhost:6333/healthz"
+    skip "vec-init (cria/valida coleção)"
+    skip "write $cfg_file {vector_backend: qdrant}"
+    return
+  fi
+
+  # Checar Docker
+  if ! command -v docker &>/dev/null; then
+    echo "  ❌ Docker não encontrado. Instale Docker Desktop ou Docker Engine."
+    echo "     Qdrant não será iniciado. Backend: sqlite."
+    return 1
+  fi
+
+  # Subir container
+  mkdir -p "$HOME/.osforge/qdrant/storage"
+  if docker compose -f "$compose_file" up -d 2>&1; then
+    ok "Qdrant container iniciado"
+  else
+    echo "  ❌ Falha ao subir Qdrant. Backend: sqlite."
+    return 1
+  fi
+
+  # Poll /healthz (máx 30s)
+  local deadline=$((SECONDS + 30))
+  printf "  Aguardando Qdrant..."
+  while [ $SECONDS -lt $deadline ]; do
+    if curl -sf http://localhost:6333/healthz >/dev/null 2>&1; then
+      echo " ok"
+      break
+    fi
+    printf "."
+    sleep 1
+  done
+  if [ $SECONDS -ge $deadline ]; then
+    echo " timeout!"
+    echo "  ❌ Qdrant não respondeu em 30s. Backend: sqlite."
+    return 1
+  fi
+
+  # Checar Ollama
+  if ! command -v ollama &>/dev/null; then
+    echo "  ⚠️  Ollama não encontrado. Embeddings não funcionarão sem ele."
+    echo "     Instale: https://ollama.com — depois rode: ollama pull bge-m3"
+  else
+    if ! ollama list 2>/dev/null | grep -q "bge-m3"; then
+      echo "  ⚠️  Modelo bge-m3 ausente. Rode: ollama pull bge-m3"
+    else
+      ok "Ollama + bge-m3 disponíveis"
+    fi
+  fi
+
+  # Criar/validar coleção via vec-init
+  local db_bin="$HOME/.local/bin/osforge-db"
+  if [ -f "$db_bin" ]; then
+    OSFORGE_VECTOR=qdrant OSFORGE_EMBED=ollama python3 "$db_bin" vec-init 2>&1 \
+      && ok "Coleção Qdrant inicializada" \
+      || echo "  ⚠️  vec-init falhou (Ollama ausente?). Coleção será criada na primeira escrita."
+  fi
+
+  # Escrever config.json
+  mkdir -p "$cfg_dir"
+  python3 - <<'PYEOF'
+import json, pathlib
+cfg_path = pathlib.Path.home() / ".osforge" / "config.json"
+cfg = {}
+if cfg_path.exists():
+    try:
+        cfg = json.loads(cfg_path.read_text())
+    except Exception:
+        pass
+cfg["vector_backend"]  = "qdrant"
+cfg["embed_provider"]  = "ollama"
+cfg.setdefault("embed_model",  "bge-m3")
+cfg.setdefault("qdrant_url",   "http://localhost:6333")
+cfg.setdefault("collection",   "osforge_memory")
+cfg_path.write_text(json.dumps(cfg, indent=2, ensure_ascii=False))
+print(f"  config.json → vector_backend=qdrant")
+PYEOF
+  ok "Qdrant deploy completo"
+}
+
 # ── Deploy Cursor ────────────────────────────────────────────────────────
 deploy_cursor() {
   echo ""
@@ -329,6 +481,7 @@ echo "════════════════════════�
 $DEPLOY_CLAUDE && deploy_claude
 $DEPLOY_CURSOR && deploy_cursor
 deploy_osforge_db
+deploy_qdrant || true   # Qdrant é opt-in; falha (Docker ausente etc.) não aborta o deploy
 
 echo ""
 echo "═══════════════════════════════════════════════════"

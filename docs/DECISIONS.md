@@ -116,3 +116,46 @@ Os speckit foram renomeados para `spec-*` e reescritos para operar sobre `.specs
 **Consequência:** Raiz com ~15 entradas — produto (`skills/ agents/ rules/ commands/ hooks/ mcp/ claude-code/ scripts/`), docs, runtime (`outputs/ .osforge/ tests/`) e `sources/`. Os 14 paths lidos pelo `deploy.sh` não mudaram.
 
 **Data:** 2026-06-10.
+
+---
+
+## ADR-010: Backend Vetorial — Qdrant via Docker (3-tier graceful fallback)
+
+**Status:** Aceito
+
+**Contexto:** O `osforge-db` original usava SQLite cosine brute-force para busca vetorial (`vec_memory` table). Com crescimento do banco, brute-force escala O(n). Busca semântica de alta qualidade requer HNSW indexado — padrão da indústria.
+
+**Decisão:** Introduzir Qdrant como tier primário do store vetorial, mantendo SQLite como cache/fallback e FTS5 como tier lexical permanente. Três tiers:
+
+| Tier | Backend | Quando |
+|------|---------|--------|
+| 1 | **Qdrant** (Docker, HNSW) | `OSFORGE_VECTOR=qdrant` ou `config.json.vector_backend=qdrant` |
+| 2 | **SQLite** (cosine brute-force) | default; ou fallback se Qdrant vazio/inalcançável |
+| 3 | **off** | `OSFORGE_EMBED=off`; busca degrada para FTS5 lexical |
+
+Regras de fallback:
+- Qdrant inalcançável (ConnectionError, timeout): warning para stderr, retorna resultado SQLite — NUNCA crasha.
+- Qdrant vazio (0 pontos): transparentemente usa SQLite.
+- `vstore_upsert` sempre escreve para AMBOS Qdrant + SQLite (SQLite = cache garantido).
+
+**Primeira dependência de runtime externa** do OSForge (Docker). Por isso:
+- Opt-in explícito: `deploy.sh --with-qdrant` ou prompt interativo.
+- `deploy.sh --no-qdrant` configura sqlite e imprime aviso de degradação.
+- Nenhum arquivo Python novo — Qdrant REST via `urllib` stdlib (zero dependências pip adicionais).
+- Imagem pinada: `qdrant/qdrant:v1.18.2`.
+- Volume em `~/.osforge/qdrant/storage` (fora do repo, persistente entre deploys).
+
+**Isolamento de config:**
+- `OSFORGE_CONFIG` env aponta para config alternativo — testes usam `/tmp`, nunca tocam `~/.osforge/config.json` real.
+- Precedência: env vars > `~/.osforge/config.json` > defaults hardcoded.
+
+**Consequências:**
+- `osforge-db vec-init` deve ser executado uma vez após Qdrant subir (descobre dim embedando probe string, cria/valida coleção).
+- `embed-backfill` popula Qdrant a partir dos registros SQLite existentes.
+- Ambientes sem Docker continuam funcionando com SQLite (tier 2) transparentemente.
+- Ollama continua sendo o embedder padrão (`embed_provider=ollama`); Qdrant é apenas o store.
+
+**Modelo de embedding padrão — `bge-m3` (revisado após avaliação):**
+A primeira escolha (`nomic-embed-text`, 768d) falhou em avaliação empírica com texto técnico curto em PT-BR — 1/3 de acerto top-1, com um documento dominando todas as queries (embeddings anisotrópicos, modelo inglês-cêntrico). `bge-m3` (multilíngue, 1024d) acertou 3/3 com separação saudável. Default do provider ollama passou a `bge-m3`; `nomic-embed-text` fica como alternativa leve (274MB vs 1.2GB) via `OSFORGE_EMBED_MODEL`. A dim é descoberta por `vec-init` (não hardcoded), então trocar de modelo só exige re-`vec-init` + `embed-backfill`.
+
+**Data:** 2026-06-12.

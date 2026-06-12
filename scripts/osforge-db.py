@@ -26,11 +26,58 @@ Comandos:
   list-projects [--status=active|all]
   import-yaml <yaml_path> <slug>    Migra status.yaml existente
   stats                             Resumo geral do banco
+
+  add-observation <project> <trigger_text> [--context=<ctx>] [--tool=<tool>]
+                                    Grava uma observação de sessão no banco
+  evolve [--project=<slug>] [--min-count=2]
+                                    Clusteriza observations e propõe candidates
+                                    (SKILL/COMMAND/AGENT); não escreve arquivos
+  list-instincts [--project=<slug>] [--scope=project|global]
+                                    Lista instincts promovidos
+  promote-instinct <instinct_id> [--scope=global]
+                                    Promove instinct project→global (conf ≥ 0.8)
+
+  Memória vetorial híbrida (3 tiers: qdrant > sqlite > off):
+  vec-init                          Cria/valida coleção Qdrant (descobre dim via probe).
+                                    No-op se backend=sqlite ou OSFORGE_EMBED=off.
+  embed <source_table> <source_id> <text>
+                                    Computa e faz upsert via vstore (qdrant ou sqlite).
+                                    No-op com aviso se OSFORGE_EMBED=off.
+  embed-backfill [--source=decisions]
+                                    Embeda linhas existentes sem embedding.
+                                    No-op se OSFORGE_EMBED=off.
+  search-semantic <query> [--top=5]
+                                    Busca vetorial (Qdrant ou SQLite conforme backend).
+                                    OSFORGE_EMBED=off → mensagem clara; exit 0.
+  search-hybrid <query> [--top=5]
+                                    RRF(FTS5 + vetor). Degrada para FTS5 se off.
+  vec-status                        Backend ativo, provider, modelo, contagem.
+                                    Se qdrant: mostra saúde + total de pontos.
+
+  Variáveis de ambiente:
+    OSFORGE_EMBED       ollama (padrão) | off | mock | voyage | openai
+    OSFORGE_EMBED_MODEL Modelo para o provider (default ollama: bge-m3 multilíngue; ex: nomic-embed-text, voyage-3-lite)
+    OSFORGE_VECTOR      sqlite (padrão) | qdrant
+    OSFORGE_QDRANT_URL  URL do Qdrant (padrão: http://localhost:6333)
+    OSFORGE_COLLECTION  Nome da coleção Qdrant (padrão: osforge_memory)
+    OSFORGE_CONFIG      Caminho alternativo para config.json (para testes isolados)
+    VOYAGE_API_KEY      Chave para voyage
+    OPENAI_API_KEY      Chave para openai
 """
 
-import sqlite3, sys, os, json, textwrap
+import sqlite3, sys, os, json, textwrap, math, hashlib, struct
+from array import array
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib import request as _urllib_request
+
+# numpy é OPCIONAL — acelerador; resultado idêntico ao pure-Python
+try:
+    import numpy as _np
+    _HAS_NUMPY = True
+except ImportError:
+    _np = None
+    _HAS_NUMPY = False
 
 # ── Localização do banco ──────────────────────────────────────────────────
 
@@ -47,6 +94,644 @@ def get_conn(scope="global"):
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")
     return conn
+
+# ── Memória vetorial: provider de embedding ───────────────────────────────
+#
+# OSFORGE_EMBED  = off (padrão) | mock | ollama | voyage | openai
+# OSFORGE_EMBED_MODEL = nome do modelo para o provider
+#
+# mock: embedding DETERMINÍSTICO offline usando hashlib.
+#   NÃO é semântico — existe apenas para testar o pipeline completo sem rede.
+#   Dois textos idênticos → vetor idêntico; textos diferentes → vetores distintos
+#   por hash de tokens. Dimensão fixa: 64. Normalizado L2.
+#
+# Política de falha de rede: retorna None + warning em stderr. NUNCA crash.
+
+_EMBED_MODEL_ENV  = os.environ.get("OSFORGE_EMBED_MODEL", "").strip()
+
+# ── Config loader (lê ~/.osforge/config.json ou OSFORGE_CONFIG) ────────────
+# Precedência: env vars > config.json > defaults
+
+def _load_osforge_config():
+    """Carrega config JSON. Retorna dict. Nunca lança exceção."""
+    cfg_path_env = os.environ.get("OSFORGE_CONFIG", "")
+    if cfg_path_env:
+        cfg_path = Path(cfg_path_env)
+    else:
+        cfg_path = Path.home() / ".osforge" / "config.json"
+    if cfg_path.exists():
+        try:
+            return json.loads(cfg_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+_OSFORGE_CFG = _load_osforge_config()
+
+def _cfg(key, default=""):
+    """Lê valor do config.json (usado apenas para chaves sem env var direta)."""
+    return _OSFORGE_CFG.get(key, default)
+
+# Provider de embedding: env > config > default "ollama"
+_EMBED_PROVIDER = (
+    os.environ.get("OSFORGE_EMBED", "").lower().strip()
+    or _cfg("embed_provider", "ollama").lower().strip()
+)
+
+# Backend vetorial: env > config > default "sqlite"
+_VECTOR_BACKEND = (
+    os.environ.get("OSFORGE_VECTOR", "").lower().strip()
+    or _cfg("vector_backend", "sqlite").lower().strip()
+)
+
+# URL e coleção Qdrant
+_QDRANT_URL = (
+    os.environ.get("OSFORGE_QDRANT_URL", "").strip()
+    or _cfg("qdrant_url", "http://localhost:6333")
+)
+_QDRANT_COLLECTION = (
+    os.environ.get("OSFORGE_COLLECTION", "").strip()
+    or _cfg("collection", "osforge_memory")
+)
+
+_DEFAULT_MODELS = {
+    "ollama":  "bge-m3",
+    "voyage":  "voyage-3-lite",
+    "openai":  "text-embedding-3-small",
+    "mock":    "mock-hash-64",
+}
+
+def _embed_model():
+    return _EMBED_MODEL_ENV or _DEFAULT_MODELS.get(_EMBED_PROVIDER, "unknown")
+
+def _vec_normalize(vec):
+    """Normaliza vetor L2 → retorna list[float]. Usa numpy se disponível."""
+    if _HAS_NUMPY:
+        a = _np.array(vec, dtype=_np.float32)
+        n = float(_np.linalg.norm(a))
+        if n == 0.0:
+            return a.tolist()
+        return (a / n).tolist()
+    # pure-Python fallback
+    n = math.sqrt(sum(x * x for x in vec))
+    if n == 0.0:
+        return list(vec)
+    return [x / n for x in vec]
+
+def _vec_to_blob(vec):
+    """Serializa list[float] como bytes float32 (array stdlib)."""
+    a = array('f', [float(x) for x in vec])
+    return a.tobytes()
+
+def _blob_to_vec(blob):
+    """Desserializa bytes → list[float]."""
+    a = array('f')
+    a.frombytes(blob)
+    return list(a)
+
+def _cosine(a, b):
+    """Cosseno entre dois vetores já normalizados L2 → valor em [-1, 1]."""
+    if _HAS_NUMPY:
+        return float(_np.dot(_np.array(a, dtype=_np.float32),
+                             _np.array(b, dtype=_np.float32)))
+    return sum(x * y for x, y in zip(a, b))
+
+def _embed_mock(text, dim=64):
+    """Embedding determinístico offline para testes de pipeline.
+    NÃO é semântico. Usa SHA-256 de tokens para preencher o vetor.
+    """
+    tokens = text.lower().split()
+    vec = [0.0] * dim
+    for i, tok in enumerate(tokens or [text]):
+        digest = hashlib.sha256(tok.encode()).digest()
+        for j in range(dim):
+            byte_val = digest[j % len(digest)]
+            vec[j] += float(byte_val) * math.cos(float(i + j))
+    return _vec_normalize(vec)
+
+def _embed_ollama(text, model):
+    """Chama Ollama local (http://localhost:11434/api/embeddings)."""
+    url = "http://localhost:11434/api/embeddings"
+    payload = json.dumps({"model": model, "prompt": text}).encode()
+    req = _urllib_request.Request(url, data=payload,
+                                  headers={"Content-Type": "application/json"})
+    try:
+        with _urllib_request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+        return data["embedding"]
+    except Exception as exc:
+        print(f"[osforge-db] aviso: ollama embed falhou ({exc})", file=sys.stderr)
+        return None
+
+def _embed_voyage(text, model):
+    """Chama Voyage AI embeddings API."""
+    api_key = os.environ.get("VOYAGE_API_KEY", "")
+    if not api_key:
+        print("[osforge-db] aviso: VOYAGE_API_KEY não definida", file=sys.stderr)
+        return None
+    url = "https://api.voyageai.com/v1/embeddings"
+    payload = json.dumps({"input": [text], "model": model}).encode()
+    req = _urllib_request.Request(url, data=payload, headers={
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}",
+    })
+    try:
+        with _urllib_request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+        return data["data"][0]["embedding"]
+    except Exception as exc:
+        print(f"[osforge-db] aviso: voyage embed falhou ({exc})", file=sys.stderr)
+        return None
+
+def _embed_openai(text, model):
+    """Chama OpenAI embeddings API."""
+    api_key = os.environ.get("OPENAI_API_KEY", "")
+    if not api_key:
+        print("[osforge-db] aviso: OPENAI_API_KEY não definida", file=sys.stderr)
+        return None
+    url = "https://api.openai.com/v1/embeddings"
+    payload = json.dumps({"input": text, "model": model}).encode()
+    req = _urllib_request.Request(url, data=payload, headers={
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}",
+    })
+    try:
+        with _urllib_request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+        return data["data"][0]["embedding"]
+    except Exception as exc:
+        print(f"[osforge-db] aviso: openai embed falhou ({exc})", file=sys.stderr)
+        return None
+
+def compute_embedding(text):
+    """Computa embedding para `text` usando o provider configurado.
+    Retorna list[float] normalizado ou None (se provider=off ou falha de rede).
+    """
+    provider = _EMBED_PROVIDER
+    model    = _embed_model()
+    if provider == "off":
+        return None
+    if provider == "mock":
+        return _embed_mock(text)
+    if provider == "ollama":
+        vec = _embed_ollama(text, model)
+    elif provider == "voyage":
+        vec = _embed_voyage(text, model)
+    elif provider == "openai":
+        vec = _embed_openai(text, model)
+    else:
+        print(f"[osforge-db] aviso: provider desconhecido '{provider}'; "
+              "use off|mock|ollama|voyage|openai", file=sys.stderr)
+        return None
+    if vec is None:
+        return None
+    return _vec_normalize(vec)
+
+# ── Qdrant REST backend (urllib stdlib — zero deps) ───────────────────────
+
+import uuid as _uuid
+
+_QDRANT_NS = _uuid.UUID("6ba7b810-9dad-11d1-80b4-00c04fd430c8")  # NAMESPACE_URL
+
+
+def _qdrant_req(method, path, body=None, timeout=10):
+    """Faz requisição REST ao Qdrant. Retorna (status_code, dict|None).
+    Em falha de rede retorna (0, None) — NUNCA lança exceção.
+    """
+    url = _QDRANT_URL.rstrip("/") + path
+    data = json.dumps(body).encode() if body is not None else None
+    headers = {"Content-Type": "application/json"}
+    req = _urllib_request.Request(url, data=data, headers=headers, method=method)
+    try:
+        with _urllib_request.urlopen(req, timeout=timeout) as resp:
+            try:
+                return resp.status, json.loads(resp.read().decode())
+            except Exception:
+                return resp.status, None
+    except Exception as exc:
+        print(f"[osforge-db] aviso: Qdrant {method} {path} falhou ({exc})",
+              file=sys.stderr)
+        return 0, None
+
+
+def _qdrant_ensure_collection(dim):
+    """Cria coleção se não existir. No-op se já existe. Retorna True em sucesso."""
+    status, _ = _qdrant_req("GET", f"/collections/{_QDRANT_COLLECTION}")
+    if status == 200:
+        return True
+    if status == 404 or status == 0:
+        body = {
+            "vectors": {
+                "size": dim,
+                "distance": "Cosine",
+            }
+        }
+        st2, _ = _qdrant_req("PUT", f"/collections/{_QDRANT_COLLECTION}", body)
+        if st2 in (200, 201):
+            return True
+        print(f"[osforge-db] aviso: Qdrant create collection status={st2}",
+              file=sys.stderr)
+        return False
+    print(f"[osforge-db] aviso: Qdrant collection check status={status}",
+          file=sys.stderr)
+    return False
+
+
+def _qdrant_point_id(source_table, source_id):
+    """UUID v5 determinístico para idempotência de upsert."""
+    key = f"{source_table}:{source_id}"
+    return str(_uuid.uuid5(_QDRANT_NS, key))
+
+
+def _qdrant_upsert(source_table, source_id, content, vec):
+    """Upsert de ponto no Qdrant. Retorna True em sucesso."""
+    if not _qdrant_ensure_collection(len(vec)):
+        return False
+    point_id = _qdrant_point_id(source_table, source_id)
+    body = {
+        "points": [
+            {
+                "id": point_id,
+                "vector": list(vec),
+                "payload": {
+                    "source_table": source_table,
+                    "source_id": str(source_id),
+                    "content": content,
+                },
+            }
+        ]
+    }
+    st, _ = _qdrant_req("PUT",
+                        f"/collections/{_QDRANT_COLLECTION}/points?wait=true",
+                        body)
+    if st in (200, 201):
+        return True
+    print(f"[osforge-db] aviso: Qdrant upsert status={st}", file=sys.stderr)
+    return False
+
+
+def _qdrant_search(query_vec, top, project=None):
+    """Busca vetorial no Qdrant. Retorna list[(source_table, source_id, content, score)].
+    Em falha retorna lista vazia — NUNCA lança exceção.
+    """
+    body = {
+        "vector": list(query_vec),
+        "limit": int(top),
+        "with_payload": True,
+    }
+    st, resp = _qdrant_req("POST",
+                           f"/collections/{_QDRANT_COLLECTION}/points/search",
+                           body)
+    if st == 0 or resp is None:
+        return []
+    results = []
+    for hit in resp.get("result", []):
+        payload = hit.get("payload", {})
+        src_table = payload.get("source_table", "")
+        src_id    = payload.get("source_id", "")
+        content   = payload.get("content", "")
+        score     = float(hit.get("score", 0.0))
+        results.append((src_table, src_id, content, score))
+    return results
+
+
+# ── vstore abstraction ────────────────────────────────────────────────────
+
+def vstore_upsert(conn, source_table, source_id, content, vec):
+    """Grava embedding no backend ativo (qdrant ou sqlite)."""
+    if _VECTOR_BACKEND == "qdrant":
+        _qdrant_upsert(source_table, str(source_id), content, vec)
+        # Sempre grava também em SQLite como cache/fallback
+        _sqlite_upsert(conn, source_table, source_id, content, vec)
+    else:
+        _sqlite_upsert(conn, source_table, source_id, content, vec)
+
+
+def vstore_search(conn, query_vec, top, project=None):
+    """Busca vetorial no backend ativo.
+    Retorna list[(source_table, source_id, content, score)].
+    """
+    if _VECTOR_BACKEND == "qdrant":
+        results = _qdrant_search(query_vec, top, project)
+        if results:
+            return results
+        # Fallback silencioso para SQLite se Qdrant retornar vazio
+        print("[osforge-db] aviso: Qdrant vazio ou inacessível — fallback SQLite.",
+              file=sys.stderr)
+    return _sqlite_search(conn, query_vec, top)
+
+
+def _sqlite_upsert(conn, source_table, source_id, content, vec):
+    """SQLite upsert (implementação original preservada)."""
+    model = _embed_model()
+    dim   = len(vec)
+    blob  = _vec_to_blob(vec)
+    conn.execute("""
+        INSERT INTO vec_memory (source_table, source_id, content, dim, model, embedding)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(source_table, source_id, model) DO UPDATE SET
+            content    = excluded.content,
+            dim        = excluded.dim,
+            embedding  = excluded.embedding,
+            created_at = datetime('now','utc')
+    """, (source_table, str(source_id), content, dim, model, blob))
+    conn.commit()
+
+
+def _sqlite_search(conn, query_vec, top):
+    """Cosine brute-force em vec_memory (implementação original preservada)."""
+    rows = conn.execute(
+        "SELECT source_table, source_id, content, embedding FROM vec_memory"
+    ).fetchall()
+    if not rows:
+        return []
+    scored = []
+    for row in rows:
+        doc_vec = _blob_to_vec(row["embedding"])
+        score   = _cosine(query_vec, doc_vec)
+        scored.append((row["source_table"], row["source_id"], row["content"], score))
+    scored.sort(key=lambda x: x[3], reverse=True)
+    return scored[:int(top)]
+
+
+def upsert_vec_memory(conn, source_table, source_id, content, vec):
+    """Compatibilidade: delega para vstore_upsert."""
+    vstore_upsert(conn, source_table, str(source_id), content, vec)
+
+# ── Comandos vetoriais ────────────────────────────────────────────────────
+
+def cmd_embed(conn, source_table, source_id, text):
+    """Computa e faz upsert via vstore_upsert. No-op com aviso se provider=off."""
+    if _EMBED_PROVIDER == "off":
+        print("[osforge-db] embed: provider=off. "
+              "Defina OSFORGE_EMBED=mock|ollama|voyage|openai para habilitar.",
+              file=sys.stderr)
+        return
+    vec = compute_embedding(text)
+    if vec is None:
+        print("[osforge-db] embed: falha ao computar embedding (veja avisos acima).",
+              file=sys.stderr)
+        return
+    vstore_upsert(conn, source_table, str(source_id), text, vec)
+    _ok(f"vstore[{_VECTOR_BACKEND}]: {source_table}/{source_id} embedado "
+        f"(dim={len(vec)}, model={_embed_model()})")
+
+def cmd_embed_backfill(conn, source="decisions"):
+    """Embeda linhas existentes de `source` sem embedding em vec_memory."""
+    if _EMBED_PROVIDER == "off":
+        print("[osforge-db] embed-backfill: provider=off — no-op. "
+              "Defina OSFORGE_EMBED para habilitar.", file=sys.stderr)
+        return
+    model = _embed_model()
+    if source == "decisions":
+        rows = conn.execute("""
+            SELECT d.id, d.content FROM decisions d
+            WHERE NOT EXISTS (
+                SELECT 1 FROM vec_memory v
+                WHERE v.source_table='decisions'
+                  AND v.source_id=CAST(d.id AS TEXT)
+                  AND v.model=?
+            )
+        """, (model,)).fetchall()
+    else:
+        _err(f"Fonte '{source}' não suportada para backfill. Use: decisions")
+        return
+    count = 0
+    for row in rows:
+        vec = compute_embedding(row["content"])
+        if vec is None:
+            print(f"[osforge-db] backfill: falha no id={row['id']} — pulando",
+                  file=sys.stderr)
+            continue
+        vstore_upsert(conn, source, str(row["id"]), row["content"], vec)
+        count += 1
+    _ok(f"embed-backfill [{_VECTOR_BACKEND}]: {count}/{len(rows)} itens de '{source}'")
+
+def cmd_search_semantic(conn, query, top=5):
+    """Busca vetorial via vstore_search (Qdrant ou SQLite conforme backend ativo).
+    Se provider=off → mensagem clara e exit 0.
+    """
+    if _EMBED_PROVIDER == "off":
+        print("Busca semântica desativada: OSFORGE_EMBED=off.\n"
+              "Use `search <query>` para busca FTS5 textual, ou defina\n"
+              "OSFORGE_EMBED=mock|ollama|voyage|openai para habilitar vetores.")
+        return
+    q_vec = compute_embedding(query)
+    if q_vec is None:
+        _err("Falha ao computar embedding da query. Veja avisos acima.")
+    results = vstore_search(conn, q_vec, int(top))
+    if not results:
+        _out("Nenhum resultado encontrado. Use `embed-backfill` para popular.")
+        return
+    if _json_mode:
+        out = [{"score": round(score, 4), "source_table": st, "source_id": sid,
+                "content": c} for st, sid, c, score in results]
+        print(json.dumps(out, ensure_ascii=False))
+        return
+    _out(f"── Busca semantica [{_VECTOR_BACKEND}]: '{query}' (top={top}) ──────────────────")
+    for rank, (src_table, src_id, content, score) in enumerate(results, 1):
+        short = textwrap.shorten(content, width=100, placeholder="...")
+        _out(f"  #{rank} [{src_table}/{src_id}] score={score:.4f}  {short}")
+
+def _rrf_merge(ranked_a, ranked_b, k=60):
+    """Reciprocal Rank Fusion de duas listas rankeadas.
+    Cada lista e uma seq de id_str onde posicao = rank.
+    Retorna lista de ids ordenada por RRF score desc.
+    k=60 segue o valor classico do paper Cormack et al. 2009.
+    """
+    scores = {}
+    for rank, item_id in enumerate(ranked_a, 1):
+        scores[item_id] = scores.get(item_id, 0.0) + 1.0 / (k + rank)
+    for rank, item_id in enumerate(ranked_b, 1):
+        scores[item_id] = scores.get(item_id, 0.0) + 1.0 / (k + rank)
+    return sorted(scores, key=lambda x: scores[x], reverse=True)
+
+def cmd_search_hybrid(conn, query, top=5, project_slug=None):
+    """RRF(FTS5 + vetor). Degrada para FTS5 puro se OSFORGE_EMBED=off."""
+    top = int(top)
+    if _EMBED_PROVIDER == "off":
+        print("[osforge-db] aviso: OSFORGE_EMBED=off — busca hibrida degradou para FTS5.",
+              file=sys.stderr)
+        cmd_search(conn, query, project_slug, top)
+        return
+
+    # Lista A: FTS5
+    fts_query = _fts_quote(query)
+    if project_slug:
+        fts_rows = conn.execute("""
+            SELECT decisions.id
+            FROM decisions_fts
+            JOIN decisions ON decisions.id = decisions_fts.rowid
+            JOIN projects  ON projects.id  = decisions.project_id
+            WHERE decisions_fts MATCH ? AND projects.slug=?
+            ORDER BY rank LIMIT ?
+        """, (fts_query, project_slug, top * 3)).fetchall()
+    else:
+        fts_rows = conn.execute("""
+            SELECT decisions.id
+            FROM decisions_fts
+            JOIN decisions ON decisions.id = decisions_fts.rowid
+            WHERE decisions_fts MATCH ?
+            ORDER BY rank LIMIT ?
+        """, (fts_query, top * 3)).fetchall()
+    fts_ranked = [str(r["id"]) for r in fts_rows]
+
+    # Lista B: vetor
+    q_vec = compute_embedding(query)
+    if q_vec is None:
+        print("[osforge-db] aviso: falha no embed da query — usando so FTS5.",
+              file=sys.stderr)
+        cmd_search(conn, query, project_slug, top)
+        return
+
+    vec_results = vstore_search(conn, q_vec, top * 3)
+    vec_ranked = [sid for _, sid, _c, _s in
+                  sorted(vec_results, key=lambda x: x[3], reverse=True)[:top * 3]]
+
+    # RRF
+    merged = _rrf_merge(fts_ranked, vec_ranked, k=60)[:top]
+
+    if not merged:
+        _out("Nenhum resultado encontrado.")
+        return
+
+    placeholders = ",".join("?" * len(merged))
+    rows = conn.execute(
+        f"SELECT d.id, d.category, d.content, p.slug as proj "
+        f"FROM decisions d JOIN projects p ON p.id=d.project_id "
+        f"WHERE d.id IN ({placeholders})",
+        [int(m) for m in merged]
+    ).fetchall()
+    row_by_id = {str(r["id"]): r for r in rows}
+
+    if _json_mode:
+        out = []
+        for sid in merged:
+            r = row_by_id.get(sid)
+            if r:
+                out.append({"id": r["id"], "project": r["proj"],
+                            "category": r["category"], "content": r["content"]})
+        print(json.dumps(out, ensure_ascii=False))
+        return
+
+    _out(f"── Busca hibrida (RRF FTS5+vetor): '{query}' (top={top}) ──────────")
+    for rank, sid in enumerate(merged, 1):
+        r = row_by_id.get(sid)
+        if not r:
+            continue
+        short = textwrap.shorten(r["content"], width=100, placeholder="...")
+        _out(f"  #{rank} [{r['proj']}] [{r['category']}]  {short}")
+
+def cmd_vec_status(conn):
+    """Imprime provider ativo, backend vetorial, modelo, contagem por source_table.
+    Se backend=qdrant, também mostra saúde e total de pontos na coleção.
+    """
+    provider = _EMBED_PROVIDER
+    model    = _embed_model()
+    rows = conn.execute("""
+        SELECT source_table, model, dim, COUNT(*) as cnt
+        FROM vec_memory GROUP BY source_table, model, dim
+    """).fetchall()
+
+    # Qdrant health + point count
+    qdrant_healthy = None
+    qdrant_points  = None
+    if _VECTOR_BACKEND == "qdrant":
+        st_h, _ = _qdrant_req("GET", "/healthz")
+        qdrant_healthy = (st_h == 200)
+        st_c, resp_c = _qdrant_req("GET", f"/collections/{_QDRANT_COLLECTION}")
+        if st_c == 200 and resp_c:
+            try:
+                qdrant_points = resp_c["result"]["points_count"]
+            except (KeyError, TypeError):
+                qdrant_points = None
+
+    if _json_mode:
+        out = {
+            "provider": provider,
+            "model": model,
+            "vector_backend": _VECTOR_BACKEND,
+            "qdrant_url": _QDRANT_URL if _VECTOR_BACKEND == "qdrant" else None,
+            "qdrant_collection": _QDRANT_COLLECTION if _VECTOR_BACKEND == "qdrant" else None,
+            "qdrant_healthy": qdrant_healthy,
+            "qdrant_points": qdrant_points,
+            "numpy_available": _HAS_NUMPY,
+            "sqlite_tables": [dict(r) for r in rows],
+        }
+        print(json.dumps(out, ensure_ascii=False))
+        return
+
+    _out("── vec-status ──────────────────────────────────────────────────────")
+    _out(f"  provider       : {provider}")
+    _out(f"  model          : {model}")
+    _out(f"  vector_backend : {_VECTOR_BACKEND}")
+    _out(f"  numpy          : {'sim (acelerador ativo)' if _HAS_NUMPY else 'nao (pure-Python)'}")
+    if _VECTOR_BACKEND == "qdrant":
+        _out(f"  qdrant_url     : {_QDRANT_URL}")
+        _out(f"  collection     : {_QDRANT_COLLECTION}")
+        health_str = "ok" if qdrant_healthy else ("INDISPONÍVEL" if qdrant_healthy is False else "?")
+        _out(f"  qdrant_health  : {health_str}")
+        pts = str(qdrant_points) if qdrant_points is not None else "?"
+        _out(f"  qdrant_points  : {pts}")
+    _out("  SQLite vec_memory (cache/fallback):")
+    if not rows:
+        _out("    (nenhum embedding gravado ainda)")
+    else:
+        for r in rows:
+            _out(f"    {r['source_table']:20s}  model={r['model']}  "
+                 f"dim={r['dim']}  count={r['cnt']}")
+
+def cmd_vec_init(conn):
+    """Cria/valida coleção Qdrant descobrindo dim via embedding de probe.
+    No-op silencioso se backend=sqlite ou provider=off.
+    """
+    if _VECTOR_BACKEND != "qdrant":
+        _out(f"vec-init: backend='{_VECTOR_BACKEND}' — no-op (só relevante para qdrant).")
+        return
+    if _EMBED_PROVIDER == "off":
+        print("[osforge-db] vec-init: OSFORGE_EMBED=off — não é possível descobrir dim.",
+              file=sys.stderr)
+        return
+    _out(f"vec-init: testando conexão com Qdrant em {_QDRANT_URL} ...")
+    st_h, _ = _qdrant_req("GET", "/healthz")
+    if st_h != 200:
+        print(f"[osforge-db] vec-init: Qdrant indisponível (status={st_h}). "
+              "Verifique se o container está rodando.", file=sys.stderr)
+        return
+    _out("  Qdrant: ok")
+    _out(f"  Embedando probe para descobrir dim (provider={_EMBED_PROVIDER}, "
+         f"model={_embed_model()}) ...")
+    probe_vec = compute_embedding("osforge vector store initialization probe")
+    if probe_vec is None:
+        print("[osforge-db] vec-init: falha ao computar embedding da probe. "
+              "Verifique o provider.", file=sys.stderr)
+        return
+    dim = len(probe_vec)
+    _out(f"  dim={dim}")
+    # Verificar se coleção já existe
+    st_c, resp_c = _qdrant_req("GET", f"/collections/{_QDRANT_COLLECTION}")
+    if st_c == 200 and resp_c:
+        try:
+            existing_dim = resp_c["result"]["config"]["params"]["vectors"]["size"]
+            if existing_dim != dim:
+                print(f"[osforge-db] vec-init: AVISO — coleção '{_QDRANT_COLLECTION}' "
+                      f"já existe com dim={existing_dim}, mas embedder produz dim={dim}. "
+                      "Inconsistência — recrie a coleção manualmente se necessário.",
+                      file=sys.stderr)
+            else:
+                _ok(f"vec-init: coleção '{_QDRANT_COLLECTION}' já existe e compatível "
+                    f"(dim={dim}).")
+        except (KeyError, TypeError):
+            _ok(f"vec-init: coleção '{_QDRANT_COLLECTION}' já existe.")
+        return
+    ok = _qdrant_ensure_collection(dim)
+    if ok:
+        _ok(f"vec-init: coleção '{_QDRANT_COLLECTION}' criada (dim={dim}, "
+            f"distance=Cosine).")
+    else:
+        print("[osforge-db] vec-init: falha ao criar coleção. Veja avisos acima.",
+              file=sys.stderr)
+
 
 # ── Schema ────────────────────────────────────────────────────────────────
 
@@ -118,6 +803,42 @@ CREATE TABLE IF NOT EXISTS tasks (
                CHECK(priority IN ('p0','p1','p2')),
     created_at TEXT    NOT NULL DEFAULT (datetime('now','utc')),
     updated_at TEXT    NOT NULL DEFAULT (datetime('now','utc'))
+);
+
+CREATE TABLE IF NOT EXISTS observations (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    project      TEXT    NOT NULL DEFAULT '',
+    trigger_text TEXT    NOT NULL,
+    context      TEXT    NOT NULL DEFAULT '',
+    tool         TEXT    NOT NULL DEFAULT '',
+    created_at   TEXT    NOT NULL DEFAULT (datetime('now','utc'))
+);
+
+CREATE TABLE IF NOT EXISTS instincts (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    trigger     TEXT    NOT NULL,
+    guidance    TEXT    NOT NULL DEFAULT '',
+    confidence  REAL    NOT NULL DEFAULT 0.5
+                CHECK(confidence >= 0.0 AND confidence <= 1.0),
+    domain      TEXT    NOT NULL DEFAULT '',
+    scope       TEXT    NOT NULL DEFAULT 'project'
+                CHECK(scope IN ('project','global')),
+    project     TEXT    NOT NULL DEFAULT '',
+    seen_count  INTEGER NOT NULL DEFAULT 1,
+    created_at  TEXT    NOT NULL DEFAULT (datetime('now','utc')),
+    updated_at  TEXT    NOT NULL DEFAULT (datetime('now','utc'))
+);
+
+CREATE TABLE IF NOT EXISTS vec_memory (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_table TEXT    NOT NULL,
+    source_id    TEXT    NOT NULL,
+    content      TEXT    NOT NULL,
+    dim          INTEGER NOT NULL,
+    model        TEXT    NOT NULL,
+    embedding    BLOB    NOT NULL,
+    created_at   TEXT    NOT NULL DEFAULT (datetime('now','utc')),
+    UNIQUE(source_table, source_id, model)
 );
 """
 
@@ -231,14 +952,23 @@ def cmd_set_resume(conn, slug, resume_point):
 
 def cmd_add_decision(conn, slug, content, category="arch"):
     p = _get_project(conn, slug)
-    conn.execute("""
+    cur = conn.execute("""
         INSERT INTO decisions (project_id, content, category)
-        VALUES (?, ?, ?)
-    """, (p["id"], content, category))
+        VALUES (?, ?, ?) RETURNING id
+    """, (p["id"], content, category)).fetchone()
     conn.execute("UPDATE projects SET updated_at=? WHERE id=?",
                  (_now(), p["id"]))
     conn.commit()
     _ok(f"Decisão ({category}) adicionada a '{slug}'")
+    # Auto-embed: best-effort, nunca falha a operação principal
+    try:
+        if _EMBED_PROVIDER != "off" and cur is not None:
+            vec = compute_embedding(content)
+            if vec is not None:
+                upsert_vec_memory(conn, "decisions", str(cur[0]), content, vec)
+    except Exception as _auto_embed_exc:
+        print(f"[osforge-db] aviso: auto-embed falhou ({_auto_embed_exc})",
+              file=sys.stderr)
 
 def cmd_add_blocker(conn, slug, description, waiting_for=None):
     p = _get_project(conn, slug)
@@ -545,6 +1275,226 @@ def cmd_stats(conn):
     _out(f"Decisões: {decs}")
     _out(f"Blockers: {blk} ativos")
 
+def cmd_add_observation(conn, project, trigger_text, context="", tool=""):
+    """Grava uma observação de sessão para posterior clusterização via evolve."""
+    conn.execute(
+        "INSERT INTO observations (project, trigger_text, context, tool) VALUES (?,?,?,?)",
+        (project, trigger_text, context, tool),
+    )
+    conn.commit()
+    _ok(f"Observação gravada: [{project}] {trigger_text[:60]}")
+
+
+# ── Helpers de clustering ────────────────────────────────────────────────────
+
+_STRIP_VERBS = frozenset([
+    "when", "creating", "writing", "adding", "implementing", "testing",
+    "building", "running", "using", "making", "working", "editing",
+    "reading", "fixing", "updating", "setting", "getting",
+])
+
+def _normalize_trigger(text):
+    """Normaliza trigger para clustering: lower, strip stop-verbs, collapse spaces."""
+    words = text.lower().split()
+    filtered = [w for w in words if w not in _STRIP_VERBS]
+    return " ".join(filtered).strip() or text.lower().strip()
+
+def _classify_candidate(cluster_size, avg_conf):
+    """Classifica candidato: AGENT (≥3, conf≥0.75) | COMMAND (conf≥0.70) | SKILL."""
+    if cluster_size >= 3 and avg_conf >= 0.75:
+        return "AGENT"
+    if avg_conf >= 0.70:
+        return "COMMAND"
+    return "SKILL"
+
+def _suggest_skill_diff(cluster_key, observations):
+    """Gera diff textual sugerido para um SKILL candidate."""
+    triggers = list({o["trigger_text"] for o in observations})
+    lines = [
+        f"--- /dev/null",
+        f"+++ skills/{cluster_key.replace(' ', '-')}/SKILL.md",
+        f"@@ -0,0 +1,18 @@",
+        f"+---",
+        f"+name: {cluster_key.replace(' ', '-')}",
+        f'+description: |',
+        f'+  ACIONE quando: {triggers[0]}',
+    ]
+    for t in triggers[1:]:
+        lines.append(f'+  ACIONE quando: {t}')
+    lines += [
+        f"+---",
+        f"+",
+        f"# {cluster_key.title()}",
+        f"+",
+        f"# TODO: preencher guidance a partir das {len(observations)} observações",
+    ]
+    return "\n".join(lines)
+
+
+def cmd_evolve(conn, project_slug=None, min_count=2):
+    """Clusteriza observations por normalização de trigger e propõe candidates.
+
+    Não escreve nenhum arquivo — apenas lista candidatos com diffs sugeridos.
+    """
+    q = "SELECT project, trigger_text, context, tool, created_at FROM observations"
+    params = []
+    if project_slug:
+        q += " WHERE project=?"
+        params.append(project_slug)
+    q += " ORDER BY created_at"
+    rows = conn.execute(q, params).fetchall()
+
+    if not rows:
+        _out("Nenhuma observation registrada. Use 'add-observation' para capturar padrões.")
+        return
+
+    # Agrupar por trigger normalizado — usa apenas a 1ª palavra de conteúdo (substantivo-sujeito)
+    # Ex: "when writing tests prefer TDD" e "when writing tests use red-green"
+    # → norm = "tests prefer tdd" / "tests use red-green" → key = "tests" em ambos
+    clusters = {}  # norm_key → list[Row]
+    for row in rows:
+        normalized = _normalize_trigger(row["trigger_text"])
+        words = normalized.split()
+        key = words[0] if words else normalized  # 1ª palavra = substantivo-sujeito
+        clusters.setdefault(key, []).append(row)
+
+    # Filtrar clusters com tamanho ≥ min_count
+    candidates = {k: v for k, v in clusters.items() if len(v) >= min_count}
+
+    if not candidates:
+        total = len(rows)
+        _out(f"{total} observation(s) registrada(s), nenhum cluster ≥ {min_count}. "
+             "Continue capturando padrões.")
+        return
+
+    # Ordenar por tamanho desc
+    sorted_cands = sorted(candidates.items(), key=lambda kv: len(kv[1]), reverse=True)
+
+    label = f"projeto={project_slug}" if project_slug else "global"
+    _out(f"{'='*60}")
+    _out(f"  EVOLVE ANALYSIS — {len(rows)} observation(s), {label}")
+    _out(f"  Clusters ≥ {min_count}: {len(sorted_cands)}")
+    _out(f"{'='*60}")
+    _out("")
+
+    skill_cands, cmd_cands, agent_cands = [], [], []
+    for key, obs in sorted_cands:
+        avg_conf = 0.5 + min(0.3, len(obs) * 0.05)  # heurística: mais obs → mais conf
+        kind = _classify_candidate(len(obs), avg_conf)
+        entry = (key, obs, avg_conf)
+        if kind == "AGENT":
+            agent_cands.append(entry)
+        elif kind == "COMMAND":
+            cmd_cands.append(entry)
+        else:
+            skill_cands.append(entry)
+
+    if skill_cands:
+        _out(f"## SKILL CANDIDATES ({len(skill_cands)})")
+        for i, (key, obs, conf) in enumerate(skill_cands, 1):
+            _out(f"\n{i}. Cluster: \"{key}\"")
+            _out(f"   Observações: {len(obs)} | conf estimada: {conf:.0%}")
+            projects = list({o['project'] for o in obs if o['project']})
+            if projects:
+                _out(f"   Projetos: {', '.join(projects)}")
+            _out(f"\n   Diff sugerido:")
+            for line in _suggest_skill_diff(key, obs).splitlines():
+                _out(f"   {line}")
+
+    if cmd_cands:
+        _out(f"\n## COMMAND CANDIDATES ({len(cmd_cands)})")
+        for i, (key, obs, conf) in enumerate(cmd_cands, 1):
+            slug = key.replace(" ", "-")
+            _out(f"\n{i}. /{slug}")
+            _out(f"   Observações: {len(obs)} | conf estimada: {conf:.0%}")
+            _out(f"   Criar: commands/{slug}.md")
+
+    if agent_cands:
+        _out(f"\n## AGENT CANDIDATES ({len(agent_cands)})")
+        for i, (key, obs, conf) in enumerate(agent_cands, 1):
+            slug = key.replace(" ", "-")
+            _out(f"\n{i}. {slug}-agent")
+            _out(f"   Cobre {len(obs)} observações | conf estimada: {conf:.0%}")
+            _out(f"   Criar: agents/{slug}.md")
+
+    _out(f"\n{'='*60}")
+    _out("Para promover um candidato como instinct:")
+    _out("  osforge-db add-observation <project> '<trigger>' --context='...'")
+    _out("  # revise e edite skills/ ou rules/ manualmente após aprovação humana")
+
+    if _json_mode:
+        out = []
+        for key, obs, conf in (skill_cands + cmd_cands + agent_cands):
+            kind = _classify_candidate(len(obs), conf)
+            out.append({
+                "cluster": key,
+                "kind": kind,
+                "count": len(obs),
+                "confidence": round(conf, 2),
+                "projects": list({o["project"] for o in obs if o["project"]}),
+            })
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+
+
+def cmd_list_instincts(conn, project=None, scope=None):
+    """Lista instincts promovidos, opcionalmente filtrados por projeto ou scope."""
+    q = "SELECT id, trigger, guidance, confidence, domain, scope, project, seen_count, created_at FROM instincts WHERE 1=1"
+    params = []
+    if project:
+        q += " AND project=?"
+        params.append(project)
+    if scope:
+        if scope not in ("project", "global"):
+            _err("scope deve ser 'project' ou 'global'")
+        q += " AND scope=?"
+        params.append(scope)
+    q += " ORDER BY confidence DESC, seen_count DESC"
+    rows = conn.execute(q, params).fetchall()
+    if _json_mode:
+        print(json.dumps([dict(r) for r in rows], ensure_ascii=False, indent=2))
+        return
+    if not rows:
+        _out("Nenhum instinct registrado.")
+        return
+    for r in rows:
+        conf_pct = f"{r['confidence']:.0%}"
+        proj_tag = f" [{r['project']}]" if r["project"] else ""
+        _out(f"#{r['id']} [{r['scope']:7}]{proj_tag} conf={conf_pct} seen={r['seen_count']}")
+        _out(f"   trigger:  {r['trigger']}")
+        if r["guidance"]:
+            short = textwrap.shorten(r["guidance"], width=80, placeholder="…")
+            _out(f"   guidance: {short}")
+        if r["domain"]:
+            _out(f"   domain:   {r['domain']}")
+
+
+def cmd_promote_instinct(conn, instinct_id, scope="global"):
+    """Promove instinct para scope global (exige confidence ≥ 0.8)."""
+    try:
+        iid = int(instinct_id)
+    except ValueError:
+        _err(f"instinct_id inválido: '{instinct_id}'")
+    row = conn.execute(
+        "SELECT id, trigger, confidence, scope FROM instincts WHERE id=?", (iid,)
+    ).fetchone()
+    if not row:
+        _err(f"Instinct #{iid} não encontrado. Use 'list-instincts' para ver os ids.")
+    if row["scope"] == scope:
+        _err(f"Instinct #{iid} já está em scope '{scope}'.")
+    if row["confidence"] < 0.8:
+        _err(
+            f"Instinct #{iid} tem confidence {row['confidence']:.0%} < 80%. "
+            "Aumente seen_count registrando mais observações antes de promover."
+        )
+    now = _now()
+    conn.execute(
+        "UPDATE instincts SET scope=?, project='', updated_at=? WHERE id=?",
+        (scope, now, iid),
+    )
+    conn.commit()
+    _ok(f"Instinct #{iid} promovido para scope='{scope}': {row['trigger'][:60]}")
+
+
 def cmd_import_yaml(conn, yaml_path, slug):
     """Migra um status.yaml existente para o banco."""
     try:
@@ -595,25 +1545,37 @@ def main():
     scope = _scope(args)
     args  = [a for a in args if not a.startswith("--scope=")]
 
-    cat_arg    = next((a for a in args if a.startswith("--category=")), None)
-    wait_arg   = next((a for a in args if a.startswith("--waiting=")), None)
-    proj_arg   = next((a for a in args if a.startswith("--project=")), None)
-    limit_arg  = next((a for a in args if a.startswith("--limit=")), None)
-    status_arg = next((a for a in args if a.startswith("--status=")), None)
-    phase_arg  = next((a for a in args if a.startswith("--phase=")), None)
-    wave_arg   = next((a for a in args if a.startswith("--wave=")), None)
-    deps_arg   = next((a for a in args if a.startswith("--depends=")), None)
-    prio_arg   = next((a for a in args if a.startswith("--priority=")), None)
-    category   = cat_arg.split("=",1)[1]  if cat_arg  else None
-    waiting    = wait_arg.split("=",1)[1] if wait_arg  else None
-    proj_flt   = proj_arg.split("=",1)[1] if proj_arg  else None
-    limit      = int(limit_arg.split("=",1)[1]) if limit_arg else 5
-    st_flag    = status_arg.split("=",1)[1] if status_arg else None
+    cat_arg      = next((a for a in args if a.startswith("--category=")), None)
+    wait_arg     = next((a for a in args if a.startswith("--waiting=")), None)
+    proj_arg     = next((a for a in args if a.startswith("--project=")), None)
+    limit_arg    = next((a for a in args if a.startswith("--limit=")), None)
+    status_arg   = next((a for a in args if a.startswith("--status=")), None)
+    phase_arg    = next((a for a in args if a.startswith("--phase=")), None)
+    wave_arg     = next((a for a in args if a.startswith("--wave=")), None)
+    deps_arg     = next((a for a in args if a.startswith("--depends=")), None)
+    prio_arg     = next((a for a in args if a.startswith("--priority=")), None)
+    ctx_arg      = next((a for a in args if a.startswith("--context=")), None)
+    tool_arg     = next((a for a in args if a.startswith("--tool=")), None)
+    mincount_arg = next((a for a in args if a.startswith("--min-count=")), None)
+    scope_arg    = next((a for a in args if a.startswith("--scope=")), None)
+    top_arg      = next((a for a in args if a.startswith("--top=")), None)
+    source_arg   = next((a for a in args if a.startswith("--source=")), None)
+    category   = cat_arg.split("=",1)[1]      if cat_arg      else None
+    waiting    = wait_arg.split("=",1)[1]     if wait_arg      else None
+    proj_flt   = proj_arg.split("=",1)[1]     if proj_arg      else None
+    limit      = int(limit_arg.split("=",1)[1]) if limit_arg   else 5
+    st_flag    = status_arg.split("=",1)[1]   if status_arg    else None
     st_filter  = st_flag if st_flag else "active"
-    phase_flt  = phase_arg.split("=",1)[1] if phase_arg else None
-    wave_flt   = wave_arg.split("=",1)[1]  if wave_arg  else None
-    deps_flt   = deps_arg.split("=",1)[1]  if deps_arg  else None
-    prio_flt   = prio_arg.split("=",1)[1]  if prio_arg  else None
+    phase_flt  = phase_arg.split("=",1)[1]    if phase_arg     else None
+    wave_flt   = wave_arg.split("=",1)[1]     if wave_arg      else None
+    deps_flt   = deps_arg.split("=",1)[1]     if deps_arg      else None
+    prio_flt   = prio_arg.split("=",1)[1]     if prio_arg      else None
+    ctx_flt    = ctx_arg.split("=",1)[1]      if ctx_arg       else ""
+    tool_flt   = tool_arg.split("=",1)[1]     if tool_arg      else ""
+    min_count  = int(mincount_arg.split("=",1)[1]) if mincount_arg else 2
+    scope_flt  = scope_arg.split("=",1)[1]    if scope_arg     else None
+    top_flt    = int(top_arg.split("=",1)[1])  if top_arg       else 5
+    source_flt = source_arg.split("=",1)[1]   if source_arg    else "decisions"
     args = [a for a in args if not a.startswith("--")]
 
     if not args:
@@ -703,6 +1665,36 @@ def main():
         if len(rest) < 2:
             _err("Uso: import-yaml <yaml_path> <slug>")
         cmd_import_yaml(conn, rest[0], rest[1])
+    elif cmd == "add-observation":
+        if len(rest) < 2:
+            _err("Uso: add-observation <project> <trigger_text> [--context=<ctx>] [--tool=<tool>]")
+        cmd_add_observation(conn, rest[0], " ".join(rest[1:]), ctx_flt, tool_flt)
+    elif cmd == "evolve":
+        cmd_evolve(conn, proj_flt, min_count)
+    elif cmd == "list-instincts":
+        cmd_list_instincts(conn, proj_flt, scope_flt)
+    elif cmd == "promote-instinct":
+        if not rest:
+            _err("Uso: promote-instinct <instinct_id> [--scope=global]")
+        cmd_promote_instinct(conn, rest[0], scope_flt or "global")
+    elif cmd == "embed":
+        if len(rest) < 3:
+            _err("Uso: embed <source_table> <source_id> <text...>")
+        cmd_embed(conn, rest[0], rest[1], " ".join(rest[2:]))
+    elif cmd == "embed-backfill":
+        cmd_embed_backfill(conn, source_flt)
+    elif cmd == "search-semantic":
+        if not rest:
+            _err("Uso: search-semantic <query> [--top=5]")
+        cmd_search_semantic(conn, " ".join(rest), top_flt)
+    elif cmd == "search-hybrid":
+        if not rest:
+            _err("Uso: search-hybrid <query> [--project=slug] [--top=5]")
+        cmd_search_hybrid(conn, " ".join(rest), top_flt, proj_flt)
+    elif cmd == "vec-status":
+        cmd_vec_status(conn)
+    elif cmd == "vec-init":
+        cmd_vec_init(conn)
     else:
         _err(f"Comando desconhecido: '{cmd}'. Use 'osforge-db' sem args para ajuda.")
 

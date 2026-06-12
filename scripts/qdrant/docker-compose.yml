@@ -1,0 +1,12 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.18.2
+    container_name: osforge-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - "${HOME}/.osforge/qdrant/storage:/qdrant/storage"
+    # restart resiliente; readiness é verificada via poll host-side no deploy.sh
+    # (a imagem qdrant não traz curl/bash, então healthcheck in-container é frágil).
+    restart: unless-stopped
