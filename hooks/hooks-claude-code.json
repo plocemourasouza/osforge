@@ -8,6 +8,14 @@
             "command": "$HOME/.claude/hooks/canvas-autostart.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/session-resume.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -17,6 +25,15 @@
           {
             "type": "command",
             "command": "$HOME/.claude/hooks/protect-tests.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $HOME/.claude/hooks/observe-capture.py"
           }
         ]
       }
@@ -30,6 +47,15 @@
             "command": "$HOME/.claude/hooks/scan-secrets.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $HOME/.claude/hooks/gateguard.py"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -38,6 +64,14 @@
           {
             "type": "command",
             "command": "$HOME/.claude/hooks/notify-done.sh"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $HOME/.claude/hooks/session-save.py"
           }
         ]
       }
