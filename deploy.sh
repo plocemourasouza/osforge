@@ -382,10 +382,13 @@ PYEOF
     echo "  ⚠️  Ollama não encontrado. Embeddings não funcionarão sem ele."
     echo "     Instale: https://ollama.com — depois rode: ollama pull bge-m3"
   else
-    if ! ollama list 2>/dev/null | grep -q "bge-m3"; then
-      echo "  ⚠️  Modelo bge-m3 ausente. Rode: ollama pull bge-m3"
-    else
+    # Checagem confiável via API do Ollama (/api/tags); fallback para o CLI.
+    # `ollama list | grep` sozinho dá falso-negativo se o CLI estiver lento/frio.
+    if curl -s --max-time 5 http://localhost:11434/api/tags 2>/dev/null | grep -q '"bge-m3' \
+       || ollama list 2>/dev/null | grep -q "bge-m3"; then
       ok "Ollama + bge-m3 disponíveis"
+    else
+      echo "  ⚠️  Modelo bge-m3 ausente. Rode: ollama pull bge-m3"
     fi
   fi
 

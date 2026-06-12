@@ -70,6 +70,7 @@ from array import array
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib import request as _urllib_request
+from urllib import error as _urllib_error
 
 # numpy é OPCIONAL — acelerador; resultado idêntico ao pure-Python
 try:
@@ -308,6 +309,14 @@ def _qdrant_req(method, path, body=None, timeout=10):
                 return resp.status, json.loads(resp.read().decode())
             except Exception:
                 return resp.status, None
+    except _urllib_error.HTTPError as exc:
+        # Status HTTP real (ex.: 404 = coleção inexistente no ensure_collection).
+        # Não é falha de rede — devolve o código para o caller decidir, sem ruído.
+        try:
+            payload = json.loads(exc.read().decode())
+        except Exception:
+            payload = None
+        return exc.code, payload
     except Exception as exc:
         print(f"[osforge-db] aviso: Qdrant {method} {path} falhou ({exc})",
               file=sys.stderr)
