@@ -12,6 +12,9 @@ Thumbs.db
 node_modules/
 *.log
 
+# OSForge runtime state (per-project --scope=local DB + Qdrant storage)
+.osforge/
+
 # Python
 __pycache__/
 *.pyc

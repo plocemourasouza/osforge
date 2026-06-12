@@ -220,6 +220,7 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Aesthetic Modes | minimalist editorial, brutalist industrial, soft premium, Notion style, Linear style, CRT terminal, Apple-tier | `skills/aesthetic-modes/SKILL.md` |
 | Redesign Audit | redesenhar, modernizar UI, upgrade visual, tirar cara de AI, site parece template | `skills/redesign-audit/SKILL.md` |
 | Stitch Design Export | Google Stitch, DESIGN.md, exportar design system | `skills/stitch-design-export/SKILL.md` |
+| Design MD | contrato de design por projeto, identidade de marca, design tokens de projeto, DESIGN.md canônico | `skills/design-md/SKILL.md` |
 | Tailwind Patterns | Tailwind v4, @theme, container queries, arbitrary values | `skills/tailwind-patterns/SKILL.md` |
 | OpenUI / GenUI Layout | OpenUI Lang, GenUI, layout DSL, declarative UI plan | `skills/openui-genui-layout/SKILL.md` |
 
@@ -263,6 +264,7 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Visual Planner | visualizar plano, HTML interativo | `skills/meta/visual-planner.md` |
 | OSForge Canvas | canvas, abre no canvas, mostra no browser, revisar interativamente, aprovar antes de implementar | `skills/osforge-canvas/SKILL.md` |
 | AutoRefine | melhorar skill, autorefine, otimizar | `skills/meta/autorefine.md` |
+| Evolve / Instinct | evolve, /evolve, osforge evolve, instinct, aprendizado contínuo, padrão de sessão vira skill | `skills/evolve/SKILL.md` |
 | Adversarial Review | adversarial, revisão cínica | `skills/meta/adversarial-review.md` |
 | Edge Case Hunter | edge cases, boundary conditions | `skills/meta/edge-case-hunter.md` |
 | Elicitation Engine | elicitar, refinar output | `skills/meta/elicitation.md` |

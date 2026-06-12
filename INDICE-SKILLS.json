@@ -410,6 +410,16 @@
     "skill_dir": "deployment-procedures"
   },
   {
+    "name": "design-md",
+    "description": "Contrato de identidade de marca POR PROJETO em um arquivo DESIGN.md — o documento de 9 seções (Visual Theme, Color, Typography, Spacing, Layout, Components, Motion, Voice & Brand, Anti-patterns) com tokens hex reais que um agente lê para gerar UI consistente com a identidade daquele projeto. ACIONE ",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/design-md",
+    "skill_dir": "design-md"
+  },
+  {
     "name": "design-taste-frontend",
     "description": "Anti-slop frontend skill for landing pages, portfolios, and redesigns. Trigger on phrases like \"build a landing page\", \"create my portfolio site\", \"redesign this site so it doesn't look like a template\", \"make it not look AI-generated\", or \"Awwwards/Linear-style page\". The agent reads the brief, inf",
     "category": "⚛️ React / Frontend",
@@ -488,6 +498,16 @@
     "source_url": "",
     "local_path": "skills/e2e-testing-patterns",
     "skill_dir": "e2e-testing-patterns"
+  },
+  {
+    "name": "osforge-evolve",
+    "description": "ACIONE quando: evolve, /evolve, osforge evolve, analisar observações, propor skills, clustering de padrões, instinct, promover instinct, aprendizado contínuo, fechar o loop de aprendizado, capturar padrões de sessão, add-observation, list-instincts, promote-instinct, evolução de configuração",
+    "category": "🏗️ Architecture",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/evolve",
+    "skill_dir": "evolve"
   },
   {
     "name": "finishing-a-development-branch",

@@ -1,6 +1,6 @@
 # 📚 Índice Completo de Agent Skills
 
-> **Total:** 964 skills indexadas de 12 repositórios
+> **Total:** 966 skills indexadas de 12 repositórios
 > **Pasta local:** `~/Development/osforge/sources/` (fontes) e `~/Development/osforge/skills/` (curadas)
 >
 > 💡 **Dica de busca:** Use `Ctrl+F` / `Cmd+F` para pesquisar por palavra-chave.
@@ -14,12 +14,12 @@
 
 | Categoria | Qtd | % |
 |-----------|-----|---|
-| 🔒 Security | 205 | 21.3% |
+| 🔒 Security | 205 | 21.2% |
 | 🤖 AI / ML / Agents | 142 | 14.7% |
 | 🔄 Workflow / Process | 135 | 14.0% |
-| ⚛️ React / Frontend | 95 | 9.9% |
+| ⚛️ React / Frontend | 96 | 9.9% |
 | 🧪 Testing | 84 | 8.7% |
-| 🏗️ Architecture | 62 | 6.4% |
+| 🏗️ Architecture | 63 | 6.5% |
 | 📝 Documentation / Writing | 59 | 6.1% |
 | ☁️ Infrastructure / DevOps | 48 | 5.0% |
 | 📱 Mobile | 39 | 4.0% |
@@ -28,14 +28,14 @@
 | 🎨 Design / Creative | 12 | 1.2% |
 | 💼 Business / Marketing | 6 | 0.6% |
 | 🐍 Languages / Frameworks | 1 | 0.1% |
-| **TOTAL** | **964** | **100%** |
+| **TOTAL** | **966** | **100%** |
 
 ### Por Origem
 
 | Origem | Repo | Qtd |
 |--------|------|-----|
 | Antigravity (634+) | [Link](https://github.com/sickn33/antigravity-awesome-skills) | 634 |
-| skills | — | 167 |
+| skills | — | 169 |
 | Trail of Bits | [Link](https://github.com/trailofbits/skills) | 51 |
 | Claude-Red (Offensive Security) | [Link](https://github.com/SnailSploit/Claude-Red) | 27 |
 | Context Engineering | [Link](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering) | 18 |
@@ -54,9 +54,9 @@
 - [🔒 Security (205)](#)
 - [🤖 AI / ML / Agents (142)](#)
 - [🔄 Workflow / Process (135)](#)
-- [⚛️ React / Frontend (95)](#)
+- [⚛️ React / Frontend (96)](#)
 - [🧪 Testing (84)](#)
-- [🏗️ Architecture (62)](#)
+- [🏗️ Architecture (63)](#)
 - [📝 Documentation / Writing (59)](#)
 - [☁️ Infrastructure / DevOps (48)](#)
 - [📱 Mobile (39)](#)
@@ -573,7 +573,7 @@
 
 ## ⚛️ React / Frontend
 
-**95 skills**
+**96 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -656,6 +656,7 @@
 | **app-builder** | 📦 skills | Orquestrador de criação de aplicações full-stack a partir de pedidos em linguagem natural, com 13 templates de scaffolding e coordenação de agentes. A… | `skills/app-builder/` |
 | **arch-builder** | 📦 skills | Facilitação de decisões arquiteturais com ADRs. Stack-aware — respeita project-context.md e otimiza para Next.js/Prisma/Supabase. ACIONE com frases co… | `skills/planning/arch-builder/` |
 | **autorefine-skill** | 📦 skills | Refinamento autônomo iterativo com loop autoresearch + meta-otimização + transferência cross-domínio. ACIONE quando (ex.: | `skills/autorefine-skill/` |
+| **design-md** | 📦 skills | Contrato de identidade de marca POR PROJETO em um arquivo DESIGN.md — o documento de 9 seções (Visual Theme, Color, Typography, Spacing, Layout, Compo… | `skills/design-md/` |
 | **design-taste-frontend** | 📦 skills | Anti-slop frontend skill for landing pages, portfolios, and redesigns. Trigger on phrases like "build a landing page", "create my portfolio site", "re… | `skills/design-taste-frontend/` |
 | **design-taste-frontend-v1** | 📦 skills | Versão legada v1 da taste-skill de frontend premium com dials fixos (variance 8, motion 6, density 4), anti-slop, ban de Inter e roxo-AI, e micro-físi… | `skills/design-taste-frontend-v1/` |
 | **frontend-design** | 📦 skills | Design thinking and decision-making for web UI. ACTIVATE whenever the user asks to design or style UI components, build page layouts, choose color pal… | `skills/frontend-design/` |
@@ -766,7 +767,7 @@
 
 ## 🏗️ Architecture
 
-**62 skills**
+**63 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -830,6 +831,7 @@
 | **zapier-make-patterns** | 🌌 Antigravity (634+) | No-code automation democratizes workflow building. Zapier and Make (formerly Integromat) let non-developers automate business processes without writin… | `sources/06-antigravity/zapier-make-patterns/` |
 | **architecture** | 📦 skills | Framework de decisão arquitetural com análise de requisitos, avaliação de trade-offs e documentação em ADRs. ACIONE quando: decidir entre X e Y (monol… | `skills/architecture/` |
 | **bash-linux** | 📦 skills | Padrões de terminal Bash para Linux e macOS: comandos essenciais, pipes, processos, processamento de texto e scripts seguros. ACIONE quando: script ba… | `skills/bash-linux/` |
+| **osforge-evolve** | 📦 skills | ACIONE quando: evolve, /evolve, osforge evolve, analisar observações, propor skills, clustering de padrões, instinct, promover instinct, aprendizado c… | `skills/evolve/` |
 | **powershell-windows** | 📦 skills | Padrões e armadilhas críticas de PowerShell no Windows: sintaxe de operadores, null checks, JSON, paths e error handling. ACIONE quando: script PowerS… | `skills/powershell-windows/` |
 | **readiness-gate** | 📦 skills | Quality gate pré-implementação. Valida que PRD, Architecture e Épicos estão alinhados e completos antes de iniciar o sprint loop. Use com: | `skills/quality/readiness-gate/` |
 
@@ -1421,6 +1423,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `deployment-procedures` — skills — `skills/deployment-procedures/`
 - `deployment-procedures` — Antigravity — `sources/06-antigravity/deployment-procedures/`
 - `deployment-validation-config-validate` — Antigravity — `sources/06-antigravity/deployment-validation-config-validate/`
+- `design-md` — skills — `skills/design-md/`
 - `design-md` — Antigravity — `sources/06-antigravity/design-md/`
 - `design-orchestration` — Antigravity — `sources/06-antigravity/design-orchestration/`
 - `design-taste-frontend` — skills — `skills/design-taste-frontend/`
@@ -1790,6 +1793,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `openapi-spec-generation` — Antigravity — `sources/06-antigravity/openapi-spec-generation/`
 - `openui-genui-layout` — skills — `skills/openui-genui-layout/`
 - `osforge-canvas` — skills — `skills/osforge-canvas/`
+- `osforge-evolve` — skills — `skills/evolve/`
 - `oss-hunter` — Antigravity — `sources/06-antigravity/oss-hunter/`
 - `ossfuzz` — Trail of Bits — `sources/07-trailofbits/testing-handbook-skills/skills/ossfuzz/`
 - `output-enforcement` — skills — `skills/output-enforcement/`
