@@ -104,7 +104,7 @@ def _is_destructive_rm(cmd: str) -> bool:
 
 
 def _is_destructive_git(cmd: str) -> bool:
-    """True for git push --force, git reset --hard, git clean -f, git commit --amend."""
+    """True for git push --force, git reset --hard, git clean -f (irreversível/compartilhado)."""
     for segment in re.split(r'[;&|]', cmd):
         tokens = segment.split()
         if not tokens:
@@ -146,13 +146,10 @@ def _is_destructive_git(cmd: str) -> bool:
             )
             if "f" in flags:
                 return True
-        elif subcmd == "commit":
-            if "--amend" in rest:
-                return True
-        elif subcmd in ("checkout", "switch"):
-            for t in rest:
-                if t in ("--force", "--discard-changes", "--"):
-                    return True
+        # NOTA: `git commit --amend` e `git checkout/switch` foram REMOVIDOS do
+        # gate — são rotina diária em dev local. Mantém-se só o que reescreve
+        # história compartilhada (push --force) ou perde trabalho em massa
+        # (reset --hard, clean -f).
                 if t.startswith("-") and not t.startswith("--") and "f" in t[1:]:
                     return True
     return False
@@ -174,16 +171,21 @@ def is_destructive_bash(cmd: str) -> bool:
     Only genuinely high-signal patterns are included.
     """
     raw = cmd or ""
-    stripped = _strip_quoted(raw)
 
-    if _DESTRUCTIVE_SQL.search(stripped):
+    # SQL destrutivo é checado no comando RAW (não no _strip_quoted): SQL quase
+    # sempre vem citado (psql -c "DROP TABLE ...", mysql -e "..."), e o strip de
+    # aspas apagava exatamente o conteúdo perigoso. Keywords são distintivas o
+    # bastante para tolerar o raro falso-positivo neste tier catastrófico.
+    if _DESTRUCTIVE_SQL.search(raw):
         return True
     if _is_destructive_rm(raw):
         return True
     if _is_destructive_git(raw):
         return True
-    if _is_destructive_redirect(raw):
-        return True
+    # NOTA: overwrite-redirect (`> file`) foi REMOVIDO do gate — é operação
+    # rotineira em trabalho local e gerava bloqueios constantes. O gate foca
+    # apenas no irreversível/compartilhado (rm -rf, push --force, reset --hard,
+    # clean -f, DROP/TRUNCATE/DELETE).
     return False
 
 
@@ -295,6 +297,22 @@ def _mark_checked(state: dict, key: str) -> dict:
 def _allow():
     """Allow: write nothing to stdout, exit 0."""
     sys.exit(0)
+
+
+def _log_denial(kind: str, detail: str) -> None:
+    """Registra cada bloqueio em ~/.osforge/gateguard/denials.log para que o
+    usuário possa monitorar a frequência do gate. Best-effort, nunca lança."""
+    try:
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        line = "{}\t{}\t{}\n".format(
+            time.strftime("%Y-%m-%dT%H:%M:%S"),
+            kind,
+            (detail or "").replace("\n", " ").replace("\t", " ")[:160],
+        )
+        with open(STATE_DIR / "denials.log", "a", encoding="utf-8") as fh:
+            fh.write(line)
+    except OSError:
+        pass
 
 
 def _deny(reason: str):
@@ -493,6 +511,7 @@ def main():
 
         if destructive:
             if not _is_checked(state, destructive_key):
+                _log_denial("BASH-DESTRUCTIVE", command)
                 state = _mark_checked(state, destructive_key)
                 ok = _save_state(state_path, state)
                 if not ok:
