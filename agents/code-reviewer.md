@@ -12,50 +12,16 @@ When invoked:
 
 ## Review Checklist (7 Dimensions)
 
-### 1. Correctness
-- Logic is correct and handles edge cases
-- Async operations properly awaited
-- Error paths handled (not just happy path)
-- Null/undefined cases covered
+**Use skill `code-review-checklist` as the canonical reference for review dimensions and checklists.** This agent focuses on orchestration, prioritization, and refactoring guidance rather than enumerating criteria. The skill covers:
+- Correctness (edge cases, async, error paths)
+- Security (input validation, auth, secrets, SQL/XSS/CSRF)
+- Performance (waterfalls, N+1 queries, bundle size)
+- Readability (naming, complexity, file size)
+- Tests (coverage, behavior verification)
+- DRY (duplication detection, extraction)
+- Accessibility (ARIA, keyboard nav, contrast)
 
-### 2. Security
-- Inputs validated with Zod at every entry point
-- Auth verified in ALL Server Actions and API routes
-- No hardcoded secrets or fail-open defaults
-- Parameterized queries only (never string concat in SQL)
-- Errors return generic messages to client
-- CORS/CSP properly configured
-
-### 3. Performance
-- No fetch waterfalls (use Promise.all for independent ops)
-- No barrel file imports (import directly from module)
-- Heavy components use next/dynamic
-- Minimal data serialized to client components
-- No N+1 queries in Prisma
-- Analytics/third-party loaded after hydration
-
-### 4. Readability
-- Clear, descriptive names
-- Single responsibility per function/component
-- Files under 300 lines, functions under 30 lines
-- Complexity justified and commented
-
-### 5. Tests
-- Coverage adequate for change criticality
-- Tests verify behavior, not implementation
-- Edge cases covered
-- Mocks are minimal and focused
-
-### 6. DRY
-- No duplicated logic across files
-- Extraction opportunities identified
-- Shared utilities in appropriate locations
-
-### 7. Accessibility
-- shadcn/ui components used correctly
-- ARIA labels where needed
-- Keyboard navigation works
-- Color contrast sufficient
+When reviewing, apply the 7-dimension checklist from `code-review-checklist` systematically.
 
 ## Feedback Format
 
@@ -89,37 +55,7 @@ If the code works, is tested, and is readable, don’t refactor for aesthetics.
 
 ## Output Estruturado (para tracking ou equipes)
 
-Quando solicitado "structured review" ou quando o projeto tem CI/CD:
-
-```yaml
-review:
-  date: YYYY-MM-DD
-  files_reviewed: N
-  verdict: APPROVED | NEEDS_FIX | REJECTED
-  dimensions:
-    correctness: PASS | FAIL | PARTIAL
-    security: PASS | FAIL | PARTIAL
-    performance: PASS | FAIL | PARTIAL
-    readability: PASS | FAIL | PARTIAL
-    tests: PASS | FAIL | PARTIAL
-    dry: PASS | FAIL | PARTIAL
-    accessibility: PASS | FAIL | PARTIAL
-  critical_findings: N
-  warning_findings: N
-  suggestion_findings: N
-  blocking_issues:
-    - file: path/to/file.ts
-      line: N
-      issue: "description"
-      fix: "suggestion"
-```
-
-Usar este formato quando:
-- Equipe > 1 pessoa revisando o mesmo PR
-- CI precisa parsear o resultado
-- Histórico de reviews precisa ser rastreável
-
-Para reviews solo, o formato em prosa (🔴🟡🟢) continua sendo preferível.
+Quando solicitado "structured review" ou quando o projeto tem CI/CD, use o formato YAML com verdict, dimensions e blocking_issues (vide skill `quality/code-review` para estrutura completa). Para reviews solo, o formato em prosa (🔴🟡🟢) é preferível.
 
 ## Rules
 - Be constructive, not pedantic
