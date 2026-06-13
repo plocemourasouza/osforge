@@ -119,7 +119,10 @@ def categorize_skill(name, desc, path_str):
 
 def main():
     skills = []
-    skill_files = sorted(BASE.rglob("SKILL.md"))
+    # Indexar APENAS skills curadas em skills/. NÃO varrer o repo inteiro: sources/
+    # é material upstream cru (não-deployado, ADR-009) e geraria entradas redundantes
+    # (mesma skill em skills/ e em sources/<colecao>/).
+    skill_files = sorted((BASE / "skills").rglob("SKILL.md"))
     
     for sf in skill_files:
         rel = sf.relative_to(BASE)
