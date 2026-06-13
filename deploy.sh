@@ -65,8 +65,9 @@ copy_dir() {
 }
 
 merge_hooks_claude() {
-  # Merge não-destrutivo: preserva hooks existentes em settings.json,
-  # adiciona/atualiza apenas os eventos definidos em hooks-claude-code.json
+  # Merge reconciliador: hooks OSForge-managed (.claude/hooks/) refletem sempre
+  # o repo (matcher/command atualizados, removidos somem); hooks próprios do
+  # usuário em settings.json são preservados intactos. Idempotente.
   local hook_src="$REPO/hooks/hooks-claude-code.json"
   local settings="$CLAUDE/settings.json"
   if $DRY_RUN; then skip "merge hooks-claude-code.json → settings.json (não-destrutivo)"; return; fi
@@ -85,28 +86,30 @@ try:
 except (FileNotFoundError, json.JSONDecodeError):
     current = {}
 
-# Merge não-destrutivo: iterar por evento e fazer union das listas
+# Merge reconciliador: hooks OSForge-managed (command referencia
+# ".claude/hooks/") são AUTORITATIVOS — reflete sempre o repo (matcher +
+# command atualizados, hooks removidos somem). Hooks próprios do usuário
+# (qualquer outro command) são preservados. Idempotente.
 new_hooks = new_data.get("hooks", {})
 cur_hooks  = current.setdefault("hooks", {})
 
+def _is_managed(cmd):
+    return "/.claude/hooks/" in (cmd or "")
+
+def _entry_all_managed(entry):
+    cmds = [h.get("command", "") for h in entry.get("hooks", [])]
+    return bool(cmds) and all(_is_managed(c) for c in cmds)
+
 for event, new_entries in new_hooks.items():
-    if event not in cur_hooks:
-        cur_hooks[event] = new_entries
-    else:
-        # Adicionar apenas entradas que não existem (por command)
-        existing_cmds = set()
-        for entry in cur_hooks[event]:
-            for h in entry.get("hooks", []):
-                existing_cmds.add(h.get("command",""))
-        for entry in new_entries:
-            for h in entry.get("hooks", []):
-                if h.get("command","") not in existing_cmds:
-                    cur_hooks[event].append(entry)
-                    break
+    # Preserva entradas do usuário; descarta as nossas (possivelmente stale)
+    kept = [e for e in cur_hooks.get(event, []) if not _entry_all_managed(e)]
+    # Re-adiciona as do repo (cópia profunda via round-trip JSON)
+    fresh = json.loads(json.dumps(new_entries))
+    cur_hooks[event] = kept + fresh
 
 with open(settings, "w") as f:
     json.dump(current, f, indent=2, ensure_ascii=False)
-print("  ✅ settings.json merged (não-destrutivo)")
+print("  ✅ settings.json merged (OSForge-managed reconciliados; user hooks preservados)")
 PYEOF
 }
 
