@@ -1,196 +1,139 @@
-# Claude Code Configuration
+# Claude Code — Instruções Globais (OSForge)
 
-## Agents
-Specialized agents available in ~/.claude/agents/:
+> **Papel deste arquivo.** São as instruções GLOBAIS que você (LLM) segue em **toda sessão** —
+> deployado para `~/.claude/CLAUDE.md`. NÃO confundir com o `CLAUDE.md` da **raiz do repositório
+> OSForge**, que é o guia de *como trabalhar no próprio repo* (build/deploy/curadoria).
+> Este = comportamento de sessão; raiz = manutenção do framework.
+>
+> **ADR-001:** nunca edite `~/.claude/` diretamente. Edite `claude-code/CLAUDE.md` no repo e rode
+> `./deploy.sh`. Mudar este arquivo invalida o cache de prompt de todas as sessões — mantenha estável.
 
-**Core Engineering**
-- orchestrator — Meta-agente: intake, triage (QUICK/STANDARD/COMPLEX), planejamento, routing, tracking cross-session via STATE.md
-- planner — Decomposes features into atomic tasks with TDD order + complexity detection
-- debugger — 10-step root cause analysis with evidence hierarchy; zero context-switching from user
-- code-reviewer — 7-dimension quality review + refactoring prioritization
-- code-refactorer — Transforms messy/rushed code into clean, maintainable implementations
-- validator — Adversarial spec conformance checker. Read-only, never modifies code.
+OSForge entrega **169 skills**, **27 agents** (orchestrator + 26 especialistas), **13 rules** always-on,
+**9 commands `spec-*`**, hooks, e o `osforge-db` (estado SQLite + memória vetorial). Rosters completos
+e referência operacional vivem no `USAGE.md` do repo — este arquivo descreve *como orquestrar*, não cataloga.
 
-**Architecture & Strategy**
-- system-architect — Scalable system design, clean architecture, legacy refactoring
-- backend-engineer — API design, data integrity, reliability patterns, Supabase/Prisma
-- frontend-engineer — shadcn ecosystem, MCP-first component discovery, visual verification
-- product-strategy-advisor — Build/kill decisions, feature prioritization, product-market fit
+---
 
-**Security & Process**
-- security-auditor — Trail of Bits methodology, fail-secure defaults, RLS verification
-- git-commit-helper — Conventional Commits: analyzes staged changes, generates semantic messages
+## Orquestração (modelos · agents · skills)
 
-## Skills & Knowledge
+Quatro camadas decidem QUEM/COM QUE executa cada demanda. Não pule a triagem.
+
+### 1. Roteamento de modelos (por complexidade da tarefa)
+Princípio tier — escolha o menor modelo que resolve bem:
+
+| Tier | Quando | Modelo (atual, jun/2026) |
+|------|--------|--------------------------|
+| Topo | planejamento, arquitetura, auditoria de segurança, PRD, síntese | `claude-opus-4-8` / `claude-fable-5` |
+| Médio | implementação, debugging, code review, execução de story | `claude-sonnet-4-6` |
+| Rápido | testes, docs, boilerplate, i18n, renomeações mecânicas | `claude-haiku-4-5` |
+
+Ao despachar subagents (Agent tool `model:`), atribua o tier por tarefa — não rode tudo no topo.
+**Fonte canônica dos IDs** (que mudam): skill `smart-model-dispatch`. Não hardcode IDs em prosa.
+
+### 2. Seleção de agent
+O **orchestrator** é o meta-agente sempre-ativo. Antes de responder, ele faz DETECT silencioso:
+classifica a demanda (QUESTION → responde direto · QUICK_FIX → age direto · FEATURE/BUG/REVIEW → encaminha)
+e conta domínios (frontend, backend, security, debug, refactor, data, devops, mobile…).
+
+- **1–2 domínios** → anuncia o agent e responde com a persona dele.
+- **3+ domínios ou COMPLEX** → propõe o fluxo completo: `INTAKE → TRIAGE → PLAN → [APPROVE] → ROUTE → TRACK → [CORRECT]`.
+
+Triagem de complexidade: **QUICK** (1–3 arquivos, zero ambiguidade) · **STANDARD** (multi-arquivo, domínio
+conhecido) · **COMPLEX** (sistema novo / requisitos ambíguos). Roster dos 27 agents e "quando usar qual"
+→ `USAGE.md §Agents`. Acione o orchestrator com `"Read agents/orchestrator/AGENT.md"` ou só descrevendo a demanda.
+
+### 3. Triggers de skill (índice on-demand)
+`@SKILLS.md` é o índice carregado em toda sessão (frase-gatilho → caminho da skill). Uma skill dispara quando:
+(a) o usuário menciona um trigger, (b) um agent detecta a necessidade, ou (c) o orchestrator mapeia uma fase
+a ela. O frontmatter de cada `SKILL.md` traz `name` + `description` com `ACIONE quando:` (as frases-gatilho).
+Skills core (TDD, verification-before-completion, security, coding-guidelines) estão sempre ativas via SKILLS.md.
+
+### 4. Spec workflow + dispatch paralelo
+Features não-triviais passam pelo ciclo `spec-*`: **discover → specify → design → tasks → implement → measure**
+(comandos `/spec-*`; templates na skill `tlc-spec-driven`; artefatos em `.specs/features/<f>/`). Detalhe e tabela
+completa → `USAGE.md §Commands`.
+
+Quando `tasks.md` traz `wave` + `depends_on`, despache por **ondas**: agrupe por `wave`, rode em paralelo dentro
+da onda (Agent tool, múltiplas chamadas numa mensagem), só avance à onda seguinte quando a anterior fecha. Skill
+`dispatching-parallel-agents`. O `osforge-db` (tasks/board) é o tracker das ondas.
+
 @SKILLS.md
 
-The spec workflow is powered by the **tlc-spec-driven** SKILL (included in @SKILLS.md).
-Execute each phase via the `spec-*` commands listed below.
+---
+
+## Ciclos de trabalho
+
+**Feature (STANDARD/COMPLEX):** brainstorming → requirements-clarify → phase-discussion → spec-builder
+(CHECKPOINT [A]prove/[E]dit/[R]efine) → arch-builder (se schema/API) → epic-decomposer → story-executor
+(two-stage review por task) → code-review (+ adversarial-review, edge-case-hunter) → ui-audit (se UI) → finishing-a-branch.
+
+**Bug fix:** systematic-debugging (reproduce → isolate → understand → fix) → story-executor → code-review.
+
+**Security review:** security-auditor (Trail of Bits, threat model) → fix → re-audit.
+
+**Regra:** não pule etapas. Feature trivial = ciclo rápido; feature complexa = pular custa mais que seguir.
+
+---
+
+## Memória e estado entre sessões
+
+### Hub/satélite — 1 sessão = 1 projeto
+Uma sessão tem **um** working directory primário. Misturar projetos numa sessão polui contexto, duplica prompts
+de permissão e degrada o resume. A sessão **sede** (abrir o repo OSForge) planeja/revisa portfólio; cada projeto-alvo
+roda em sua própria sessão **satélite** no diretório dele. Detalhe e exemplo → `USAGE.md §Multi-projeto`.
+
+### osforge-db — estado persistente
+- **Início de sessão satélite:** o hook `session-resume` injeta `osforge-db resume <slug>` + `board` (≈50 tokens).
+- **Durante:** `osforge-db set-phase / add-decision / add-task / set-task`.
+- **Fim de sessão:** o hook `session-save` grava `set-resume <slug> "..."` automaticamente (parse do transcript).
+- **Recall semântico:** `osforge-db search-hybrid "<consulta>"` (RRF de FTS5 + memória vetorial). A memória vetorial
+  é 3-tier (Qdrant → SQLite cosseno → FTS5), opt-in no deploy; embedder default `bge-m3` via Ollama. Ref → `USAGE.md §osforge-db`.
+
+### Memory Hierarchy (ordem de carregamento; último vence)
+1. **Managed** `/etc/claude-code/CLAUDE.md` — global corporativo.
+2. **User** `~/.claude/CLAUDE.md` — este arquivo (global pessoal).
+3. **Project** `<repo>/CLAUDE.md` ou `<repo>/.claude/CLAUDE.md` — compartilhado, versionado.
+4. **Local** `<repo>/CLAUDE.local.md` — privado per-project, `.gitignore`-able.
+
+Suporta `@include <arquivo>` (composição) e frontmatter `paths:` (injeção condicional por glob de arquivos tocados).
+Conflito = nível mais específico vence. Detalhes na rule `memory-hierarchy.mdc`.
+
+---
 
 ## Prompt Cache Strategy
 
-OSForge organiza memória em 2 zonas explícitas para maximizar cache hit no Anthropic API:
+Para maximizar cache hit no Anthropic API, o conteúdo se divide em dois blocos:
 
-### 🔒 Cacheable Prefix (stable across sessions)
-Esta seção raramente muda. Quando ela é estável, Anthropic API faz cache do prefixo
-e cobra ~10% do preço normal por tokens repetidos. Pra OSForge, isso inclui:
+- **🔒 Prefixo cacheável (estável):** identidade + safety (este arquivo, topo), `settings.json` (permissões/hooks),
+  rules de estilo (`typescript-strict.mdc`, `code-style.mdc`, `anti-ai-slop.mdc`), índice de skills (`@SKILLS.md`, 169 skills).
+  **Mantenha estável** — mudar invalida o cache de todas as sessões.
+- **🌊 Sufixo dinâmico (muda por sessão):** skills carregadas on-demand, memória (`CLAUDE.local.md`, `.osforge/`),
+  contexto de ambiente (OS/dir/git), preferências de idioma, instruções de MCP ativas, diretrizes de janela de contexto.
 
-- Identity + safety instructions (este arquivo, sections 1-3)
-- Permission + hook configuration  (`~/.claude/settings.json`)
-- Code style + error handling rules (`rules/typescript-strict.mdc`, `rules/code-style.mdc`)
-- Tool preferences (este arquivo, MCP Servers section)
-- Tone + style + output rules (anti-ai-slop, intelligent-routing)
-- Skills index (@SKILLS.md — 122 triggers)
+---
 
-**Mantenha estas seções ESTÁVEIS.** Mudanças invalidam o cache de TODOS os usuários.
+## MCP Servers (8)
+Context7 (docs de libs), Github (repos/PRs/issues), Supabase (DB/migrations/RLS), Shadcn (componentes),
+Browsermcp (automação de browser), next-devtools (Next.js), Prisma-Local + Prisma-Remote (schema/migrations).
+Definições em `mcp/claude-code.json` do repo.
 
-### 🔄 Cache Boundary
+---
 
-```
-═══════════════════════════════════════════════════════
-   CACHEABLE PREFIX ENDS HERE
-═══════════════════════════════════════════════════════
-   DYNAMIC SUFFIX BELOW (changes per session)
-```
+## Insights Capture
+Após qualquer feature/fix significativo: registre lições em `tasks/lessons.md`
+(🐛 Gotcha · 📐 Pattern · ⚡ Performance · 🔒 Security · 🧠 Context) e decisões arquiteturais via
+`osforge-db add-decision` (ou `.specs/project/DECISIONS.md`).
 
-### 🌊 Dynamic Suffix (changes per session)
-Esta seção muda toda sessão. Não tente cachear — desperdiça tokens:
-
-- Available agents and skills (loaded on-demand via @include)
-- Memory file contents (`CLAUDE.local.md`, `.osforge/status.yaml`)
-- Environment context (OS, directory, git state)
-- Language and output preferences (per-session)
-- Active MCP server instructions (per-session)
-- Context window management directives
-
-### Hierarquia de carregamento
-
-Loading order (último carregado = maior prioridade):
-1. **Managed** (`/etc/claude-code/CLAUDE.md`) — corporate global
-2. **User** (`~/.claude/CLAUDE.md`) — pessoal global (esse arquivo)
-3. **Project** (`<repo>/CLAUDE.md`, `<repo>/.claude/CLAUDE.md`) — compartilhado
-4. **Local** (`CLAUDE.local.md`) — privado per-project, `.gitignore`-able
-
-Ver `rules/memory-hierarchy.mdc` para detalhes completos sobre `@include`,
-frontmatter `paths` (conditional injection), e resolução de conflitos.
-
-## Commands (spec-* system)
-Available in ~/.claude/commands/. Execute with `/spec-discover`, `/spec-specify`, etc.
-
-| Command | Phase | Output |
-|---------|-------|--------|
-| `/spec-constitution` | Pré-projeto | `.specs/memory/constitution.md` |
-| `/spec-discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
-| `/spec-specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
-| `/spec-design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
-| `/spec-tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
-| `/spec-implement` | Phase 4 — Implement+Validate | atualiza `tasks.md` + cria `validation.md` |
-| `/spec-measure` | Phase 5 — Measure | `.specs/features/[f]/measure.md` |
-| `/spec-clarify` | Auxiliar | atualiza artefatos in-place |
-| `/spec-checklist` | Auxiliar | `.specs/features/[f]/checklist.md` |
-
-## MCP Servers
-- **Shadcn** — Component discovery: search components, get installation commands, browse docs
-- **Context7** — Library documentation and framework patterns in context
-- **Github** — Repository operations, PRs, issues, file management
-- **Supabase** — Database operations, migrations, RLS policy management
-- **Browsermcp** — Browser automation for visual verification and testing
-
-## Development Workflow (Agent Orchestration)
-
-### Fluxo Principal: Orchestrator (recomendado)
-
-O orchestrator é o meta-agente que faz intake, triage e coordena todos os outros.
-Acionar com: `"Read agents/orchestrator/AGENT.md"` ou descrever o que quer construir.
-
-```
-INTAKE → TRIAGE → PLAN → [APPROVE] → ROUTE → TRACK → [CORRECT]
-```
-
-**Ciclo completo para feature nova:**
-```
-1. brainstorming          → refinamento socrático ANTES de qualquer spec
-                             salva design doc em .osforge/designs/
-                             (pular para features triviais ou bem definidas)
-
-2. requirements-clarify   → clarificação por dimensões de cobertura
-                             (funcional, dados, UX, integração, segurança)
-                             produz clarifications record antes do plano técnico
-
-3. phase-discussion       → captura decisões de implementação por fase
-                             (UI, API, dados) — produz .osforge/phases/N-CONTEXT.md
-
-4. spec-builder           → tech spec com ACs testáveis
-                             modo Delta/Brownfield para features existentes
-                             CHECKPOINT: [A]prove / [E]dit / [R]efine
-
-5. arch-builder           → ADRs e decisões de arquitetura (se schema/API changes)
-
-6. epic-decomposer        → épicos e stories com tasks em XML canônico
-
-7. story-executor         → implementa cada story
-                             two-stage review por task: spec compliance → code quality
-
-8. quality/code-review    → review com adversarial-review + edge-case-hunter
-
-9. quality/ui-audit       → auditoria de 6 pilares para phases com UI
-
-10. finishing-a-branch    → verificação pré-merge + menu M/P/K/D
-```
-
-**Ciclo para bug fix:**
-```
-1. systematic-debugging → 4 fases: reproduce → isolate → understand → fix
-2. story-executor       → implementa fix com two-stage review
-3. quality/code-review  → review do fix
-```
-
-**Ciclo para security review:**
-```
-1. security-auditor     → Trail of Bits methodology, threat modeling
-2. story-executor       → fix findings
-3. security-auditor     → re-audit
-```
-
-### Fluxo Alternativo: spec-* Commands (legacy, compatível)
-
-Comandos slash disponíveis em `~/.claude/commands/`. Usam o sistema `tlc-spec-driven`.
-
-| Command | Phase | Output |
-|---------|-------|--------|
-| `/spec-constitution` | Pré-projeto | `.specs/memory/constitution.md` |
-| `/spec-discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
-| `/spec-specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
-| `/spec-design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
-| `/spec-tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
-| `/spec-implement` | Phase 4 — Implement | atualiza `tasks.md` + `validation.md` |
-| `/spec-measure` | Phase 5 — Measure | `.specs/features/[f]/measure.md` |
-| `/spec-clarify` | Auxiliar | atualiza artefatos in-place |
-| `/spec-checklist` | Auxiliar | `.specs/features/[f]/checklist.md` |
-
-### Regra: Não pule etapas. Se a feature é trivial, o ciclo é rápido.
-Se é complexa, pular etapas custa mais que seguir o ciclo.
-
-## Insights Capture (todos os agentes)
-Após completar qualquer feature ou fix significativo, atualize:
-- `tasks/lessons.md` — O que aprendemos? Gotchas para futuro?
-- `.specs/project/DECISIONS.md` — Se houve decisão arquitetural
-
-Categorias para lessons.md:
-- 🐛 **Gotcha:** pattern que causa bug não-óbvio
-- 📐 **Pattern:** padrão que funcionou bem, replicar
-- ⚡ **Performance:** otimização descoberta
-- 🔒 **Security:** vulnerabilidade ou pattern seguro
-- 🧠 **Context:** algo específico deste projeto que afeta futuras decisões
+---
 
 ## Core Rules
-- Specs e planos: apresentar via **OSForge Canvas** por default (servidor auto-iniciado
-  por SessionStart hook em `localhost:4242`; skill `osforge-canvas`) — terminal recebe
-  só resumo curto + URL. Exceção: usuário pedir "só texto".
-- Read before Write/Edit — always confirm current state first
-- Absolute paths only — never relative paths in scripts or automations
-- Never auto-commit — always wait for explicit approval
-- Never skip tests — run full suite after changes, not just affected tests
-- Validate before execution, verify after completion with evidence
-- Structured logs: { action, tenantId, userId, duration, error } — never log PII
-- When context feels heavy: compress responses, show diffs not full files, omit recaps
+- **Specs e planos: apresentar via OSForge Canvas por default** (server auto-iniciado pelo hook SessionStart em
+  `localhost:4242`; skill `osforge-canvas`) — terminal recebe só resumo curto + URL. Exceção: usuário pedir "só texto".
+- **Read before Write/Edit** — sempre confirme o estado atual antes.
+- **Caminhos absolutos** — nunca relativos em scripts/automações.
+- **Nunca auto-commit** — espere aprovação explícita. **Nunca pule testes** — rode a suíte completa.
+- **Validar antes, verificar depois com evidência** (skill `verification-before-completion`).
+- **GateGuard** (hook PreToolUse, matcher Bash) bloqueia só o irreversível/compartilhado: `rm -rf`,
+  `git push --force`, `reset --hard`, `clean -f`, SQL `DROP/TRUNCATE/DELETE`. Kill-switch `OSFORGE_GATEGUARD=off`.
+- **Logs estruturados** `{ action, tenantId, userId, duration, error }` — nunca logar PII.
+- **Contexto pesado (>70%):** comprimir respostas, mostrar diffs não arquivos inteiros, omitir recaps.

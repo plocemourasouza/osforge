@@ -25,6 +25,18 @@ Complete installation, configuration, and day-to-day usage instructions.
 
 ---
 
+## Getting Started — Ordem de Leitura
+
+Novo no OSForge? Leia nesta ordem:
+
+1. **Este USAGE.md §1-2** — instalação e deploy
+2. **[`claude-code/SKILLS.md`](claude-code/SKILLS.md)** — índice de triggers das 169 skills
+3. **[`claude-code/CLAUDE.md`](claude-code/CLAUDE.md)** — orquestração de sessão, workflow de agentes, regras globais
+
+> **1 sessão = 1 projeto.** Nunca misture projetos em uma única sessão Claude Code — polui o contexto, duplica prompts de permissão e degrada a precisão do `resume`. Abra uma sessão-sede em `~/Development/osforge` para planejamento e uma sessão-satélite por projeto para execução. Detalhes completos em [§10](#10-operação-multi-projeto--sessão-sede-e-satélites).
+
+---
+
 ## 1. Installation
 
 ### Prerequisites
@@ -61,21 +73,23 @@ cargo install llmfit
 ./deploy.sh --claude-only   # Claude Code only
 ./deploy.sh --cursor-only   # Cursor only
 ./deploy.sh --dry-run       # Simulate without applying changes
+./deploy.sh --with-qdrant   # Also provision vector memory (Qdrant via Docker, opt-in)
+./deploy.sh --no-qdrant     # Skip Qdrant; keep SQLite vector backend (no prompt)
 ```
 
 ### What the deploy does
 
 **Claude Code (`~/.claude/`)**
 - Copies `CLAUDE.md` and `SKILLS.md`
-- Syncs 12 agents to `~/.claude/agents/`
+- Syncs 27 agents (orchestrator + 26 specialists) to `~/.claude/agents/`
 - Copies 9 `spec-*` commands to `~/.claude/commands/`
-- Installs Python hooks to `~/.claude/hooks/`
-- Non-destructive MCP merge into `~/.claude.json`
+- Installs 8 hooks to `~/.claude/hooks/`
+- Non-destructive MCP merge into `~/.claude.json` (hooks OSForge-managed refletem o repo; hooks de usuário preservados)
 
 **Cursor (`~/.cursor/`)**
 - Copies `SKILLS.md`
 - Syncs agents to `~/.cursor/agents/`
-- Copies 11 rules (`.mdc` + `.md`) to `~/.cursor/rules/`
+- Copies 13 rules (11 `.mdc` + 2 `.md`) to `~/.cursor/rules/`
 - Copies hook scripts
 
 **Dependency check**
@@ -211,7 +225,7 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 "I want the debugger to investigate this bug"
 ```
 
-### Agent reference
+### Agent reference (27 agents: orchestrator + 26 specialists)
 
 | Agent | When to use |
 |---|---|
@@ -227,6 +241,21 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 | `validator` | Critiques specs, validates acceptance criteria |
 | `product-strategy-advisor` | Roadmap, prioritization, product decisions |
 | `git-commit-helper` | Conventional commits, changelogs, release notes |
+| `database-architect` | Schema design, indexing strategy, query optimization |
+| `devops-engineer` | CI/CD, containers, infrastructure, deployment pipelines |
+| `documentation-writer` | Technical docs, READMEs, API docs, changelogs |
+| `mobile-developer` | React Native, Expo, mobile UX, iOS/Android patterns |
+| `performance-optimizer` | Profiling, Lighthouse, bundle analysis, Core Web Vitals |
+| `penetration-tester` | Offensive security, OWASP, red-team exercises |
+| `qa-automation-engineer` | Test strategy, Playwright, test pyramid, coverage |
+| `test-engineer` | Unit/integration tests, TDD guidance |
+| `product-manager` | Requirements, user stories, backlog, product process |
+| `product-owner` | Acceptance criteria, sprint goals, stakeholder alignment |
+| `project-planner` | Project timelines, milestones, risk tracking |
+| `seo-specialist` | Meta tags, structured data, Core Web Vitals for SEO, GEO |
+| `code-archaeologist` | Legacy code analysis, reverse-engineering undocumented systems |
+| `explorer-agent` | Open-ended research, technology evaluation, discovery |
+| `game-developer` | Game loops, multiplayer, physics, game engine patterns |
 
 ### Combined usage pattern (full feature)
 
@@ -258,7 +287,7 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 
 ## 5. Always-On Rules (Cursor)
 
-The 11 rules are automatically active in all Cursor sessions. No activation needed.
+The 13 rules (11 `.mdc` + 2 `.md`: `artifact-chain`, `orchestrator-awareness`) are automatically active in all Cursor sessions. No activation needed.
 
 | Rule | Effect |
 |---|---|
@@ -273,6 +302,8 @@ The 11 rules are automatically active in all Cursor sessions. No activation need
 | `orchestrator-awareness` | Check `.osforge/status.yaml` for WIP; route complex demands through Orchestrator |
 | `artifact-chain` | Planning artifacts need frontmatter (`type`, `status`, `depends_on`); never skip checkpoints |
 | `intelligent-routing` | Silent domain detection + automatic agent selection on every message |
+| `anti-ai-slop` | Anti-patterns to avoid generic "AI-slop" output; concrete, non-hedged prose/design |
+| `memory-hierarchy` | 4-layer config loading (Managed/User/Project/Local); `@include`, `paths` frontmatter |
 
 ---
 
@@ -403,7 +434,7 @@ When resuming a session, the Orchestrator detects existing work and offers to co
 
 ## 8. Python Hooks
 
-Hooks run as external processes — **zero token cost**. Configured via `hooks/hooks-claude-code.json`.
+Hooks run as external processes — **zero token cost**. Configured via `hooks/hooks-claude-code.json`. O merge no `settings.json` é **reconciliador**: hooks OSForge-managed refletem sempre o repo; hooks do próprio usuário são preservados (union, nunca sobrescreve).
 
 ### Installation
 
@@ -412,38 +443,45 @@ Hooks run as external processes — **zero token cost**. Configured via `hooks/h
 ./deploy.sh
 
 # Manual
-cp hooks/*.py ~/.claude/hooks/
-chmod +x ~/.claude/hooks/*.py
+cp hooks/*.py hooks/*.sh ~/.claude/hooks/
+chmod +x ~/.claude/hooks/*
 ```
 
-### What each hook does
+### What each hook does (8 hooks)
 
-**`pre_tool_use.py`** (before any tool call)
-- Blocks dangerous shell commands (`rm -rf /`, `sudo`, etc.)
-- Protects `.env` and `.env.local` from accidental writes
-- Generates audit log of all operations
+**`canvas-autostart.sh`** (SessionStart)
+- Inicia o OSForge Canvas em `localhost:4242` se ainda não estiver rodando
+- Permite que Claude escreva artefatos JSON e o viewer os renderize em tempo real via SSE
 
-**`post_tool_use.py`** (after Write/Edit)
-- Detects `console.log` in production files
-- Blocks `any` in TypeScript without justification
-- Warns about `@ts-ignore` without an explanatory comment
-- Detects `export default` (prohibited by style guide)
+**`session-resume.sh`** (SessionStart)
+- Detecta se o `cwd` é um projeto registrado no `osforge-db`
+- Injeta automaticamente `osforge-db resume <slug>` + `board` no início da sessão (~50 tokens)
 
-**`pre_compact.py`** (before context compaction)
-- Backs up the current conversation to `~/.claude/backups/`
-- Preserves important context before truncation
+**`protect-tests.sh`** (PostToolUse — Write | Edit | MultiEdit)
+- Alerta e loga quando um arquivo de teste foi alterado
+- Lembrete: testes devem falhar por lógica de negócio, nunca ajustados para passar
 
-**`session_end.py`** (end of session)
-- Writes a summarized session log
-- Sends a macOS notification via AppleScript
+**`observe-capture.py`** (PostToolUse — Edit | Write | MultiEdit | Bash)
+- Grava observações de comportamento do Claude para alimentar o ciclo `evolve`
+- Permite que padrões de sessão virem skills automaticamente
 
-### Auxiliary shell scripts
+**`scan-secrets.sh`** (PreToolUse — Bash)
+- Bloqueia commits que contenham segredos/secrets antes de chegar ao `git push`
+- Varre por padrões: API keys, tokens, senhas em variáveis, credentials hardcoded
 
-```bash
-hooks/scan-secrets.sh     # Detects secrets/API keys in staged files
-hooks/protect-tests.sh    # Warns when modifying critical test files
-hooks/notify-done.sh      # macOS notification on task completion
-```
+**`gateguard.py`** (PreToolUse — Bash)
+- Fact-forcing: bloqueia **somente** o irreversível/compartilhado:
+  `rm -rf`, `git push --force`, `git reset --hard`, `git clean -f`, SQL `DROP`/`TRUNCATE`/`DELETE`
+- Matcher restrito a Bash — não gatea Edit/Write
+- Kill-switch: `OSFORGE_GATEGUARD=off` desativa para automações CI
+- Loga todas as negativas em `~/.osforge/gateguard/denials.log`
+
+**`notify-done.sh`** (Stop)
+- Envia notificação macOS via AppleScript ao término da sessão
+
+**`session-save.py`** (Stop)
+- Parseia o transcript da sessão e grava `set-resume` automático no `osforge-db`
+- Garante que o contexto da sessão não se perde entre janelas
 
 ---
 
@@ -536,6 +574,80 @@ osforge-db import-yaml .osforge/status.yaml meu-projeto
 | `data` | Schema, migration, data model decisions |
 | `security` | Auth, LGPD, security decisions |
 
+### Memória vetorial (3-tier)
+
+O `osforge-db` suporta busca semântica sobre decisões e contexto de projeto via embeddings. Degradação graciosa: sem embedder ativo, cai automaticamente para FTS5 lexical.
+
+**Subcomandos de embedding e busca:**
+
+```bash
+# Embeddar um registro específico
+osforge-db embed decisions <id> "texto a embeddar"
+
+# Popula embeddings para todo o histórico de decisões
+osforge-db embed-backfill --source=decisions
+
+# Busca semântica pura (top-N mais próximos)
+osforge-db search-semantic "autenticação multi-tenant" --top=5
+
+# Busca híbrida — RRF (Reciprocal Rank Fusion) combinando FTS5 + vetor
+osforge-db search-hybrid "RLS Supabase por organização" --top=5
+
+# Inicializar backend vetorial
+osforge-db vec-init
+
+# Ver status do backend (provider, modelo, coleção, contagem de vetores)
+osforge-db vec-status
+```
+
+**Variáveis de ambiente:**
+
+| Variável | Padrão | Opções |
+|---|---|---|
+| `OSFORGE_EMBED` | `ollama` | `ollama` \| `off` \| `mock` \| `voyage` \| `openai` |
+| `OSFORGE_EMBED_MODEL` | `bge-m3` | qualquer modelo Ollama ou API |
+| `OSFORGE_VECTOR` | `sqlite` | `sqlite` \| `qdrant` |
+| `OSFORGE_QDRANT_URL` | `http://localhost:6333` | URL do Qdrant |
+| `OSFORGE_COLLECTION` | `osforge_memory` | nome da coleção |
+
+**Contrato `~/.osforge/config.json`:**
+
+```json
+{
+  "vector_backend": "qdrant",
+  "embed_provider": "ollama",
+  "embed_model": "bge-m3",
+  "qdrant_url": "http://localhost:6333",
+  "collection": "osforge_memory"
+}
+```
+
+**3 tiers — da maior qualidade ao mais simples:**
+
+| Tier | Requisito | Indexação | Quando usar |
+|---|---|---|---|
+| **qdrant** | Docker + Ollama | HNSW (ANN rápido) | Produção, grandes históricos |
+| **sqlite** | Apenas Ollama | Cosseno brute-force | Sem Docker, dev local |
+| **off** | Nenhum | FTS5 lexical | Sem embedder disponível |
+
+### Memória vetorial — setup (Qdrant + Ollama)
+
+```bash
+# 1. Instalar modelo de embedding multilíngue (acerta PT-BR)
+ollama pull bge-m3
+
+# 2. Deploy com Qdrant via Docker (sobe container, cria coleção, escreve config.json)
+./deploy.sh --with-qdrant
+
+# 3. Populando histórico existente
+osforge-db embed-backfill --source=decisions
+
+# Alternativa sem Docker (SQLite brute-force, com aviso de performance)
+./deploy.sh --no-qdrant
+```
+
+Decisão registrada em **ADR-010** (`docs/DECISIONS.md`). Avaliação de modelos: `bge-m3` (multilíngue) escolhido por acertar 3/3 em PT-BR vs 1/3 do `nomic-embed-text`.
+
 ---
 
 ## 10. Operação Multi-projeto — Sessão-sede e Satélites
@@ -625,7 +737,15 @@ SEDE (retomada):
 
 ## 11. The Agency — 121 Specialists
 
-Detects the machine's actual hardware and recommends which local models will run well, with optimal quantization and speed estimates.
+The Agency é um catálogo de 121 especialistas de negócio (contábil, jurídico, marketing, financeiro, HR, operações) acessíveis via skill `agency`. Não confundir com os 27 agentes de engenharia (§4) — estes são especialistas de domínio para problemas de negócio, não de código.
+
+```
+"Read skills/meta/agency.md"
+```
+
+### Local LLM Advisor (llmfit)
+
+Detecta o hardware real da máquina e recomenda quais modelos locais vão rodar bem, com quantização ideal e estimativas de velocidade.
 
 ### Installation
 
@@ -727,23 +847,26 @@ Routes tasks to the optimal model tier — saving ~65% cost vs using Opus for ev
 
 ### Tier summary
 
-| Tier | Model | Cost | When to use |
-|---|---|---|---|
-| 🔴 Opus | `claude-opus-4-6` | $5/$25 per 1M | Architecture, deep reasoning, critical decisions |
-| 🟡 Sonnet | `claude-sonnet-4-6` | $3/$15 per 1M | Implementation, debugging, review, tests |
-| 🟢 Haiku | `claude-haiku-4-5` | $1/$5 per 1M | Boilerplate, i18n, stubs, docs, simple CRUD |
-| 🏠 Local | Ollama (via llmfit) | $0 | Haiku-eligible tasks with sensitive data or high volume |
+> IDs mudam com novos lançamentos — fonte canônica é a skill `smart-model-dispatch` (`skills/claude-ai/model-dispatch.md`).
+
+| Tier | Model ID | When to use |
+|---|---|---|
+| Topo — Opus | `claude-opus-4-8` | Arquitetura, planejamento complexo, security review |
+| Topo — Fable | `claude-fable-5` | Decomposição, raciocínio longo, análise de ADR |
+| Medio — Sonnet | `claude-sonnet-4-6` | Implementação, debug, review, testes |
+| Rápido — Haiku | `claude-haiku-4-5` | Boilerplate, i18n, stubs, docs, CRUD simples |
+| Local | Ollama (via llmfit) | $0 — Haiku-eligible com dados sensíveis ou alto volume |
 
 ### Full feature dispatch pattern
 
 ```
-[opus]   planner           → architecture + decomposition
-[opus]   validator         → critiques the plan
-[sonnet] backend-engineer  → Prisma + Server Actions
-[sonnet] frontend-engineer → UI + components
-[haiku]  →                   i18n keys, test stubs, seed data
-[sonnet] code-reviewer     → final review
-[local]  →                   mechanical tasks with sensitive data
+[opus/fable] planner           → architecture + decomposition
+[opus/fable] validator         → critiques the plan
+[sonnet]     backend-engineer  → Prisma + Server Actions
+[sonnet]     frontend-engineer → UI + components
+[haiku]      →                   i18n keys, test stubs, seed data
+[sonnet]     code-reviewer     → final review
+[local]      →                   mechanical tasks with sensitive data
 ```
 
 ---
