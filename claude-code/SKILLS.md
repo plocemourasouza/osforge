@@ -158,6 +158,7 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Skill | Trigger | Load |
 |-------|---------|------|
 | Next.js + React | React, Next.js, performance, waterfalls, bundle | `skills/stack/nextjs-react.md` |
+| Humanizer | humanizar texto, remover cara de IA, soar natural, revisar escrita, tirar em-dash, menos promocional, signs of AI writing | `skills/humanizer/SKILL.md` |
 | PostgreSQL & Supabase | query, RLS, index, Supabase | `skills/stack/postgres-supabase.md` |
 | Frontend UI (shadcn) | UI, componente, landing, shadcn, Magic UI | `skills/stack/frontend-ui.md` |
 | Prisma Expert | schema, migration, Prisma | `skills/stack/prisma.md` |

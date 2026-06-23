@@ -1,6 +1,6 @@
 # 📚 Índice Completo de Agent Skills
 
-> **Total:** 169 skills indexadas de 1 repositórios
+> **Total:** 170 skills indexadas de 1 repositórios
 > **Pasta local:** `~/Development/osforge/sources/` (fontes) e `~/Development/osforge/skills/` (curadas)
 >
 > 💡 **Dica de busca:** Use `Ctrl+F` / `Cmd+F` para pesquisar por palavra-chave.
@@ -14,24 +14,24 @@
 
 | Categoria | Qtd | % |
 |-----------|-----|---|
-| 🔒 Security | 47 | 27.8% |
-| 📱 Mobile | 25 | 14.8% |
-| 🔄 Workflow / Process | 22 | 13.0% |
-| 🤖 AI / ML / Agents | 22 | 13.0% |
+| 🔒 Security | 47 | 27.6% |
+| 📱 Mobile | 25 | 14.7% |
+| 🤖 AI / ML / Agents | 23 | 13.5% |
+| 🔄 Workflow / Process | 22 | 12.9% |
 | ⚛️ React / Frontend | 21 | 12.4% |
-| 🧪 Testing | 16 | 9.5% |
-| 🏗️ Architecture | 5 | 3.0% |
+| 🧪 Testing | 16 | 9.4% |
+| 🏗️ Architecture | 5 | 2.9% |
 | 📝 Documentation / Writing | 4 | 2.4% |
 | ☁️ Infrastructure / DevOps | 3 | 1.8% |
 | 🗄️ Database / Backend | 3 | 1.8% |
 | 💼 Business / Marketing | 1 | 0.6% |
-| **TOTAL** | **169** | **100%** |
+| **TOTAL** | **170** | **100%** |
 
 ### Por Origem
 
 | Origem | Repo | Qtd |
 |--------|------|-----|
-| skills | — | 169 |
+| skills | — | 170 |
 
 ---
 
@@ -39,8 +39,8 @@
 
 - [🔒 Security (47)](#)
 - [📱 Mobile (25)](#)
+- [🤖 AI / ML / Agents (23)](#)
 - [🔄 Workflow / Process (22)](#)
-- [🤖 AI / ML / Agents (22)](#)
 - [⚛️ React / Frontend (21)](#)
 - [🧪 Testing (16)](#)
 - [🏗️ Architecture (5)](#)
@@ -137,6 +137,36 @@
 | **vr-ar** | 📦 skills | Princípios de jogos VR/AR: conforto e prevenção de motion sickness, locomoção, hand tracking, anchoring AR e metas de performance por headset. ACIONE … | `skills/game-development/vr-ar/` |
 | **web-games** | 📦 skills | Princípios de jogos para navegador: escolha de framework (Phaser, PixiJS, Three.js, Babylon.js), WebGPU vs WebGL, compressão de assets, PWA e áudio no… | `skills/game-development/web-games/` |
 
+## 🤖 AI / ML / Agents
+
+**23 skills**
+
+| Skill | Origem | Descrição | Path Local |
+|-------|--------|-----------|-----------|
+| **agency** | 📦 skills | Índice geral dos 121 agentes especialistas da The Agency, organizado em 10 divisões com roteamento on-demand. ACIONE quando: | `skills/agency/` |
+| **agency-design** | 📦 skills | Índice dos 8 agentes de Design da Agency (Brand Guardian, UI Designer, UX Architect, UX Researcher, Image Prompt Engineer, Visual Storyteller, Whimsy … | `skills/agency/design/` |
+| **agency-marketing** | 📦 skills | Índice dos 26 agentes e 25 workflows de Marketing da Agency (Growth Hacker, Content Creator, SEO Specialist, estrategistas por plataforma, CRO, mercad… | `skills/agency/marketing/` |
+| **agency-product** | 📦 skills | Índice dos 5 agentes de Produto da Agency (Product Manager, Sprint Prioritizer, Feedback Synthesizer, Trend Researcher, Behavioral Nudge Engine). ACIO… | `skills/agency/product/` |
+| **agency-project-management** | 📦 skills | Índice dos 6 agentes de Gestão de Projetos da Agency (Project Shepherd, Studio Producer, Studio Operations, Jira Workflow Steward, Experiment Tracker,… | `skills/agency/project-management/` |
+| **agency-sales** | 📦 skills | Índice dos 8 agentes e 3 workflows de Vendas da Agency (Outbound Strategist, Discovery Coach, Deal Strategist, Proposal Strategist, Pipeline Analyst, … | `skills/agency/sales/` |
+| **claude-api-typescript** | 📦 skills | Build apps with the Claude API, Anthropic TypeScript SDK, and Agent SDK. TRIGGER when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent… | `skills/claude-api-typescript/` |
+| **coding-guidelines** | 📦 skills | Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code c… | `skills/coding-guidelines/` |
+| **config-critique** | 📦 skills | Lint LLM-powered de customizações do usuário no OSForge — valida novas SKILL.md, rules .mdc, hooks customizados, agents adicionais, e overrides de CLA… | `skills/config-critique/` |
+| **context-compact** | 📦 skills | Compactação estruturada de conversação quando atinge ~70% da janela de contexto. ACIONE quando: usuário diz "comprimir contexto", "compactar", "summar… | `skills/context-compact/` |
+| **context-distillator** | 📦 skills | Compressão lossless de documentos longos para consumo otimizado por LLMs, preservando 100% da informação factual e eliminando overhead textual. ACIONE… | `skills/context/context-distillator/` |
+| **dispatching-parallel-agents** | 📦 skills | Orquestra tasks paralelas em subagents independentes. ACIONE quando: 2+ tasks sem estado compartilhado, refatoração em múltiplos arquivos não relacion… | `skills/dispatching-parallel-agents/` |
+| **doc-shard** | 📦 skills | Divide documentos markdown grandes em arquivos menores organizados com index. Use quando documento exceder context window ou para organizar docs exten… | `skills/context/doc-shard/` |
+| **editorial-review** | 📦 skills | Revisão editorial de documentos técnicos em 2 modos: prose (copy-editing clínico) e structure (reorganização e simplificação). Use com "editorial revi… | `skills/context/editorial-review/` |
+| **genai-optimization** | 📦 skills | Generative Engine Optimization (GEO) para conteúdo ser citado por motores de busca com IA. ACIONE quando: fazer conteúdo ser citado pelo ChatGPT/Perpl… | `skills/genai-optimization/` |
+| **git-workflow** | 📦 skills | Git workflow patterns for AI agent development: worktrees for parallel agents, branching strategy, commit discipline, and merge workflows. Use when cr… | `skills/git-workflow/` |
+| **humanizer** | 📦 skills | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and human-written. Based on Wikipedia… | `skills/humanizer/` |
+| **llmfit-advisor** | 📦 skills | Detecta o hardware da máquina (RAM, CPU, GPU/VRAM) e recomenda os melhores LLMs locais com quantização ideal, estimativa de velocidade e scoring de fi… | `skills/llmfit-advisor/` |
+| **phase-discussion** | 📦 skills | Captura decisões de implementação de uma fase ANTES do planejamento técnico. ACIONE antes de planejar qualquer fase com UI, API, sistema de conteúdo o… | `skills/planning/phase-discussion/` |
+| **smart-model-dispatch** | 📦 skills | Roteador de modelos Claude. ACIONE quando: spawning de subagents via Agent tool, implementando feature com múltiplas subtasks de complexidade mista, o… | `skills/smart-model-dispatch/` |
+| **stuck-recovery** | 📦 skills | Detecta agent stuck patterns (loops, repetições, drift do escopo, ferramenta falhando 3x+) e executa recovery cirúrgico: salva estado em osforge-db, i… | `skills/stuck-recovery/` |
+| **tlc-spec-driven** | 📦 skills | Product-driven planning with 5 phases - Discover, Specify, Design, Tasks, Implement+Validate+Measure. Creates atomic tasks with verification criteria … | `skills/tlc-spec-driven/` |
+| **tool-safety-classifier** | 📦 skills | Classifier LLM-powered de segurança pra auto-aprovação de tool calls em modos autônomos (CI, headless, agent-of-agents). ACIONE quando: usuário roda e… | `skills/tool-safety-classifier/` |
+
 ## 🔄 Workflow / Process
 
 **22 skills**
@@ -165,35 +195,6 @@
 | **systematic-debugging** | 📦 skills | Debugging sistemático em 4 fases com análise de causa raiz. ACIONE quando: bug difícil de reproduzir, crash sem stacktrace claro, comportamento interm… | `skills/systematic-debugging/` |
 | **ui-design-intelligence** | 📦 skills | Spec de design system adaptado ao produto e indústria. ACIONE quando: usuário menciona estilo visual, identidade, paleta, tipografia, tom visual, tipo… | `skills/ui-design-intelligence/` |
 | **verification-before-completion** | 📦 skills | Requires running verification commands and confirming output before making any success claims. Use when about to claim work is complete, fixed, passin… | `skills/verification-before-completion/` |
-
-## 🤖 AI / ML / Agents
-
-**22 skills**
-
-| Skill | Origem | Descrição | Path Local |
-|-------|--------|-----------|-----------|
-| **agency** | 📦 skills | Índice geral dos 121 agentes especialistas da The Agency, organizado em 10 divisões com roteamento on-demand. ACIONE quando: | `skills/agency/` |
-| **agency-design** | 📦 skills | Índice dos 8 agentes de Design da Agency (Brand Guardian, UI Designer, UX Architect, UX Researcher, Image Prompt Engineer, Visual Storyteller, Whimsy … | `skills/agency/design/` |
-| **agency-marketing** | 📦 skills | Índice dos 26 agentes e 25 workflows de Marketing da Agency (Growth Hacker, Content Creator, SEO Specialist, estrategistas por plataforma, CRO, mercad… | `skills/agency/marketing/` |
-| **agency-product** | 📦 skills | Índice dos 5 agentes de Produto da Agency (Product Manager, Sprint Prioritizer, Feedback Synthesizer, Trend Researcher, Behavioral Nudge Engine). ACIO… | `skills/agency/product/` |
-| **agency-project-management** | 📦 skills | Índice dos 6 agentes de Gestão de Projetos da Agency (Project Shepherd, Studio Producer, Studio Operations, Jira Workflow Steward, Experiment Tracker,… | `skills/agency/project-management/` |
-| **agency-sales** | 📦 skills | Índice dos 8 agentes e 3 workflows de Vendas da Agency (Outbound Strategist, Discovery Coach, Deal Strategist, Proposal Strategist, Pipeline Analyst, … | `skills/agency/sales/` |
-| **claude-api-typescript** | 📦 skills | Build apps with the Claude API, Anthropic TypeScript SDK, and Agent SDK. TRIGGER when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent… | `skills/claude-api-typescript/` |
-| **coding-guidelines** | 📦 skills | Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code c… | `skills/coding-guidelines/` |
-| **config-critique** | 📦 skills | Lint LLM-powered de customizações do usuário no OSForge — valida novas SKILL.md, rules .mdc, hooks customizados, agents adicionais, e overrides de CLA… | `skills/config-critique/` |
-| **context-compact** | 📦 skills | Compactação estruturada de conversação quando atinge ~70% da janela de contexto. ACIONE quando: usuário diz "comprimir contexto", "compactar", "summar… | `skills/context-compact/` |
-| **context-distillator** | 📦 skills | Compressão lossless de documentos longos para consumo otimizado por LLMs, preservando 100% da informação factual e eliminando overhead textual. ACIONE… | `skills/context/context-distillator/` |
-| **dispatching-parallel-agents** | 📦 skills | Orquestra tasks paralelas em subagents independentes. ACIONE quando: 2+ tasks sem estado compartilhado, refatoração em múltiplos arquivos não relacion… | `skills/dispatching-parallel-agents/` |
-| **doc-shard** | 📦 skills | Divide documentos markdown grandes em arquivos menores organizados com index. Use quando documento exceder context window ou para organizar docs exten… | `skills/context/doc-shard/` |
-| **editorial-review** | 📦 skills | Revisão editorial de documentos técnicos em 2 modos: prose (copy-editing clínico) e structure (reorganização e simplificação). Use com "editorial revi… | `skills/context/editorial-review/` |
-| **genai-optimization** | 📦 skills | Generative Engine Optimization (GEO) para conteúdo ser citado por motores de busca com IA. ACIONE quando: fazer conteúdo ser citado pelo ChatGPT/Perpl… | `skills/genai-optimization/` |
-| **git-workflow** | 📦 skills | Git workflow patterns for AI agent development: worktrees for parallel agents, branching strategy, commit discipline, and merge workflows. Use when cr… | `skills/git-workflow/` |
-| **llmfit-advisor** | 📦 skills | Detecta o hardware da máquina (RAM, CPU, GPU/VRAM) e recomenda os melhores LLMs locais com quantização ideal, estimativa de velocidade e scoring de fi… | `skills/llmfit-advisor/` |
-| **phase-discussion** | 📦 skills | Captura decisões de implementação de uma fase ANTES do planejamento técnico. ACIONE antes de planejar qualquer fase com UI, API, sistema de conteúdo o… | `skills/planning/phase-discussion/` |
-| **smart-model-dispatch** | 📦 skills | Roteador de modelos Claude. ACIONE quando: spawning de subagents via Agent tool, implementando feature com múltiplas subtasks de complexidade mista, o… | `skills/smart-model-dispatch/` |
-| **stuck-recovery** | 📦 skills | Detecta agent stuck patterns (loops, repetições, drift do escopo, ferramenta falhando 3x+) e executa recovery cirúrgico: salva estado em osforge-db, i… | `skills/stuck-recovery/` |
-| **tlc-spec-driven** | 📦 skills | Product-driven planning with 5 phases - Discover, Specify, Design, Tasks, Implement+Validate+Measure. Creates atomic tasks with verification criteria … | `skills/tlc-spec-driven/` |
-| **tool-safety-classifier** | 📦 skills | Classifier LLM-powered de segurança pra auto-aprovação de tool calls em modos autônomos (CI, headless, agent-of-agents). ACIONE quando: usuário roda e… | `skills/tool-safety-classifier/` |
 
 ## ⚛️ React / Frontend
 
@@ -391,6 +392,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 
 **H**
 - `high-end-visual-design` — skills — `skills/high-end-visual-design/`
+- `humanizer` — skills — `skills/humanizer/`
 
 **I**
 - `i18n-localization` — skills — `skills/i18n-localization/`

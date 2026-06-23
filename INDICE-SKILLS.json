@@ -710,6 +710,16 @@
     "skill_dir": "high-end-visual-design"
   },
   {
+    "name": "humanizer",
+    "description": "Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and human-written. Based on Wikipedia's comprehensive \"Signs of AI writing\" guide. Detects and fixes patterns including: inflated symbolism, promotional language, superficial -ing analyse",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/humanizer",
+    "skill_dir": "humanizer"
+  },
+  {
     "name": "i18n-localization",
     "description": "Internationalization for Next.js applications. Trigger on multi-language support (\"set up multiple languages\", \"add English/Spanish support\", \"translate the app\"), locale routing (\"/en routes\", \"detect user language\"), translation management, date/currency formatting (\"format prices in BRL\", \"locali",
     "category": "⚛️ React / Frontend",
