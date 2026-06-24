@@ -37,3 +37,13 @@ sources/
 # OSForge Canvas runtime scratch (artefatos e feedback gerados em sessão)
 outputs/canvas/
 .playwright-mcp/
+
+# Secrets / credenciais (nunca versionar) — defesa extra
+.env
+.env.*
+*.token
+.supabase-token
+.claude.json
+*.key
+*.pem
+secrets.json
