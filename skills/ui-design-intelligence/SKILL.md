@@ -41,7 +41,7 @@ Do usuário ou do contexto existente:
 - **Stack alvo:** Next.js + shadcn/ui, React + Tailwind, Vue, HTML puro, React Native, Flutter
 - **Modo:** light / dark / system
 
-Se o usuário não forneceu estilo: inferir do tipo de produto usando `references/styles.md`.
+Se o usuário não forneceu estilo: inferir do tipo de produto via `references/reasoning-rules.md` (regra por indústria) e `references/styles.md`.
 
 ### 2. Busca multi-domínio em paralelo
 
@@ -49,12 +49,15 @@ Consultar simultaneamente (ler as seções relevantes de cada reference):
 
 ```
 [Paralelo]
-A → references/styles.md          — estilo visual + CSS tokens
-B → references/color-palettes.md  — paleta por indústria/produto
-C → references/typography-pairs.md — par tipográfico compatível
-D → references/ux-guidelines.md   — diretrizes UX críticas para o contexto
-E → references/chart-types.md     — tipos de chart se for dashboard/analytics
+A → references/reasoning-rules.md  — regra por produto/indústria: pattern + estilo + cor + tipografia + anti-patterns (PONTO DE PARTIDA)
+B → references/styles.md          — estilo visual + CSS tokens
+C → references/color-palettes.md  — paleta por indústria/produto
+D → references/typography-pairs.md — par tipográfico compatível
+E → references/ux-guidelines.md   — diretrizes UX críticas para o contexto
+F → references/chart-types.md     — tipos de chart se for dashboard/analytics
 ```
+
+Quando o tipo de produto bate com uma regra em `reasoning-rules.md`, use-a como espinha dorsal e refine com os demais references.
 
 ### 3. Sintetizar o design system spec
 
@@ -154,9 +157,10 @@ Ao final, informar como o design system se conecta:
 
 ## Referências
 
-- `references/styles.md` — 67 estilos visuais com tokens e quando usar
-- `references/color-palettes.md` — paletas por indústria e produto
-- `references/typography-pairs.md` — 57 combinações tipográficas curadas
+- `references/reasoning-rules.md` — 161 regras por produto/indústria (motor de design system v2.0)
+- `references/styles.md` — 84 estilos visuais com tokens e quando usar
+- `references/color-palettes.md` — 161 paletas por indústria e produto
+- `references/typography-pairs.md` — 73 combinações tipográficas curadas
 - `references/ux-guidelines.md` — 99 diretrizes UX com anti-patterns
 - `references/chart-types.md` — 25 tipos de chart para dashboards e analytics
 

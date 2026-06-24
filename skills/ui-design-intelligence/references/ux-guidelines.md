@@ -1,157 +1,437 @@
 # UX Guidelines — UI Design Intelligence
 
-99 diretrizes de UX curadas: boas práticas, anti-patterns e regras de acessibilidade.
-Organizadas por domínio para busca rápida.
+99 diretrizes de UX curadas: boas práticas, anti-patterns e acessibilidade. Organizadas por domínio.
 
 ---
 
-## Layout & Espaçamento
+## AI Interaction
 
-✅ Use escala de espaçamento baseada em múltiplos de 4px (4, 8, 12, 16, 24, 32, 48, 64)  
-✅ Espaçamento interno (padding) sempre maior que espaçamento externo entre elementos relacionados  
-✅ Agrupar elementos relacionados com espaçamento menor; separar grupos com espaçamento maior  
-✅ Linhas de conteúdo: max-width entre 60–80 caracteres para leitura confortável  
-✅ Hierarquia visual clara: o elemento mais importante ocupa mais espaço/atenção  
-❌ Nunca usar valores de espaçamento arbitrários (17px, 23px) — quebra a grid  
-❌ Nunca encher todos os espaços disponíveis — espaço em branco é design  
-❌ Evitar mais de 3 níveis de hierarquia visual na mesma tela  
+**Disclaimer** _(High)_  
+✅ Clearly label AI generated content  
+❌ Present AI as human  
 
----
+**Streaming** _(Medium)_  
+✅ Stream text response token by token  
+❌ Show loading spinner for 10s+  
 
-## Formulários
+**Feedback Loop** _(Low)_  
+✅ Thumps up/down or 'Regenerate'  
+❌ Static output only  
 
-✅ Labels sempre visíveis (nunca usar apenas placeholder como label)  
-✅ Validação inline — mostrar erro logo abaixo do campo após o usuário sair dele  
-✅ Mensagens de erro específicas: "Email inválido" não "Preencha corretamente"  
-✅ Agrupar campos relacionados (endereço: rua + número + CEP juntos)  
-✅ Botão de submit próximo ao último campo do formulário  
-✅ Indicar campos obrigatórios com asterisco + legenda "* obrigatório"  
-✅ Auto-focus no primeiro campo de formulários curtos  
-✅ Desabilitar botão de submit durante processamento para evitar double-submit  
-❌ Nunca limpar um formulário sem confirmação do usuário  
-❌ Nunca exigir formato específico sem máscaras (CPF, telefone, CEP)  
-❌ Evitar CAPTCHAs — usar honeypots ou rate limiting no backend  
+## Accessibility
 
----
+**Color Contrast** _(High)_  
+✅ Minimum 4.5:1 ratio for normal text  
+❌ Low contrast text  
 
-## Navegação
+**Color Only** _(High)_  
+✅ Use icons/text in addition to color  
+❌ Red/green only for error/success  
 
-✅ Indicar localização atual no menu/breadcrumb sempre  
-✅ Links visitados devem ter cor diferente de links não visitados  
-✅ Âncoras de navegação principais: máximo 7 itens (Miller's Law)  
-✅ Menu mobile: hamburger com label "Menu", não apenas ícone  
-✅ Back button: sempre disponível em mobile — não confiar no botão do sistema  
-✅ Breadcrumb para hierarquias com 3+ níveis  
-❌ Nunca esconder a navegação principal em desktop sem razão clara  
-❌ Evitar dropdowns com mais de 10 itens — usar search ou categorias  
-❌ Nunca abrir links externos sem aviso  
+**Alt Text** _(High)_  
+✅ Descriptive alt text for meaningful images  
+❌ Empty or missing alt attributes  
 
----
+**Heading Hierarchy** _(Medium)_  
+✅ Use sequential heading levels h1-h6  
+❌ Skip heading levels or misuse for styling  
 
-## Feedback e Estados
+**ARIA Labels** _(High)_  
+✅ Add aria-label for icon-only buttons  
+❌ Icon buttons without labels  
 
-✅ Todo action button precisa de estado de loading quando a ação é assíncrona  
-✅ Feedback de sucesso: máximo 3 segundos, depois desaparecer automaticamente  
-✅ Feedback de erro: permanecer visível até o usuário agir  
-✅ Skeleton loaders para conteúdo que demora >300ms para carregar  
-✅ Mensagens de erro devem sugerir a próxima ação ("Verifique sua conexão e tente novamente")  
-✅ Confirmação antes de ações destrutivas (deletar, cancelar, arquivar)  
-✅ Undo disponível por 5–10 segundos após ação destrutiva (quando possível)  
-❌ Nunca usar spinners sem timeout — usuário fica esperando para sempre  
-❌ Nunca usar alert() nativo do browser para feedback  
-❌ Nunca exibir stack traces para o usuário final  
+**Keyboard Navigation** _(High)_  
+✅ Tab order matches visual order  
+❌ Keyboard traps or illogical tab order  
 
----
+**Screen Reader** _(Medium)_  
+✅ Use semantic HTML and ARIA properly  
+❌ Div soup with no semantics  
 
-## Acessibilidade
+**Form Labels** _(High)_  
+✅ Use label with for attribute or wrap input  
+❌ Placeholder-only inputs  
 
-✅ Contraste mínimo WCAG AA: 4.5:1 para texto normal, 3:1 para texto grande (>18px bold)  
-✅ Todos os elementos interativos devem ter focus visible (outline ou ring)  
-✅ Ordem de tab deve seguir a ordem visual de cima para baixo, esquerda para direita  
-✅ Imagens decorativas: alt="" | Imagens informativas: alt com descrição  
-✅ Ícones sem texto: aria-label obrigatório  
-✅ Inputs: sempre associar com label via htmlFor/id  
-✅ Tabelas: usar thead, th com scope, caption quando necessário  
-✅ Modais: focar no primeiro elemento interativo ao abrir; retornar foco ao fechar  
-✅ Animações: respeitar prefers-reduced-motion  
-❌ Nunca usar cor como único indicador de estado (vermelho para erro SEM ícone/texto)  
-❌ Nunca usar placeholder como substituto de label  
-❌ Evitar "clique aqui" como texto de link — usar texto descritivo  
+**Error Messages** _(High)_  
+✅ Use aria-live or role=alert for errors  
+❌ Visual-only error indication  
 
----
+**Skip Links** _(Medium)_  
+✅ Provide skip to main content link  
+❌ No skip link on nav-heavy pages  
 
-## Mobile
+**Motion Sensitivity** _(High)_  
+✅ Respect prefers-reduced-motion  
+❌ Force scroll effects  
 
-✅ Touch targets mínimos: 44x44px (Apple HIG) / 48x48px (Material)  
-✅ Conteúdo crítico na metade superior da tela em mobile (acima do fold)  
-✅ Inputs de telefone/número: type="tel" abre teclado numérico  
-✅ Inputs de email: type="email" abre teclado com @  
-✅ Swipe gestures: sempre ter alternativa por toque (swipe para deletar → botão delete)  
-✅ Bottom navigation bar para apps mobile com 3–5 destinos principais  
-❌ Nunca usar hover como único trigger de ação importante em mobile  
-❌ Evitar modais que cobrem >80% da tela em mobile  
-❌ Nunca esconder scroll de forma que o usuário não saiba que há mais conteúdo  
+## Animation
 
----
+**Excessive Motion** _(High)_  
+✅ Animate 1-2 key elements per view maximum  
+❌ Animate everything that moves  
 
-## Tabelas e Dados
+**Duration Timing** _(Medium)_  
+✅ Use 150-300ms for micro-interactions  
+❌ Use animations longer than 500ms for UI  
 
-✅ Alinhar números à direita, textos à esquerda  
-✅ Colunas de status: usar badge colorido + texto (nunca só cor)  
-✅ Tabelas longas: sticky header  
-✅ Tabelas com muitas colunas: scroll horizontal com shadow indicador  
-✅ Linhas alternadas (zebra) para tabelas densas  
-✅ Paginação visível e com indicador de total ("Mostrando 1–20 de 156")  
-✅ Ordenação: indicar coluna ativa e direção (ícone ↑↓)  
-✅ Busca em tabelas: debounce de 300ms  
-❌ Nunca paginar tabelas com menos de 20 linhas  
-❌ Nunca usar tabelas para layouts — usar CSS Grid/Flex  
+**Reduced Motion** _(High)_  
+✅ Check prefers-reduced-motion media query  
+❌ Ignore accessibility motion settings  
 
----
+**Loading States** _(High)_  
+✅ Use skeleton screens or spinners  
+❌ Leave UI frozen with no feedback  
 
-## Animação e Transição
+**Hover vs Tap** _(High)_  
+✅ Use click/tap for primary interactions  
+❌ Rely only on hover for important actions  
 
-✅ Duração padrão: 150–300ms para micro-interações  
-✅ Entrada de elementos: fade + scale sutil (opacity 0→1, scale 0.95→1)  
-✅ Saída de elementos: mais rápida que entrada (100–150ms)  
-✅ Easing: ease-out para entradas, ease-in para saídas  
-✅ Skeleton loader: animação shimmer suave (pulse)  
-❌ Nunca animar mais de 3 propriedades simultaneamente  
-❌ Evitar animações em loop que o usuário não pediu  
-❌ Nunca usar animation-duration > 500ms para micro-interações  
+**Continuous Animation** _(Medium)_  
+✅ Use for loading indicators only  
+❌ Use for decorative elements  
 
----
+**Transform Performance** _(Medium)_  
+✅ Use transform and opacity for animations  
+❌ Animate width/height/top/left properties  
 
-## Performance Percebida
+**Easing Functions** _(Low)_  
+✅ Use ease-out for entering ease-in for exiting  
+❌ Use linear for UI transitions  
 
-✅ Mostrar conteúdo o mais rápido possível — priorizar LCP  
-✅ Otimistic updates: atualizar a UI antes da resposta do servidor para ações comuns  
-✅ Skeleton loaders para listas e cards (nunca spinner centralizado para listas)  
-✅ Imagens: usar next/image com lazy loading e placeholder blur  
-✅ Fontes: preload as fontes críticas, usar font-display: swap  
-❌ Nunca bloquear a UI para operações que podem ser feitas em background  
-❌ Evitar redirects desnecessários — cada redirect adiciona 200–500ms  
+## Content
 
----
+**Truncation** _(Medium)_  
+✅ Truncate with ellipsis and expand option  
+❌ Overflow or broken layout  
 
-## E-commerce específico
+**Date Formatting** _(Low)_  
+✅ Use relative or locale-aware dates  
+❌ Ambiguous date formats  
 
-✅ Preço sempre em destaque — maior e mais bold que o restante do card  
-✅ "Adicionar ao carrinho" deve confirmar visualmente (ícone animado, badge no cart)  
-✅ Exibir estoque quando baixo ("Apenas 3 restantes")  
-✅ Frete grátis acima de X: mostrar quanto falta para o usuário atingir  
-✅ Carrinho persistente — sobrevive ao fechar o browser  
-❌ Nunca cobrar frete surpresa no checkout — mostrar desde o product page  
-❌ Evitar campos opcionais desnecessários no checkout  
+**Number Formatting** _(Low)_  
+✅ Use thousand separators or abbreviations  
+❌ Long unformatted numbers  
 
----
+**Placeholder Content** _(Low)_  
+✅ Use realistic sample data  
+❌ Lorem ipsum everywhere  
 
-## SaaS / Onboarding
+## Data Entry
 
-✅ Onboarding: máximo 5 steps, com indicador de progresso  
-✅ Empty states: sempre com imagem/ilustração + explicação + CTA  
-✅ Trial: mostrar dias restantes no header/dashboard  
-✅ Upgrade: mostrar o valor antes de pedir pagamento  
-✅ Configurações: organizar em categorias, busca disponível se >15 items  
-❌ Nunca redirecionar para pricing sem o usuário ter visto valor primeiro  
-❌ Evitar feature gates sem explicar o que o usuário ganha ao fazer upgrade  
+**Bulk Actions** _(Low)_  
+✅ Allow multi-select and bulk edit  
+❌ Single row actions only  
+
+## Feedback
+
+**Loading Indicators** _(High)_  
+✅ Show spinner/skeleton for operations > 300ms  
+❌ No feedback during loading  
+
+**Empty States** _(Medium)_  
+✅ Show helpful message and action  
+❌ Blank empty screens  
+
+**Error Recovery** _(Medium)_  
+✅ Provide clear next steps  
+❌ Error without recovery path  
+
+**Progress Indicators** _(Medium)_  
+✅ Step indicators or progress bar  
+❌ No indication of progress  
+
+**Toast Notifications** _(Medium)_  
+✅ Auto-dismiss after 3-5 seconds  
+❌ Toasts that never disappear  
+
+**Confirmation Messages** _(Medium)_  
+✅ Brief success message  
+❌ Silent success  
+
+## Forms
+
+**Input Labels** _(High)_  
+✅ Always show label above or beside input  
+❌ Placeholder as only label  
+
+**Error Placement** _(Medium)_  
+✅ Show error below related input  
+❌ Single error message at top of form  
+
+**Inline Validation** _(Medium)_  
+✅ Validate on blur for most fields  
+❌ Validate only on submit  
+
+**Input Types** _(Medium)_  
+✅ Use email tel number url etc  
+❌ Text input for everything  
+
+**Autofill Support** _(Medium)_  
+✅ Use autocomplete attribute properly  
+❌ Block or ignore autofill  
+
+**Required Indicators** _(Medium)_  
+✅ Use asterisk or (required) text  
+❌ No indication of required fields  
+
+**Password Visibility** _(Medium)_  
+✅ Toggle to show/hide password  
+❌ No visibility toggle  
+
+**Submit Feedback** _(High)_  
+✅ Show loading then success/error state  
+❌ No feedback after submit  
+
+**Input Affordance** _(Medium)_  
+✅ Use distinct input styling  
+❌ Inputs that look like plain text  
+
+**Mobile Keyboards** _(Medium)_  
+✅ Use inputmode attribute  
+❌ Default keyboard for all inputs  
+
+## Interaction
+
+**Focus States** _(High)_  
+✅ Use visible focus rings on interactive elements  
+❌ Remove focus outline without replacement  
+
+**Hover States** _(Medium)_  
+✅ Change cursor and add subtle visual change  
+❌ No hover feedback on clickable elements  
+
+**Active States** _(Medium)_  
+✅ Add pressed/active state visual change  
+❌ No feedback during interaction  
+
+**Disabled States** _(Medium)_  
+✅ Reduce opacity and change cursor  
+❌ Confuse disabled with normal state  
+
+**Loading Buttons** _(High)_  
+✅ Disable button and show loading state  
+❌ Allow multiple clicks during processing  
+
+**Error Feedback** _(High)_  
+✅ Show clear error messages near problem  
+❌ Silent failures with no feedback  
+
+**Success Feedback** _(Medium)_  
+✅ Show success message or visual change  
+❌ No confirmation of completed action  
+
+**Confirmation Dialogs** _(High)_  
+✅ Confirm before delete/irreversible actions  
+❌ Delete without confirmation  
+
+## Layout
+
+**Z-Index Management** _(High)_  
+✅ Define z-index scale system (10 20 30 50)  
+❌ Use arbitrary large z-index values  
+
+**Overflow Hidden** _(Medium)_  
+✅ Test all content fits within containers  
+❌ Blindly apply overflow-hidden  
+
+**Fixed Positioning** _(Medium)_  
+✅ Account for safe areas and other fixed elements  
+❌ Stack multiple fixed elements carelessly  
+
+**Stacking Context** _(Medium)_  
+✅ Understand what creates new stacking context  
+❌ Expect z-index to work across contexts  
+
+**Content Jumping** _(High)_  
+✅ Reserve space for async content  
+❌ Let images/content push layout around  
+
+**Viewport Units** _(Medium)_  
+✅ Use dvh or account for mobile browser chrome  
+❌ Use 100vh for full-screen mobile layouts  
+
+**Container Width** _(Medium)_  
+✅ Limit max-width for text content (65-75ch)  
+❌ Let text span full viewport width  
+
+## Navigation
+
+**Smooth Scroll** _(High)_  
+✅ Use scroll-behavior: smooth on html element  
+❌ Jump directly without transition  
+
+**Sticky Navigation** _(Medium)_  
+✅ Add padding-top to body equal to nav height  
+❌ Let nav overlap first section content  
+
+**Active State** _(Medium)_  
+✅ Highlight active nav item with color/underline  
+❌ No visual feedback on current location  
+
+**Back Button** _(High)_  
+✅ Preserve navigation history properly  
+❌ Break browser/app back button behavior  
+
+**Deep Linking** _(Medium)_  
+✅ Update URL on state/view changes  
+❌ Static URLs for dynamic content  
+
+**Breadcrumbs** _(Low)_  
+✅ Use for sites with 3+ levels of depth  
+❌ Use for flat single-level sites  
+
+## Onboarding
+
+**User Freedom** _(Medium)_  
+✅ Provide Skip and Back buttons  
+❌ Force linear unskippable tour  
+
+## Performance
+
+**Image Optimization** _(High)_  
+✅ Use appropriate size and format (WebP)  
+❌ Unoptimized full-size images  
+
+**Lazy Loading** _(Medium)_  
+✅ Lazy load below-fold images and content  
+❌ Load everything upfront  
+
+**Code Splitting** _(Medium)_  
+✅ Split code by route/feature  
+❌ Single large bundle  
+
+**Caching** _(Medium)_  
+✅ Set appropriate cache headers  
+❌ No caching strategy  
+
+**Font Loading** _(Medium)_  
+✅ Use font-display swap or optional  
+❌ Invisible text during font load  
+
+**Third Party Scripts** _(Medium)_  
+✅ Load non-critical scripts async/defer  
+❌ Synchronous third-party scripts  
+
+**Bundle Size** _(Medium)_  
+✅ Monitor and minimize bundle size  
+❌ Ignore bundle size growth  
+
+**Render Blocking** _(Medium)_  
+✅ Inline critical CSS defer non-critical  
+❌ Large blocking CSS files  
+
+## Responsive
+
+**Mobile First** _(Medium)_  
+✅ Start with mobile styles then add breakpoints  
+❌ Desktop-first causing mobile issues  
+
+**Breakpoint Testing** _(Medium)_  
+✅ Test at 320 375 414 768 1024 1440  
+❌ Only test on your device  
+
+**Touch Friendly** _(High)_  
+✅ Increase touch targets on mobile  
+❌ Same tiny buttons on mobile  
+
+**Readable Font Size** _(High)_  
+✅ Minimum 16px body text on mobile  
+❌ Tiny text on mobile  
+
+**Viewport Meta** _(High)_  
+✅ Use width=device-width initial-scale=1  
+❌ Missing or incorrect viewport  
+
+**Horizontal Scroll** _(High)_  
+✅ Ensure content fits viewport width  
+❌ Content wider than viewport  
+
+**Image Scaling** _(Medium)_  
+✅ Use max-width: 100% on images  
+❌ Fixed width images overflow  
+
+**Table Handling** _(Medium)_  
+✅ Use horizontal scroll or card layout  
+❌ Wide tables breaking layout  
+
+## Search
+
+**Autocomplete** _(Medium)_  
+✅ Show predictions as user types  
+❌ Require full type and enter  
+
+**No Results** _(Medium)_  
+✅ Show 'No results' with suggestions  
+❌ Blank screen or '0 results'  
+
+## Spatial UI
+
+**Gaze Hover** _(High)_  
+✅ Scale/highlight element on look  
+❌ Static element until pinch  
+
+**Depth Layering** _(Medium)_  
+✅ Use glass material and z-offset  
+❌ Flat opaque panels blocking view  
+
+## Sustainability
+
+**Auto-Play Video** _(Medium)_  
+✅ Click-to-play or pause when off-screen  
+❌ Auto-play high-res video loops  
+
+**Asset Weight** _(Medium)_  
+✅ Compress and lazy load 3D models  
+❌ Load 50MB textures  
+
+## Touch
+
+**Touch Target Size** _(High)_  
+✅ Minimum 44x44px touch targets  
+❌ Tiny clickable areas  
+
+**Touch Spacing** _(Medium)_  
+✅ Minimum 8px gap between touch targets  
+❌ Tightly packed clickable elements  
+
+**Gesture Conflicts** _(Medium)_  
+✅ Avoid horizontal swipe on main content  
+❌ Override system gestures  
+
+**Tap Delay** _(Medium)_  
+✅ Use touch-action CSS or fastclick  
+❌ Default mobile tap handling  
+
+**Pull to Refresh** _(Low)_  
+✅ Disable where not needed  
+❌ Enable by default everywhere  
+
+**Haptic Feedback** _(Low)_  
+✅ Use for confirmations and important actions  
+❌ Overuse vibration feedback  
+
+## Typography
+
+**Line Height** _(Medium)_  
+✅ Use 1.5-1.75 for body text  
+❌ Cramped or excessive line height  
+
+**Line Length** _(Medium)_  
+✅ Limit to 65-75 characters per line  
+❌ Full-width text on large screens  
+
+**Font Size Scale** _(Medium)_  
+✅ Use consistent modular scale  
+❌ Random font sizes  
+
+**Font Loading** _(Medium)_  
+✅ Reserve space with fallback font  
+❌ Layout shift when fonts load  
+
+**Contrast Readability** _(High)_  
+✅ Use darker text on light backgrounds  
+❌ Gray text on gray background  
+
+**Heading Clarity** _(Medium)_  
+✅ Clear size/weight difference  
+❌ Headings similar to body text

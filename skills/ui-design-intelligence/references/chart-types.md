@@ -1,155 +1,155 @@
 # Chart Types — UI Design Intelligence
 
-25 tipos de chart para dashboards e analytics. Para cada tipo: quando usar, quando NÃO usar, e biblioteca recomendada.
+25 tipos de chart para dashboards e analytics. Para cada um: quando usar, quando NÃO usar, biblioteca e acessibilidade.
 
 ---
 
-## Comparação
+### Line Chart — Trend Over Time
+**Usar quando:** Data has a time axis; user needs to observe rise/fall trends or rate of change over a continuous period  
+**Não usar:** Fewer than 4 data points (use stat card); more than 6 series (visual noise); no time dimension exists  
+**Bibliotecas:** Chart.js, Recharts, ApexCharts  
+**A11y:** Differentiate series by line style (solid/dashed/dotted) not color alone. Add pattern overlays for colorblind users.
 
-### Bar Chart (Barras verticais)
-**Usar quando:** Comparar valores entre categorias distintas (receita por mês, usuários por plano)  
-**Não usar:** Para mais de 12 categorias, ou quando a ordem temporal é o foco principal  
-**Bibliotecas:** Recharts `<BarChart>` | Chart.js | Victory  
-**Tip:** Ordenar da maior para menor barra quando a ordem não é temporal
+### Bar Chart (Horizontal or Vertical) — Compare Categories
+**Usar quando:** Comparing discrete categories by magnitude; ranking or ordering is the core insight; categories ≤ 15  
+**Não usar:** Categories > 15 (use table or search); data has time dimension (use line); showing proportions (use waffle/stacked)  
+**Bibliotecas:** Chart.js, Recharts, D3.js  
+**A11y:** Value labels on each bar by default. Sort control for user reordering.
 
-### Horizontal Bar Chart
-**Usar quando:** Labels longas (nomes de produto, países), ou quando comparar rankings  
-**Não usar:** Para séries temporais  
-**Tip:** Ideal para "top 10" com nomes que não cabem no eixo X
+### Pie Chart or Donut — Part-to-Whole
+**Usar quando:** ≤5 categories; one dominant segment vs rest; emphasis on visual proportion over exact values  
+**Não usar:** Categories > 5; slice differences < 5% (visually indistinguishable); user needs precise values; accessibility-first context  
+**Bibliotecas:** Chart.js, Recharts, D3.js  
+**A11y:** Pie charts fail WCAG for colorblind users. Slices rely on color alone. Avoid as primary chart in a11y contexts.
 
-### Grouped Bar Chart
-**Usar quando:** Comparar múltiplas séries para as mesmas categorias (receita vs meta por mês)  
-**Não usar:** Mais de 3 séries no mesmo grupo — vira poluição visual  
-**Tip:** Máximo 3 grupos de barras lado a lado
+### Scatter Plot or Bubble Chart — Correlation / Distribution
+**Usar quando:** Exploring relationship between two continuous variables; identifying clusters or outliers in a dataset  
+**Não usar:** Variables are categorical (use grouped bar); fewer than 20 points (patterns aren't meaningful); mobile-primary context  
+**Bibliotecas:** D3.js, Plotly, Recharts  
+**A11y:** Provide data table alternative. Combine color + shape distinction for colorblind users.
 
-### Stacked Bar Chart
-**Usar quando:** Mostrar composição de um total (breakdown de receita por categoria)  
-**Não usar:** Quando o usuário precisa comparar valores intermediários exatos  
-**Tip:** Colocar a série mais importante na base
+### Heat Map or Choropleth — Heatmap / Intensity
+**Usar quando:** Showing intensity/density across a 2D grid; time-based patterns (e.g., activity by hour × day)  
+**Não usar:** Fewer than 20 cells (use bar); user needs to read exact values; colorblind users without pattern fallback  
+**Bibliotecas:** D3.js, Plotly, ApexCharts  
+**A11y:** Pattern overlay for colorblind users. Numerical value on hover. Legend must include scale ticks.
 
----
+### Choropleth Map or Bubble Map — Geographic Data
+**Usar quando:** Data has a regional/location dimension; spatial distribution is the core insight for the user  
+**Não usar:** Regions have very different sizes making visual comparison misleading (use bar); mobile-primary context  
+**Bibliotecas:** D3.js, Mapbox, Leaflet  
+**A11y:** Include text labels for major regions. Provide keyboard navigation between regions.
 
-## Tendência / Temporal
+### Funnel Chart or Sankey — Funnel / Flow
+**Usar quando:** Sequential multi-stage process; showing conversion or drop-off rates between defined stages  
+**Não usar:** Stages aren't sequential; values don't decrease monotonically (use bar); fewer than 3 stages  
+**Bibliotecas:** D3.js, Recharts, Custom SVG  
+**A11y:** Explicit conversion % as text per stage. Stage labels always visible. Linear list view as fallback.
 
-### Line Chart
-**Usar quando:** Evolução de um valor ao longo do tempo (MAU, receita mensal, tickets abertos)  
-**Não usar:** Para categorias não ordenadas (preferir barras)  
-**Bibliotecas:** Recharts `<LineChart>` | Chart.js  
-**Tip:** Máximo 4 linhas no mesmo gráfico antes de ficar ilegível
+### Gauge Chart or Bullet Chart — Performance vs Target
+**Usar quando:** Single KPI measured against a defined target or threshold; dashboard summary context  
+**Não usar:** No target or benchmark exists; comparing multiple KPIs at once (use bullet chart grid)  
+**Bibliotecas:** D3.js, ApexCharts, Custom SVG  
+**A11y:** Always show numerical value + % of target as text beside chart. Never rely on color position alone.
 
-### Area Chart
-**Usar quando:** Enfatizar magnitude além da tendência (volume, tráfego)  
-**Não usar:** Para múltiplas séries que se sobrepõem muito  
-**Tip:** Use fill com opacidade 0.1–0.2 para não esconder linhas subjacentes
+### Line with Confidence Band — Time-Series Forecast
+**Usar quando:** Historical data + model predictions; communicating uncertainty range to non-technical stakeholders  
+**Não usar:** No historical baseline; prediction confidence is too low to be useful; audience is not data-literate  
+**Bibliotecas:** Chart.js, ApexCharts, Plotly  
+**A11y:** Toggle between actual-only and forecast views. Legend must distinguish lines beyond color (solid vs dashed).
 
-### Stacked Area Chart
-**Usar quando:** Composição de um total ao longo do tempo (tráfego por canal)  
-**Não usar:** Mais de 4 séries empilhadas  
-**Tip:** Cada área precisa ter cor suficientemente diferente
+### Line Chart with Highlights — Anomaly Detection
+**Usar quando:** Monitoring a time-series for outliers; alerting users to unexpected spikes or dips in operational data  
+**Não usar:** Anomalies are predefined categories (use bar with highlight); real-time context without a pause control  
+**Bibliotecas:** D3.js, Plotly, ApexCharts  
+**A11y:** Use shape marker (not color only) for anomaly points. Add text annotation per anomaly event.
 
-### Spark Line
-**Usar quando:** Mini-tendência dentro de um KPI card (sem eixos, sem labels)  
-**Tip:** Ideal em StatCard — apenas a forma da curva importa, não os valores exatos
+### Treemap — Hierarchical / Nested Data
+**Usar quando:** Showing size relationships within a hierarchy; overview of proportional structure (e.g., budget breakdown)  
+**Não usar:** Hierarchy depth > 3 levels (too complex to read); user needs to compare sibling values precisely  
+**Bibliotecas:** D3.js, Recharts, ApexCharts  
+**A11y:** Poor baseline accessibility. Always provide table alternative as primary view. Label all large areas.
 
----
+### Sankey Diagram — Flow / Process Data
+**Usar quando:** Showing how quantities flow between nodes; multi-source multi-target distribution  
+**Não usar:** Flow directions form loops (use network graph); fewer than 3 source-target pairs; mobile-primary context  
+**Bibliotecas:** D3.js (d3-sankey), Plotly  
+**A11y:** Structural flow charts cannot be conveyed by color alone. Provide flow table. Avoid on mobile.
 
-## Proporção / Composição
+### Waterfall Chart — Cumulative Changes
+**Usar quando:** Showing how individual positive/negative components add up to a final total (e.g., P&L, budget variance)  
+**Não usar:** Changes are not additive; more than 12 bars (readability breaks); audience expects a simple total  
+**Bibliotecas:** ApexCharts, Highcharts, Plotly  
+**A11y:** Color + directional arrow icon per bar (not color alone). Labels on every bar.
 
-### Pie Chart
-**Usar quando:** Mostrar partes de um todo com no máximo 5 categorias  
-**Não usar:** Mais de 5 fatias, ou quando as proporções são muito parecidas  
-**Tip:** Ordenar do maior para menor, começando às 12h
+### Radar / Spider Chart — Multi-Variable Comparison
+**Usar quando:** Comparing multiple entities across the same fixed set of attributes (e.g., product feature comparison)  
+**Não usar:** Axes > 8 (unreadable); values need precise comparison (use grouped bar); audience unfamiliar with radar charts  
+**Bibliotecas:** Chart.js, Recharts, ApexCharts  
+**A11y:** Limit axes to 5–8. Always provide grouped bar chart alternative for precise reading.
 
-### Donut Chart
-**Usar quando:** Mesmo caso do Pie, mas com espaço central para exibir o total  
-**Tip:** Exibir o valor total ou a maior categoria no centro
+### Candlestick Chart — Stock / Trading OHLC
+**Usar quando:** Financial time-series with Open/High/Low/Close data; trading or investment product context only  
+**Não usar:** Non-financial audience; no OHLC data available (use line chart); accessibility-first context  
+**Bibliotecas:** Lightweight Charts (TradingView), ApexCharts  
+**A11y:** Provide OHLC data table. Colorblind: use fill vs outline pattern (bullish = filled, bearish = hollow).
 
-### Treemap
-**Usar quando:** Hierarquia de dados com proporção (categorias de gasto, portfolios)  
-**Não usar:** Quando há muitos itens pequenos (>20)  
-**Tip:** Colorir por categoria, tamanho pelo valor
+### Network Graph — Relationship / Connection Data
+**Usar quando:** Mapping connections between entities; network topology or social graph exploration context  
+**Não usar:** Node count > 500 without clustering pre-applied; user needs precise connection counts; mobile context  
+**Bibliotecas:** D3.js (d3-force), Vis.js, Cytoscape.js  
+**A11y:** Fundamentally inaccessible without alternative. Never use as sole representation. Always provide list alternative.
 
----
+### Box Plot — Distribution / Statistical
+**Usar quando:** Showing spread, median, and outliers of a dataset; comparing distributions across multiple groups  
+**Não usar:** Fewer than 20 data points per group (distribution is not meaningful); audience unfamiliar with statistical charts  
+**Bibliotecas:** Plotly, D3.js, Chart.js (plugin)  
+**A11y:** Include stats summary table. Annotate outlier count in chart subtitle.
 
-## Distribuição
+### Bullet Chart — Performance vs Target (Compact)
+**Usar quando:** Dashboard with multiple KPIs side by side; space-constrained contexts where a gauge is too large  
+**Não usar:** Single KPI with emphasis (use gauge); data has no defined target range; fewer than 3 KPIs  
+**Bibliotecas:** D3.js, Plotly, Custom SVG  
+**A11y:** All values always visible as text. Color ranges are labeled with text thresholds not color alone.
 
-### Histogram
-**Usar quando:** Distribuição de uma variável contínua (tempo de resposta de API, idade dos usuários)  
-**Não usar:** Para dados categóricos  
-**Tip:** Escolher largura de bucket que mostre a distribuição sem ser granular demais
+### Waffle Chart — Proportional / Percentage
+**Usar quando:** Showing what fraction of a whole is filled; percentage progress in a visually engaging and accessible format  
+**Não usar:** More than 5 categories (use stacked bar); exact values matter over visual proportion; very tight space  
+**Bibliotecas:** D3.js, React-Waffle, Custom CSS Grid  
+**A11y:** Better than pie for accessibility. Percentage text label always visible. Each cell has aria-label.
 
-### Box Plot
-**Usar quando:** Comparar distribuições entre grupos (tempo de resposta por endpoint)  
-**Não usar:** Para audiências não técnicas — preferir bar chart com error bars  
+### Sunburst Chart — Hierarchical Proportional
+**Usar quando:** Exploring nested proportions where both hierarchy and relative size matter (e.g., org spend breakdown)  
+**Não usar:** More than 3 hierarchy levels (outer rings become unreadable); precision matters over overview; mobile  
+**Bibliotecas:** D3.js (d3-hierarchy), Recharts, ApexCharts  
+**A11y:** Poor accessibility beyond 2 levels. Mandatory table alternative required for any production use.
 
-### Scatter Plot
-**Usar quando:** Correlação entre duas variáveis (churn vs NPS, custo vs performance)  
-**Não usar:** Quando há mais de 500 pontos sem clustering  
-**Tip:** Adicionar linha de tendência (regression line) para deixar a correlação visível
+### Decomposition Tree — Root Cause Analysis
+**Usar quando:** Decomposing a metric into contributing factors; AI-assisted analysis or BI drill-down scenarios  
+**Não usar:** No clear parent-child causal relationship; audience expects a summary rather than exploration  
+**Bibliotecas:** Power BI (native), React-Flow, Custom D3.js  
+**A11y:** Keyboard-navigable expand/collapse. Screen reader announces node value and % contribution.
 
----
+### 3D Scatter / Surface Plot — 3D Spatial Data
+**Usar quando:** Scientific/engineering context where Z-axis carries essential info not expressible in 2D  
+**Não usar:** 2D projection conveys the same insight; mobile context; accessibility-required environments; standard business dashboards  
+**Bibliotecas:** Three.js, Deck.gl, Plotly 3D  
+**A11y:** 3D spatial charts are fundamentally inaccessible. Must not be used as primary chart type in any product UI.
 
-## Progresso / Status
+### Streaming Area Chart — Real-Time Streaming
+**Usar quando:** Live monitoring dashboards; IoT/ops data updating at ≥1 Hz; user needs current value at a glance  
+**Não usar:** Update frequency < 1/min (use periodic-refresh line chart); flashing content without reduced-motion support  
+**Bibliotecas:** Smoothed D3.js, CanvasJS  
+**A11y:** Pause/resume control required. Current value as large visible text KPI. Respect prefers-reduced-motion.
 
-### Gauge / Radial
-**Usar quando:** Um único KPI com range conhecido (NPS de -100 a 100, CPU de 0–100%)  
-**Não usar:** Para comparar múltiplos valores  
-**Tip:** Adicionar zonas de cor (verde/amarelo/vermelho) para contexto rápido
+### Word Cloud with Sentiment — Sentiment / Emotion
+**Usar quando:** NLP output visualization; exploratory analysis of text corpus sentiment; frequency-weighted keyword overview  
+**Não usar:** Precise values matter (word size is inherently imprecise); screen-reader context; corpus < 50 items  
+**Bibliotecas:** D3-cloud, Highcharts, Nivo  
+**A11y:** Word clouds fail screen readers. Never use as sole output of NLP analysis. Always pair with list view.
 
-### Progress Bar
-**Usar quando:** Progresso em direção a uma meta (meta de vendas, onboarding, storage usado)  
-**Tip:** Sempre mostrar o valor numérico além da barra
-
-### Bullet Chart
-**Usar quando:** Mostrar performance atual vs meta vs range (velocímetro de KPI)  
-**Nota:** Menos conhecido mas muito eficiente para dashboards executivos
-
----
-
-## Geográfico
-
-### Choropleth Map
-**Usar quando:** Métricas por região, estado ou país (receita por estado, usuários por país)  
-**Biblioteca:** Recharts + GeoJSON | D3.js | deck.gl  
-**Tip:** Usar escala de cor sequencial (claro → escuro), nunca divergente para valores absolutos
-
-### Bubble Map
-**Usar quando:** Concentração de eventos geográficos com magnitude  
-
----
-
-## Relacionamento
-
-### Network Graph
-**Usar quando:** Relações entre entidades (grafo de referências, dependências de sistema)  
-**Biblioteca:** D3.js force simulation | Cytoscape.js  
-**Não usar:** Para audiências não técnicas — prefira table ou lista
-
-### Sankey Diagram
-**Usar quando:** Fluxo de volume entre estados (funil de vendas, jornada do usuário)  
-**Biblioteca:** d3-sankey | Recharts (não tem nativo — usar biblioteca específica)
-
----
-
-## Tabelas Especiais
-
-### Heatmap Table
-**Usar quando:** Comparar intensidade em duas dimensões (hora × dia, métrica × segmento)  
-**Tip:** Usar escala de cor sequencial, adicionar legenda com range
-
-### Funnel Chart
-**Usar quando:** Conversão em etapas sequenciais (cadastro → ativação → retenção → receita)  
-**Tip:** Sempre mostrar a taxa de conversão entre cada etapa, não apenas o volume
-
----
-
-## Regras gerais de charts
-
-1. **Título descritivo** — não "Receita" mas "Receita Mensal (Jan–Dez 2024)"
-2. **Eixos com labels e unidades** — "R$ mil", "usuários", "%"
-3. **Tooltips informativos** — ao hover, mostrar o valor exato + contexto
-4. **Legenda** — apenas quando necessário; se há só uma série, dispensa
-5. **Cores** — usar paleta consistente com o design system; nunca vermelho/verde sem semântica
-6. **Responsive** — usar `ResponsiveContainer` (Recharts) ou equivalente
-7. **Empty state** — chart sem dados precisa de estado vazio claro, não gráfico em branco
-8. **Loading** — skeleton de chart durante carregamento de dados
+### Process Map / Graph — Process Mining
+**Usar quando:** Analyzing event logs to visualize actual process flows; identifying bottlenecks and deviations in ops/product funnels  
+**Não usar:** No event log data available; audience expects a static flowchart (use diagram tool); node count > 100 without pre-filtering  
+**Bibliotecas:** React-Flow, Cytoscape.js, Recharts  
+**A11y:** Complex graphs are hard to navigate. Provide path summary text. Highlight top 3 bottlenecks as annotations.
