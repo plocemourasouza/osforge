@@ -83,6 +83,7 @@ approval HALT. Understand and plan — never execute (no writes/edits/mutating c
 - **Grill first** (one question at a time; explore the code instead of asking). Triage scales depth (QUICK 3–5 steps · STANDARD full · COMPLEX + alternatives/risks).
 - **The plan is a dispatch manifest**, authored from `docs/PLAN.template.md`, containing: **Objective · Feature structure** (modules/seams, data model, API) **· User stories** (US-xx + acceptance criteria) **· Roster** (models/agents/skills declared up front) **· Task manifest** **· Waves · Risks/rollback · Out of scope · Verification**.
 - **Every task carries full metadata:** `story · wave · depends_on · model · agent · skills · files · done-when · verify` — so a worker can run it self-contained, in parallel within its wave.
+- **Planning tier:** the orchestrator (Sonnet, always-active) delegates deep planning to `planner`/`validator` on **Opus** for STANDARD/COMPLEX; it keeps intake/triage/synthesis on Sonnet (QUICK may stay on Sonnet). Per `smart-model-dispatch`.
 - **Language boundary:** plan written in English; reply in the user's language. **Present via Canvas** by default.
 - **HALT:** `[A]pprove · [E]dit · [S]implify` — never roll into implementation.
 - **On approval:** persist to `.specs/` + import the manifest into `osforge-db` (`add-task` with `wave`/`depends_on`); dispatch each wave **in parallel** (`dispatching-parallel-agents`), each task at its `model` tier with its `agent` + `skills`. **Default autonomy = checkpoint per wave** (report + stop after each wave before the next).

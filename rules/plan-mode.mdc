@@ -43,6 +43,12 @@ Author from `docs/PLAN.template.md`. The plan MUST contain:
 - verify:      <command / test that proves it>
 ```
 
+## Planning model tier
+The orchestrator runs on **Sonnet** (always-active, cheap router). It does NOT author a STANDARD/COMPLEX
+manifest alone on Sonnet — it **delegates deep planning to the `planner` agent on Opus** (feature structure,
+decomposition, the task manifest) and to `validator` on Opus (critique the plan, find gaps), per `smart-model-dispatch`.
+The orchestrator keeps intake/triage/synthesis on Sonnet. (QUICK plans may stay on Sonnet.)
+
 ## Presentation
 Present the plan via **OSForge Canvas** by default (cards, dependency graph, approve/edit/reject); the terminal gets a short summary + URL. Exception: the user asks for "text only".
 

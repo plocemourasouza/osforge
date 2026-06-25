@@ -18,7 +18,7 @@ Use the most powerful model only where reasoning depth matters. Route mechanical
 
 ## Model Tiers
 
-### 🔴 Opus (`claude-opus-4-6`) — $5/$25 per 1M tokens
+### 🔴 Opus (`claude-opus-4-8`) — $5/$25 per 1M tokens
 **When:** Task requires deep reasoning, architectural decisions, or multi-step analysis where errors compound.
 
 | Agent/Skill | Use Opus When |
