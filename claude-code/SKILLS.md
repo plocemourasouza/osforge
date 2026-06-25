@@ -158,9 +158,9 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Skill | Trigger | Load |
 |-------|---------|------|
 | Next.js + React | React, Next.js, performance, waterfalls, bundle | `skills/stack/nextjs-react.md` |
-| Humanizer | humanizar texto, remover cara de IA, soar natural, revisar escrita, tirar em-dash, menos promocional, signs of AI writing | `skills/humanizer/SKILL.md` |
+| Humanizer | humanize text, remove the AI look, sound natural, review writing, drop em-dashes, less promotional, signs of AI writing | `skills/humanizer/SKILL.md` |
 | PostgreSQL & Supabase | query, RLS, index, Supabase | `skills/stack/postgres-supabase.md` |
-| Frontend UI (shadcn) | UI, componente, landing, shadcn, Magic UI | `skills/stack/frontend-ui.md` |
+| Frontend UI (shadcn) | UI, component, landing, shadcn, Magic UI | `skills/stack/frontend-ui.md` |
 | Prisma Expert | schema, migration, Prisma | `skills/stack/prisma.md` |
 | Supabase Auth | auth, RBAC, session, OAuth | `skills/stack/supabase-auth.md` |
 | Stripe | payment, subscription, checkout, webhook | `skills/stack/stripe.md` |
@@ -172,15 +172,15 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Skill | Trigger | Load |
 |-------|---------|------|
 | Git Workflow | branch, commit, worktree, merge | `skills/workflow/git.md` |
-| Spec Builder | spec, especificar, tech spec | `skills/workflow/spec-builder.md` |
-| PRD Builder | prd, requisitos, requirements | `skills/workflow/prd-builder.md` |
-| Architecture Builder | arquitetura, ADR, schema changes | `skills/workflow/architecture.md` |
-| Epic Decomposer | épicos, stories, breakdown | `skills/workflow/epic-decomposer.md` |
-| Story Executor | executar story, implementar story | `skills/workflow/story-executor.md` |
+| Spec Builder | spec, specify, tech spec | `skills/workflow/spec-builder.md` |
+| PRD Builder | prd, requirements | `skills/workflow/prd-builder.md` |
+| Architecture Builder | architecture, ADR, schema changes | `skills/workflow/architecture.md` |
+| Epic Decomposer | epics, stories, breakdown | `skills/workflow/epic-decomposer.md` |
+| Story Executor | execute story, implement story | `skills/workflow/story-executor.md` |
 | Plan Writing | task planning, plan breakdown | `skills/workflow/plan-writing.md` |
-| Finishing Branch | finalizar branch, merge, PR, ship | `skills/workflow/finishing-branch.md` |
-| Receiving Review | feedback de review, changes requested | `skills/workflow/receiving-review.md` |
-| Requirements Clarify | clarificar requisitos, ambiguous | `skills/workflow/requirements-clarify.md` |
+| Finishing Branch | finish branch, merge, PR, ship | `skills/workflow/finishing-branch.md` |
+| Receiving Review | review feedback, changes requested | `skills/workflow/receiving-review.md` |
+| Requirements Clarify | clarify requirements, ambiguous | `skills/workflow/requirements-clarify.md` |
 | Doc Sanitization | /clean-docs, docs accumulating | `skills/workflow/doc-sanitization.md` |
 
 ## Testing
@@ -214,14 +214,14 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Accessibility | WCAG, a11y, screen reader | `skills/design/accessibility.md` |
 | Mobile Design | mobile app, touch targets, iOS/Android | `skills/design/mobile.md` |
 | Frontend Design | design system, color theory, typography, UX psychology | `skills/frontend-design/SKILL.md` |
-| UI Design Intelligence | identidade visual, paleta por indústria, fintech/healthcare/saas | `skills/ui-design-intelligence/SKILL.md` |
+| UI Design Intelligence | visual identity, palette by industry, fintech/healthcare/saas | `skills/ui-design-intelligence/SKILL.md` |
 | Web Design Guidelines | UI accessibility audit, design compliance | `skills/web-design-guidelines/SKILL.md` |
-| Aesthetic Boost | design bonito, visual marcante, anti-AI-slop, hero, landing | `skills/aesthetic-boost/SKILL.md` |
-| Taste Design Dials | premium, awwwards, agência, GSAP, magnetic, perpetual motion, bento 2.0, double-bezel | `skills/taste-design-dials/SKILL.md` |
+| Aesthetic Boost | beautiful design, striking visuals, anti-AI-slop, hero, landing | `skills/aesthetic-boost/SKILL.md` |
+| Taste Design Dials | premium, awwwards, agency, GSAP, magnetic, perpetual motion, bento 2.0, double-bezel | `skills/taste-design-dials/SKILL.md` |
 | Aesthetic Modes | minimalist editorial, brutalist industrial, soft premium, Notion style, Linear style, CRT terminal, Apple-tier | `skills/aesthetic-modes/SKILL.md` |
-| Redesign Audit | redesenhar, modernizar UI, upgrade visual, tirar cara de AI, site parece template | `skills/redesign-audit/SKILL.md` |
+| Redesign Audit | redesign, modernize UI, visual upgrade, remove the AI look, site looks like a template | `skills/redesign-audit/SKILL.md` |
 | Stitch Design Export | Google Stitch, DESIGN.md, exportar design system | `skills/stitch-design-export/SKILL.md` |
-| Design MD | contrato de design por projeto, identidade de marca, design tokens de projeto, DESIGN.md canônico | `skills/design-md/SKILL.md` |
+| Design MD | per-project design contract, brand identity, project design tokens, canonical DESIGN.md | `skills/design-md/SKILL.md` |
 | Tailwind Patterns | Tailwind v4, @theme, container queries, arbitrary values | `skills/tailwind-patterns/SKILL.md` |
 | OpenUI / GenUI Layout | OpenUI Lang, GenUI, layout DSL, declarative UI plan | `skills/openui-genui-layout/SKILL.md` |
 
@@ -248,7 +248,7 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | MCP Builder | MCP server, expose API as tool | `skills/meta/mcp-builder.md` |
 | GDPR/LGPD | consent, data rights, privacy | `skills/meta/gdpr-lgpd.md` |
 | Parallel Agents | parallel tasks, dispatching | `skills/meta/parallel-agents.md` |
-| The Agency | especialista, expert não coberto | `skills/meta/agency.md` |
+| The Agency | specialist, expert not covered | `skills/meta/agency.md` |
 | App Builder | scaffolding, new project, boilerplate | `skills/meta/app-builder.md` |
 | API Patterns | REST, GraphQL, tRPC | `skills/meta/api-patterns.md` |
 | Game Development | game, game loop, multiplayer | `skills/meta/game-dev.md` |
@@ -259,23 +259,23 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Server Management | process management, monitoring | `skills/meta/server-mgmt.md` |
 | Documentation Templates | README, API docs, changelog | `skills/meta/doc-templates.md` |
 | Lint and Validate | linting, ESLint, Prettier | `skills/meta/lint-validate.md` |
-| Code Review | code review, revisar código, PR | `skills/meta/code-review.md` |
+| Code Review | code review, review code, PR | `skills/meta/code-review.md` |
 | Behavioral Modes | brainstorm mode, implement mode | `skills/meta/behavioral-modes.md` |
-| DB State Sync | osforge-db, salvar estado | `skills/meta/db-state-sync.md` |
-| Visual Planner | visualizar plano, HTML interativo | `skills/meta/visual-planner.md` |
-| OSForge Canvas | canvas, abre no canvas, mostra no browser, revisar interativamente, aprovar antes de implementar | `skills/osforge-canvas/SKILL.md` |
-| AutoRefine | melhorar skill, autorefine, otimizar | `skills/meta/autorefine.md` |
-| Evolve / Instinct | evolve, /evolve, osforge evolve, instinct, aprendizado contínuo, padrão de sessão vira skill | `skills/evolve/SKILL.md` |
-| Adversarial Review | adversarial, revisão cínica | `skills/meta/adversarial-review.md` |
+| DB State Sync | osforge-db, save state | `skills/meta/db-state-sync.md` |
+| Visual Planner | visualize plan, interactive HTML | `skills/meta/visual-planner.md` |
+| OSForge Canvas | canvas, open in canvas, show in browser, review interactively, approve before implementing | `skills/osforge-canvas/SKILL.md` |
+| AutoRefine | improve skill, autorefine, optimize | `skills/meta/autorefine.md` |
+| Evolve / Instinct | evolve, /evolve, osforge evolve, instinct, continuous learning, session pattern becomes a skill | `skills/evolve/SKILL.md` |
+| Adversarial Review | adversarial, cynical review | `skills/meta/adversarial-review.md` |
 | Edge Case Hunter | edge cases, boundary conditions | `skills/meta/edge-case-hunter.md` |
-| Elicitation Engine | elicitar, refinar output | `skills/meta/elicitation.md` |
+| Elicitation Engine | elicit, refine output | `skills/meta/elicitation.md` |
 | Readiness Gate | readiness check, quality gate | `skills/meta/readiness-gate.md` |
-| Context Distillator | distill, comprimir contexto | `skills/meta/context-distillator.md` |
-| Project Context | project context, constituição | `skills/meta/project-context.md` |
-| Doc Shard | shard doc, dividir documento | `skills/meta/doc-shard.md` |
+| Context Distillator | distill, compress context | `skills/meta/context-distillator.md` |
+| Project Context | project context, constitution | `skills/meta/project-context.md` |
+| Doc Shard | shard doc, split document | `skills/meta/doc-shard.md` |
 | Editorial Review | editorial review, review prose | `skills/meta/editorial-review.md` |
-| Output Enforcement | completo, todo o arquivo, exaustivo, sem placeholder, no `// ...`, no `// TODO` | `skills/output-enforcement/SKILL.md` |
-| Tool Safety Classifier | modo automático, yolo mode, headless, CI mode, auto-approve, sem confirmação | `skills/tool-safety-classifier/SKILL.md` |
-| Context Compact | comprimir contexto, compactar, summary, perto do limite, context full, save state, /compact | `skills/context-compact/SKILL.md` |
-| Config Critique | revisar minha skill, validar minha rule, verificar conflito de hooks, lint config | `skills/config-critique/SKILL.md` |
-| Stuck Recovery | stuck, travado, loop, não está funcionando, esquece o que estava fazendo | `skills/stuck-recovery/SKILL.md` |
+| Output Enforcement | complete, the whole file, exhaustive, no placeholder, no `// ...`, no `// TODO` | `skills/output-enforcement/SKILL.md` |
+| Tool Safety Classifier | automatic mode, yolo mode, headless, CI mode, auto-approve, no confirmation | `skills/tool-safety-classifier/SKILL.md` |
+| Context Compact | compress context, compact, summary, near the limit, context full, save state, /compact | `skills/context-compact/SKILL.md` |
+| Config Critique | review my skill, validate my rule, check hook conflicts, lint config | `skills/config-critique/SKILL.md` |
+| Stuck Recovery | stuck, blocked, loop, not working, forgets what it was doing | `skills/stuck-recovery/SKILL.md` |
