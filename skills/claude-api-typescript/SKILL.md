@@ -10,8 +10,8 @@ metadata:
 # Claude API & Agent SDK — TypeScript
 
 ## Defaults
-- Model: `claude-opus-4-6` (always, unless user explicitly requests another)
-- Thinking: `thinking: { type: "adaptive" }` (Opus 4.6 / Sonnet 4.6 — do NOT use `budget_tokens`, it's deprecated)
+- Model: `claude-opus-4-8` (always, unless user explicitly requests another)
+- Thinking: `thinking: { type: "adaptive" }` (Opus 4.8 / Sonnet 4.6 — do NOT use `budget_tokens`, it's deprecated)
 - Streaming: default for any request with long input/output — use `.finalMessage()` to get complete response
 - Effort: `output_config: { effort: "high" }` (default). Use `"low"` for subagents, `"max"` for deep reasoning (Opus only)
 
@@ -19,7 +19,7 @@ metadata:
 
 | Model | ID | Context | Input $/1M | Output $/1M |
 |---|---|---|---|---|
-| Claude Opus 4.6 | `claude-opus-4-6` | 200K (1M beta) | $5.00 | $25.00 |
+| Claude Opus 4.8 | `claude-opus-4-8` | 200K (1M beta) | $5.00 | $25.00 |
 | Claude Sonnet 4.6 | `claude-sonnet-4-6` | 200K (1M beta) | $3.00 | $15.00 |
 | Claude Haiku 4.5 | `claude-haiku-4-5` | 200K | $1.00 | $5.00 |
 
@@ -46,7 +46,7 @@ import Anthropic from "@anthropic-ai/sdk"
 const client = new Anthropic() // uses ANTHROPIC_API_KEY env var
 
 const response = await client.messages.create({
-  model: "claude-opus-4-6",
+  model: "claude-opus-4-8",
   max_tokens: 1024,
   thinking: { type: "adaptive" },
   messages: [{ role: "user", content: "What is the capital of France?" }],
@@ -136,7 +136,7 @@ const searchProjects = betaZodTool({
 })
 
 const result = await client.beta.messages.toolRunner({
-  model: "claude-opus-4-6",
+  model: "claude-opus-4-8",
   max_tokens: 4096,
   tools: [searchProjects],
   messages: [{ role: "user", content: "Find active projects about billing" }],
@@ -146,7 +146,7 @@ const result = await client.beta.messages.toolRunner({
 ### Structured Outputs
 ```typescript
 const response = await client.messages.create({
-  model: "claude-opus-4-6",
+  model: "claude-opus-4-8",
   max_tokens: 1024,
   output_config: {
     format: {
@@ -212,8 +212,8 @@ for await (const message of query({
 ```
 
 ## Common Pitfalls
-- **Opus 4.6:** `budget_tokens` is deprecated — use `thinking: { type: "adaptive" }`
-- **Opus 4.6:** Assistant message prefills return 400 error — use structured outputs instead
+- **Opus 4.8:** `budget_tokens` is deprecated — use `thinking: { type: "adaptive" }`
+- **Opus 4.8:** Assistant message prefills return 400 error — use structured outputs instead
 - **128K output:** Requires streaming — use `.stream()` with `.finalMessage()`
 - **Structured outputs:** Use `output_config: { format: {...} }` (not deprecated `output_format`)
 - **Don't redefine SDK types:** Use `Anthropic.MessageParam`, `Anthropic.Tool`, etc.

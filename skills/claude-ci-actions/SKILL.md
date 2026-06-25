@@ -153,4 +153,4 @@ jobs:
 - GitHub Actions minutes consumed per run
 - API tokens per interaction (proportional to prompt + context)
 - Use `--max-turns 10` to cap costs
-- Sonnet 4.6 ($3/$15 per 1M tokens) for review, Opus 4.6 ($5/$25) for complex tasks
+- Sonnet 4.6 ($3/$15 per 1M tokens) for review, Opus 4.8 ($5/$25) for complex tasks
