@@ -211,6 +211,12 @@ deploy_claude() {
   copy_file "$REPO/claude-code/CLAUDE.md" "$CLAUDE/CLAUDE.md" true
   copy_file "$REPO/claude-code/SKILLS.md" "$CLAUDE/SKILLS.md"
 
+  log "Authoring templates/standards → docs/:"
+  mkdir -p "$CLAUDE/docs"
+  copy_file "$REPO/docs/PLAN.template.md"   "$CLAUDE/docs/PLAN.template.md"
+  copy_file "$REPO/docs/SKILL.template.md"  "$CLAUDE/docs/SKILL.template.md"
+  copy_file "$REPO/docs/SKILL-STANDARD.md"  "$CLAUDE/docs/SKILL-STANDARD.md"
+
   echo ""
   log "MCPs → ~/.claude.json (sync não-destrutivo):"
   MCP_SRC="$REPO/mcp/claude-code.json" CLAUDE_JSON="$HOME/.claude.json" sync_mcps_claude
@@ -472,6 +478,12 @@ deploy_cursor() {
   echo ""
   log "SKILLS.md:"
   copy_file "$REPO/claude-code/SKILLS.md" "$CURSOR/SKILLS.md"
+
+  log "Authoring templates/standards → docs/:"
+  mkdir -p "$CURSOR/docs"
+  copy_file "$REPO/docs/PLAN.template.md"   "$CURSOR/docs/PLAN.template.md"
+  copy_file "$REPO/docs/SKILL.template.md"  "$CURSOR/docs/SKILL.template.md"
+  copy_file "$REPO/docs/SKILL-STANDARD.md"  "$CURSOR/docs/SKILL-STANDARD.md"
 
   echo ""
   ok "Cursor deploy completo"

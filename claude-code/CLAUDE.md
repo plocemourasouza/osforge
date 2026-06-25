@@ -102,7 +102,7 @@ approval HALT. Understand and plan — never execute (no writes/edits/mutating c
 7. **Risks & rollback · Out of scope · Verification.**
 
 - **HALT:** `[A]pprove · [E]dit · [S]implify` — never roll into implementation.
-- **On approval:** persist to `.specs/` + import the manifest into `osforge-db` (`add-task` with `wave`/`depends_on`); dispatch each wave **in parallel** (`dispatching-parallel-agents`), each task at its `model` tier with its `agent` + `skills`. **Default autonomy = checkpoint per wave** (report + stop after each wave). Full reference: rule `plan-mode.mdc` + `docs/PLAN.template.md` (repo).
+- **On approval:** persist to `.specs/` + import the manifest into `osforge-db` (`add-task` with `wave`/`depends_on`); dispatch each wave **in parallel** (`dispatching-parallel-agents`), each task at its `model` tier with its `agent` + `skills`. **Default autonomy = checkpoint per wave** (report + stop after each wave). Full template (global, any project): **`~/.claude/docs/PLAN.template.md`** + rule `plan-mode.mdc`.
 
 ---
 
@@ -182,4 +182,4 @@ After any significant feature/fix: record lessons in `tasks/lessons.md`
 - For each question, offer your recommended answer.
 
 ## Authoring skills
-- Start from `docs/SKILL.template.md`; follow `docs/SKILL-STANDARD.md` (predictability, leading words, completion criteria, invocation axis). Validate triggering with `scripts/test-skill-triggering.sh`.
+- Start from `~/.claude/docs/SKILL.template.md`; follow `~/.claude/docs/SKILL-STANDARD.md` (predictability, leading words, completion criteria, invocation axis). Validate triggering with `scripts/test-skill-triggering.sh` (OSForge repo).
