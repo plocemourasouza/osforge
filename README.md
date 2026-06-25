@@ -255,7 +255,40 @@ New skills follow a single standard — [`docs/SKILL-STANDARD.md`](docs/SKILL-ST
 
 ## Origins
 
-Built from 1100+ agent skills, commands, and patterns across 23 curated and adapted sources: Anthropic, BMAD-METHOD, GSD, taste-skill, agentic-ai-prompt-research, The Agency, Trail of Bits, Vercel Labs, Supabase, Expo, Marketing Skills, llmfit, UI-UX Pro Max, spec-kit, OpenSpec, claude-red, and others. Architectural decisions are recorded as ADRs in [docs/DECISIONS.md](docs/DECISIONS.md).
+OSForge is a **curation**, not a fork. It distills **1100+ agent skills, commands, and patterns from 23 sources** into one coherent, English-authored, stack-tuned framework. Nothing is copied wholesale — every upstream is adapted to the OSForge standard, credited with `inspired_by`/`source` frontmatter, and the raw collections live disk-only under `sources/` (ADR-009). What each source contributed:
+
+### Foundations & format
+
+| Source | Contribution |
+|---|---|
+| [Anthropic](https://github.com/anthropics) | Skill format, core skills, brand guidelines |
+| [GitHub spec-kit](https://github.com/github/spec-kit) · OpenSpec | Spec-driven workflow + the `constitution` pattern |
+| BMAD-METHOD · GSD | Multi-phase planning and discovery discipline |
+| superpowers · context-engineering | Context budgeting, progressive disclosure, prompt-cache strategy |
+
+### Engineering, security & platform
+
+| Source | Contribution |
+|---|---|
+| [Vercel Labs](https://github.com/vercel) | Next.js + React performance patterns |
+| [Trail of Bits](https://github.com/trailofbits) | Security-audit methodology, threat modeling |
+| [Supabase](https://github.com/supabase) · Prisma | Postgres, RLS, auth (SSR), ORM patterns |
+| [Expo](https://github.com/expo) | Mobile / React Native coverage |
+| [Cloudflare](https://github.com/cloudflare) · [Sentry](https://github.com/getsentry) | Edge/deploy and observability patterns |
+| claude-red | Offensive-security tactics (authorized testing only) |
+
+### Design, agentic patterns & business
+
+| Source | Contribution |
+|---|---|
+| [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT) | Premium frontend taste system — dials, aesthetic modes, anti-AI-slop |
+| [Leonxlnx/agentic-ai-prompt-research](https://github.com/Leonxlnx/agentic-ai-prompt-research) | Coordinator Protocol, tool-safety, context-compact, stuck-recovery |
+| [nextlevelbuilder/ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) (MIT) | Design-system engine — 161 reasoning rules, 161 palettes, 84 styles |
+| [mattpocock/skills](https://github.com/mattpocock/skills) (MIT) | Skill-predictability theory feeding the OSForge skill standard |
+| The Agency · Marketing Skills | 121 business specialists + 32 marketing execution workflows |
+| [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) (MIT) | Local-LLM hardware fit advisor |
+
+> The 13 vendored collections (`sources/01-anthropic` … `sources/13-claude-red`) are the raw curation base — disk-only, never deployed. Every architectural decision is recorded as an ADR in **[docs/DECISIONS.md](docs/DECISIONS.md)** (currently 11 ADRs).
 
 ---
 
