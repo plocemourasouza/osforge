@@ -180,6 +180,16 @@
     "skill_dir": "architecture"
   },
   {
+    "name": "asaas-integration",
+    "description": "ASAAS payment integration (Brazilian gateway: Pix, boleto, credit card, subscriptions). Use when: integrating ASAAS, charging via Pix/boleto/card, handling ASAAS webhooks, billing Brazilian customers, or migrating from Stripe to a BR provider. Keywords: ASAAS, Pix, boleto, cobrança, pagamento BR, ga",
+    "category": "🔄 Workflow / Process",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/asaas-integration",
+    "skill_dir": "asaas-integration"
+  },
+  {
     "name": "autorefine-skill",
     "description": "Iterative autonomous refinement with autoresearch loop + meta-optimization + cross-domain transfer. Use when (e.g.",
     "category": "⚛️ React / Frontend",
@@ -188,6 +198,16 @@
     "source_url": "",
     "local_path": "skills/autorefine-skill",
     "skill_dir": "autorefine-skill"
+  },
+  {
+    "name": "aws-deploy",
+    "description": "Deploy to AWS — pick the right service (Amplify, App Runner, ECS/Fargate, Lambda, S3+CloudFront), with least-privilege IAM, managed secrets, and rollback. Use when: deploying to AWS, choosing an AWS compute/hosting service, IAM/secrets for a deploy, CI/CD to AWS, or moving off Vercel to AWS. Keyword",
+    "category": "☁️ Infrastructure / DevOps",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/aws-deploy",
+    "skill_dir": "aws-deploy"
   },
   {
     "name": "bash-linux",
@@ -218,6 +238,16 @@
     "source_url": "",
     "local_path": "skills/best-practices",
     "skill_dir": "best-practices"
+  },
+  {
+    "name": "better-auth",
+    "description": "Better Auth — framework-agnostic TypeScript auth (sessions, email/password, OAuth, plugins) in Next.js App Router. Use when: setting up Better Auth, session management, OAuth/social login, email+password, RBAC/organizations via plugins, or migrating to Better Auth. Keywords: Better Auth, better-auth",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/better-auth",
+    "skill_dir": "better-auth"
   },
   {
     "name": "brainstorming",

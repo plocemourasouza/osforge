@@ -164,6 +164,9 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Prisma Expert | schema, migration, Prisma | `skills/stack/prisma.md` |
 | Supabase Auth | auth, RBAC, session, OAuth | `skills/stack/supabase-auth.md` |
 | Stripe | payment, subscription, checkout, webhook | `skills/stack/stripe.md` |
+| ASAAS | ASAAS, Pix, boleto, cobrança, BR payment gateway | `skills/asaas-integration/SKILL.md` |
+| Better Auth | Better Auth, session, OAuth, social login, RBAC | `skills/better-auth/SKILL.md` |
+| AWS Deploy | AWS, ECS, Fargate, Lambda, Amplify, App Runner, IAM | `skills/aws-deploy/SKILL.md` |
 | Bun | Bun.file, Bun.serve, Bun.$ | `skills/stack/bun.md` |
 | i18n | multi-language, locale, translation | `skills/stack/i18n.md` |
 | Tailwind | Tailwind, utility classes, responsive | `skills/stack/tailwind.md` |

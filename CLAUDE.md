@@ -7,7 +7,7 @@ maintain the framework; `claude-code/CLAUDE.md` = how to behave in a session.
 
 ## What this repo is
 
-OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **170 skills, 27 agents** (orchestrator + 26 specialists), **13 always-on rules, 9 `spec-*` commands, 8 MCP servers**, hooks, and the `osforge-db` SQLite state CLI (now with local vector memory). There is no build, lint, or test suite. The "build" is the deploy.
+OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **173 skills, 27 agents** (orchestrator + 26 specialists), **13 always-on rules, 9 `spec-*` commands, 8 MCP servers**, hooks, and the `osforge-db` SQLite state CLI (now with local vector memory). There is no build, lint, or test suite. The "build" is the deploy.
 
 **ADR-001 (docs/DECISIONS.md): never edit `~/.claude/` or `~/.cursor/` directly.** All changes happen here, get committed, then deployed via `./deploy.sh`.
 
@@ -36,7 +36,7 @@ Deploy behavior worth knowing:
 ## Architecture
 
 ### Deployed content (the product)
-- `skills/` — One directory per skill, each with a `SKILL.md` (frontmatter: `name`, `description` with `ACIONE quando:` trigger phrases). Some skills have subdirectories with reference modules.
+- `skills/` — One directory per skill, each with a `SKILL.md` (frontmatter: `name`, `description` with `Use when:` / `Keywords:` / `Do NOT use for:` triggers per `docs/SKILL-STANDARD.md`). Some skills have subdirectories with reference modules.
 - `agents/` — One `.md` per agent. Exception: `agents/orchestrator/` is a directory; deploy copies its `AGENT.md` to `agents/orchestrator.md`.
 - `rules/` — `.mdc` files loaded as Cursor always-on global rules (Claude Code equivalents live inside `claude-code/CLAUDE.md`).
 - `commands/` — `spec-*.md` slash commands. Unified spec system (ADR-003): commands are the execution interface; the `tlc-spec-driven` skill holds templates. Both operate on `.specs/` in target projects.

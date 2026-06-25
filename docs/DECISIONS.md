@@ -178,3 +178,22 @@ A primeira escolha (`nomic-embed-text`, 768d) falhou em avaliação empírica co
 - Third-party adaptations keep `inspired_by`/`source` frontmatter.
 
 **Date:** 2026-06-24.
+
+## ADR-012: Stack Coverage Policy — Context7 for facts, skills for discipline
+
+**Context.** Expanding the supported stack (Better Auth, ASAAS, AWS, Rails, Astro, Vite, etc.) raised the question: do we create a skill/agent per technology, or rely on the Context7 docs MCP? Reflexively creating one skill per tech bloats an already large library (170 skills) and bakes volatile API docs into files that go stale (the `sediment` failure mode).
+
+**Decision.** Context7 and skills are **complementary**, split by what they hold:
+1. **Volatile facts (current API, syntax, version-specific behavior) → Context7**, never a skill. Enforced by the existing `context7-docs-first` rule. Skills MUST NOT duplicate API documentation.
+2. **Durable discipline (patterns, anti-patterns, gotchas, OSForge conventions, when-to-use) → a lean skill** that explicitly points to Context7 for the API surface.
+3. **A whole multi-step role → an agent** (rare; the roster is considered complete).
+
+**Priority rule (coverage):** create a skill only when (a) there is durable opinion/gotchas to encode, OR (b) Context7/model coverage is weak — typically **new or regional** tech (e.g., ASAAS, Better Auth). Well-documented popular libs (Vite, Astro, Express, Jest, Zod) rely on Context7 + existing language skills; no dedicated skill.
+
+**Consequences.**
+- A verifiable coverage contract lives in `docs/STACK-COVERAGE.md`: each stack tech → `{skill | Context7 docs-first}`.
+- First skills created under this policy: `asaas-integration`, `better-auth`, `aws-deploy` — each lean, each with a "current API → Context7" pointer.
+- Triggering for new skills is validated by `scripts/test-skill-triggering.sh`, including pt-BR prompts (cross-lingual, per ADR-011).
+- Express stays under `nodejs-best-practices`; pytest/Django/FastAPI/Flask stay under `python-patterns`.
+
+**Date:** 2026-06-25.

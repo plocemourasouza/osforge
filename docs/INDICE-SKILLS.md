@@ -1,6 +1,6 @@
 # 📚 Índice Completo de Agent Skills
 
-> **Total:** 170 skills indexadas de 1 repositórios
+> **Total:** 173 skills indexadas de 1 repositórios
 > **Pasta local:** `~/Development/osforge/sources/` (fontes) e `~/Development/osforge/skills/` (curadas)
 >
 > 💡 **Dica de busca:** Use `Ctrl+F` / `Cmd+F` para pesquisar por palavra-chave.
@@ -14,42 +14,42 @@
 
 | Categoria | Qtd | % |
 |-----------|-----|---|
-| 🔒 Security | 44 | 25.9% |
-| 🔄 Workflow / Process | 28 | 16.5% |
-| ⚛️ React / Frontend | 24 | 14.1% |
-| 🤖 AI / ML / Agents | 21 | 12.4% |
-| 🧪 Testing | 17 | 10.0% |
-| 🏗️ Architecture | 8 | 4.7% |
-| 📦 General | 7 | 4.1% |
+| 🔒 Security | 44 | 25.4% |
+| 🔄 Workflow / Process | 29 | 16.8% |
+| ⚛️ React / Frontend | 25 | 14.5% |
+| 🤖 AI / ML / Agents | 21 | 12.1% |
+| 🧪 Testing | 17 | 9.8% |
+| 🏗️ Architecture | 8 | 4.6% |
+| 📦 General | 7 | 4.0% |
 | 📝 Documentation / Writing | 6 | 3.5% |
 | 🗄️ Database / Backend | 5 | 2.9% |
-| 📱 Mobile | 4 | 2.4% |
-| ☁️ Infrastructure / DevOps | 3 | 1.8% |
+| ☁️ Infrastructure / DevOps | 4 | 2.3% |
+| 📱 Mobile | 4 | 2.3% |
 | 💼 Business / Marketing | 2 | 1.2% |
 | 🎨 Design / Creative | 1 | 0.6% |
-| **TOTAL** | **170** | **100%** |
+| **TOTAL** | **173** | **100%** |
 
 ### Por Origem
 
 | Origem | Repo | Qtd |
 |--------|------|-----|
-| skills | — | 170 |
+| skills | — | 173 |
 
 ---
 
 ## 🗂️ Sumário por Categoria
 
 - [🔒 Security (44)](#)
-- [🔄 Workflow / Process (28)](#)
-- [⚛️ React / Frontend (24)](#)
+- [🔄 Workflow / Process (29)](#)
+- [⚛️ React / Frontend (25)](#)
 - [🤖 AI / ML / Agents (21)](#)
 - [🧪 Testing (17)](#)
 - [🏗️ Architecture (8)](#)
 - [📦 General (7)](#)
 - [📝 Documentation / Writing (6)](#)
 - [🗄️ Database / Backend (5)](#)
+- [☁️ Infrastructure / DevOps (4)](#)
 - [📱 Mobile (4)](#)
-- [☁️ Infrastructure / DevOps (3)](#)
 - [💼 Business / Marketing (2)](#)
 - [🎨 Design / Creative (1)](#)
 
@@ -108,7 +108,7 @@
 
 ## 🔄 Workflow / Process
 
-**28 skills**
+**29 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -117,6 +117,7 @@
 | **aesthetic-modes** | 📦 skills | Three distinct visual modes for projects with a strong identity: EDITORIAL_MINIMALIST (Notion/Linear, warm monochrome), INDUSTRIAL_BRUTALIST (Swiss + … | `skills/aesthetic-modes/` |
 | **agency-product** | 📦 skills | Index of the Agency | `skills/agency/product/` |
 | **agency-project-management** | 📦 skills | Index of the Agency | `skills/agency/project-management/` |
+| **asaas-integration** | 📦 skills | ASAAS payment integration (Brazilian gateway: Pix, boleto, credit card, subscriptions). Use when: integrating ASAAS, charging via Pix/boleto/card, han… | `skills/asaas-integration/` |
 | **behavioral-modes** | 📦 skills | AI operational modes (brainstorm, implement, debug, review, teach, ship, orchestrate). Use to adapt behavior based on task type. | `skills/behavioral-modes/` |
 | **brainstorming** | 📦 skills | Socratic refinement of an idea BEFORE any code or technical spec. Use when: the user describes a vague idea, wants to explore alternatives before comm… | `skills/brainstorming/` |
 | **code-review** | 📦 skills | Structured code review with a checklist adapted to the OSForge stack. Use when: code review, review code, review PR, CR. Integrates adversarial-review… | `skills/quality/code-review/` |
@@ -143,7 +144,7 @@
 
 ## ⚛️ React / Frontend
 
-**24 skills**
+**25 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -151,6 +152,7 @@
 | **app-builder** | 📦 skills | Orchestrator for building full-stack applications from natural-language requests, with 13 scaffolding templates and agent coordination. Use when: crea… | `skills/app-builder/` |
 | **arch-builder** | 📦 skills | Facilitation of architectural decisions with ADRs. Stack-aware — respects project-context.md and optimizes for Next.js/Prisma/Supabase. Use with phras… | `skills/planning/arch-builder/` |
 | **autorefine-skill** | 📦 skills | Iterative autonomous refinement with autoresearch loop + meta-optimization + cross-domain transfer. Use when (e.g. | `skills/autorefine-skill/` |
+| **better-auth** | 📦 skills | Better Auth — framework-agnostic TypeScript auth (sessions, email/password, OAuth, plugins) in Next.js App Router. Use when: setting up Better Auth, s… | `skills/better-auth/` |
 | **design-md** | 📦 skills | PER-PROJECT brand identity contract in a DESIGN.md file — the 9-section document (Visual Theme, Color, Typography, Spacing, Layout, Components, Motion… | `skills/design-md/` |
 | **design-taste-frontend** | 📦 skills | Anti-slop frontend skill for landing pages, portfolios, and redesigns. Trigger on phrases like "build a landing page", "create my portfolio site", "re… | `skills/design-taste-frontend/` |
 | **design-taste-frontend-v1** | 📦 skills | Legacy v1 of the premium frontend taste-skill with fixed dials (variance 8, motion 6, density 4), anti-slop, Inter and AI-purple bans, and magnetic mi… | `skills/design-taste-frontend-v1/` |
@@ -278,6 +280,17 @@
 | **python-patterns** | 📦 skills | Python development principles: framework selection, async vs sync, type hints, Pydantic, project structure, and background tasks. Use when: choosing b… | `skills/python-patterns/` |
 | **smart-hooks** | 📦 skills | Production-grade Python hooks for Claude Code quality gates, safety rails, and developer experience. TRIGGER when: setting up hooks for a project, con… | `skills/smart-hooks/` |
 
+## ☁️ Infrastructure / DevOps
+
+**4 skills**
+
+| Skill | Origem | Descrição | Path Local |
+|-------|--------|-----------|-----------|
+| **aws-deploy** | 📦 skills | Deploy to AWS — pick the right service (Amplify, App Runner, ECS/Fargate, Lambda, S3+CloudFront), with least-privilege IAM, managed secrets, and rollb… | `skills/aws-deploy/` |
+| **claude-ci-actions** | 📦 skills | Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. TRIGGER when: setting up @claude in PRs/issues, configuring automat… | `skills/claude-ci-actions/` |
+| **deployment-procedures** | 📦 skills | Safe production deployment workflows with backup, post-deploy verification, and rollback for Vercel, Railway, VPS+PM2, Docker, and Kubernetes. Use whe… | `skills/deployment-procedures/` |
+| **server-management** | 📦 skills | Server operations principles: process management (PM2, systemd, Docker), monitoring, logs, scaling, health checks, and troubleshooting. Use when: app … | `skills/server-management/` |
+
 ## 📱 Mobile
 
 **4 skills**
@@ -288,16 +301,6 @@
 | **mobile-design** | 📦 skills | Mobile-first design principles for iOS and Android apps: touch interaction, thumb zone, 60fps performance, platform conventions (HIG, Material 3), off… | `skills/mobile-design/` |
 | **mobile-games** | 📦 skills | Mobile game principles: touch input, battery and thermal, App Store and Google Play requirements, monetization. Use when: I | `skills/game-development/mobile-games/` |
 | **stitch-design-export** | 📦 skills | OSForge enhancement layer sobre stitch-design-taste. Gera DESIGN.md para Google Stitch com tokens de osforge.config.json + Impeccable. ACIONE com stit… | `skills/stitch-design-export/` |
-
-## ☁️ Infrastructure / DevOps
-
-**3 skills**
-
-| Skill | Origem | Descrição | Path Local |
-|-------|--------|-----------|-----------|
-| **claude-ci-actions** | 📦 skills | Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. TRIGGER when: setting up @claude in PRs/issues, configuring automat… | `skills/claude-ci-actions/` |
-| **deployment-procedures** | 📦 skills | Safe production deployment workflows with backup, post-deploy verification, and rollback for Vercel, Railway, VPS+PM2, Docker, and Kubernetes. Use whe… | `skills/deployment-procedures/` |
-| **server-management** | 📦 skills | Server operations principles: process management (PM2, systemd, Docker), monitoring, logs, scaling, health checks, and troubleshooting. Use when: app … | `skills/server-management/` |
 
 ## 💼 Business / Marketing
 
@@ -348,12 +351,15 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `app-builder` — skills — `skills/app-builder/`
 - `arch-builder` — skills — `skills/planning/arch-builder/`
 - `architecture` — skills — `skills/architecture/`
+- `asaas-integration` — skills — `skills/asaas-integration/`
 - `autorefine-skill` — skills — `skills/autorefine-skill/`
+- `aws-deploy` — skills — `skills/aws-deploy/`
 
 **B**
 - `bash-linux` — skills — `skills/bash-linux/`
 - `behavioral-modes` — skills — `skills/behavioral-modes/`
 - `best-practices` — skills — `skills/best-practices/`
+- `better-auth` — skills — `skills/better-auth/`
 - `brainstorming` — skills — `skills/brainstorming/`
 - `brandkit` — skills — `skills/brandkit/`
 - `bun-development` — skills — `skills/bun-development/`
