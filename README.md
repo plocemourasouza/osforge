@@ -20,7 +20,7 @@
   - [Spec-driven workflow](#4-spec-driven-workflow)
 - [Quick start](#quick-start)
 - [What's inside](#whats-inside)
-- [Language & authoring standard (ADR-011)](#language--authoring-standard-adr-011)
+- [Language & authoring standard](#language--authoring-standard)
 - [Stack compatibility](#stack-compatibility)
 - [Origins](#origins)
 - [License](#license)
@@ -214,7 +214,7 @@ A local Bun service at `localhost:4242`. The agent writes versioned JSON artifac
 
 ---
 
-## Language & authoring standard (ADR-011)
+## Language & authoring standard
 
 OSForge separates **authoring language** from **runtime language**:
 
