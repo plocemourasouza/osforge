@@ -2,7 +2,7 @@
 
 **An AI-powered development framework: skills, agents, rules, hooks, commands, and a full library of specialists — the single source of truth for your global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration.**
 
-170 on-demand skills · 27 specialized agents · 13 always-on rules · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
+27 specialized agents · 170 on-demand skills · 13 always-on rules · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -162,6 +162,17 @@ cd osforge
 
 ## What's inside
 
+### 27 specialized agents
+
+Every agent ships a Reality Check (anti-self-deception) and a Quality Control loop (mandatory verification). Full roster in [USAGE.md](USAGE.md).
+
+- **Orchestrator** — meta-agent: intake, triage, planning, routing to 26 specialists, cross-session tracking, and the language boundary.
+- **Engineering** — frontend-engineer, backend-engineer, database-architect, mobile-developer, game-developer, devops-engineer, performance-optimizer.
+- **Quality & Security** — code-reviewer, code-refactorer, security-auditor, penetration-tester, test-engineer, qa-automation-engineer, validator.
+- **Planning & Product** — planner, system-architect, project-planner, product-manager, product-owner, product-strategy-advisor.
+- **Investigation** — debugger, explorer-agent, code-archaeologist.
+- **Docs & SEO** — documentation-writer, seo-specialist, git-commit-helper.
+
 ### 170 on-demand skills
 
 Full index with triggers in [claude-code/SKILLS.md](claude-code/SKILLS.md). Main categories:
@@ -173,17 +184,6 @@ Full index with triggers in [claude-code/SKILLS.md](claude-code/SKILLS.md). Main
 - **Testing & Quality** — E2E Playwright, Testing Patterns, Adversarial Review, Code Review, Edge Case Hunter, UI Audit, Readiness Gate, Output Enforcement.
 - **Meta & Context** — Systematic Debugging, Performance Profiling, Smart Model Dispatch, llmfit Advisor, Context Distillator, osforge-db, OSForge Canvas, Stuck Recovery, Config Critique, Context Compact, Tool Safety Classifier, Evolve/Instinct.
 - **The Agency** — 121 AI specialists across 10 divisions + 32 marketing execution workflows.
-
-### 27 specialized agents
-
-Every agent ships a Reality Check (anti-self-deception) and a Quality Control loop (mandatory verification). Full roster in [USAGE.md](USAGE.md).
-
-- **Orchestrator** — meta-agent: intake, triage, planning, routing to 26 specialists, cross-session tracking, and the language boundary.
-- **Engineering** — frontend-engineer, backend-engineer, database-architect, mobile-developer, game-developer, devops-engineer, performance-optimizer.
-- **Quality & Security** — code-reviewer, code-refactorer, security-auditor, penetration-tester, test-engineer, qa-automation-engineer, validator.
-- **Planning & Product** — planner, system-architect, project-planner, product-manager, product-owner, product-strategy-advisor.
-- **Investigation** — debugger, explorer-agent, code-archaeologist.
-- **Docs & SEO** — documentation-writer, seo-specialist, git-commit-helper.
 
 ### 13 always-on rules (Cursor)
 
