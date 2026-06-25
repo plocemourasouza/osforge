@@ -78,15 +78,31 @@ Skill `dispatching-parallel-agents`. `osforge-db` (tasks/board) is the wave trac
 ## Plan Mode (read-only → dispatch manifest)
 
 Plan Mode is the **read-only** half of the orchestrator flow (`DETECT → INTAKE → TRIAGE → PLAN`), stopping at the
-approval HALT. Understand and plan — never execute (no writes/edits/mutating commands). Full protocol: rule `plan-mode.mdc`.
+approval HALT. Understand and plan — never execute (no writes/edits/mutating commands).
+**This applies to Claude Code's native Plan Mode / `ExitPlanMode` too: the plan you present MUST follow the shape below — it is self-contained here, no external file required.**
 
-- **Grill first** (one question at a time; explore the code instead of asking). Triage scales depth (QUICK 3–5 steps · STANDARD full · COMPLEX + alternatives/risks).
-- **The plan is a dispatch manifest**, authored from `docs/PLAN.template.md`, containing: **Objective · Feature structure** (modules/seams, data model, API) **· User stories** (US-xx + acceptance criteria) **· Roster** (models/agents/skills declared up front) **· Task manifest** **· Waves · Risks/rollback · Out of scope · Verification**.
-- **Every task carries full metadata:** `story · wave · depends_on · model · agent · skills · files · done-when · verify` — so a worker can run it self-contained, in parallel within its wave.
-- **Planning tier:** the orchestrator (Sonnet, always-active) delegates deep planning to `planner`/`validator` on **Opus** for STANDARD/COMPLEX; it keeps intake/triage/synthesis on Sonnet (QUICK may stay on Sonnet). Per `smart-model-dispatch`.
-- **Language boundary:** plan written in English; reply in the user's language. **Present via Canvas** by default.
+- **Grill first** (one question at a time; explore the code instead of asking). Triage scales depth (QUICK 3–5 tasks · STANDARD full · COMPLEX + alternatives/risks).
+- **Planning tier:** the orchestrator (Sonnet, always-active) delegates STANDARD/COMPLEX planning to `planner`/`validator` on **Opus**; keeps intake/triage/synthesis on Sonnet. Per `smart-model-dispatch`.
+- **Language boundary:** plan in English; reply in the user's language. **Present via Canvas** by default.
+
+**Mandatory plan shape** — a plan missing the **Roster**, **User stories**, or the **Task manifest** is incomplete, *even for a single-file change* (then the manifest just has 1–4 tasks). Emit these sections, in order:
+
+1. **Objective** — 1–2 sentences.
+2. **Feature structure** — modules/seams, data model, API surface.
+3. **User stories** — `US-xx` + testable acceptance criteria.
+4. **Roster** — the models, agents, and skills this plan will use (declared up front).
+5. **Task manifest** — atomic tasks; each task:
+   ```
+   ### T-<n> — <title>
+   - story: US-<n>   · wave: <int>   · depends_on: [T-..]
+   - model: haiku|sonnet|opus|fable   · agent: <name>   · skills: <s>, <s>
+   - files: <path>   · done when: <checkable criterion>   · verify: <cmd/test>
+   ```
+6. **Waves** — which tasks run in parallel.
+7. **Risks & rollback · Out of scope · Verification.**
+
 - **HALT:** `[A]pprove · [E]dit · [S]implify` — never roll into implementation.
-- **On approval:** persist to `.specs/` + import the manifest into `osforge-db` (`add-task` with `wave`/`depends_on`); dispatch each wave **in parallel** (`dispatching-parallel-agents`), each task at its `model` tier with its `agent` + `skills`. **Default autonomy = checkpoint per wave** (report + stop after each wave before the next).
+- **On approval:** persist to `.specs/` + import the manifest into `osforge-db` (`add-task` with `wave`/`depends_on`); dispatch each wave **in parallel** (`dispatching-parallel-agents`), each task at its `model` tier with its `agent` + `skills`. **Default autonomy = checkpoint per wave** (report + stop after each wave). Full reference: rule `plan-mode.mdc` + `docs/PLAN.template.md` (repo).
 
 ---
 
