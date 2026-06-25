@@ -237,17 +237,20 @@ New skills follow a single standard — [`docs/SKILL-STANDARD.md`](docs/SKILL-ST
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 15+ (App Router) |
-| Language | TypeScript (strict mode) |
-| ORM | Prisma |
-| Database | PostgreSQL via Supabase |
-| Auth | Supabase Auth (SSR) |
+| Framework | Next.js `@latest` (App Router) · Node · Express · Vite · Astro |
+| Language | TypeScript (strict) · Python · Ruby (Rails) · PHP · Java |
+| ORM (default) | Prisma `@latest` |
+| Database | PostgreSQL · Qdrant (vector) · SQLite |
+| Auth | Better Auth · Supabase Auth (SSR) |
 | UI | shadcn/ui + Tailwind CSS |
+| Validation | Zod (schema validation, end-to-end types) |
 | Runtime | Bun |
-| Deployment | Vercel |
-| Payments | Stripe |
-| Testing | Playwright + Bun test |
-| AI tools | Claude Code, Cursor |
+| Deployment | Vercel · AWS |
+| Payments | Stripe · ASAAS |
+| Testing | Playwright · Bun test · Jest · pytest |
+| AI tools | Claude Code · Cursor |
+
+**Accessory libraries** (commonly paired across the skills) — data/state: TanStack Query, SWR · forms: React Hook Form (+ Zod resolver) · charts: Recharts · theming: next-themes · icons: lucide-react · motion: Framer Motion, GSAP.
 
 **MCP servers** — 8 configured (Context7, GitHub, Supabase, Shadcn, Browsermcp, next-devtools, Prisma-Local, Prisma-Remote). See `mcp/claude-code.json`.
 
