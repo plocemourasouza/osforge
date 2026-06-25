@@ -1,55 +1,55 @@
 ---
 name: agency-product
-description: "Índice dos 5 agentes de Produto da Agency (Product Manager, Sprint Prioritizer, Feedback Synthesizer, Trend Researcher, Behavioral Nudge Engine). ACIONE quando: 'priorizar features do próximo sprint', 'sintetizar feedback dos usuários em insights acionáveis', 'montar roadmap de produto', 'pesquisar tendências de mercado e concorrentes', 'desenhar nudges comportamentais para ativação e engajamento'. Keywords: produto, product management, roadmap, priorização, sprint, feedback, discovery, tendências, market research, backlog. Não acione para: coordenação de execução e timelines (project-management), pesquisa de usabilidade com usuários (design)."
+description: "Index of the Agency's 5 Product agents (Product Manager, Sprint Prioritizer, Feedback Synthesizer, Trend Researcher, Behavioral Nudge Engine). Use when: 'prioritize features for the next sprint', 'synthesize user feedback into actionable insights', 'build a product roadmap', 'research market and competitor trends', 'design behavioral nudges for activation and engagement'. Keywords: product, product management, roadmap, prioritization, sprint, feedback, discovery, trends, market research, backlog. Do NOT use for: execution and timeline coordination (project-management), usability research with users (design)."
 ---
 
-# 📊 Produto - Indice de Agentes
+# 📊 Product - Agent Index
 
-**Quando usar:** Gatilhos concretos: "priorizar features do próximo sprint", "sintetizar feedback dos usuários em insights acionáveis", "montar roadmap de produto", "pesquisar tendências de mercado e concorrentes", "desenhar nudges comportamentais para ativação e engajamento"
+**When to use:** Concrete triggers: "prioritize features for the next sprint", "synthesize user feedback into actionable insights", "build a product roadmap", "research market and competitor trends", "design behavioral nudges for activation and engagement"
 
-**Total:** 5 agentes
-
----
-
-## Como ativar
-
-Diga: `Ative o agente [nome]` ou `Use o [nome] para [tarefa]`
+**Total:** 5 agents
 
 ---
 
-## Agentes disponiveis
+## How to activate
+
+Say: `Activate the [name] agent` or `Use the [name] for [task]`
+
+---
+
+## Available agents
 
 ### 🧠 Behavioral Nudge Engine
 
-**Arquivo:** `product/product-behavioral-nudge-engine.md`
+**File:** `product/product-behavioral-nudge-engine.md`
 
-**Especialidade:** Behavioral psychology specialist that adapts software interaction cadences and styles to maximize user motivation and success.
+**Expertise:** Behavioral psychology specialist that adapts software interaction cadences and styles to maximize user motivation and success.
 
 
 ### 🔍 Feedback Synthesizer
 
-**Arquivo:** `product/product-feedback-synthesizer.md`
+**File:** `product/product-feedback-synthesizer.md`
 
-**Especialidade:** Expert in collecting, analyzing, and synthesizing user feedback from multiple channels to extract actionable product insights. Transforms qualitative ...
+**Expertise:** Expert in collecting, analyzing, and synthesizing user feedback from multiple channels to extract actionable product insights. Transforms qualitative ...
 
 
 ### 🧭 Product Manager
 
-**Arquivo:** `product/product-manager.md`
+**File:** `product/product-manager.md`
 
-**Especialidade:** Holistic product leader who owns the full product lifecycle — from discovery and strategy through roadmap, stakeholder alignment, go-to-market, and ou...
+**Expertise:** Holistic product leader who owns the full product lifecycle — from discovery and strategy through roadmap, stakeholder alignment, go-to-market, and ou...
 
 
 ### 🎯 Sprint Prioritizer
 
-**Arquivo:** `product/product-sprint-prioritizer.md`
+**File:** `product/product-sprint-prioritizer.md`
 
-**Especialidade:** Expert product manager specializing in agile sprint planning, feature prioritization, and resource allocation. Focused on maximizing team velocity and...
+**Expertise:** Expert product manager specializing in agile sprint planning, feature prioritization, and resource allocation. Focused on maximizing team velocity and...
 
 
 ### 🔭 Trend Researcher
 
-**Arquivo:** `product/product-trend-researcher.md`
+**File:** `product/product-trend-researcher.md`
 
-**Especialidade:** Expert market intelligence analyst specializing in identifying emerging trends, competitive analysis, and opportunity assessment. Focused on providing...
+**Expertise:** Expert market intelligence analyst specializing in identifying emerging trends, competitive analysis, and opportunity assessment. Focused on providing...
 

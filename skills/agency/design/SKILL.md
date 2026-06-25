@@ -1,76 +1,76 @@
 ---
 name: agency-design
-description: "Índice dos 8 agentes de Design da Agency (Brand Guardian, UI Designer, UX Architect, UX Researcher, Image Prompt Engineer, Visual Storyteller, Whimsy Injector). ACIONE quando: 'criar um design system para o app', 'revisar a identidade visual da marca', 'escrever prompts de imagem para IA', 'planejar pesquisa de usabilidade com usuários', 'deixar a interface mais divertida e memorável'. Keywords: design, UI, UX, branding, identidade visual, design system, pesquisa de usuários, image prompt, storytelling visual, usabilidade. Não acione para: implementação de código frontend (engineering), auditoria WCAG formal (testing) ou criação de anúncios pagos (paid-media)."
+description: "Index of the Agency's 8 Design agents (Brand Guardian, UI Designer, UX Architect, UX Researcher, Image Prompt Engineer, Visual Storyteller, Whimsy Injector). Use when: 'create a design system for the app', 'review the brand's visual identity', 'write image prompts for AI', 'plan usability research with users', 'make the interface more fun and memorable'. Keywords: design, UI, UX, branding, visual identity, design system, user research, image prompt, visual storytelling, usability. Do NOT use for: frontend code implementation (engineering), formal WCAG audits (testing), or paid ad creation (paid-media)."
 ---
 
-# 🎨 Design - Indice de Agentes
+# 🎨 Design - Agent Index
 
-**Quando usar:** Gatilhos concretos: "criar um design system para o app", "revisar a identidade visual da marca", "escrever prompts de imagem para IA", "planejar pesquisa de usabilidade com usuários", "garantir representação inclusiva nos visuais", "adicionar personalidade e delight à interface"
+**When to use:** Concrete triggers: "create a design system for the app", "review the brand's visual identity", "write image prompts for AI", "plan usability research with users", "ensure inclusive representation in visuals", "add personality and delight to the interface"
 
-**Total:** 8 agentes
-
----
-
-## Como ativar
-
-Diga: `Ative o agente [nome]` ou `Use o [nome] para [tarefa]`
+**Total:** 8 agents
 
 ---
 
-## Agentes disponiveis
+## How to activate
+
+Say: `Activate the [name] agent` or `Use the [name] for [task]`
+
+---
+
+## Available agents
 
 ### 🎨 Brand Guardian
 
-**Arquivo:** `design/design-brand-guardian.md`
+**File:** `design/design-brand-guardian.md`
 
-**Especialidade:** Expert brand strategist and guardian specializing in brand identity development, consistency maintenance, and strategic brand positioning
+**Expertise:** Expert brand strategist and guardian specializing in brand identity development, consistency maintenance, and strategic brand positioning
 
 
 ### 📷 Image Prompt Engineer
 
-**Arquivo:** `design/design-image-prompt-engineer.md`
+**File:** `design/design-image-prompt-engineer.md`
 
-**Especialidade:** Expert photography prompt engineer specializing in crafting detailed, evocative prompts for AI image generation. Masters the art of translating visual...
+**Expertise:** Expert photography prompt engineer specializing in crafting detailed, evocative prompts for AI image generation. Masters the art of translating visual...
 
 
 ### 🌈 Inclusive Visuals Specialist
 
-**Arquivo:** `design/design-inclusive-visuals-specialist.md`
+**File:** `design/design-inclusive-visuals-specialist.md`
 
-**Especialidade:** Representation expert who defeats systemic AI biases to generate culturally accurate, affirming, and non-stereotypical images and video.
+**Expertise:** Representation expert who defeats systemic AI biases to generate culturally accurate, affirming, and non-stereotypical images and video.
 
 
 ### 🎨 UI Designer
 
-**Arquivo:** `design/design-ui-designer.md`
+**File:** `design/design-ui-designer.md`
 
-**Especialidade:** Expert UI designer specializing in visual design systems, component libraries, and pixel-perfect interface creation. Creates beautiful, consistent, ac...
+**Expertise:** Expert UI designer specializing in visual design systems, component libraries, and pixel-perfect interface creation. Creates beautiful, consistent, ac...
 
 
 ### 📐 UX Architect
 
-**Arquivo:** `design/design-ux-architect.md`
+**File:** `design/design-ux-architect.md`
 
-**Especialidade:** Technical architecture and UX specialist who provides developers with solid foundations, CSS systems, and clear implementation guidance
+**Expertise:** Technical architecture and UX specialist who provides developers with solid foundations, CSS systems, and clear implementation guidance
 
 
 ### 🔬 UX Researcher
 
-**Arquivo:** `design/design-ux-researcher.md`
+**File:** `design/design-ux-researcher.md`
 
-**Especialidade:** Expert user experience researcher specializing in user behavior analysis, usability testing, and data-driven design insights. Provides actionable rese...
+**Expertise:** Expert user experience researcher specializing in user behavior analysis, usability testing, and data-driven design insights. Provides actionable rese...
 
 
 ### 🎬 Visual Storyteller
 
-**Arquivo:** `design/design-visual-storyteller.md`
+**File:** `design/design-visual-storyteller.md`
 
-**Especialidade:** Expert visual communication specialist focused on creating compelling visual narratives, multimedia content, and brand storytelling through design. Sp...
+**Expertise:** Expert visual communication specialist focused on creating compelling visual narratives, multimedia content, and brand storytelling through design. Sp...
 
 
 ### ✨ Whimsy Injector
 
-**Arquivo:** `design/design-whimsy-injector.md`
+**File:** `design/design-whimsy-injector.md`
 
-**Especialidade:** Expert creative specialist focused on adding personality, delight, and playful elements to brand experiences. Creates memorable, joyful interactions t...
+**Expertise:** Expert creative specialist focused on adding personality, delight, and playful elements to brand experiences. Creates memorable, joyful interactions t...
 

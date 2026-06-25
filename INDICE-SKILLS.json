@@ -11,7 +11,7 @@
   },
   {
     "name": "aesthetic-boost",
-    "description": "Boost estético anti-AI-slop. Invoque junto com qualquer skill de frontend para elevar a qualidade visual. Ative quando o usuário pedir \"design bonito\", \"visual marcante\", \"landing page\", \"hero section\", \"melhorar design\", \"identidade visual forte\", ou qualquer task que exija output visualmente disti",
+    "description": "Anti-AI-slop aesthetic boost. Invoke alongside any frontend skill to elevate visual quality. Activate when the user asks for \"beautiful design\", \"striking visuals\", \"landing page\", \"hero section\", \"improve design\", \"strong visual identity\", or any task that requires visually distinct output. Compact",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -21,7 +21,7 @@
   },
   {
     "name": "aesthetic-modes",
-    "description": "Três modos visuais distintos para projetos com identidade forte: EDITORIAL_MINIMALIST (Notion/Linear, warm monochrome), INDUSTRIAL_BRUTALIST (Swiss + CRT terminal), SOFT_PREMIUM (Apple-tier, glassmorphism nested cards). ACIONE quando: usuário pede \"estilo minimalista editorial\", \"brutalist\", \"indust",
+    "description": "Three distinct visual modes for projects with a strong identity: EDITORIAL_MINIMALIST (Notion/Linear, warm monochrome), INDUSTRIAL_BRUTALIST (Swiss + CRT terminal), SOFT_PREMIUM (Apple-tier, glassmorphism nested cards). Use when: the user asks for \"editorial minimalist style\", \"brutalist\", \"industri",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -31,8 +31,8 @@
   },
   {
     "name": "agency",
-    "description": "Índice geral dos 121 agentes especialistas da The Agency, organizado em 10 divisões com roteamento on-demand. ACIONE quando:",
-    "category": "🤖 AI / ML / Agents",
+    "description": "General index of The Agency",
+    "category": "📦 General",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -41,8 +41,8 @@
   },
   {
     "name": "agency-design",
-    "description": "Índice dos 8 agentes de Design da Agency (Brand Guardian, UI Designer, UX Architect, UX Researcher, Image Prompt Engineer, Visual Storyteller, Whimsy Injector). ACIONE quando:",
-    "category": "🤖 AI / ML / Agents",
+    "description": "Index of the Agency",
+    "category": "🎨 Design / Creative",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -51,8 +51,8 @@
   },
   {
     "name": "agency-engineering",
-    "description": "Índice dos 23 agentes de Engenharia da Agency (Backend Architect, Code Reviewer, Security Engineer, SRE, DevOps Automator, AI Engineer, Database Optimizer, etc.). ACIONE quando:",
-    "category": "🔒 Security",
+    "description": "Index of the Agency",
+    "category": "📦 General",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -61,8 +61,8 @@
   },
   {
     "name": "agency-marketing",
-    "description": "Índice dos 26 agentes e 25 workflows de Marketing da Agency (Growth Hacker, Content Creator, SEO Specialist, estrategistas por plataforma, CRO, mercados China/Ásia). ACIONE quando:",
-    "category": "🤖 AI / ML / Agents",
+    "description": "Index of the Agency",
+    "category": "💼 Business / Marketing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -71,8 +71,8 @@
   },
   {
     "name": "agency-paid-media",
-    "description": "Índice dos 7 agentes e 4 workflows de Mídia Paga da Agency (PPC Strategist, Paid Social Strategist, Creative Strategist, Tracking Specialist, Programmatic Buyer, Auditor). ACIONE quando:",
-    "category": "🔒 Security",
+    "description": "Index of the Agency",
+    "category": "📦 General",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -81,8 +81,8 @@
   },
   {
     "name": "agency-product",
-    "description": "Índice dos 5 agentes de Produto da Agency (Product Manager, Sprint Prioritizer, Feedback Synthesizer, Trend Researcher, Behavioral Nudge Engine). ACIONE quando:",
-    "category": "🤖 AI / ML / Agents",
+    "description": "Index of the Agency",
+    "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -91,8 +91,8 @@
   },
   {
     "name": "agency-project-management",
-    "description": "Índice dos 6 agentes de Gestão de Projetos da Agency (Project Shepherd, Studio Producer, Studio Operations, Jira Workflow Steward, Experiment Tracker, Senior Project Manager). ACIONE quando:",
-    "category": "🤖 AI / ML / Agents",
+    "description": "Index of the Agency",
+    "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -101,8 +101,8 @@
   },
   {
     "name": "agency-sales",
-    "description": "Índice dos 8 agentes e 3 workflows de Vendas da Agency (Outbound Strategist, Discovery Coach, Deal Strategist, Proposal Strategist, Pipeline Analyst, Account Strategist, Sales Coach, Sales Engineer). ACIONE quando:",
-    "category": "🤖 AI / ML / Agents",
+    "description": "Index of the Agency",
+    "category": "💼 Business / Marketing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -111,8 +111,8 @@
   },
   {
     "name": "agency-specialized",
-    "description": "Índice dos 24 agentes Especialistas da Agency (Agents Orchestrator, Compliance Auditor, Blockchain Security Auditor, MCP Builder, Document Generator, Workflow Architect, Supply Chain Strategist, ZK Steward, etc.). ACIONE quando:",
-    "category": "🔒 Security",
+    "description": "Index of the Agency",
+    "category": "📦 General",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -121,8 +121,8 @@
   },
   {
     "name": "agency-support",
-    "description": "Índice dos 6 agentes de Suporte e Operações da Agency (Support Responder, Analytics Reporter, Executive Summary Generator, Finance Tracker, Legal Compliance Checker, Infrastructure Maintainer). ACIONE quando:",
-    "category": "☁️ Infrastructure / DevOps",
+    "description": "Index of the Agency",
+    "category": "📦 General",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -131,8 +131,8 @@
   },
   {
     "name": "agency-testing",
-    "description": "Índice dos 8 agentes de Qualidade e Testes da Agency (Accessibility Auditor, API Tester, Performance Benchmarker, Reality Checker, Evidence Collector, Test Results Analyzer, Tool Evaluator, Workflow Optimizer). ACIONE quando:",
-    "category": "🔒 Security",
+    "description": "Index of the Agency",
+    "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -151,8 +151,8 @@
   },
   {
     "name": "api-patterns",
-    "description": "Princípios de design de APIs: escolha de estilo, formato de resposta, versionamento, paginação, autenticação e rate limiting. ACIONE quando: escolher entre REST, GraphQL e tRPC, padronizar envelope de resposta e formato de erro, planejar versionamento (URI, header, query), definir auth com JWT, OAut",
-    "category": "📱 Mobile",
+    "description": "API design principles: style choice, response format, versioning, pagination, authentication, and rate limiting. Use when: choosing between REST, GraphQL, and tRPC, standardizing the response envelope and error format, planning versioning (URI, header, query), defining auth with JWT, OAuth, Passkey,",
+    "category": "🗄️ Database / Backend",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -161,7 +161,7 @@
   },
   {
     "name": "app-builder",
-    "description": "Orquestrador de criação de aplicações full-stack a partir de pedidos em linguagem natural, com 13 templates de scaffolding e coordenação de agentes. ACIONE quando: cria um app novo do zero, qual stack usar para este projeto, scaffolding de Next.js/FastAPI/Expo/Electron/Astro, montar um SaaS, landing",
+    "description": "Orchestrator for building full-stack applications from natural-language requests, with 13 scaffolding templates and agent coordination. Use when: creating a new app from scratch, deciding which stack to use for a project, scaffolding Next.js/FastAPI/Expo/Electron/Astro, building a SaaS, landing page",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -171,8 +171,8 @@
   },
   {
     "name": "architecture",
-    "description": "Framework de decisão arquitetural com análise de requisitos, avaliação de trade-offs e documentação em ADRs. ACIONE quando: decidir entre X e Y (monolito vs microservices, REST vs eventos), escrever ou revisar um ADR, escolher padrões de arquitetura para um sistema novo, avaliar se a complexidade pr",
-    "category": "🏗️ Architecture",
+    "description": "Architectural decision framework with requirements analysis, trade-off evaluation, and documentation in ADRs. Use when: deciding between X and Y (monolith vs microservices, REST vs events), writing or reviewing an ADR, choosing architecture patterns for a new system, evaluating whether the proposed ",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -181,7 +181,7 @@
   },
   {
     "name": "autorefine-skill",
-    "description": "Refinamento autônomo iterativo com loop autoresearch + meta-otimização + transferência cross-domínio. ACIONE quando (ex.:",
+    "description": "Iterative autonomous refinement with autoresearch loop + meta-optimization + cross-domain transfer. Use when (e.g.",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -191,7 +191,7 @@
   },
   {
     "name": "bash-linux",
-    "description": "Padrões de terminal Bash para Linux e macOS: comandos essenciais, pipes, processos, processamento de texto e scripts seguros. ACIONE quando: script bash com erro ou comportamento inesperado, porta ocupada e precisa matar processo (lsof, kill), buscar e transformar texto com grep, sed e awk, escrever",
+    "description": "Bash terminal patterns for Linux and macOS: essential commands, pipes, processes, text processing, and safe scripts. Use when: a bash script errors or behaves unexpectedly, a port is occupied and you need to kill a process (lsof, kill), searching and transforming text with grep, sed, and awk, writin",
     "category": "🏗️ Architecture",
     "source": "skills",
     "source_emoji": "📦",
@@ -221,7 +221,7 @@
   },
   {
     "name": "brainstorming",
-    "description": "Refinamento socrático de ideia ANTES de qualquer código ou spec técnica. ACIONE quando: usuário descreve uma ideia vaga, quer explorar alternativas antes de comprometer, diz",
+    "description": "Socratic refinement of an idea BEFORE any code or technical spec. Use when: the user describes a vague idea, wants to explore alternatives before committing, says",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -231,7 +231,7 @@
   },
   {
     "name": "brandkit",
-    "description": "Gera imagens de brand-kit premium: boards de brand guidelines, sistemas de logo, identity decks e apresentações de universo visual com grids limpos, tipografia esparsa e metáfora de marca forte. ACIONE quando:",
+    "description": "Generates premium brand-kit images: brand guideline boards, logo systems, identity decks, and visual-universe presentations with clean grids, sparse typography, and a strong brand metaphor. Use when:",
     "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
@@ -271,8 +271,8 @@
   },
   {
     "name": "clean-code",
-    "description": "Padrões pragmáticos de código limpo: conciso, direto, sem over-engineering e sem comentários desnecessários. ACIONE quando: código over-engineered ou com abstrações prematuras, pedido para simplifica isso, revisar nomes/funções/estrutura, função gigante ou aninhamento profundo demais, remover coment",
-    "category": "📱 Mobile",
+    "description": "Pragmatic clean-code standards: concise, direct, no over-engineering, and no unnecessary comments. Use when: code is over-engineered or has premature abstractions, a request to",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -281,7 +281,7 @@
   },
   {
     "name": "code-review-checklist",
-    "description": "Checklist de code review cobrindo correção, segurança, performance, qualidade, testes e padrões específicos de código gerado por IA. ACIONE quando: pedirem revisar este PR, antes de aprovar um merge, checar injeção SQL/XSS/secrets hardcoded, avaliar código gerado por LLM (prompt injection, hallucina",
+    "description": "Code review checklist covering correctness, security, performance, quality, testing, and patterns specific to AI-generated code. Use when: asked to review this PR, before approving a merge, checking for SQL injection/XSS/hardcoded secrets, evaluating LLM-generated code (prompt injection, hallucinati",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -301,7 +301,7 @@
   },
   {
     "name": "config-critique",
-    "description": "Lint LLM-powered de customizações do usuário no OSForge — valida novas SKILL.md, rules .mdc, hooks customizados, agents adicionais, e overrides de CLAUDE.md em 4 eixos (Clarity / Completeness / Conflicts / Actionability). ACIONE quando: \"revisar minha skill\", \"validar minha rule\", \"verificar conflit",
+    "description": "LLM-powered lint of user customizations in OSForge — validates new SKILL.md, .mdc rules, custom hooks, additional agents, and CLAUDE.md overrides across 4 axes (Clarity / Completeness / Conflicts / Actionability). Use when: \"review my skill\", \"validate my rule\", \"check hook conflict\", \"lint config\",",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -311,7 +311,7 @@
   },
   {
     "name": "context-distillator",
-    "description": "Compressão lossless de documentos longos para consumo otimizado por LLMs, preservando 100% da informação factual e eliminando overhead textual. ACIONE quando: comprime esse doc longo, destila o contexto antes de passar para outra skill, PRD/spec/architecture grande demais para a janela de contexto, ",
+    "description": "Lossless compression of long documents for optimized LLM consumption, preserving 100% of the factual information and eliminating textual overhead. Use when: compress this long doc, distill the context before passing it to another skill, a PRD/spec/architecture too large for the context window, conso",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -321,8 +321,8 @@
   },
   {
     "name": "db-state-sync",
-    "description": "Gerencia estado de projetos no banco SQLite local do OSForge (~/.osforge/osforge.db). ACIONE quando: salvar progresso de uma fase, registrar decisão arquitetural, adicionar/resolver blocker, rastrear tasks, ver board cross-project, retomar sessão anterior, buscar decisões passadas. Keywords: salvar ",
-    "category": "🔒 Security",
+    "description": "Manages project state in OSForge",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -331,7 +331,7 @@
   },
   {
     "name": "doc-shard",
-    "description": "Divide documentos markdown grandes em arquivos menores organizados com index. Use quando documento exceder context window ou para organizar docs extensos — ex. um guia de 10k tokens, uma spec com múltiplas seções, um PRD extenso. Use com \"shard doc\", \"dividir documento\".",
+    "description": "Split large markdown documents into smaller organized files with an index. Use when a document exceeds the context window or to organize extensive docs — e.g. a 10k-token guide, a spec with multiple sections, an extensive PRD. Use with \"shard doc\", \"split document\".",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -341,7 +341,7 @@
   },
   {
     "name": "editorial-review",
-    "description": "Revisão editorial de documentos técnicos em 2 modos: prose (copy-editing clínico) e structure (reorganização e simplificação). Use com \"editorial review\", \"review prose\", \"review structure\", \"revisar redação\", \"documento confuso\", \"redação flácida\", \"texto prolixo\", \"esse doc está mal organizado\".",
+    "description": "Editorial review of technical documents in 2 modes: prose (clinical copy-editing) and structure (reorganization and simplification). Use with \"editorial review\", \"review prose\", \"review structure\", \"review writing\", \"confusing document\", \"flabby writing\", \"verbose text\", \"this doc is poorly organize",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -351,8 +351,8 @@
   },
   {
     "name": "project-context-generator",
-    "description": "Analisa codebase e gera project-context.md + constitution.md — os documentos governantes do projeto. ACIONE quando: iniciar em projeto novo, projeto não tem project-context.md, precisar atualizar contexto após mudanças de stack, criar princípios do projeto. Keywords: project context, gerar contexto,",
-    "category": "📱 Mobile",
+    "description": "Analyzes a codebase and generates project-context.md + constitution.md — the project",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -361,7 +361,7 @@
   },
   {
     "name": "context-compact",
-    "description": "Compactação estruturada de conversação quando atinge ~70% da janela de contexto. ACIONE quando: usuário diz \"comprimir contexto\", \"compactar\", \"summary\", \"perto do limite\", \"context full\", \"save state\", \"/compact\", \"/clear\", ou quando o contador de tokens passar de 140k. Produz summary em 9 seções c",
+    "description": "Structured conversation compaction when reaching ~70% of the context window. Use when: user says \"compress context\", \"compact\", \"summary\", \"near the limit\", \"context full\", \"save state\", \"/compact\", \"/clear\", or when the token counter passes 140k. Produces a 9-section summary with an analysis scratc",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -391,7 +391,7 @@
   },
   {
     "name": "database-design",
-    "description": "Princípios de design de banco de dados: escolha de banco e ORM, schema, índices, otimização e migrations. ACIONE quando: query lenta ou N+1 em produção, escolher entre PostgreSQL, Neon, Turso e SQLite, escolher entre Drizzle, Prisma e Kysely, modelar schema e relacionamentos de nova feature, criar í",
+    "description": "Database design principles: database and ORM choice, schema, indexes, optimization, and migrations. Use when: a slow query or N+1 in production, choosing between PostgreSQL, Neon, Turso, and SQLite, choosing between Drizzle, Prisma, and Kysely, modeling the schema and relationships of a new feature,",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -401,7 +401,7 @@
   },
   {
     "name": "deployment-procedures",
-    "description": "Workflows seguros de deploy em produção com backup, verificação pós-deploy e rollback para Vercel, Railway, VPS+PM2, Docker e Kubernetes. ACIONE quando: deploy falhou ou quebrou produção, serviço caiu após release e precisa de rollback rápido, decidir entre rolling, blue-green e canary, montar check",
+    "description": "Safe production deployment workflows with backup, post-deploy verification, and rollback for Vercel, Railway, VPS+PM2, Docker, and Kubernetes. Use when: a deploy failed or broke production, a service went down after a release and needs a quick rollback, deciding between rolling, blue-green, and cana",
     "category": "☁️ Infrastructure / DevOps",
     "source": "skills",
     "source_emoji": "📦",
@@ -411,7 +411,7 @@
   },
   {
     "name": "design-md",
-    "description": "Contrato de identidade de marca POR PROJETO em um arquivo DESIGN.md — o documento de 9 seções (Visual Theme, Color, Typography, Spacing, Layout, Components, Motion, Voice & Brand, Anti-patterns) com tokens hex reais que um agente lê para gerar UI consistente com a identidade daquele projeto. ACIONE ",
+    "description": "PER-PROJECT brand identity contract in a DESIGN.md file — the 9-section document (Visual Theme, Color, Typography, Spacing, Layout, Components, Motion, Voice & Brand, Anti-patterns) with real hex tokens that an agent reads to generate UI consistent with that project's identity. Use when: user asks t",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -431,7 +431,7 @@
   },
   {
     "name": "design-taste-frontend-v1",
-    "description": "Versão legada v1 da taste-skill de frontend premium com dials fixos (variance 8, motion 6, density 4), anti-slop, ban de Inter e roxo-AI, e micro-física magnética com Framer Motion. ACIONE quando:",
+    "description": "Legacy v1 of the premium frontend taste-skill with fixed dials (variance 8, motion 6, density 4), anti-slop, Inter and AI-purple bans, and magnetic micro-physics with Framer Motion. Use when:",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -451,8 +451,8 @@
   },
   {
     "name": "dispatching-parallel-agents",
-    "description": "Orquestra tasks paralelas em subagents independentes. ACIONE quando: 2+ tasks sem estado compartilhado, refatoração em múltiplos arquivos não relacionados, decomposição revela trabalho paralelizável, ou tasks com dependências parciais. Keywords: parallel, wave, dispatch, parallel agents, multiple ta",
-    "category": "🤖 AI / ML / Agents",
+    "description": "Orchestrates parallel tasks across independent subagents. Use when: 2+ tasks with no shared state, refactoring across multiple unrelated files, decomposition reveals parallelizable work, or tasks with partial dependencies. Keywords: parallel, wave, dispatch, parallel agents, multiple tasks, independ",
+    "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -461,7 +461,7 @@
   },
   {
     "name": "doc-sanitization",
-    "description": "Clean up, consolidate, and organize project documentation. Removes obsolete specs, merges duplicates, enforces lifecycle rules. Trigger on phrases like \"tenho muita documentação desorganizada\", \"limpar os docs do projeto\", \"consolidar specs antigas\", or \"esses arquivos .md estão uma bagunça\". Use wh",
+    "description": "Clean up, consolidate, and organize project documentation. Removes obsolete specs, merges duplicates, enforces lifecycle rules. Trigger on phrases like \"I have a lot of disorganized documentation\", \"clean up the project docs\", \"consolidate old specs\", or \"these .md files are a mess\". Use when trigge",
     "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
@@ -471,7 +471,7 @@
   },
   {
     "name": "docs-writer",
-    "description": "Escreve, revisa e edita documentação técnica verificando o código-fonte e seguindo style guide do projeto. ACIONE quando: documentar uma feature/comando/API a partir do código, reescrever ou melhorar uma seção existente de docs, revisar clareza/tom/consistência de arquivos .md, atualizar docs desatu",
+    "description": "Writes, reviews, and edits technical documentation by checking the source code and following the project",
     "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
@@ -481,8 +481,8 @@
   },
   {
     "name": "documentation-templates",
-    "description": "Templates prontos e guias de estrutura para documentação: README, API docs, comentários de código e docs AI-friendly. ACIONE quando: criar README do zero com estrutura padrão, montar esqueleto de documentação de API, definir seções e ordem de um doc novo, padronizar comentários de código, estruturar",
-    "category": "📱 Mobile",
+    "description": "Ready-made templates and structure guides for documentation: README, API docs, code comments, and AI-friendly docs. Use when: creating a README from scratch with a standard structure, building an API documentation skeleton, defining the sections and order of a new doc, standardizing code comments, s",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -501,7 +501,7 @@
   },
   {
     "name": "osforge-evolve",
-    "description": "ACIONE quando: evolve, /evolve, osforge evolve, analisar observações, propor skills, clustering de padrões, instinct, promover instinct, aprendizado contínuo, fechar o loop de aprendizado, capturar padrões de sessão, add-observation, list-instincts, promote-instinct, evolução de configuração",
+    "description": "Use when: evolve, /evolve, osforge evolve, analyze observations, propose skills, pattern clustering, instinct, promote instinct, continuous learning, close the learning loop, capture session patterns, add-observation, list-instincts, promote-instinct, configuration evolution",
     "category": "🏗️ Architecture",
     "source": "skills",
     "source_emoji": "📦",
@@ -511,7 +511,7 @@
   },
   {
     "name": "finishing-a-development-branch",
-    "description": "Workflow de finalização de branch de desenvolvimento. ACIONE quando: todas as tasks de uma branch estão completas, usuário quer mergear ou abrir PR, pronto para ship. Keywords: finalizar branch, merge, pull request, PR, ship, branch completa, done, concluído, terminar feature, fechar branch.",
+    "description": "Development branch finalization workflow. Use when: all tasks on a branch are complete, the user wants to merge or open a PR, ready to ship. Keywords: finalize branch, merge, pull request, PR, ship, branch complete, done, completed, finish feature, close branch.",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -541,8 +541,8 @@
   },
   {
     "name": "full-output-enforcement",
-    "description": "Regra base anti-truncamento: proíbe placeholders e omissões, exige geração completa de cada deliverable e gerencia splits por limite de token com marcador PAUSED. ACIONE quando: resposta veio truncada, código saiu com // ... ou rest of code, usuário pede o arquivo completo ou me dá tudo sem resumir,",
-    "category": "🔄 Workflow / Process",
+    "description": "Anti-truncation base rule: forbids placeholders and omissions, requires complete generation of every deliverable, and manages token-limit splits with a PAUSED marker. Use when: a response came back truncated, code came out with // ... or rest of code, the user asks for the complete file or says give",
+    "category": "📦 General",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -551,8 +551,8 @@
   },
   {
     "name": "2d-games",
-    "description": "Princípios de jogos 2D: sprites, atlases, tilemaps, física 2D, câmeras e padrões de gênero (platformer, top-down). ACIONE quando: estou fazendo um platformer 2D e o pulo parece travado (coyote time, jump buffering); como organizar sprites e animações no Godot, Unity 2D ou Phaser; preciso montar tile",
-    "category": "📱 Mobile",
+    "description": "2D game principles: sprites, atlases, tilemaps, 2D physics, cameras, and genre patterns (platformer, top-down). Use when: I",
+    "category": "🏗️ Architecture",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -561,8 +561,8 @@
   },
   {
     "name": "3d-games",
-    "description": "Princípios de jogos 3D: pipeline de rendering, shaders, física e colisão 3D, câmeras, iluminação e LOD. ACIONE quando: meu jogo 3D está com draw calls demais e preciso de culling/batching/LOD; quando vale escrever um shader customizado (água, toon, efeitos); qual collider usar para personagens e ter",
-    "category": "📱 Mobile",
+    "description": "3D game principles: rendering pipeline, shaders, 3D physics and collision, cameras, lighting, and LOD. Use when: my 3D game has too many draw calls and I need culling/batching/LOD; when it",
+    "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -571,8 +571,8 @@
   },
   {
     "name": "game-development",
-    "description": "Orquestrador de desenvolvimento de jogos que ensina princípios universais (game loop, padrões, performance, IA, colisão) e roteia para sub-skills de plataforma e especialidade. ACIONE quando: quero fazer um jogo mas não sei por onde começar; estou estruturando a arquitetura do meu jogo (game loop, s",
-    "category": "📱 Mobile",
+    "description": "Game development orchestrator that teaches universal principles (game loop, patterns, performance, AI, collision) and routes to platform and specialty sub-skills. Use when: I want to make a game but don",
+    "category": "🏗️ Architecture",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -581,8 +581,8 @@
   },
   {
     "name": "game-art",
-    "description": "Princípios de arte para jogos: pipeline de assets, otimização de texturas, animação (sprite, skeletal, procedural), VFX e direção de arte. ACIONE quando: como organizar o pipeline de assets do Blender/Aseprite para a engine (FBX, glTF, PNG); minhas texturas estão pesadas e preciso de atlases, mipmap",
-    "category": "📱 Mobile",
+    "description": "Game art principles: asset pipeline, texture optimization, animation (sprite, skeletal, procedural), VFX, and art direction. Use when: how to organize the asset pipeline from Blender/Aseprite to the engine (FBX, glTF, PNG); my textures are heavy and I need atlases, mipmaps, or compression (KTX2, Web",
+    "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -591,8 +591,8 @@
   },
   {
     "name": "game-audio",
-    "description": "Princípios de áudio para jogos: SFX, música, formatos e compressão, áudio adaptativo, performance e acessibilidade sonora. ACIONE quando: quero adicionar sons e música ao meu jogo e não sei quais formatos usar (WAV, OGG, MP3); como fazer música adaptativa que muda com combate, vida ou local (layers,",
-    "category": "📱 Mobile",
+    "description": "Game audio principles: SFX, music, formats and compression, adaptive audio, performance, and audio accessibility. Use when: I want to add sounds and music to my game and don",
+    "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -601,8 +601,8 @@
   },
   {
     "name": "game-design",
-    "description": "Princípios de game design: core loop, estrutura de GDD, psicologia do jogador, balanceamento de dificuldade e progressão. ACIONE quando: meu jogo não está divertido e quero analisar o core loop de 30 segundos; preciso escrever um GDD (game design document) para o meu jogo; como balancear dificuldade",
-    "category": "📱 Mobile",
+    "description": "Game design principles: core loop, GDD structure, player psychology, difficulty balancing, and progression. Use when: my game isn",
+    "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -611,7 +611,7 @@
   },
   {
     "name": "mobile-games",
-    "description": "Princípios de jogos mobile: touch input, bateria e thermal, requisitos de App Store e Google Play, monetização. ACIONE quando: estou portando ou criando um jogo para iOS/Android e os controles de touch estão ruins; meu jogo mobile esquenta o aparelho ou drena bateria (thermal throttling, 30 vs 60 FP",
+    "description": "Mobile game principles: touch input, battery and thermal, App Store and Google Play requirements, monetization. Use when: I",
     "category": "📱 Mobile",
     "source": "skills",
     "source_emoji": "📦",
@@ -621,8 +621,8 @@
   },
   {
     "name": "multiplayer",
-    "description": "Princípios de jogos multiplayer: arquitetura de rede (dedicated server, P2P, host-based), sincronização, lag compensation, anti-cheat e matchmaking. ACIONE quando: quero adicionar multiplayer ao meu jogo e não sei qual arquitetura usar; os jogadores remotos ficam teleportando ou com lag (prediction,",
-    "category": "📱 Mobile",
+    "description": "Multiplayer game principles: network architecture (dedicated server, P2P, host-based), synchronization, lag compensation, anti-cheat, and matchmaking. Use when: I want to add multiplayer to my game and don",
+    "category": "🏗️ Architecture",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -631,8 +631,8 @@
   },
   {
     "name": "pc-games",
-    "description": "Princípios de jogos para PC (Windows, Mac, Linux): publicação na Steam, configurações gráficas, rebinding de controles, modding e acessibilidade desktop. ACIONE quando: vou lançar meu jogo na Steam (ou Epic, GOG, itch.io) e preciso preparar a store page; como estruturar opções gráficas em tiers (res",
-    "category": "📱 Mobile",
+    "description": "PC game principles (Windows, Mac, Linux): publishing on Steam, graphics settings, control rebinding, modding, and desktop accessibility. Use when: I",
+    "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -641,8 +641,8 @@
   },
   {
     "name": "vr-ar",
-    "description": "Princípios de jogos VR/AR: conforto e prevenção de motion sickness, locomoção, hand tracking, anchoring AR e metas de performance por headset. ACIONE quando: jogadores estão passando mal no meu jogo VR (motion sickness, locomoção teleport vs smooth); estou desenvolvendo para Meta Quest, PSVR2 ou Ste",
-    "category": "📱 Mobile",
+    "description": "VR/AR game principles: comfort and motion sickness prevention, locomotion, hand tracking, AR anchoring, and per-headset performance targets. Use when: players are getting sick in my VR game (motion sickness, teleport vs smooth locomotion); I",
+    "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -651,8 +651,8 @@
   },
   {
     "name": "web-games",
-    "description": "Princípios de jogos para navegador: escolha de framework (Phaser, PixiJS, Three.js, Babylon.js), WebGPU vs WebGL, compressão de assets, PWA e áudio no browser. ACIONE quando: quero fazer um jogo que roda no navegador e não sei qual framework escolher; devo usar WebGPU ou WebGL no meu projeto novo; m",
-    "category": "📱 Mobile",
+    "description": "Browser game principles: framework selection (Phaser, PixiJS, Three.js, Babylon.js), WebGPU vs WebGL, asset compression, PWA, and browser audio. Use when: I want to make a game that runs in the browser and don",
+    "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -671,7 +671,7 @@
   },
   {
     "name": "genai-optimization",
-    "description": "Generative Engine Optimization (GEO) para conteúdo ser citado por motores de busca com IA. ACIONE quando: fazer conteúdo ser citado pelo ChatGPT/Perplexity/Claude/Gemini, otimizar para busca por IA (AI search), estruturar conteúdo para retrieval RAG, aumentar taxa de citação em respostas geradas, co",
+    "description": "Generative Engine Optimization (GEO) for content to be cited by AI-powered search engines. Use when: making content get cited by ChatGPT/Perplexity/Claude/Gemini, optimizing for AI search, structuring content for RAG retrieval, increasing citation rate in generated responses, comparing SEO vs GEO st",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -691,7 +691,7 @@
   },
   {
     "name": "gpt-taste",
-    "description": "Engenharia de design award-winning com motion GSAP avançado: randomização de layouts, estrutura AIDA, hero de no máximo 2-3 linhas, bento grids sem células vazias e ScrollTrigger com pinning, scrubbing e card stacking. ACIONE quando:",
+    "description": "Award-winning design engineering with advanced GSAP motion: layout randomization, AIDA structure, hero of at most 2-3 lines, bento grids with no empty cells, and ScrollTrigger with pinning, scrubbing, and card stacking. Use when:",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -701,7 +701,7 @@
   },
   {
     "name": "high-end-visual-design",
-    "description": "Faz o site parecer caro nível agência: fontes premium, cards double-bezel, sombras ultra-difusas, nav em pílula de vidro flutuante e coreografia de motion com spring physics estilo Apple/Linear. ACIONE quando:",
+    "description": "Makes the site look expensive at agency level: premium fonts, double-bezel cards, ultra-diffused shadows, floating glass pill nav, and motion choreography with Apple/Linear-style spring physics. Use when:",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -751,7 +751,7 @@
   },
   {
     "name": "imagegen-frontend-web",
-    "description": "Direção de arte para gerar mockups de sites premium via geração de imagem: uma imagem horizontal separada por seção, variedade de composição de hero e paleta única consistente entre todas as imagens. ACIONE quando:",
+    "description": "Art direction for generating premium site mockups via image generation: one separate horizontal image per section, hero composition variety, and a single consistent palette across all images. Use when:",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -761,7 +761,7 @@
   },
   {
     "name": "industrial-brutalist-ui",
-    "description": "Gera interfaces brutalistas industriais que fundem print tipográfico suíço com terminais militares/CRT: grids rígidos, monospace, tipografia gigante, vermelho hazard, scanlines e halftone. ACIONE quando:",
+    "description": "Generates industrial brutalist interfaces that fuse Swiss typographic print with military/CRT terminals: rigid grids, monospace, giant typography, hazard red, scanlines, and halftone. Use when:",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -781,7 +781,7 @@
   },
   {
     "name": "lint-and-validate",
-    "description": "Controle de qualidade automático após cada modificação de código: lint, type-check e análise estática (eslint, tsc, ruff, mypy, bandit, npm audit). ACIONE quando: acabou de editar ou criar código, antes de commitar ou marcar tarefa como done, apareceu erro de lint ou de tipos, configurar validação e",
+    "description": "Automatic quality control after every code change: lint, type-check, and static analysis (eslint, tsc, ruff, mypy, bandit, npm audit). Use when: you just edited or created code, before committing or marking a task as done, a lint or type error appeared, setting up validation in a Node/TypeScript or ",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -791,7 +791,7 @@
   },
   {
     "name": "llmfit-advisor",
-    "description": "Detecta o hardware da máquina (RAM, CPU, GPU/VRAM) e recomenda os melhores LLMs locais com quantização ideal, estimativa de velocidade e scoring de fit. TRIGGER quando: usuário pergunta quais modelos rodam localmente, quer configurar Ollama/LM Studio, menciona rodar modelos offline, precisa de alter",
+    "description": "Detects the machine",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -801,7 +801,7 @@
   },
   {
     "name": "mcp-builder",
-    "description": "Constrói servidores MCP (Model Context Protocol) customizados em TypeScript ou Python. ACIONE quando: criar servidor MCP do zero, expor API interna como tool MCP, transformar banco de dados ou serviço em resource para Claude Code/Cursor, definir tools/resources/prompts com transporte stdio ou SSE, d",
+    "description": "Builds custom MCP (Model Context Protocol) servers in TypeScript or Python. Use when: creating an MCP server from scratch, exposing an internal API as an MCP tool, turning a database or service into a resource for Claude Code/Cursor, defining tools/resources/prompts with stdio or SSE transport, debu",
     "category": "📱 Mobile",
     "source": "skills",
     "source_emoji": "📦",
@@ -811,7 +811,7 @@
   },
   {
     "name": "minimalist-ui",
-    "description": "Gera interfaces ultra-minimalistas estilo editorial/documento (tipo Notion) com paleta monocromática quente, serifas editoriais, bento grids flat, pastéis lavados e sombras quase inexistentes. ACIONE quando:",
+    "description": "Generates ultra-minimalist editorial/document-style interfaces (Notion-like) with a warm monochrome palette, editorial serifs, flat bento grids, washed pastels, and near-nonexistent shadows. Use when:",
     "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
@@ -821,7 +821,7 @@
   },
   {
     "name": "mobile-design",
-    "description": "Princípios de design mobile-first para apps iOS e Android: interação touch, thumb zone, performance 60fps, convenções de plataforma (HIG, Material 3), offline-first e navegação nativa. ACIONE quando:",
+    "description": "Mobile-first design principles for iOS and Android apps: touch interaction, thumb zone, 60fps performance, platform conventions (HIG, Material 3), offline-first, and native navigation. Use when:",
     "category": "📱 Mobile",
     "source": "skills",
     "source_emoji": "📦",
@@ -841,7 +841,7 @@
   },
   {
     "name": "nextjs-supabase-auth",
-    "description": "Padrões de autenticação Next.js App Router + Supabase Auth. ACIONE quando: configurando middleware de auth, RBAC multi-org, gerenciamento de sessão, refresh de token, RLS por tenant, OAuth flows, debugging de Supabase Auth. Keywords: auth, login, session, middleware, RBAC, role, permission, supabase",
+    "description": "Next.js App Router + Supabase Auth authentication patterns. Use when: configuring auth middleware, multi-org RBAC, session management, token refresh, per-tenant RLS, OAuth flows, debugging Supabase Auth. Keywords: auth, login, session, middleware, RBAC, role, permission, supabase auth, protected rou",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -851,8 +851,8 @@
   },
   {
     "name": "nodejs-best-practices",
-    "description": "Princípios de desenvolvimento Node.js: escolha de framework, padrões async, arquitetura em camadas, validação, error handling e segurança. ACIONE quando: escolher entre Hono, Fastify, NestJS e Express para novo projeto, async/await travando ou event loop bloqueado por trabalho CPU-bound, decidir ent",
-    "category": "📱 Mobile",
+    "description": "Node.js development principles: framework choice, async patterns, layered architecture, validation, error handling, and security. Use when: choosing between Hono, Fastify, NestJS, and Express for a new project, async/await hanging or event loop blocked by CPU-bound work, deciding between Promise.all",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1131,7 +1131,7 @@
   },
   {
     "name": "openui-genui-layout",
-    "description": "Planejamento e geração de UI em Next.js. ACIONE quando: criando qualquer página, tela, dashboard, formulário, tabela, componente com layout, scaffold de rota. Produce um plano OpenUI Lang ANTES de qualquer código. Keywords: create page, scaffold, layout, screen, dashboard, form, table, component, UI",
+    "description": "UI planning and generation in Next.js. Use when: creating any page, screen, dashboard, form, table, layout component, route scaffold. Produces an OpenUI Lang plan BEFORE any code. Keywords: create page, scaffold, layout, screen, dashboard, form, table, component, UI, create interface, generate UI, p",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1141,7 +1141,7 @@
   },
   {
     "name": "osforge-canvas",
-    "description": "UI generativa local para revisão interativa de planos, specs e breakdowns no browser, com feedback estruturado nativo. CANAL DEFAULT para apresentação de qualquer spec ou plano: o servidor é iniciado automaticamente por SessionStart hook — não espere o usuário pedir. ACIONE quando: for apresentar um",
+    "description": "Local generative UI for interactive review of plans, specs, and breakdowns in the browser, with native structured feedback. DEFAULT CHANNEL for presenting any spec or plan: the server is started automatically by a SessionStart hook — don't wait for the user to ask. Use when: presenting a plan, spec,",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -1151,7 +1151,7 @@
   },
   {
     "name": "output-enforcement",
-    "description": "Camada de enhancement OSForge sobre full-output-enforcement: além do output completo, exige verification gate antes de declarar done e proteção TDD (nunca enfraquecer testes). ACIONE quando: pedirem completo, todo o arquivo, exaustivo, sem placeholders ou não corte, refactor multi-arquivo, gerar vár",
+    "description": "OSForge enhancement layer over full-output-enforcement: beyond complete output, requires a verification gate before declaring done and TDD protection (never weaken tests). Use when: asked for complete, the whole file, exhaustive, no placeholders, or don",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
@@ -1161,8 +1161,8 @@
   },
   {
     "name": "performance-profiling",
-    "description": "Princípios de profiling de performance: medir, analisar e otimizar usando Core Web Vitals, Lighthouse e ferramentas de profiling. ACIONE quando: página lenta ou LCP/INP/CLS ruins, suspeita de memory leak, jank no scroll ou animações travando, bundle JavaScript muito grande, API ou operação demorada ",
-    "category": "📱 Mobile",
+    "description": "Performance profiling principles: measure, analyze, and optimize using Core Web Vitals, Lighthouse, and profiling tools. Use when: slow page or poor LCP/INP/CLS, suspected memory leak, scroll jank or stuttering animations, oversized JavaScript bundle, slow API or operation needing a baseline and mea",
+    "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1171,8 +1171,8 @@
   },
   {
     "name": "plan-writing",
-    "description": "Planejamento estruturado de trabalho com breakdown em tarefas pequenas, dependências e critérios de verificação. ACIONE quando: planeja a implementação de uma feature, quebra em tarefas um trabalho multi-step, criar plano curto e específico antes de codar, ordenar dependências e caminho crítico, def",
-    "category": "📱 Mobile",
+    "description": "Structured work planning with breakdown into small tasks, dependencies, and verification criteria. Use when: planning a feature implementation, breaking multi-step work into tasks, creating a short, specific plan before coding, ordering dependencies and the critical path, defining verifiable done cr",
+    "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1181,7 +1181,7 @@
   },
   {
     "name": "arch-builder",
-    "description": "Facilitação de decisões arquiteturais com ADRs. Stack-aware — respeita project-context.md e otimiza para Next.js/Prisma/Supabase. ACIONE com frases como:",
+    "description": "Facilitation of architectural decisions with ADRs. Stack-aware — respects project-context.md and optimizes for Next.js/Prisma/Supabase. Use with phrases like:",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1191,7 +1191,7 @@
   },
   {
     "name": "epic-decomposer",
-    "description": "Decompõe specs, PRDs ou requisitos em épicos e stories implementáveis. Cada story com ACs testáveis, tasks com file paths, e dependências mapeadas.",
+    "description": "Decomposes specs, PRDs, or requirements into implementable epics and stories. Each story with testable ACs, tasks with file paths, and mapped dependencies.",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
@@ -1201,7 +1201,7 @@
   },
   {
     "name": "phase-discussion",
-    "description": "Captura decisões de implementação de uma fase ANTES do planejamento técnico. ACIONE antes de planejar qualquer fase com UI, API, sistema de conteúdo ou reorganização de dados. Keywords: discutir fase, discuss phase, decisões da fase, contexto da fase, antes de planejar, o que decidir antes, fase N, ",
+    "description": "Captures implementation decisions for a phase BEFORE technical planning. Use when planning any phase with UI, API, content system, or data reorganization. Keywords: discuss phase, discuss phase, phase decisions, phase context, before planning, what to decide first, phase N, phase discussion.",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -1211,8 +1211,8 @@
   },
   {
     "name": "prd-builder",
-    "description": "Facilitação colaborativa de Product Requirements Document. Guia o usuário por definição de problema, usuários, requisitos, métricas e escopo MVP. Use com \"prd\", \"requisitos\", \"requirements\", \"product requirements\".",
-    "category": "📱 Mobile",
+    "description": "Collaborative facilitation of a Product Requirements Document. Guides the user through problem definition, users, requirements, metrics, and MVP scope. Use with \"prd\", \"requirements\", \"requirements\", \"product requirements\".",
+    "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1221,7 +1221,7 @@
   },
   {
     "name": "requirements-clarify",
-    "description": "Clarificação estruturada de requisitos ANTES do plano técnico. ACIONE quando: spec tem áreas vagas ou underspecificadas, usuário disse",
+    "description": "Structured requirements clarification BEFORE the technical plan. Use when: a spec has vague or underspecified areas, the user said",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -1231,7 +1231,7 @@
   },
   {
     "name": "spec-builder",
-    "description": "Facilitação colaborativa de tech spec com ACs testáveis. ACIONE quando: especificar uma feature, definir o que construir, escrever spec técnica, detalhar requisitos antes de implementar. Keywords: spec, especificar, definir feature, tech spec, acceptance criteria, escrever spec, o que construir, req",
+    "description": "Collaborative facilitation of a tech spec with testable ACs. Use when: specifying a feature, defining what to build, writing a technical spec, detailing requirements before implementing. Keywords: spec, specify, define feature, tech spec, acceptance criteria, write spec, what to build, requirements,",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
@@ -1241,7 +1241,7 @@
   },
   {
     "name": "story-executor",
-    "description": "Executa implementação de uma story seguindo suas tasks e ACs. ACIONE quando: executar story, implementar story, dev story, run story. Coordena invocação dos skills de execução corretos do OSForge. Keywords: executar story, implementar story, dev story, run story, execute story, implement story.",
+    "description": "Executes implementation of a story following its tasks and ACs. Use when: execute story, implement story, dev story, run story. Coordinates invocation of the correct OSForge execution skills. Keywords: execute story, implement story, dev story, run story, execute story, implement story.",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -1261,7 +1261,7 @@
   },
   {
     "name": "powershell-windows",
-    "description": "Padrões e armadilhas críticas de PowerShell no Windows: sintaxe de operadores, null checks, JSON, paths e error handling. ACIONE quando: script PowerShell falhando com erro de parameter or ou Unexpected token, condicional if com -or/-and quebrando por falta de parênteses em cmdlets, JSON truncado po",
+    "description": "Critical PowerShell patterns and pitfalls on Windows: operator syntax, null checks, JSON, paths, and error handling. Use when: a PowerShell script fails with a parameter or or Unexpected token error, an if conditional with -or/-and breaks due to missing parentheses around cmdlets, JSON truncated by ",
     "category": "🏗️ Architecture",
     "source": "skills",
     "source_emoji": "📦",
@@ -1281,7 +1281,7 @@
   },
   {
     "name": "prisma-expert",
-    "description": "Padrões avançados de Prisma ORM. ACIONE quando: mudanças de schema com >3 models, estratégias de migration, queries lentas ou N+1, relações many-to-many ou polimórficas, isolamento multi-tenant, debugging de Prisma. Keywords: prisma, schema, migration, query, relation, database, orm, model, seed, in",
+    "description": "Advanced Prisma ORM patterns. Use when: schema changes with >3 models, migration strategies, slow queries or N+1, many-to-many or polymorphic relations, multi-tenant isolation, Prisma debugging. Keywords: prisma, schema, migration, query, relation, database, orm, model, seed, index, RLS.",
     "category": "🗄️ Database / Backend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1291,8 +1291,8 @@
   },
   {
     "name": "python-patterns",
-    "description": "Princípios de desenvolvimento Python: escolha de framework, async vs sync, type hints, Pydantic, estrutura de projeto e background tasks. ACIONE quando: escolher entre FastAPI, Django e Flask, async def bloqueando ou misturando lib sync em código async, N+1 no Django ORM (select_related, prefetch_re",
-    "category": "📱 Mobile",
+    "description": "Python development principles: framework selection, async vs sync, type hints, Pydantic, project structure, and background tasks. Use when: choosing between FastAPI, Django, and Flask, async def blocking or mixing a sync lib into async code, N+1 in the Django ORM (select_related, prefetch_related), ",
+    "category": "🗄️ Database / Backend",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1301,7 +1301,7 @@
   },
   {
     "name": "adversarial-review",
-    "description": "Revisão cínica e adversarial de qualquer artefato. ACIONE quando: revisar spec antes de implementar, validar PRD, criticar schema, revisar código com ceticismo máximo. Keywords: adversarial, revisão cínica, review cínico, critica isso, critique, o que está errado, encontre problemas, worst case.",
+    "description": "Cynical, adversarial review of any artifact. Use when: reviewing a spec before implementing, validating a PRD, critiquing a schema, reviewing code with maximum skepticism. Keywords: adversarial, cynical review, cynical review, critique this, critique, what",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -1311,7 +1311,7 @@
   },
   {
     "name": "code-review",
-    "description": "Review estruturado de código com checklist adaptado ao stack OSForge. ACIONE quando: code review, revisar código, review PR, CR. Integra adversarial-review e edge-case-hunter automaticamente. Keywords: code review, revisar código, review PR, CR, pull request, diff, changes, revisar mudanças.",
+    "description": "Structured code review with a checklist adapted to the OSForge stack. Use when: code review, review code, review PR, CR. Integrates adversarial-review and edge-case-hunter automatically. Keywords: code review, review code, review PR, CR, pull request, diff, changes, review changes.",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -1321,8 +1321,8 @@
   },
   {
     "name": "edge-case-hunter",
-    "description": "Caça exaustiva de edge cases por enumeração sistemática de branches e boundaries, reportando em JSON apenas caminhos sem handling. ACIONE quando: pedirem edge cases ou boundary conditions de um diff/arquivo/função, verificar inputs null/vazios e off-by-one antes de mergear, checar race conditions e ",
-    "category": "📱 Mobile",
+    "description": "Exhaustive edge-case hunt via systematic enumeration of branches and boundaries, reporting in JSON only the paths without handling. Use when: asked for edge cases or boundary conditions of a diff/file/function, verifying null/empty inputs and off-by-one before merging, checking race conditions and d",
+    "category": "📦 General",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1331,8 +1331,8 @@
   },
   {
     "name": "elicitation-engine",
-    "description": "Refinamento iterativo de outputs (specs, PRDs, decisões arquiteturais, qualquer artefato) via menu interativo de técnicas de elicitação estruturadas. ACIONE quando: pedirem refine isso, melhorar ou aprofundar uma spec/PRD, dig deeper numa decisão de design, que perguntas estou ignorando, fortalecer ",
-    "category": "🔄 Workflow / Process",
+    "description": "Iterative refinement of outputs (specs, PRDs, architectural decisions, any artifact) via an interactive menu of structured elicitation techniques. Use when: asked to refine this, improve or deepen a spec/PRD, dig deeper into a design decision, what questions am I missing, strengthen a weak section o",
+    "category": "🏗️ Architecture",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1341,7 +1341,7 @@
   },
   {
     "name": "readiness-gate",
-    "description": "Quality gate pré-implementação. Valida que PRD, Architecture e Épicos estão alinhados e completos antes de iniciar o sprint loop. Use com:",
+    "description": "Pre-implementation quality gate. Validates that the PRD, Architecture and Epics are aligned and complete before starting the sprint loop. Use with:",
     "category": "🏗️ Architecture",
     "source": "skills",
     "source_emoji": "📦",
@@ -1351,7 +1351,7 @@
   },
   {
     "name": "ui-audit",
-    "description": "Auditoria retroativa de qualidade visual em código frontend já implementado. ACIONE após qualquer fase de UI/UX, ou quando:",
+    "description": "Retroactive visual quality audit of already-implemented frontend code. Use after any UI/UX phase, or when:",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -1371,7 +1371,7 @@
   },
   {
     "name": "receiving-code-review",
-    "description": "Como responder ao feedback de um code review. ACIONE quando: recebeu feedback de review, PR tem comments, revisor pediu mudanças, CHANGES_REQUESTED. Keywords: responder review, feedback de review, changes requested, responder PR, tratar comments, resolver feedback, revisor pediu mudanças.",
+    "description": "How to respond to code review feedback. Use when: received review feedback, PR has comments, reviewer requested changes, CHANGES_REQUESTED. Keywords: respond to review, review feedback, changes requested, respond to PR, handle comments, resolve feedback, reviewer requested changes.",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -1381,7 +1381,7 @@
   },
   {
     "name": "red-team-tactics",
-    "description": "Táticas de red team baseadas em MITRE ATT&CK para simulação de adversário autorizada. ACIONE quando: planejar simulação de ataque/pentest autorizado, estruturar exercício de red team por fases ATT&CK (recon, initial access, lateral movement, exfiltration), avaliar evasão de detecção para testar defe",
+    "description": "Red team tactics based on MITRE ATT&CK for authorized adversary simulation. Use when: planning an authorized attack simulation/pentest, structuring a red team exercise by ATT&CK phases (recon, initial access, lateral movement, exfiltration), evaluating detection evasion to test defenses (purple team",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -1401,7 +1401,7 @@
   },
   {
     "name": "redesign-existing-projects",
-    "description": "Eleva sites e apps existentes a qualidade premium: audita o design atual, identifica padrões genéricos de IA e aplica upgrades de tipografia, cor e layout sem quebrar funcionalidade. ACIONE quando: herdei código com design genérico, moderniza o visual deste projeto, página parece feita por IA (gradi",
+    "description": "Elevates existing sites and apps to premium quality: audits the current design, identifies generic AI patterns, and applies typography, color, and layout upgrades without breaking functionality. Use when: I inherited code with generic design, modernize the look of this project, page looks AI-made (p",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -1411,8 +1411,8 @@
   },
   {
     "name": "rust-pro",
-    "description": "Especialista em Rust 1.75+ para sistemas de alta performance: async com Tokio, ownership, lifetimes, traits avançados, unsafe/FFI e web services com axum. ACIONE quando: erro de borrow checker ou lifetime em código genérico, desenhar serviço web async com Tokio, axum ou tonic, otimizar performance e",
-    "category": "🔄 Workflow / Process",
+    "description": "Rust 1.75+ expert for high-performance systems: async with Tokio, ownership, lifetimes, advanced traits, unsafe/FFI, and web services with axum. Use when: borrow checker or lifetime error in generic code, designing an async web service with Tokio, axum or tonic, optimizing performance and memory usa",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1451,8 +1451,8 @@
   },
   {
     "name": "seo-fundamentals",
-    "description": "Fundamentos de SEO para Google com E-E-A-T, Core Web Vitals e SEO técnico. ACIONE quando: melhorar ranking de página no Google, implementar schema markup/dados estruturados, otimizar Core Web Vitals (LCP, INP, CLS) para SEO, configurar sitemap/robots.txt/canonical, otimizar title/meta description/he",
-    "category": "💼 Business / Marketing",
+    "description": "SEO fundamentals for Google with E-E-A-T, Core Web Vitals, and technical SEO. Use when: improving a page",
+    "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1461,8 +1461,8 @@
   },
   {
     "name": "server-management",
-    "description": "Princípios de operação de servidores: gerenciamento de processos (PM2, systemd, Docker), monitoramento, logs, scaling, health checks e troubleshooting. ACIONE quando: app cai e não reinicia sozinho, CPU ou memória alta no servidor, disco cheio por logs sem rotação, resposta lenta e dúvida entre scal",
-    "category": "📱 Mobile",
+    "description": "Server operations principles: process management (PM2, systemd, Docker), monitoring, logs, scaling, health checks, and troubleshooting. Use when: app crashes and doesn",
+    "category": "☁️ Infrastructure / DevOps",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1491,7 +1491,7 @@
   },
   {
     "name": "smart-model-dispatch",
-    "description": "Roteador de modelos Claude. ACIONE quando: spawning de subagents via Agent tool, implementando feature com múltiplas subtasks de complexidade mista, otimizando custo de API, planejando sprint com tarefas paralelas. Keywords: model routing, opus sonnet haiku, cost optimization, smart dispatch, parall",
+    "description": "Claude model router. Use when: spawning subagents via Agent tool, implementing a feature with multiple mixed-complexity subtasks, optimizing API cost, planning a sprint with parallel tasks. Keywords: model routing, opus sonnet haiku, cost optimization, smart dispatch, parallel agents, which model, m",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -1511,7 +1511,7 @@
   },
   {
     "name": "stitch-design-taste",
-    "description": "Gera arquivos DESIGN.md semânticos para o Google Stitch, codificando atmosfera, paleta calibrada, tipografia, componentes e anti-padrões em linguagem natural que o agente do Stitch interpreta para gerar telas premium. ACIONE quando:",
+    "description": "Generates semantic DESIGN.md files for Google Stitch, encoding atmosphere, calibrated palette, typography, components, and anti-patterns in natural language that Stitch",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1531,7 +1531,7 @@
   },
   {
     "name": "stuck-recovery",
-    "description": "Detecta agent stuck patterns (loops, repetições, drift do escopo, ferramenta falhando 3x+) e executa recovery cirúrgico: salva estado em osforge-db, identifica causa raiz, propõe reset com contexto mínimo preservado. ACIONE quando: usuário diz \"stuck\", \"travado\", \"loop\", \"não está funcionando\", \"ten",
+    "description": "Detects agent stuck patterns (loops, repetitions, scope drift, a tool failing 3x+) and runs surgical recovery: saves state to osforge-db, identifies root cause, proposes a reset with minimal context preserved. Use when: the user says \"stuck\", \"loop\", \"it's not working\", \"try again\", \"this isn't maki",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -1541,7 +1541,7 @@
   },
   {
     "name": "systematic-debugging",
-    "description": "Debugging sistemático em 4 fases com análise de causa raiz. ACIONE quando: bug difícil de reproduzir, crash sem stacktrace claro, comportamento intermitente, regressão sem causa óbvia, investigação profunda de root cause. Keywords: debug, bug, error, crash, fix, issue, not working, broken, regressio",
+    "description": "Systematic 4-phase debugging with root-cause analysis. Use when: a bug is hard to reproduce, a crash has no clear stacktrace, intermittent behavior, a regression with no obvious cause, deep root-cause investigation. Keywords: debug, bug, error, crash, fix, issue, not working, broken, regression, inv",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -1551,7 +1551,7 @@
   },
   {
     "name": "tailwind-patterns",
-    "description": "Padrões técnicos de Tailwind CSS v4: configuração CSS-first com @theme, engine Oxide, container queries nativas, design tokens como CSS variables e migração de v3 para v4. ACIONE quando:",
+    "description": "Technical Tailwind CSS v4 patterns: CSS-first configuration with @theme, the Oxide engine, native container queries, design tokens as CSS variables, and v3-to-v4 migration. Use when:",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1561,7 +1561,7 @@
   },
   {
     "name": "taste-design-dials",
-    "description": "Camada de enhancement OSForge sobre a taste-skill com 3 dials ajustáveis (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY) mais regras Next.js App Router e constraints estruturais OSForge. ACIONE quando:",
+    "description": "OSForge enhancement layer on top of the taste-skill with 3 adjustable dials (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY) plus Next.js App Router rules and OSForge structural constraints. Use when:",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1591,7 +1591,7 @@
   },
   {
     "name": "testing-patterns",
-    "description": "Padrões e princípios de testes unitários e de integração: pirâmide de testes, padrão AAA, estratégias de mocking, organização e dados de teste. ACIONE quando: escrever testes unitários ou de integração, configurar mocks/stubs/spies/fakes, corrigir teste flaky, decidir o que testar vs o que mockar, o",
+    "description": "Unit and integration testing patterns and principles: testing pyramid, AAA pattern, mocking strategies, test organization and data. Use when: writing unit or integration tests, setting up mocks/stubs/spies/fakes, fixing a flaky test, deciding what to test vs what to mock, organizing a suite with fac",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
@@ -1611,8 +1611,8 @@
   },
   {
     "name": "tool-safety-classifier",
-    "description": "Classifier LLM-powered de segurança pra auto-aprovação de tool calls em modos autônomos (CI, headless, agent-of-agents). ACIONE quando: usuário roda em \"modo automático\", \"yolo mode\", \"headless\", \"CI mode\", \"auto-approve\", \"sem confirmação\". Avalia toda tool call em 3 categorias (allow / soft_deny /",
-    "category": "🤖 AI / ML / Agents",
+    "description": "LLM-powered security classifier for auto-approval of tool calls in autonomous modes (CI, headless, agent-of-agents). Use when: the user runs in \"automatic mode\", \"yolo mode\", \"headless\", \"CI mode\", \"auto-approve\", \"no confirmation\". Evaluates every tool call across 3 categories (allow / soft_deny / ",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1621,7 +1621,7 @@
   },
   {
     "name": "ui-design-intelligence",
-    "description": "Spec de design system adaptado ao produto e indústria. ACIONE quando: usuário menciona estilo visual, identidade, paleta, tipografia, tom visual, tipo de produto ou indústria (fintech, healthcare, saas, e-commerce, etc). Produz design system spec completo. Keywords: estilo visual, identidade visual,",
+    "description": "Design system spec adapted to the product and industry. Use when: the user mentions visual style, identity, palette, typography, visual tone, product type or industry (fintech, healthcare, saas, e-commerce, etc). Produces a complete design system spec. Keywords: visual style, visual identity, palett",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -1631,7 +1631,7 @@
   },
   {
     "name": "using-git-worktrees",
-    "description": "Setup e uso de git worktrees para desenvolvimento paralelo. ACIONE quando: trabalhar em múltiplas features simultaneamente, precisar de branches isoladas para cada agente paralelo, testar hotfix sem interromper desenvolvimento de feature. Keywords: git worktree, worktrees, parallel development, mult",
+    "description": "Setup and use of git worktrees for parallel development. Use when: working on multiple features simultaneously, needing isolated branches for each parallel agent, testing a hotfix without interrupting feature development. Keywords: git worktree, worktrees, parallel development, multiple branches, is",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
@@ -1661,7 +1661,7 @@
   },
   {
     "name": "visual-planner",
-    "description": "Transforma documentos de planejamento em breakdowns HTML visuais e interativos. ACIONE quando: visualizar um plano, transformar spec em HTML, criar breakdown visual, apresentar PRD visualmente, gerar HTML interativo de arquitetura, tornar spec mais fácil de seguir. Keywords: visualizar plano, breakd",
+    "description": "Transforms planning documents into visual, interactive HTML breakdowns. Use when: visualizing a plan, turning a spec into HTML, creating a visual breakdown, presenting a PRD visually, generating interactive architecture HTML, making a spec easier to follow. Keywords: visualize plan, visual breakdown",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1671,7 +1671,7 @@
   },
   {
     "name": "vulnerability-scanner",
-    "description": "Análise avançada de vulnerabilidades com OWASP Top 10:2025, supply chain security e priorização de risco. ACIONE quando: mapear superfície de ataque de um projeto, auditar dependências e supply chain (lockfiles, CI/CD), revisar código em busca de vulnerabilidades OWASP (IDOR, SSRF, injection), prior",
+    "description": "Advanced vulnerability analysis with OWASP Top 10:2025, supply chain security, and risk prioritization. Use when: mapping a project",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -1691,7 +1691,7 @@
   },
   {
     "name": "webapp-testing",
-    "description": "Testes E2E de aplicações web com Playwright, auditoria profunda de rotas/endpoints e testes visuais, com script runner de browser incluso. ACIONE quando: testar fluxo com Playwright, escrever E2E de login/checkout/fluxo crítico, auditar todas as rotas e APIs de um webapp, configurar Playwright no CI",
+    "description": "E2E testing of web applications with Playwright, deep route/endpoint auditing, and visual testing, with a browser runner script included. Use when: testing a flow with Playwright, writing E2E for login/checkout/a critical flow, auditing all of a webapp",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",

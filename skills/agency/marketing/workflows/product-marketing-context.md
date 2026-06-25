@@ -1,173 +1,173 @@
 ---
 name: marketing-context
-description: "Criar ou atualizar o contexto de marketing do projeto. Usar antes de qualquer workflow de marketing. Gera `.osforge/marketing-context.md` que todos os workflows consultam como fonte de verdade sobre produto, audiência, posicionamento e voz."
+description: "Create or update the project's marketing context. Use before any marketing workflow. Generates `.osforge/marketing-context.md`, which all workflows consult as the source of truth about product, audience, positioning, and voice."
 metadata:
   version: 2.0.0
   origin: coreyhaines31/marketingskills (product-marketing-context v1.1.0)
   adapted-for: osforge
 ---
 
-# Contexto de Marketing do Projeto
+# Project Marketing Context
 
-Você ajuda o usuário a criar e manter o documento de contexto de marketing.
-Esse documento captura informações de posicionamento e messaging que TODOS os
-workflows de marketing, mídia paga e vendas referenciam como fonte única de verdade.
+You help the user create and maintain the marketing context document.
+This document captures positioning and messaging information that ALL
+marketing, paid media, and sales workflows reference as the single source of truth.
 
-**Arquivo de saída:** `.osforge/marketing-context.md`
+**Output file:** `.osforge/marketing-context.md`
 
 ---
 
-## Integração com OSForge
+## OSForge Integration
 
-### Fontes de contexto existentes
+### Existing context sources
 
-Antes de perguntar qualquer coisa ao usuário, verificar estas fontes nesta ordem:
+Before asking the user anything, check these sources in this order:
 
-1. **`.osforge/marketing-context.md`** — Se existe, ler e oferecer atualização
-2. **`project-context.md`** (raiz ou `docs/`) — Extrair stack, produto e audiência
-3. **`.osforge/STATE.md`** — Verificar decisões de produto anteriores
-4. **`README.md`** do projeto — Nome, descrição, features
+1. **`.osforge/marketing-context.md`** — If it exists, read it and offer to update
+2. **`project-context.md`** (root or `docs/`) — Extract stack, product, and audience
+3. **`.osforge/STATE.md`** — Check prior product decisions
+4. **`README.md`** of the project — Name, description, features
 
-### Regra de não-duplicação
+### No-duplication rule
 
-Se `project-context.md` já tem informações sobre o produto (nome, stack, features),
-NÃO duplicar. Referenciar: "Stack e features cobertos em project-context.md."
-O marketing-context foca no que project-context NÃO cobre: posicionamento,
-audiência, voz, dores do cliente, diferenciação e prova social.
+If `project-context.md` already has information about the product (name, stack, features),
+do NOT duplicate it. Reference it: "Stack and features covered in project-context.md."
+The marketing-context focuses on what project-context does NOT cover: positioning,
+audience, voice, customer pains, differentiation, and social proof.
 
 ---
 
 ## Workflow
 
-### Passo 1: Verificar contexto existente
+### Step 1: Check existing context
 
-Verificar se `.osforge/marketing-context.md` existe.
-Também verificar `.agents/product-marketing-context.md` e
-`.claude/product-marketing-context.md` como fallback de migração.
+Check whether `.osforge/marketing-context.md` exists.
+Also check `.agents/product-marketing-context.md` and
+`.claude/product-marketing-context.md` as migration fallbacks.
 
-**Se encontrar em local antigo:** oferecer migração automática:
+**If found in an old location:** offer automatic migration:
 ```
-Encontrei contexto de marketing em .agents/product-marketing-context.md.
-Vou migrar para .osforge/marketing-context.md para integrar com o OSForge.
+I found marketing context in .agents/product-marketing-context.md.
+I'll migrate it to .osforge/marketing-context.md to integrate with OSForge.
 ```
 
-**Se marketing-context.md existe:**
-- Ler e resumir o que está capturado
-- Perguntar quais seções quer atualizar
-- Só coletar info das seções escolhidas
+**If marketing-context.md exists:**
+- Read it and summarize what is captured
+- Ask which sections you want to update
+- Only collect info for the chosen sections
 
-**Se não existe, oferecer duas opções:**
-1. **Auto-draft a partir do codebase** (recomendado): Estudar repo, README,
-   landing pages, copy, package.json e gerar um V1
-2. **Começar do zero**: Percorrer cada seção conversacionalmente
+**If it does not exist, offer two options:**
+1. **Auto-draft from the codebase** (recommended): Study the repo, README,
+   landing pages, copy, package.json, and generate a V1
+2. **Start from scratch**: Walk through each section conversationally
 
-### Passo 2: Coletar informações
+### Step 2: Collect information
 
-**Se auto-drafting:**
-1. Ler: README, landing pages, marketing copy, about pages, meta descriptions,
+**If auto-drafting:**
+1. Read: README, landing pages, marketing copy, about pages, meta descriptions,
    package.json, project-context.md
-2. Gerar draft de todas as seções
-3. Apresentar e perguntar o que precisa corrigir
-4. Iterar até satisfação do usuário
+2. Generate a draft of all sections
+3. Present it and ask what needs correcting
+4. Iterate until the user is satisfied
 
-**Se do zero:**
-Percorrer uma seção por vez. Não despejar todas as perguntas de uma vez.
-Insistir em linguagem real do cliente — frases exatas valem mais que
-descrições polidas.
+**If from scratch:**
+Walk through one section at a time. Do not dump all the questions at once.
+Insist on real customer language — exact phrases are worth more than
+polished descriptions.
 
 ---
 
-## Seções a Capturar
+## Sections to Capture
 
-### 1. Visão do Produto
-- Descrição em uma frase
-- O que faz (2-3 frases)
-- Categoria de produto (em que "prateleira" o cliente te procura)
-- Tipo (SaaS, marketplace, e-commerce, serviço, etc.)
-- Modelo de negócio e precificação
+### 1. Product Vision
+- One-sentence description
+- What it does (2-3 sentences)
+- Product category (which "shelf" the customer looks for you on)
+- Type (SaaS, marketplace, e-commerce, service, etc.)
+- Business model and pricing
 
-### 2. Audiência-Alvo
-- Tipo de empresa (indústria, tamanho, estágio)
-- Decisores-alvo (cargos, departamentos)
-- Caso de uso principal
-- Jobs to be done (2-3 coisas para as quais o cliente te "contrata")
-- Cenários específicos de uso
+### 2. Target Audience
+- Company type (industry, size, stage)
+- Target decision-makers (titles, departments)
+- Primary use case
+- Jobs to be done (2-3 things the customer "hires" you for)
+- Specific usage scenarios
 
 ### 3. Personas (B2B)
-Para cada stakeholder no processo de compra:
-- Usuário, Campeão, Decisor, Comprador Financeiro, Influenciador Técnico
-- O que cada um valoriza, seu desafio, e a promessa de valor
+For each stakeholder in the buying process:
+- User, Champion, Decision-Maker, Economic Buyer, Technical Influencer
+- What each one values, their challenge, and the value promise
 
-### 4. Problemas & Dores
-- Desafio central antes de encontrar sua solução
-- Por que soluções atuais falham
-- Custo da inação (tempo, dinheiro, oportunidades)
-- Tensão emocional (estresse, medo, dúvida)
+### 4. Problems & Pains
+- Core challenge before finding your solution
+- Why current solutions fail
+- Cost of inaction (time, money, opportunities)
+- Emotional tension (stress, fear, doubt)
 
-### 5. Diferenciação
-- Alternativas diretas (concorrentes) e indiretas (planilhas, manual, etc.)
-- O que te torna diferente (não "melhor" — diferente)
-- Posicionamento em uma frase: "[Produto] é o único [categoria] que [diferencial]"
+### 5. Differentiation
+- Direct alternatives (competitors) and indirect ones (spreadsheets, manual, etc.)
+- What makes you different (not "better" — different)
+- One-sentence positioning: "[Product] is the only [category] that [differentiator]"
 
-### 6. Prova Social
-- Métricas (usuários, receita, crescimento, tempo economizado)
-- Clientes ou logos notáveis
-- Resultados documentados
-- Avaliações e ratings
+### 6. Social Proof
+- Metrics (users, revenue, growth, time saved)
+- Notable customers or logos
+- Documented results
+- Reviews and ratings
 
-### 7. Voz & Tom
-- Como a marca soa (formal/informal, técnico/acessível)
-- Palavras e frases que a marca USA
-- Palavras e frases que a marca EVITA
-- Referências de tom (ex: "como um colega técnico explicando")
+### 7. Voice & Tone
+- How the brand sounds (formal/informal, technical/accessible)
+- Words and phrases the brand USES
+- Words and phrases the brand AVOIDS
+- Tone references (e.g., "like a technical colleague explaining")
 
-### 8. Estratégia de Canais
-- Canais atuais de aquisição (orgânico, pago, email, social, parcerias)
-- Canal mais eficaz
-- Canais planejados ou em teste
+### 8. Channel Strategy
+- Current acquisition channels (organic, paid, email, social, partnerships)
+- Most effective channel
+- Planned or in-testing channels
 
 ---
 
-## Formato de Saída
+## Output Format
 
-Gerar `.osforge/marketing-context.md` com este template:
+Generate `.osforge/marketing-context.md` with this template:
 
 ```markdown
-# Marketing Context — [Nome do Produto]
+# Marketing Context — [Product Name]
 
-> Gerado em [data]. Fonte de verdade para todos os workflows de marketing.
-> Stack e features: ver project-context.md
+> Generated on [date]. Source of truth for all marketing workflows.
+> Stack and features: see project-context.md
 
-## Produto
-[conteúdo da seção 1]
+## Product
+[content from section 1]
 
-## Audiência
-[conteúdo da seção 2]
+## Audience
+[content from section 2]
 
 ## Personas
-[conteúdo da seção 3 — omitir se B2C]
+[content from section 3 — omit if B2C]
 
-## Problemas & Dores
-[conteúdo da seção 4]
+## Problems & Pains
+[content from section 4]
 
-## Diferenciação
-[conteúdo da seção 5]
+## Differentiation
+[content from section 5]
 
-## Prova Social
-[conteúdo da seção 6]
+## Social Proof
+[content from section 6]
 
-## Voz & Tom
-[conteúdo da seção 7]
+## Voice & Tone
+[content from section 7]
 
-## Canais
-[conteúdo da seção 8]
+## Channels
+[content from section 8]
 ```
 
 ---
 
-## Skills Relacionados
+## Related Skills
 
-- **Após criar contexto:** usar `copywriting` para escrever copy, `page-cro` para otimizar páginas
-- **Para SEO:** `seo-audit` e `content-strategy` usam audiência e posicionamento daqui
-- **Para vendas:** `sales-enablement` e `cold-email` usam dores e diferenciação daqui
-- **Para ads:** `paid-ads` e `ad-creative` usam voz, audiência e prova social daqui
+- **After creating context:** use `copywriting` to write copy, `page-cro` to optimize pages
+- **For SEO:** `seo-audit` and `content-strategy` use the audience and positioning from here
+- **For sales:** `sales-enablement` and `cold-email` use the pains and differentiation from here
+- **For ads:** `paid-ads` and `ad-creative` use the voice, audience, and social proof from here
