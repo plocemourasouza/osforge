@@ -70,6 +70,8 @@ Based on the user interview, fill in these components:
 
 ### Skill Writing Guide
 
+> **OSForge standard (authoritative):** start from `docs/SKILL.template.md` and follow `docs/SKILL-STANDARD.md` — English authoring, `Use when` / `Keywords` / `Do NOT use for` activation, the invocation axis (`disable-model-invocation`), leading words, and checkable completion criteria. Validate triggering with `scripts/test-skill-triggering.sh`.
+
 #### Anatomy of a Skill
 
 ```

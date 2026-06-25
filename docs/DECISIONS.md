@@ -159,3 +159,22 @@ Regras de fallback:
 A primeira escolha (`nomic-embed-text`, 768d) falhou em avaliação empírica com texto técnico curto em PT-BR — 1/3 de acerto top-1, com um documento dominando todas as queries (embeddings anisotrópicos, modelo inglês-cêntrico). `bge-m3` (multilíngue, 1024d) acertou 3/3 com separação saudável. Default do provider ollama passou a `bge-m3`; `nomic-embed-text` fica como alternativa leve (274MB vs 1.2GB) via `OSFORGE_EMBED_MODEL`. A dim é descoberta por `vec-init` (não hardcoded), então trocar de modelo só exige re-`vec-init` + `embed-backfill`.
 
 **Data:** 2026-06-12.
+
+## ADR-011: English Authoring + Reply-in-User-Language + Unified Skill Standard
+
+> From this ADR onward, DECISIONS.md entries are written in English (per the decision below).
+
+**Context.** OSForge content was historically authored largely in pt-BR, with inconsistent skill descriptions — some used `ACIONE quando / Keywords / Não acione para`, others terse English `Use when…` with no negative triggers. Mixed language and inconsistent activation specs hurt **predictability**: how reliably Claude Code picks and executes the right skill in any situation. A review of `mattpocock/skills` (MIT) surfaced complementary strengths worth merging.
+
+**Decision.**
+1. **Authoring = English.** All repo content (skills, agents, rules, `CLAUDE.md`, `SKILLS.md`, commands, ADRs, comments) is authored in English. Supersedes the prior "prose largely pt-BR — match that" convention.
+2. **Runtime = user's language.** The agent replies in whatever language the user writes in. Encoded as a global rule in `claude-code/CLAUDE.md`.
+3. **Unified skill standard.** Adopt `docs/SKILL-STANDARD.md` + `docs/SKILL.template.md` as single source of truth: activation via `Use when / Keywords / Do NOT use for`; explicit invocation axis (`disable-model-invocation`); execution-routing frontmatter (`model/context/agent/allowed-tools`); canonical body (Iron Law → When NOT to use → numbered steps with checkable "Done when" → anti-patterns → progressive-disclosure references); leading words; failure-mode audit. Merges OSForge's activation/routing strengths with mattpocock/skills' predictability theory (`inspired_by`, MIT).
+
+**Consequences.**
+- The pt-BR→English migration of ~142 skills + agents + rules runs in **harness-validated batches** (`scripts/test-skill-triggering.sh`), never a single mega-diff. Order: pilot 3 → engineering/stack → agency → rest.
+- **Cross-lingual activation risk:** English descriptions must still fire on pt-BR user prompts (semantic, not lexical, match). Mitigation: triggering test cases MUST include pt-BR prompts.
+- `skill-creator` points to the standard; new skills start from the template.
+- Third-party adaptations keep `inspired_by`/`source` frontmatter.
+
+**Date:** 2026-06-24.

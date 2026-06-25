@@ -137,3 +137,17 @@ Após qualquer feature/fix significativo: registre lições em `tasks/lessons.md
   `git push --force`, `reset --hard`, `clean -f`, SQL `DROP/TRUNCATE/DELETE`. Kill-switch `OSFORGE_GATEGUARD=off`.
 - **Logs estruturados** `{ action, tenantId, userId, duration, error }` — nunca logar PII.
 - **Contexto pesado (>70%):** comprimir respostas, mostrar diffs não arquivos inteiros, omitir recaps.
+
+---
+
+## Language (ADR-011)
+- All repository content (skills, agents, rules, `CLAUDE.md`, `SKILLS.md`, commands, ADRs, code comments) is authored in **English**.
+- ALWAYS reply to the user in the language they wrote in (user writes Brazilian Portuguese → reply in Brazilian Portuguese). Translate as needed; never force the user into English.
+
+## Alignment before building (grilling)
+- Ask ONE question at a time — multiple at once is bewildering.
+- If the answer is in the code, explore the code instead of asking.
+- For each question, offer your recommended answer.
+
+## Authoring skills
+- Start from `docs/SKILL.template.md`; follow `docs/SKILL-STANDARD.md` (predictability, leading words, completion criteria, invocation axis). Validate triggering with `scripts/test-skill-triggering.sh`.

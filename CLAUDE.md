@@ -55,10 +55,10 @@ Deploy behavior worth knowing:
 
 ## Workflow for changes
 
-1. Adding/editing a skill: create/edit `skills/<name>/SKILL.md` with proper frontmatter and `ACIONE quando:` triggers → add/update its row in `claude-code/SKILLS.md` → regenerate indexes → `./deploy.sh`.
+1. Adding/editing a skill: start from `docs/SKILL.template.md` and follow `docs/SKILL-STANDARD.md` — `Use when:` / `Keywords:` / `Do NOT use for:` triggers, the invocation axis, and a checkable body → add/update its row in `claude-code/SKILLS.md` → regenerate indexes → validate with `scripts/test-skill-triggering.sh` → `./deploy.sh`.
 2. Curating from upstream: source lives in the numbered dirs; the converted/curated version goes in `skills/`. Don't deploy source dirs.
 3. Architectural decisions about the framework itself get an ADR in `docs/DECISIONS.md`.
-4. Skill/agent/rule prose is largely Portuguese (pt-BR) with English technical terms — match that.
+4. Language (ADR-011): all repo content (skills, agents, rules, `CLAUDE.md`, `SKILLS.md`, commands, ADRs, comments) is authored in **English**. At runtime the agent replies in the user's language. Legacy pt-BR skills are migrated to English in harness-validated batches (see `docs/SKILL-STANDARD.md` §5.A).
 
 ## Multi-project operation
 
