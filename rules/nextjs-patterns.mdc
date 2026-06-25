@@ -1,119 +1,119 @@
 ---
-description: Padrões obrigatórios para Next.js 15+, React 19, Prisma 6, Supabase, shadcn/ui e MCPs — aplique em toda implementação no stack
+description: Mandatory patterns for Next.js 15+, React 19, Prisma 6, Supabase, shadcn/ui and MCPs — apply in every implementation on the stack
 globs: ["**/*.ts", "**/*.tsx", "src/**", "app/**", "prisma/**"]
 alwaysApply: true
 ---
 
-# Stack Técnica e Padrões Next.js
+# Technical Stack and Next.js Patterns
 
-## Tecnologias Obrigatórias
+## Mandatory Technologies
 
-- **Runtime**: Bun (Node.js apenas em projetos legados ou incompatibilidade comprovada)
-- **Framework**: Next.js 15+ com App Router exclusivamente (nunca Pages Router)
-- **React**: 19+ | **TypeScript**: 5.5+ com strict mode
-- **ORM**: Prisma 6+ (nunca misturar ORMs no mesmo projeto)
+- **Runtime**: Bun (Node.js only in legacy projects or proven incompatibility)
+- **Framework**: Next.js 15+ with App Router exclusively (never Pages Router)
+- **React**: 19+ | **TypeScript**: 5.5+ with strict mode
+- **ORM**: Prisma 6+ (never mix ORMs in the same project)
 - **UI**: shadcn/ui v2 + Radix UI + Tailwind CSS + CVA
-- **Linter/Formatter**: Biome (nunca ESLint + Prettier juntos)
-- **Banco**: PostgreSQL via Supabase — porta 6543 (pooled) para app, 5432 (direta) para migrations
+- **Linter/Formatter**: Biome (never ESLint + Prettier together)
+- **Database**: PostgreSQL via Supabase — port 6543 (pooled) for the app, 5432 (direct) for migrations
 
-## Verificação Inicial Obrigatória
+## Mandatory Initial Check
 
-Antes de qualquer implementação em projeto existente, leia:
-- `package.json` — versões e scripts
+Before any implementation in an existing project, read:
+- `package.json` — versions and scripts
 - `next.config.ts` — cache, turbopack, experimental features
-- `schema.prisma` — output do client e relações
-- `components.json` — tema e aliases shadcn
-- Arquivo de configuração do linter (biome.json ou eslint.config)
+- `schema.prisma` — client output and relations
+- `components.json` — shadcn theme and aliases
+- The linter configuration file (biome.json or eslint.config)
 
 ---
 
-## MCPs — Fluxo de Utilização
+## MCPs — Usage Flow
 
-### Ordem padrão numa tarefa de desenvolvimento:
-1. **Context7** → documentação atualizada da biblioteca/framework envolvido
-2. **Supabase MCP** → verificar schema atual antes de qualquer migration
-3. **Shadcn MCP** → verificar componentes disponíveis antes de criar custom
-4. Implementação com as informações obtidas
-5. **GitHub MCP** → commit e PR quando autorizado
+### Default order in a development task:
+1. **Context7** → up-to-date documentation of the library/framework involved
+2. **Supabase MCP** → check the current schema before any migration
+3. **Shadcn MCP** → check available components before creating a custom one
+4. Implementation with the information obtained
+5. **GitHub MCP** → commit and PR when authorized
 
-### Regras por MCP:
-- **Context7**: Consulte antes de implementar qualquer feature com Next.js, React ou Prisma — APIs evoluem rapidamente
-- **Supabase MCP**: Nunca crie migration sem verificar estado atual do schema
-- **Shadcn MCP**: Sempre verifique se existe componente shadcn antes de criar custom
-- **GitHub MCP**: **Nunca** commit/push sem autorização explícita do usuário
-- **Browser MCP**: Verificação visual de componentes, fluxos de usuário, responsividade
+### Rules per MCP:
+- **Context7**: Consult it before implementing any feature with Next.js, React or Prisma — APIs evolve quickly
+- **Supabase MCP**: Never create a migration without checking the current state of the schema
+- **Shadcn MCP**: Always check whether a shadcn component exists before creating a custom one
+- **GitHub MCP**: **Never** commit/push without explicit authorization from the user
+- **Browser MCP**: Visual verification of components, user flows, responsiveness
 
 ---
 
 ## Server Components vs Client Components
 
-**Server Components** (padrão, sem diretiva):
-- Acesso direto ao banco, fetch de APIs, uso de secrets
-- Não podem usar hooks de estado, efeitos ou event handlers
+**Server Components** (default, no directive):
+- Direct database access, API fetching, use of secrets
+- Cannot use state hooks, effects or event handlers
 
-**Client Components** (`'use client'` no topo):
-- Necessários para: `useState`, `useEffect`, `useContext`, hooks customizados
-- Necessários para: event handlers (`onClick`, `onChange`), APIs do browser
+**Client Components** (`'use client'` at the top):
+- Required for: `useState`, `useEffect`, `useContext`, custom hooks
+- Required for: event handlers (`onClick`, `onChange`), browser APIs
 
-**Estratégia**: Mantenha máximo de componentes como Server Components. Crie Client Components pequenos apenas para as partes que requerem interatividade. Passe dados de SC para CC via props.
+**Strategy**: Keep the maximum number of components as Server Components. Create small Client Components only for the parts that require interactivity. Pass data from SC to CC via props.
 
 ## Server Actions
 
-Substituem API Routes para operações internas. Toda Server Action deve ter:
-1. Validação de entrada com Zod
-2. Verificação de autenticação/autorização
-3. Tratamento de erros com retorno estruturado
-4. Revalidação de cache quando aplicável
+They replace API Routes for internal operations. Every Server Action must have:
+1. Input validation with Zod
+2. Authentication/authorization check
+3. Error handling with a structured return
+4. Cache revalidation when applicable
 
-**API Routes** são exclusivas para: integrações externas, webhooks, endpoints consumidos por terceiros.
+**API Routes** are exclusive to: external integrations, webhooks, endpoints consumed by third parties.
 
-## Hooks React 19 Prioritários
+## Priority React 19 Hooks
 
-- `use()` — resolve promises diretamente com suporte automático a Suspense
-- `useOptimistic()` — atualizações otimistas antes da confirmação do servidor
-- `useFormStatus()` — estado de submissão sem prop drilling
-- `useActionState()` — combina estado de Server Action com seu dispatch
-
----
-
-## Performance — Regras Prioritárias (Vercel Engineering)
-
-### CRÍTICO — Eliminar Waterfalls
-- Mova `await` para dentro de branches onde é realmente usado — não bloqueie o fluxo principal
-- Use `Promise.all()` para operações independentes — nunca encadeie awaits sequenciais
-- Use Suspense boundaries para streaming de conteúdo que depende de dados
-- Em API routes: inicie promises cedo, faça `await` tarde
-
-### CRÍTICO — Bundle Size
-- Importe diretamente dos módulos, **nunca** de barrel files (`index.ts`)
-- Use `next/dynamic` para componentes pesados não necessários no carregamento inicial
-- Carregue analytics, logging e third-party scripts após hydration
-- Preload em hover/focus para percepção de velocidade
-
-### ALTO — Server-Side Performance
-- Autentique Server Actions como API routes — nunca confie que o caller é legítimo
-- Use `React.cache()` para deduplicação per-request
-- Minimize dados serializados em props de RSC — passe apenas o necessário ao client
-- Reestruture componentes para paralelizar fetches ao invés de encadear
-- Use `after()` para operações non-blocking pós-response
-
-### MÉDIO — Re-render Optimization
-- Não subscribe a state usado apenas em callbacks — defer reads
-- Extraia trabalho pesado em componentes memoizados
-- Derive estado durante render, não em `useEffect`
-- Use functional setState (`setX(prev => ...)`) para callbacks estáveis
-- Hoist default props não-primitivos para fora do render
+- `use()` — resolves promises directly with automatic Suspense support
+- `useOptimistic()` — optimistic updates before server confirmation
+- `useFormStatus()` — submission state without prop drilling
+- `useActionState()` — combines Server Action state with its dispatch
 
 ---
 
-## shadcn/ui — Padrões
+## Performance — Priority Rules (Vercel Engineering)
 
-### Composition (evite boolean props)
+### CRITICAL — Eliminate Waterfalls
+- Move `await` inside the branches where it is actually used — don't block the main flow
+- Use `Promise.all()` for independent operations — never chain sequential awaits
+- Use Suspense boundaries for streaming content that depends on data
+- In API routes: start promises early, `await` late
+
+### CRITICAL — Bundle Size
+- Import directly from modules, **never** from barrel files (`index.ts`)
+- Use `next/dynamic` for heavy components not needed on initial load
+- Load analytics, logging and third-party scripts after hydration
+- Preload on hover/focus for perceived speed
+
+### HIGH — Server-Side Performance
+- Authenticate Server Actions like API routes — never trust that the caller is legitimate
+- Use `React.cache()` for per-request deduplication
+- Minimize serialized data in RSC props — pass only what's needed to the client
+- Restructure components to parallelize fetches instead of chaining them
+- Use `after()` for non-blocking post-response operations
+
+### MEDIUM — Re-render Optimization
+- Don't subscribe to state used only in callbacks — defer reads
+- Extract heavy work into memoized components
+- Derive state during render, not in `useEffect`
+- Use functional setState (`setX(prev => ...)`) for stable callbacks
+- Hoist non-primitive default props out of the render
+
+---
+
+## shadcn/ui — Patterns
+
+### Composition (avoid boolean props)
 ```tsx
-// ❌ Ruim: proliferação de boolean props
+// ❌ Bad: proliferation of boolean props
 <Card isCompact showHeader hasFooter variant="outlined" />
 
-// ✅ Bom: composição explícita
+// ✅ Good: explicit composition
 <Card variant="outlined">
   <CardHeader />
   <CardContent compact />
@@ -121,66 +121,66 @@ Substituem API Routes para operações internas. Toda Server Action deve ter:
 </Card>
 ```
 
-### Formulários
-Combine: React Hook Form + Zod + componentes Form do shadcn. Oferece validação type-safe, estados de erro acessíveis e integração natural com Server Actions.
+### Forms
+Combine: React Hook Form + Zod + shadcn Form components. It offers type-safe validation, accessible error states and natural integration with Server Actions.
 
-### Customização
-- Use variantes CVA para customizações de componentes
-- Use `cn()` sempre que houver composição de classes
-- Crie wrappers que **estendem** os componentes base — nunca modifique `components/ui/` diretamente
-- Referencie cores via variáveis CSS semânticas (`primary`, `secondary`, `muted`) — nunca hardcode valores
+### Customization
+- Use CVA variants for component customizations
+- Use `cn()` whenever there is class composition
+- Create wrappers that **extend** the base components — never modify `components/ui/` directly
+- Reference colors via semantic CSS variables (`primary`, `secondary`, `muted`) — never hardcode values
 
 ---
 
-## Prisma — Padrões
+## Prisma — Patterns
 
-### Configuração
-- Client gerado em `src/generated/prisma`
-- Instância singleton em desenvolvimento para evitar esgotamento de conexões
-- Connection pooling obrigatório no Supabase: porta 6543 para app, 5432 para migrations
+### Configuration
+- Client generated in `src/generated/prisma`
+- Singleton instance in development to avoid connection exhaustion
+- Connection pooling mandatory on Supabase: port 6543 for the app, 5432 for migrations
 
 ### Queries
-- Especifique sempre os campos via `select` quando não precisar de todos
-- Use `include` com moderação — prefira selects aninhados para campos específicos
-- `$transaction` com callback para operações multi-write atômicas (rollback automático)
+- Always specify fields via `select` when you don't need all of them
+- Use `include` sparingly — prefer nested selects for specific fields
+- `$transaction` with a callback for atomic multi-write operations (automatic rollback)
 
-### Raw SQL (quando usar)
-Prisma não atende bem: GROUP BY complexo, JSON/JSONB, full-text search avançado, pivot tables. Nesses casos:
+### Raw SQL (when to use)
+Prisma doesn't handle well: complex GROUP BY, JSON/JSONB, advanced full-text search, pivot tables. In those cases:
 
 ```typescript
-// Sempre $queryRaw com template literals — proteção contra SQL injection
+// Always $queryRaw with template literals — protection against SQL injection
 const result = await prisma.$queryRaw<ResultType[]>`
   SELECT * FROM table WHERE id = ${userId}
 `
 ```
 
-Considere Views para queries frequentes e complexas — Prisma mapeia views como tabelas.
+Consider Views for frequent and complex queries — Prisma maps views as tables.
 
 ---
 
-## Estrutura de Arquivos
+## File Structure
 
 ```
 src/
-├── app/          — rotas e layouts (Next.js App Router)
-├── actions/      — Server Actions por domínio (*.actions.ts)
+├── app/          — routes and layouts (Next.js App Router)
+├── actions/      — Server Actions by domain (*.actions.ts)
 ├── components/
-│   └── ui/       — componentes shadcn (nunca edite diretamente)
-├── lib/          — utilitários e configs de bibliotecas
-├── hooks/        — hooks React customizados (prefixo use-)
-├── services/     — lógica de negócio (*.service.ts)
-├── types/        — definições TypeScript compartilhadas (*.types.ts)
-└── generated/    — código gerado (Prisma Client)
+│   └── ui/       — shadcn components (never edit directly)
+├── lib/          — utilities and library configs
+├── hooks/        — custom React hooks (use- prefix)
+├── services/     — business logic (*.service.ts)
+├── types/        — shared TypeScript definitions (*.types.ts)
+└── generated/    — generated code (Prisma Client)
 ```
 
-## Limites de Código
-- Arquivos: máximo **300 linhas** — excedeu, divida em módulos
-- Funções: máximo **30 linhas** — extraia subfunções com nomes descritivos
-- Componentes: uma única responsabilidade — se faz muitas coisas, componha
+## Code Limits
+- Files: maximum **300 lines** — if exceeded, split into modules
+- Functions: maximum **30 lines** — extract subfunctions with descriptive names
+- Components: a single responsibility — if it does too many things, compose
 
-## Checklist Pré-Commit
-- [ ] Lint passa sem erros
-- [ ] TypeScript compila sem erros
-- [ ] Testes relevantes passam
-- [ ] Prisma Client gerado (se schema alterado)
-- [ ] Build completa sem erros (em branches de release)
+## Pre-Commit Checklist
+- [ ] Lint passes without errors
+- [ ] TypeScript compiles without errors
+- [ ] Relevant tests pass
+- [ ] Prisma Client generated (if the schema changed)
+- [ ] Build completes without errors (on release branches)

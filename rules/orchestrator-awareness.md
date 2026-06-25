@@ -1,37 +1,37 @@
 ---
 name: orchestrator-awareness
 description: >
-  Rule always-on que garante ativação do Orchestrator quando necessário
-  e respeito ao sistema de artefatos progressivos.
+  Always-on rule that guarantees activation of the Orchestrator when needed
+  and respect for the progressive artifact system.
 type: always-on
 version: 1.0.0
 ---
 
 # Rule: Orchestrator Awareness
 
-## Ativação do Orchestrator
+## Orchestrator Activation
 
-- Quando o usuário iniciar conversa sobre desenvolvimento (novo projeto, feature,
-  bug, melhoria), verificar se o Orchestrator deve ser ativado.
-- Se existe `.osforge/status.yaml` com work in-progress: SEMPRE informar ao
-  usuário antes de qualquer ação: "Há trabalho em progresso: {projeto} — fase
-  {current_phase}. Retomar ou iniciar novo?"
-- Para demandas de desenvolvimento que envolvam mais de 1 arquivo ou decisões
-  de design: sugerir ativação do Orchestrator para planejamento estruturado.
-- Para quick fixes triviais (1 arquivo, zero ambiguidade): não impor o Orchestrator
-  a menos que o usuário peça.
+- When the user starts a conversation about development (new project, feature,
+  bug, improvement), check whether the Orchestrator should be activated.
+- If there is a `.osforge/status.yaml` with work in-progress: ALWAYS inform the
+  user before any action: "There is work in progress: {project} — phase
+  {current_phase}. Resume or start new?"
+- For development demands involving more than 1 file or design
+  decisions: suggest activating the Orchestrator for structured planning.
+- For trivial quick fixes (1 file, zero ambiguity): do not impose the Orchestrator
+  unless the user asks.
 
-## Sistema de Artefatos
+## Artifact System
 
-- Nunca iniciar implementação de feature STANDARD ou COMPLEX sem spec/story
-  aprovada (exceto se o usuário fizer override explícito).
-- Artefatos de planning devem ter frontmatter com `type`, `status` e `created`.
-- Quando um artefato referenciar outro, usar caminhos relativos ao projeto.
-- Status de artefatos: draft → ready → in-progress → complete.
-- Nunca alterar artefato com status `complete` sem aprovação do usuário.
+- Never start implementing a STANDARD or COMPLEX feature without an approved
+  spec/story (except when the user makes an explicit override).
+- Planning artifacts must have frontmatter with `type`, `status` and `created`.
+- When an artifact references another, use paths relative to the project.
+- Artifact status: draft → ready → in-progress → complete.
+- Never change an artifact with `complete` status without the user's approval.
 
 ## Tracking
 
-- Se `.osforge/status.yaml` existe, manter atualizado a cada mudança de fase.
-- Se não existe e o trabalho justifica (STANDARD+), sugerir criação.
-- Nunca apagar entries do status — marcar como `skipped` ou `cancelled`.
+- If `.osforge/status.yaml` exists, keep it updated on every phase change.
+- If it does not exist and the work justifies it (STANDARD+), suggest creating it.
+- Never delete entries from the status — mark them as `skipped` or `cancelled`.

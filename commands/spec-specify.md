@@ -1,80 +1,80 @@
 ---
-description: Phase 1 — Cria a especificação técnica detalhada de uma feature: requisitos funcionais, não-funcionais, acceptance criteria e casos de uso. Use após /spec-discover ou quando o problema já está validado. Gatilhos: "specify", "especificar feature", "escrever spec", "requisitos técnicos", "/spec-specify [feature]".
+description: Phase 1 — Creates the detailed technical specification of a feature: functional requirements, non-functional requirements, acceptance criteria, and use cases. Use after /spec-discover or when the problem is already validated. Triggers: "specify", "specify feature", "write spec", "technical requirements", "/spec-specify [feature]".
 ---
 
-## Contexto necessário
-Leia antes de executar:
-- `.specs/features/[feature]/discovery.md` — problema e hipótese validados
-- `.specs/memory/constitution.md` — princípios e padrões do projeto
-- `.specs/project/STATE.md` (se existir) — contexto de sessões anteriores
+## Required context
+Read before executing:
+- `.specs/features/[feature]/discovery.md` — validated problem and hypothesis
+- `.specs/memory/constitution.md` — project principles and standards
+- `.specs/project/STATE.md` (if it exists) — context from previous sessions
 
-## Fase: Phase 1 — Specify
+## Phase: Phase 1 — Specify
 
-## Saída esperada
+## Expected output
 `.specs/features/[feature-name]/spec.md`
 
-## Processo
+## Process
 
-1. **Identificar feature**: Se o argumento após `/spec-specify` nomeia a feature, use-o. Caso contrário, verifique qual feature tem `discovery.md` mais recente ou pergunte.
+1. **Identify feature**: If the argument after `/spec-specify` names the feature, use it. Otherwise, check which feature has the most recent `discovery.md` or ask.
 
-2. **Verificar constitution**: Se `.specs/memory/constitution.md` existe, verifique se a feature respeita os princípios definidos. Se violar algum, sinalize antes de continuar.
+2. **Check constitution**: If `.specs/memory/constitution.md` exists, verify that the feature respects the defined principles. If it violates any, flag it before continuing.
 
-3. **Fazer perguntas de especificação** (máximo 4, só se genuinamente ambíguo):
-   - Quais são os fluxos principais do usuário?
-   - Há integrações externas envolvidas?
-   - Quais são as restrições de performance aceitáveis?
-   - Como tratar estados de erro?
+3. **Ask specification questions** (maximum 4, only if genuinely ambiguous):
+   - What are the main user flows?
+   - Are there external integrations involved?
+   - What are the acceptable performance constraints?
+   - How should error states be handled?
 
-4. **Criar `spec.md`**:
+4. **Create `spec.md`**:
 
 ```markdown
 # Spec: [Feature Name]
-**Feature:** [feature-name] | **Data:** [YYYY-MM-DD] | **Status:** Draft
-**Referência:** [discovery.md]
+**Feature:** [feature-name] | **Date:** [YYYY-MM-DD] | **Status:** Draft
+**Reference:** [discovery.md]
 
-## Contexto
-[2-3 frases resumindo o problema e hipótese do discovery]
+## Context
+[2-3 sentences summarizing the problem and hypothesis from the discovery]
 
-## Requisitos Funcionais
-### RF-01: [Nome do requisito]
-- **Descrição:** [O que o sistema deve fazer]
-- **Usuário:** [Quem executa esta ação]
-- **Fluxo principal:** [Passos do happy path]
-- **Fluxos alternativos:** [Variações aceitas]
-- **Erros e exceções:** [O que acontece quando falha]
+## Functional Requirements
+### FR-01: [Requirement name]
+- **Description:** [What the system must do]
+- **User:** [Who performs this action]
+- **Main flow:** [Happy path steps]
+- **Alternative flows:** [Accepted variations]
+- **Errors and exceptions:** [What happens when it fails]
 
-### RF-02: ...
+### FR-02: ...
 
-## Requisitos Não-Funcionais
-- **Performance:** [ex: response time < 200ms para 95% das requests]
-- **Segurança:** [validações, autenticação necessária, RLS]
-- **Acessibilidade:** [WCAG nível mínimo, comportamento com teclado]
-- **Disponibilidade:** [uptime esperado, degradação aceitável]
+## Non-Functional Requirements
+- **Performance:** [e.g., response time < 200ms for 95% of requests]
+- **Security:** [validations, required authentication, RLS]
+- **Accessibility:** [minimum WCAG level, keyboard behavior]
+- **Availability:** [expected uptime, acceptable degradation]
 
 ## Acceptance Criteria
-Dado que [contexto], quando [ação], então [resultado esperado].
+Given that [context], when [action], then [expected result].
 
-- [ ] AC-01: Dado que [condição], quando [ação], então [resultado]
+- [ ] AC-01: Given that [condition], when [action], then [result]
 - [ ] AC-02: ...
-- [ ] AC-ERROR-01: Dado que [condição de erro], quando [ação], então [comportamento de erro]
+- [ ] AC-ERROR-01: Given that [error condition], when [action], then [error behavior]
 
-## Fora do Escopo
-- [Item que poderia ser confundido como incluído mas não está]
-- [Feature relacionada que será tratada separadamente]
+## Out of Scope
+- [Item that could be confused as included but isn't]
+- [Related feature that will be handled separately]
 
-## Dependências
-- [API externa, serviço, feature que deve existir antes]
+## Dependencies
+- [External API, service, or feature that must exist first]
 
 ## Constitution Check
-- [ ] Respeita [princípio 1 da constitution]
-- [ ] Respeita [princípio 2]
-- [ ] Não introduz exceções aos padrões de qualidade definidos
+- [ ] Respects [constitution principle 1]
+- [ ] Respects [principle 2]
+- [ ] Does not introduce exceptions to the defined quality standards
 ```
 
-5. **Confirmar**: Apresente a spec criada. Sinalize qualquer ambiguidade que ficou não-resolvida. Sugira próximo passo: `/spec-design [feature-name]`.
+5. **Confirm**: Present the created spec. Flag any ambiguity that remained unresolved. Suggest next step: `/spec-design [feature-name]`.
 
-## Regras
-- Acceptance Criteria devem ser verificáveis — nada de "o sistema deve ser rápido"
-- Cada AC deve mapear para um teste que pode ser escrito
-- Constitution check é obrigatório se constitution.md existe
-- Não especifique implementação — isso é para /spec-design
+## Rules
+- Acceptance Criteria must be verifiable — no "the system should be fast"
+- Each AC must map to a test that can be written
+- Constitution check is mandatory if constitution.md exists
+- Do not specify implementation — that's for /spec-design

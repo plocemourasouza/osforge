@@ -1,61 +1,61 @@
 ---
-description: Phase 2 — Cria o design técnico: arquitetura, modelo de dados, contratos de API e decisões técnicas com trade-offs documentados. Use após /spec-specify. Gatilhos: "design", "arquitetura da feature", "modelo de dados", "contratos de API", "/spec-design [feature]".
+description: Phase 2 — Creates the technical design: architecture, data model, API contracts, and technical decisions with documented trade-offs. Use after /spec-specify. Triggers: "design", "feature architecture", "data model", "API contracts", "/spec-design [feature]".
 ---
 
-## Contexto necessário
-Leia antes de executar:
-- `.specs/features/[feature]/spec.md` — requisitos e acceptance criteria
-- `.specs/memory/constitution.md` — padrões de arquitetura do projeto
-- `schema.prisma` (se existir) — modelo de dados atual
-- `.specs/codebase/ARCHITECTURE.md` (se existir) — arquitetura atual
+## Required context
+Read before executing:
+- `.specs/features/[feature]/spec.md` — requirements and acceptance criteria
+- `.specs/memory/constitution.md` — project architecture standards
+- `schema.prisma` (if it exists) — current data model
+- `.specs/codebase/ARCHITECTURE.md` (if it exists) — current architecture
 
-## Fase: Phase 2 — Design
+## Phase: Phase 2 — Design
 
-## Saída esperada
+## Expected output
 `.specs/features/[feature-name]/design.md`
 
-## Processo
+## Process
 
-1. **Carregar spec.md**: Leia os requisitos funcionais e acceptance criteria para guiar as decisões de design.
+1. **Load spec.md**: Read the functional requirements and acceptance criteria to guide the design decisions.
 
-2. **Analisar schema atual**: Se `schema.prisma` existe, verifique o modelo de dados antes de propor alterações. Consulte Supabase MCP para verificar estado real se disponível.
+2. **Analyze the current schema**: If `schema.prisma` exists, check the data model before proposing changes. Consult the Supabase MCP to verify the real state if available.
 
-3. **Criar `design.md`**:
+3. **Create `design.md`**:
 
 ```markdown
 # Design: [Feature Name]
-**Feature:** [feature-name] | **Data:** [YYYY-MM-DD] | **Status:** Draft
-**Referência:** [spec.md]
+**Feature:** [feature-name] | **Date:** [YYYY-MM-DD] | **Status:** Draft
+**Reference:** [spec.md]
 
-## Arquitetura
+## Architecture
 
-### Fluxo de Dados
-[Diagrama em texto ou Mermaid mostrando como os dados fluem]
+### Data Flow
+[Text or Mermaid diagram showing how data flows]
 
-### Componentes Envolvidos
-- **[Componente/módulo]**: [responsabilidade nesta feature]
-- Server Actions: [quais ações e em qual arquivo]
-- API Routes: [apenas se integração externa — justificar por que não é Server Action]
-- Componentes React: [Server vs Client — justificar cada Client Component]
+### Components Involved
+- **[Component/module]**: [responsibility in this feature]
+- Server Actions: [which actions and in which file]
+- API Routes: [only if external integration — justify why it isn't a Server Action]
+- React Components: [Server vs Client — justify each Client Component]
 
-## Modelo de Dados
+## Data Model
 
-### Alterações no Schema
+### Schema Changes
 ```prisma
-// Novas tabelas ou campos necessários
-model [Nome] {
+// New tables or fields required
+model [Name] {
   id        String   @id @default(cuid())
   // ...
 }
 ```
 
-### Migrations necessárias
-- [Descreva cada migration em linguagem natural]
+### Required Migrations
+- [Describe each migration in natural language]
 
-### Políticas RLS (se Supabase)
-- [Tabela]: [SELECT/INSERT/UPDATE/DELETE] para [role] quando [condição]
+### RLS Policies (if Supabase)
+- [Table]: [SELECT/INSERT/UPDATE/DELETE] for [role] when [condition]
 
-## Contratos
+## Contracts
 
 ### Server Actions
 ```typescript
@@ -63,37 +63,37 @@ model [Nome] {
 export async function [actionName](input: [InputType]): Promise<[ReturnType]>
 ```
 
-### Tipos TypeScript
+### TypeScript Types
 ```typescript
 // src/types/[feature].types.ts
-type [Nome] = {
+type [Name] = {
   // ...
 }
 ```
 
-## Decisões Técnicas
+## Technical Decisions
 
-### Decisão 1: [Título]
-- **Contexto:** [Por que esta decisão foi necessária]
-- **Opções consideradas:**
-  - A: [descrição] — Prós: [...] Contras: [...]
-  - B: [descrição] — Prós: [...] Contras: [...]
-- **Decisão:** [Qual opção e por quê]
-- **Consequências:** [O que esta decisão implica para o futuro]
+### Decision 1: [Title]
+- **Context:** [Why this decision was necessary]
+- **Options considered:**
+  - A: [description] — Pros: [...] Cons: [...]
+  - B: [description] — Pros: [...] Cons: [...]
+- **Decision:** [Which option and why]
+- **Consequences:** [What this decision implies for the future]
 
-## Impacto em Features Existentes
-- [Feature/componente afetado]: [como é impactado, se requer alteração]
-- Sem impacto: [áreas verificadas e confirmadas sem impacto]
+## Impact on Existing Features
+- [Affected feature/component]: [how it is impacted, whether it requires changes]
+- No impact: [areas checked and confirmed unaffected]
 
 ## Constitution Check
-- [ ] Design respeita [princípio arquitetural da constitution]
-- [ ] Não há exceção não-documentada aos padrões definidos
+- [ ] Design respects [architectural principle from the constitution]
+- [ ] No undocumented exception to the defined standards
 ```
 
-4. **Confirmar**: Apresente o design. Para decisões com trade-offs significativos, apresente as opções explicitamente e aguarde confirmação antes de gravar a decisão no arquivo. Sugira próximo passo: `/spec-tasks [feature-name]`.
+4. **Confirm**: Present the design. For decisions with significant trade-offs, present the options explicitly and wait for confirmation before recording the decision in the file. Suggest next step: `/spec-tasks [feature-name]`.
 
-## Regras
-- Toda decisão com alternativas não-triviais deve ser documentada como ADR (Architecture Decision Record)
-- Server Actions são o padrão; API Routes exigem justificativa explícita
-- RLS é obrigatório para tabelas com dados multi-tenant
-- Não implemente código nesta fase — apenas contratos e tipos
+## Rules
+- Every decision with non-trivial alternatives must be documented as an ADR (Architecture Decision Record)
+- Server Actions are the default; API Routes require explicit justification
+- RLS is mandatory for tables with multi-tenant data
+- Do not implement code in this phase — only contracts and types

@@ -1,83 +1,83 @@
 ---
-description: Phase 4 — Executa a implementação e validação da feature seguindo TDD e o plano de tasks.md. Processa tasks em ordem de dependência, escreve testes antes do código, e valida ao concluir. Gatilhos: "implement", "implementar", "executar tasks", "desenvolver", "codificar", "/spec-implement [feature]".
+description: Phase 4 — Executes the implementation and validation of the feature following TDD and the tasks.md plan. Processes tasks in dependency order, writes tests before code, and validates upon completion. Triggers: "implement", "implement feature", "execute tasks", "develop", "code it", "/spec-implement [feature]".
 ---
 
-## Contexto necessário
-Leia antes de executar:
-- `.specs/features/[feature]/tasks.md` — lista de tasks a executar
-- `.specs/features/[feature]/spec.md` — acceptance criteria (referência durante implementação)
-- `.specs/features/[feature]/design.md` — contratos, schema, arquitetura
-- `.specs/memory/constitution.md` — padrões, convenções e princípios do projeto
+## Required context
+Read before executing:
+- `.specs/features/[feature]/tasks.md` — list of tasks to execute
+- `.specs/features/[feature]/spec.md` — acceptance criteria (reference during implementation)
+- `.specs/features/[feature]/design.md` — contracts, schema, architecture
+- `.specs/memory/constitution.md` — project standards, conventions, and principles
 
-## Fase: Phase 4 — Implement + Validate (PDD)
+## Phase: Phase 4 — Implement + Validate (PDD)
 
-## Saída esperada
-- Código implementado conforme design.md
-- Tasks marcadas como `[x]` em `.specs/features/[feature]/tasks.md`
-- `.specs/features/[feature]/validation.md` ao concluir
+## Expected output
+- Code implemented according to design.md
+- Tasks marked as `[x]` in `.specs/features/[feature]/tasks.md`
+- `.specs/features/[feature]/validation.md` upon completion
 
-## Processo
+## Process
 
-O argumento passado após `/spec-implement` é a feature. Se vazio, pergunte qual feature implementar. Se não houver `tasks.md`, execute `/spec-tasks` antes.
+The argument passed after `/spec-implement` is the feature. If empty, ask which feature to implement. If there is no `tasks.md`, run `/spec-tasks` first.
 
-### Antes de iniciar
-1. Leia `tasks.md` e identifique a primeira task não concluída
-2. Verifique se há dependências externas não resolvidas (migrations pendentes, serviços, aprovações)
-3. Se houver tasks com "NEEDS CLARIFICATION", execute `/spec-clarify` antes de prosseguir
+### Before starting
+1. Read `tasks.md` and identify the first incomplete task
+2. Check whether there are unresolved external dependencies (pending migrations, services, approvals)
+3. If there are tasks with "NEEDS CLARIFICATION", run `/spec-clarify` before proceeding
 
-### Por task
-Execute cada task rigorosamente em ordem de dependência:
+### Per task
+Execute each task strictly in dependency order:
 
-**Para tasks de teste (prefixo T-0X com "escrever teste"):**
-1. Escreva o teste conforme especificado
-2. Execute: confirm RED — o teste deve falhar pelo motivo correto
-3. Registre: marque `[ ]` com nota `(RED confirmado)`
+**For test tasks (prefix T-0X with "write test"):**
+1. Write the test as specified
+2. Run: confirm RED — the test must fail for the correct reason
+3. Record: mark `[ ]` with a note `(RED confirmed)`
 
-**Para tasks de implementação (código de produção):**
-1. Escreva o código mínimo para passar o teste
-2. Execute: confirm GREEN — o teste deve passar
-3. Refatore se necessário (REFACTOR) mantendo GREEN
-4. Marque `[x]` na task com evidência: `(bun test — 0 failures)`
+**For implementation tasks (production code):**
+1. Write the minimal code to pass the test
+2. Run: confirm GREEN — the test must pass
+3. Refactor if needed (REFACTOR) while keeping GREEN
+4. Mark `[x]` on the task with evidence: `(bun test — 0 failures)`
 
-**Para tasks sem teste associado (setup, config, migration):**
-1. Execute a task
-2. Verifique conforme o critério listado na task
-3. Marque `[x]` com evidência do critério cumprido
+**For tasks with no associated test (setup, config, migration):**
+1. Execute the task
+2. Verify against the criterion listed in the task
+3. Mark `[x]` with evidence of the criterion met
 
-### Ao concluir todas as tasks
-1. Execute a suite completa: `bun test` → deve ter 0 failures
-2. Execute build: `bun run build` → deve ter exit 0
-3. Execute lint: `bun run lint` → deve ter 0 errors
-4. Crie `.specs/features/[feature]/validation.md`:
+### Upon completing all tasks
+1. Run the full suite: `bun test` → must have 0 failures
+2. Run build: `bun run build` → must have exit 0
+3. Run lint: `bun run lint` → must have 0 errors
+4. Create `.specs/features/[feature]/validation.md`:
 
 ```markdown
 # Validation: [Feature Name]
-**Data:** [YYYY-MM-DD] | **Status:** VALIDATED
+**Date:** [YYYY-MM-DD] | **Status:** VALIDATED
 
-## Evidências de Verificação
-- Testes: `bun test` — [N] passed, 0 failures, 0 skipped
+## Verification Evidence
+- Tests: `bun test` — [N] passed, 0 failures, 0 skipped
 - Build: `bun run build` — exit 0
 - Lint: `bun run lint` — 0 errors
 
-## Acceptance Criteria Verificados
-| AC | Status | Como verificado |
+## Verified Acceptance Criteria
+| AC | Status | How verified |
 |---|---|---|
-| AC-01 | ✅ PASS | [forma de verificação] |
-| AC-02 | ✅ PASS | [forma de verificação] |
+| AC-01 | ✅ PASS | [verification method] |
+| AC-02 | ✅ PASS | [verification method] |
 
-## Decisões Tomadas Durante Implementação
-- [decisão 1 e justificativa]
-- [decisão 2 e justificativa]
+## Decisions Made During Implementation
+- [decision 1 and rationale]
+- [decision 2 and rationale]
 
-## Pendências (se houver)
-- [item pendente e motivo]
+## Pending Items (if any)
+- [pending item and reason]
 ```
 
-5. Sugira `/spec-measure` para registrar métricas pós-deploy.
+5. Suggest `/spec-measure` to record post-deploy metrics.
 
-## Regras
-- **NUNCA declare concluído sem evidência de verificação fresca**
-- TDD é obrigatório para toda lógica de negócio — não pule o ciclo RED-GREEN-REFACTOR
-- Se um teste não pode ser escrito para uma funcionalidade, questione se o design está claro o suficiente
-- Commits só com autorização explícita do usuário
-- Se encontrar bloqueador durante implementação, pare e descreva o bloqueador — não improvise solução que desvie do design
+## Rules
+- **NEVER declare completion without fresh verification evidence**
+- TDD is mandatory for all business logic — do not skip the RED-GREEN-REFACTOR cycle
+- If a test cannot be written for a piece of functionality, question whether the design is clear enough
+- Commits only with explicit user authorization
+- If you hit a blocker during implementation, stop and describe the blocker — do not improvise a solution that deviates from the design

@@ -1,113 +1,113 @@
-# Template de Brief de Delegação
+# Delegation Brief Template
 
-> Workers (sub-agentes, Task tools) **não têm acesso à conversa com o usuário**.
-> O brief é o único contexto que o worker recebe. Um brief incompleto gera output
-> incompleto — lixo entra, lixo sai. Preencha todos os campos antes de despachar.
+> Workers (sub-agents, Task tools) **do not have access to the conversation with the user**.
+> The brief is the only context the worker receives. An incomplete brief produces incomplete
+> output — garbage in, garbage out. Fill in all fields before dispatching.
 
 ---
 
-## Template Canônico
+## Canonical Template
 
 ```markdown
-## Objetivo
-<!-- 1-3 frases: o que fazer e por que isso importa agora. -->
+## Objective
+<!-- 1-3 sentences: what to do and why it matters now. -->
 
-## Skills a Carregar
-<!-- Paths exatos que o worker deve ler ANTES de implementar.
-     Exemplo: `skills/stack/prisma.md`, `skills/security-best-practices.md` -->
+## Skills to Load
+<!-- Exact paths the worker must read BEFORE implementing.
+     Example: `skills/stack/prisma.md`, `skills/security-best-practices.md` -->
 - 
 
-## Escopo de Arquivos
-**Pode ler/editar:**
+## File Scope
+**May read/edit:**
 - 
 
-**Fora de escopo (não tocar):**
+**Out of scope (do not touch):**
 - 
 
-## Contexto Essencial
-<!-- Decisões já tomadas, constraints, padrões do projeto que o worker precisa
-     respeitar. Inclua: stack relevante, convenções, decisões arquiteturais,
-     por que abordagens alternativas foram descartadas. -->
+## Essential Context
+<!-- Decisions already made, constraints, project patterns the worker must
+     respect. Include: relevant stack, conventions, architectural decisions,
+     why alternative approaches were discarded. -->
 
-## Critério de Pronto
-<!-- Verificável: comando a executar + resultado esperado.
-     O worker NÃO pode reportar done sem rodar este comando e ver este resultado. -->
-**Comando:** `<comando>`
-**Resultado esperado:** <o que deve aparecer>
+## Done Criterion
+<!-- Verifiable: command to run + expected result.
+     The worker may NOT report done without running this command and seeing this result. -->
+**Command:** `<command>`
+**Expected result:** <what should appear>
 
-## Formato de Output
-<!-- O que reportar de volta: commit hash? diff resumido? lista de achados?
-     Seja explícito — o worker não vai adivinhar. -->
+## Output Format
+<!-- What to report back: commit hash? summarized diff? list of findings?
+     Be explicit — the worker will not guess. -->
 
-## Paralelo-com / Depende-de
-<!-- IDs de tasks irmãs rodando em paralelo (alerta de arquivos compartilhados)
-     ou tasks que devem completar antes deste worker iniciar. -->
-- Paralelo-com: (nenhum | task-X)
-- Depende-de: (nenhum | task-Y completa)
+## Parallel-with / Depends-on
+<!-- IDs of sibling tasks running in parallel (shared-file warning)
+     or tasks that must complete before this worker starts. -->
+- Parallel-with: (none | task-X)
+- Depends-on: (none | task-Y complete)
 ```
 
 ---
 
-## Exemplo Completo
+## Complete Example
 
 ```markdown
-## Objetivo
-Criar endpoint `POST /api/products` com validação Zod e persistência via Prisma.
-A validação deve rodar antes de qualquer escrita no banco para garantir que
-dados inválidos nunca cheguem ao storage.
+## Objective
+Create endpoint `POST /api/products` with Zod validation and persistence via Prisma.
+Validation must run before any write to the database to ensure that
+invalid data never reaches storage.
 
-## Skills a Carregar
-- `skills/stack/prisma.md` — padrões de schema e transaction handling
-- `skills/api-patterns.md` — estrutura de Route Handler e tratamento de erro
-- `skills/security-best-practices.md` — seção "Zod validation on ALL external input"
+## Skills to Load
+- `skills/stack/prisma.md` — schema patterns and transaction handling
+- `skills/api-patterns.md` — Route Handler structure and error handling
+- `skills/security-best-practices.md` — "Zod validation on ALL external input" section
 
-## Escopo de Arquivos
-**Pode ler/editar:**
-- `app/api/products/route.ts` (criar se não existir)
-- `lib/validations/product.ts` (criar se não existir)
-- `prisma/schema.prisma` (apenas leitura — não alterar)
-- `types/product.ts` (apenas leitura — usar os tipos existentes)
+## File Scope
+**May read/edit:**
+- `app/api/products/route.ts` (create if it does not exist)
+- `lib/validations/product.ts` (create if it does not exist)
+- `prisma/schema.prisma` (read only — do not change)
+- `types/product.ts` (read only — use the existing types)
 
-**Fora de escopo (não tocar):**
-- Qualquer outro arquivo em `app/api/`
-- Migrations Prisma — schema já está aprovado
-- Testes E2E existentes
+**Out of scope (do not touch):**
+- Any other file in `app/api/`
+- Prisma migrations — schema is already approved
+- Existing E2E tests
 
-## Contexto Essencial
+## Essential Context
 - Stack: Next.js App Router, TypeScript strict, Prisma 5, Bun
-- Convenção de erro: `{ error: string, code: string }` com HTTP status correto
-- Autenticação: já existe `lib/auth/session.ts` — importar `getSession()` e
-  retornar 401 se sessão nula (não implementar auth do zero)
-- O model `Product` no schema tem campos obrigatórios: `name`, `price`, `tenantId`
-- `tenantId` deve vir da sessão, NUNCA do body da requisição
+- Error convention: `{ error: string, code: string }` with the correct HTTP status
+- Authentication: `lib/auth/session.ts` already exists — import `getSession()` and
+  return 401 if the session is null (do not implement auth from scratch)
+- The `Product` model in the schema has required fields: `name`, `price`, `tenantId`
+- `tenantId` must come from the session, NEVER from the request body
 
-## Critério de Pronto
-**Comando:** `bun test app/api/products/route.test.ts`
-**Resultado esperado:** todos os testes passando, 0 failures
+## Done Criterion
+**Command:** `bun test app/api/products/route.test.ts`
+**Expected result:** all tests passing, 0 failures
 
-(Se o arquivo de teste não existir, criar antes de implementar — TDD obrigatório.)
+(If the test file does not exist, create it before implementing — TDD mandatory.)
 
-## Formato de Output
-Reportar:
-1. Hash do commit com a implementação
-2. Sumário dos testes: `N passed, 0 failed`
-3. Se houver decisão de design não óbvia, listar em 1-2 bullets
+## Output Format
+Report:
+1. Hash of the commit with the implementation
+2. Test summary: `N passed, 0 failed`
+3. If there is a non-obvious design decision, list it in 1-2 bullets
 
-## Paralelo-com / Depende-de
-- Paralelo-com: task-frontend-product-form (arquivos distintos — sem conflito)
-- Depende-de: task-schema-product completa (migration já deve estar aplicada)
+## Parallel-with / Depends-on
+- Parallel-with: task-frontend-product-form (distinct files — no conflict)
+- Depends-on: task-schema-product complete (migration must already be applied)
 ```
 
 ---
 
-## Seleção de Modelo
+## Model Selection
 
-| Modelo | Usar quando |
+| Model | Use when |
 |--------|-------------|
-| `haiku` | Tarefas mecânicas: formatar output, gerar boilerplate simples, buscar em docs |
-| `sonnet` | Implementação padrão: CRUD, componentes, refactoring, testes unitários |
-| `opus` / `fable` | Alta complexidade: schema migrations com impacto cross-tenant, design de sistema distribuído, concorrência, decisões arquiteturais com trade-offs não-óbvios |
+| `haiku` | Mechanical tasks: format output, generate simple boilerplate, search docs |
+| `sonnet` | Standard implementation: CRUD, components, refactoring, unit tests |
+| `opus` / `fable` | High complexity: schema migrations with cross-tenant impact, distributed system design, concurrency, architectural decisions with non-obvious trade-offs |
 
-**Regra rápida:** quando o erro de julgamento do modelo pode custar horas de
-rollback (migrations, design de contratos de API públicos, mudanças de RLS),
-use opus/fable. Para todo o resto, sonnet é suficiente.
+**Quick rule:** when a model's judgment error can cost hours of
+rollback (migrations, design of public API contracts, RLS changes),
+use opus/fable. For everything else, sonnet is enough.

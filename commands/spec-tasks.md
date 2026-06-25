@@ -1,109 +1,109 @@
 ---
-description: Phase 3 — Gera o plano de tarefas atômicas com ordem de dependência e critérios de verificação por task. Use após /spec-design. Gatilhos: "tasks", "gerar tarefas", "plano de implementação", "decompor em tasks", "/spec-tasks [feature]".
+description: Phase 3 — Generates the atomic task plan with dependency order and per-task verification criteria. Use after /spec-design. Triggers: "tasks", "generate tasks", "implementation plan", "break down into tasks", "/spec-tasks [feature]".
 ---
 
-## Contexto necessário
-Leia antes de executar:
-- `.specs/features/[feature]/spec.md` — acceptance criteria (cada AC vira ao menos 1 task)
-- `.specs/features/[feature]/design.md` — contratos, schema, arquitetura
-- `.specs/memory/constitution.md` — padrões de qualidade (cobertura de testes, etc.)
+## Required context
+Read before executing:
+- `.specs/features/[feature]/spec.md` — acceptance criteria (each AC becomes at least 1 task)
+- `.specs/features/[feature]/design.md` — contracts, schema, architecture
+- `.specs/memory/constitution.md` — quality standards (test coverage, etc.)
 
-## Fase: Phase 3 — Tasks
+## Phase: Phase 3 — Tasks
 
-## Saída esperada
+## Expected output
 `.specs/features/[feature-name]/tasks.md`
 
-## Processo
+## Process
 
-1. **Leia spec.md e design.md** na íntegra antes de gerar qualquer task.
+1. **Read spec.md and design.md** in full before generating any task.
 
-2. **Prioridade por impacto no usuário**:
+2. **Prioritize by user impact**:
    ```
-   Score = (Impacto × Confiança) / Esforço
+   Score = (Impact × Confidence) / Effort
    H=3, M=2, L=1
    ```
-   - Score > 4 → Fazer primeiro
-   - Score 2-4 → Fazer neste ciclo
+   - Score > 4 → Do first
+   - Score 2-4 → Do this cycle
    - Score < 2 → Backlog
 
-3. **Estrutura de cada task**: Atômica de 2-5 minutos. Especificar paths exatos. Sem ambiguidade sobre o que "feito" significa.
+3. **Structure of each task**: Atomic, 2-5 minutes. Specify exact paths. No ambiguity about what "done" means.
 
-4. **Criar `tasks.md`**:
+4. **Create `tasks.md`**:
 
 ```markdown
 # Tasks: [Feature Name]
-**Feature:** [feature-name] | **Data:** [YYYY-MM-DD] | **Estimativa:** [total]
-**Referências:** spec.md | design.md
+**Feature:** [feature-name] | **Date:** [YYYY-MM-DD] | **Estimate:** [total]
+**References:** spec.md | design.md
 
-## Resumo
-- Total de tasks: [N]
-- Estimativa total: [X horas / Y dias]
-- Dependências externas: [migrations, serviços, aprovações necessárias]
+## Summary
+- Total tasks: [N]
+- Total estimate: [X hours / Y days]
+- External dependencies: [migrations, services, approvals required]
 
 ## Tasks
 
 ### Setup & Foundation
-- [ ] **T-01**: Criar migration `[nome]` para [tabela/campo]
-  - Arquivo: `prisma/migrations/[timestamp]_[nome]/migration.sql`
-  - Critério: `bun prisma migrate dev` executa sem erro
-  - Estimativa: 15min
+- [ ] **T-01**: Create migration `[name]` for [table/field]
+  - File: `prisma/migrations/[timestamp]_[name]/migration.sql`
+  - Criterion: `bun prisma migrate dev` runs without error
+  - Estimate: 15min
 
-- [ ] **T-02**: Gerar Prisma Client após migration
-  - Comando: `bun prisma generate`
-  - Critério: sem erros de tipo em `src/generated/prisma`
-  - Estimativa: 5min
+- [ ] **T-02**: Generate Prisma Client after migration
+  - Command: `bun prisma generate`
+  - Criterion: no type errors in `src/generated/prisma`
+  - Estimate: 5min
 
-### Lógica de Negócio (TDD — escrever testes antes)
-- [ ] **T-03**: Escrever teste para [Server Action]
-  - Arquivo: `src/actions/__tests__/[feature].actions.test.ts`
-  - Critério: teste falha (RED) — verificar com `bun test`
-  - Estimativa: 20min
+### Business Logic (TDD — write tests first)
+- [ ] **T-03**: Write test for [Server Action]
+  - File: `src/actions/__tests__/[feature].actions.test.ts`
+  - Criterion: test fails (RED) — verify with `bun test`
+  - Estimate: 20min
 
-- [ ] **T-04**: Implementar [Server Action]
-  - Arquivo: `src/actions/[feature].actions.ts`
-  - Contrato: ver design.md seção "Server Actions"
-  - Critério: teste T-03 passa (GREEN) — verificar com `bun test`
-  - Estimativa: 30min
+- [ ] **T-04**: Implement [Server Action]
+  - File: `src/actions/[feature].actions.ts`
+  - Contract: see design.md section "Server Actions"
+  - Criterion: test T-03 passes (GREEN) — verify with `bun test`
+  - Estimate: 30min
 
-- [ ] **T-05**: Refatorar [Server Action] se necessário
-  - Critério: todos os testes passam + código segue padrões da constitution
-  - Estimativa: 15min
+- [ ] **T-05**: Refactor [Server Action] if needed
+  - Criterion: all tests pass + code follows the constitution standards
+  - Estimate: 15min
 
-### Interface (componentes)
-- [ ] **T-06**: Criar componente `[Nome]` (Server Component)
-  - Arquivo: `src/components/[feature]/[Nome].tsx`
-  - Props: ver design.md seção "Componentes React"
-  - Critério: renderiza sem erros em desenvolvimento
-  - Estimativa: 45min
+### Interface (components)
+- [ ] **T-06**: Create component `[Name]` (Server Component)
+  - File: `src/components/[feature]/[Name].tsx`
+  - Props: see design.md section "React Components"
+  - Criterion: renders without errors in development
+  - Estimate: 45min
 
-### Integração
-- [ ] **T-07**: Conectar componente com Server Action
-  - Critério: AC-01 do spec.md pode ser verificado manualmente
-  - Estimativa: 20min
+### Integration
+- [ ] **T-07**: Connect component with Server Action
+  - Criterion: AC-01 of spec.md can be verified manually
+  - Estimate: 20min
 
-### Validação Final
-- [ ] **T-08**: Rodar suite completa de testes
-  - Comando: `bun test`
-  - Critério: 0 failures, 0 skipped
-  - Estimativa: 5min
+### Final Validation
+- [ ] **T-08**: Run the full test suite
+  - Command: `bun test`
+  - Criterion: 0 failures, 0 skipped
+  - Estimate: 5min
 
-- [ ] **T-09**: Build de produção
-  - Comando: `bun run build`
-  - Critério: exit 0, sem erros TypeScript
-  - Estimativa: 5min
+- [ ] **T-09**: Production build
+  - Command: `bun run build`
+  - Criterion: exit 0, no TypeScript errors
+  - Estimate: 5min
 
-## Mapeamento AC → Tasks
-| Acceptance Criteria | Tasks que validam |
+## AC → Tasks Mapping
+| Acceptance Criteria | Validating tasks |
 |---|---|
 | AC-01 | T-03, T-04, T-07 |
 | AC-02 | T-05, T-06 |
-| AC-ERROR-01 | T-03 (caso de erro) |
+| AC-ERROR-01 | T-03 (error case) |
 ```
 
-5. **Confirmar**: Apresente a lista de tasks. Para features complexas, pergunte se o usuário quer decompor mais alguma task antes de iniciar.
+5. **Confirm**: Present the task list. For complex features, ask whether the user wants to break down any task further before starting.
 
-## Regras
-- Toda task deve ter critério de verificação executável (comando + saída esperada)
-- Tasks de teste SEMPRE antes de tasks de implementação (TDD)
-- Nunca agrupe "implementar X e Y" numa task — uma responsabilidade por task
-- O mapeamento AC → Tasks garante que nenhum acceptance criteria fique sem cobertura
+## Rules
+- Every task must have an executable verification criterion (command + expected output)
+- Test tasks ALWAYS before implementation tasks (TDD)
+- Never group "implement X and Y" into one task — one responsibility per task
+- The AC → Tasks mapping ensures no acceptance criterion is left without coverage

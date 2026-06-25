@@ -125,33 +125,33 @@ Before presenting any UI work:
 - [ ] No layout shift (proper skeleton loaders)
 - [ ] `bun tsc --noEmit` passes
 
-## Verificação Visual
+## Visual Verification
 
-Após implementar componentes visuais, SEMPRE verifique o resultado quando possível.
+After implementing visual components, ALWAYS verify the result when possible.
 
-### Prioridade de Ferramentas
-1. **Playwright** — testes automatizados de UI (`npx playwright test`)
-2. **Puppeteer MCP** — browser isolado sem sessões do usuário
-3. **Browser DevTools** — via terminal para network/console checks
+### Tool Priority
+1. **Playwright** — automated UI tests (`npx playwright test`)
+2. **Puppeteer MCP** — isolated browser without the user's sessions
+3. **Browser DevTools** — via terminal for network/console checks
 
-### O Que Verificar
-- Layout corresponde ao design/spec
-- Responsividade: mobile (375px), tablet (768px), desktop (1280px+)
-- Estados: loading skeleton, empty state, error state, success
-- Interatividade: hover, focus, click, transitions
-- Acessibilidade: tab navigation, screen reader labels, contrast ratio
+### What to Verify
+- Layout matches the design/spec
+- Responsiveness: mobile (375px), tablet (768px), desktop (1280px+)
+- States: loading skeleton, empty state, error state, success
+- Interactivity: hover, focus, click, transitions
+- Accessibility: tab navigation, screen reader labels, contrast ratio
 - Performance: no layout shift, skeleton loaders, lazy loading
 
-### Processo
-1. Após implementar, rode `npm run dev` e acesse a rota relevante
-2. Capture evidência visual (screenshot ou output de teste)
-3. Verifique contra os acceptance criteria da spec/story
-4. Reporte qualquer discrepância ANTES de marcar como concluído
+### Process
+1. After implementing, run `npm run dev` and visit the relevant route
+2. Capture visual evidence (screenshot or test output)
+3. Verify against the acceptance criteria of the spec/story
+4. Report any discrepancy BEFORE marking as complete
 
 ### Anti-pattern
-NÃO declare que um componente "está funcionando" sem evidência visual.
-Se não puder verificar visualmente, diga explicitamente e sugira como
-o usuário pode verificar.
+Do NOT declare that a component "is working" without visual evidence.
+If you cannot verify it visually, say so explicitly and suggest how
+the user can verify it.
 
 ## Reality Check (Anti-Self-Deception)
 

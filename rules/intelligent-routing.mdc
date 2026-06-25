@@ -1,75 +1,75 @@
 ---
-description: Detecção silenciosa de domínio e seleção automática de agente especialista para qualquer request. Aplica-se a toda mensagem antes de responder — sem exigir que o usuário conheça a arquitetura de agentes do OSForge.
+description: Silent domain detection and automatic selection of a specialist agent for any request. Applies to every message before responding — without requiring the user to know OSForge's agent architecture.
 globs: ["**/*.ts", "**/*.tsx", "**/*.md", "**/*.prisma"]
 alwaysApply: true
 ---
 
 # Rule: Intelligent Routing
 
-Antes de responder a QUALQUER request de desenvolvimento, executar análise silenciosa:
+Before responding to ANY development request, perform a silent analysis:
 
-## 1. Classificar o request
+## 1. Classify the request
 
-| Tipo | Exemplos |
+| Type | Examples |
 |---|---|
-| QUESTION | "Como funciona X?", "O que é Y?" |
-| QUICK_FIX | 1 arquivo, zero ambiguidade, pattern conhecido |
-| FEATURE | Nova funcionalidade, múltiplos arquivos |
-| BUG | Erro, falha, comportamento inesperado |
-| REVIEW | Revisar código, auditar, checar qualidade |
-| DESIGN | UI, UX, layout, componente visual |
-| UNCLEAR | Request vago — pedir clarificação primeiro |
+| QUESTION | "How does X work?", "What is Y?" |
+| QUICK_FIX | 1 file, zero ambiguity, known pattern |
+| FEATURE | New functionality, multiple files |
+| BUG | Error, failure, unexpected behavior |
+| REVIEW | Review code, audit, check quality |
+| DESIGN | UI, UX, layout, visual component |
+| UNCLEAR | Vague request — ask for clarification first |
 
-Para QUESTION e UNCLEAR: responder diretamente sem routing. Para os demais: continuar.
+For QUESTION and UNCLEAR: respond directly without routing. For the rest: continue.
 
-## 2. Detectar domínios
+## 2. Detect domains
 
-Analisar keywords e contexto do request:
+Analyze the request's keywords and context:
 
-| Keyword/Contexto | Domínio |
+| Keyword/Context | Domain |
 |---|---|
-| componente, page, layout, UI, tela, modal, form, dashboard, tailwind, shadcn | FRONTEND |
-| API, route, Server Action, banco, schema, query, Prisma, endpoint | BACKEND |
-| auth, JWT, RLS, permissão, senha, token, CSRF, SQL injection, pentest | SECURITY |
-| teste, test, spec, playwright, coverage, mock, TDD, E2E | TESTING |
+| component, page, layout, UI, screen, modal, form, dashboard, tailwind, shadcn | FRONTEND |
+| API, route, Server Action, database, schema, query, Prisma, endpoint | BACKEND |
+| auth, JWT, RLS, permission, password, token, CSRF, SQL injection, pentest | SECURITY |
+| test, spec, playwright, coverage, mock, TDD, E2E | TESTING |
 | deploy, CI, GitHub Actions, Vercel, env, pipeline, Docker, infra | DEVOPS |
-| performance, lento, otimização, bundle, cache, N+1, Lighthouse, profiling | PERFORMANCE |
-| bug, erro, exception, stack trace, crash, 500, debug | DEBUG |
-| refatorar, limpar, organizar, simplificar, legacy | REFACTOR |
-| mobile, React Native, Flutter, iOS, Android, touch, app mobile | MOBILE |
-| game, jogo, sprite, game loop, Unity, Godot, multiplayer, 2D, 3D | GAME |
-| database, banco de dados, schema design, indexing, migration, ORM | DATABASE |
+| performance, slow, optimization, bundle, cache, N+1, Lighthouse, profiling | PERFORMANCE |
+| bug, error, exception, stack trace, crash, 500, debug | DEBUG |
+| refactor, clean up, organize, simplify, legacy | REFACTOR |
+| mobile, React Native, Flutter, iOS, Android, touch, mobile app | MOBILE |
+| game, sprite, game loop, Unity, Godot, multiplayer, 2D, 3D | GAME |
+| database, schema design, indexing, migration, ORM | DATABASE |
 | SEO, ranking, meta tags, sitemap, E-E-A-T, search engine | SEO |
-| documentação, docs, README, manual, changelog, ADR | DOCS |
+| documentation, docs, README, manual, changelog, ADR | DOCS |
 | REST, GraphQL, tRPC, API design, rate limit, versioning | API_DESIGN |
-| novo projeto, scaffolding, template, boilerplate, criar app | SCAFFOLDING |
+| new project, scaffolding, template, boilerplate, create app | SCAFFOLDING |
 | Rust, cargo, ownership, borrowing | RUST |
 | Python, FastAPI, Django, Flask, pip | PYTHON |
 | bash, shell, Linux, terminal, PowerShell, Windows | INFRA |
-| brainstorm, ideia, explorar problema, ideação | IDEATION |
+| brainstorm, idea, explore a problem, ideation | IDEATION |
 | GEO, AI search, LLM visibility, Perplexity, ChatGPT ranking | GEO |
-| visualizar plano, breakdown visual, HTML interativo, apresentar spec, agency delivery | VISUALIZATION |
-| premium, awwwards, agência, $150k, magnetic, GSAP, perpetual motion, bento 2.0, double-bezel, liquid glass, scrolltelling | DESIGN_TASTE |
+| visualize plan, visual breakdown, interactive HTML, present spec, agency delivery | VISUALIZATION |
+| premium, awwwards, agency, $150k, magnetic, GSAP, perpetual motion, bento 2.0, double-bezel, liquid glass, scrolltelling | DESIGN_TASTE |
 | minimalist editorial, Notion style, Linear style, warm monochrome, Apple-tier, soft premium, brutalist, industrial, Swiss, CRT terminal, blueprint UI | DESIGN_MODE |
-| redesenhar, modernizar UI, upgrade visual, tirar cara de AI, site parece template, melhorar design atual | REDESIGN |
+| redesign, modernize UI, visual upgrade, remove AI look, site looks like a template, improve current design | REDESIGN |
 | Google Stitch, DESIGN.md (export), Stitch prompt, semantic design system | STITCH_EXPORT |
-| output completo, sem placeholder, sem `// ...`, sem `// TODO`, exaustivo, sem cortar | OUTPUT_QUALITY |
-| modo automático, yolo, headless, CI mode, auto-approve, sem confirmação, autonomous | AUTO_MODE |
-| comprimir contexto, compactar, summary, perto do limite, context full, /compact | CONTEXT_FULL |
-| revisar minha skill, validar minha rule, lint config, conflito de hooks, minha skill está boa? | CONFIG_REVIEW |
-| stuck, travado, loop, não progredindo, esquece o que estava fazendo, recuperar sessão | STUCK |
+| complete output, no placeholder, no `// ...`, no `// TODO`, exhaustive, don't cut off | OUTPUT_QUALITY |
+| automatic mode, yolo, headless, CI mode, auto-approve, no confirmation, autonomous | AUTO_MODE |
+| compress context, compact, summary, near the limit, context full, /compact | CONTEXT_FULL |
+| review my skill, validate my rule, lint config, hook conflict, is my skill good? | CONFIG_REVIEW |
+| stuck, loop, not progressing, forgets what it was doing, recover session | STUCK |
 
-## 3. Selecionar agente(s)
+## 3. Select agent(s)
 
-Com base nos domínios detectados:
+Based on the detected domains:
 
-| Domínio(s) | Agente(s) |
+| Domain(s) | Agent(s) |
 |---|---|
 | FRONTEND | `frontend-engineer` |
 | BACKEND | `backend-engineer` |
 | SECURITY | `security-auditor` |
-| SECURITY (ofensivo/pentest) | `penetration-tester` |
-| TESTING | `test-engineer` ou `qa-automation-engineer` |
+| SECURITY (offensive/pentest) | `penetration-tester` |
+| TESTING | `test-engineer` or `qa-automation-engineer` |
 | DEVOPS | `devops-engineer` |
 | PERFORMANCE | `performance-optimizer` |
 | DEBUG | `debugger` |
@@ -81,111 +81,111 @@ Com base nos domínios detectados:
 | DATABASE | `database-architect` |
 | SEO / GEO | `seo-specialist` |
 | DOCS | `documentation-writer` |
-| SCAFFOLDING | usa `skills/app-builder` (sem agente dedicado) |
-| IDEATION | usa `skills/brainstorming` (sem agente dedicado) |
+| SCAFFOLDING | uses `skills/app-builder` (no dedicated agent) |
+| IDEATION | uses `skills/brainstorming` (no dedicated agent) |
 | API_DESIGN | `backend-engineer` + `skills/api-patterns` |
 | FRONTEND + SECURITY | `frontend-engineer` + `security-auditor` |
 | FRONTEND + BACKEND | `frontend-engineer` + `backend-engineer` |
 | BACKEND + DATABASE | `backend-engineer` + `database-architect` |
 | SECURITY + TESTING | `security-auditor` + `penetration-tester` |
-| VISUALIZATION | usa `skills/visual-planner` + `skills/aesthetic-boost` (sem agente dedicado) |
+| VISUALIZATION | uses `skills/visual-planner` + `skills/aesthetic-boost` (no dedicated agent) |
 | FRONTEND + DESIGN_TASTE | `frontend-engineer` + `skills/taste-design-dials` + `skills/aesthetic-boost` |
-| FRONTEND + DESIGN_MODE | `frontend-engineer` + `skills/aesthetic-modes` (resolver Editorial/Brutalist/Soft) |
-| REDESIGN | `frontend-engineer` + `skills/redesign-audit` → depois `skills/ui-audit` |
+| FRONTEND + DESIGN_MODE | `frontend-engineer` + `skills/aesthetic-modes` (resolve Editorial/Brutalist/Soft) |
+| REDESIGN | `frontend-engineer` + `skills/redesign-audit` → then `skills/ui-audit` |
 | STITCH_EXPORT | `skills/stitch-design-export` + `skills/ui-design-intelligence` |
 | OUTPUT_QUALITY | always-active modifier `skills/output-enforcement` |
-| Qualquer task longa (>500 LOC ou >5 deliverables) | adicionar `skills/output-enforcement` automaticamente |
-| AUTO_MODE | `skills/tool-safety-classifier` (gate pré tool call em modo autônomo) |
+| Any long task (>500 LOC or >5 deliverables) | add `skills/output-enforcement` automatically |
+| AUTO_MODE | `skills/tool-safety-classifier` (pre-tool-call gate in autonomous mode) |
 | CONTEXT_FULL | `skills/context-compact` (9-section structured summary) |
-| CONFIG_REVIEW | `skills/config-critique` (4-axis LLM linter de customizações) |
-| STUCK | `skills/stuck-recovery` (detect loop + save state + reset cirúrgico) |
-| Explorar codebase desconhecido | `explorer-agent` |
-| Planejamento de produto | `product-manager` ou `product-owner` |
-| Planejamento de projeto | `project-planner` |
-| Arquitetura de sistema | `system-architect` |
-| 3+ domínios ou FEATURE complexa | → Acionar Orchestrator |
+| CONFIG_REVIEW | `skills/config-critique` (4-axis LLM linter for customizations) |
+| STUCK | `skills/stuck-recovery` (detect loop + save state + surgical reset) |
+| Explore an unknown codebase | `explorer-agent` |
+| Product planning | `product-manager` or `product-owner` |
+| Project planning | `project-planner` |
+| System architecture | `system-architect` |
+| 3+ domains or complex FEATURE | → Activate the Orchestrator |
 
-## 4. Comunicar e agir
+## 4. Communicate and act
 
-### 4.0 Declaração de Triage (STANDARD / COMPLEX obrigatório)
+### 4.0 Triage Declaration (mandatory for STANDARD / COMPLEX)
 
-Para demandas FEATURE ou BUG classificadas como STANDARD ou COMPLEX, declarar
-**na primeira linha da resposta**, antes de qualquer plano:
+For FEATURE or BUG demands classified as STANDARD or COMPLEX, declare it
+**on the first line of the response**, before any plan:
 
 ```
-Triage: STANDARD — endpoint novo com validação Zod + persistência Prisma, 3-5 arquivos
+Triage: STANDARD — new endpoint with Zod validation + Prisma persistence, 3-5 files
 ```
 ```
-Triage: COMPLEX — refatoração de schema multi-tenant com migrations e RLS, impacto cross-feature
+Triage: COMPLEX — multi-tenant schema refactor with migrations and RLS, cross-feature impact
 ```
 
-QUICK_FIX e QUESTION ficam **isentos** desta declaração.
+QUICK_FIX and QUESTION are **exempt** from this declaration.
 
-Para requests QUICK_FIX com 1 domínio: agir direto, sem anunciar.
+For QUICK_FIX requests with 1 domain: act directly, without announcing.
 
-Para FEATURE, BUG, REVIEW com domínio claro: informar concisamente no início:
+For FEATURE, BUG, REVIEW with a clear domain: inform concisely at the start:
 ```
-🤖 Aplicando expertise de `@frontend-engineer` + `@security-auditor`...
+🤖 Applying expertise from `@frontend-engineer` + `@security-auditor`...
 ```
-Depois responder com a persona do(s) agente(s) selecionado(s).
+Then respond with the persona of the selected agent(s).
 
-Para 3+ domínios ou FEATURE complexa: sugerir Orchestrator:
+For 3+ domains or a complex FEATURE: suggest the Orchestrator:
 ```
-🤖 Detectado: Frontend + Backend + Auth — demanda multi-domínio.
-Sugestão: ativar o Orchestrator para planejamento estruturado.
-Prefere prosseguir direto ou estruturar o plano?
+🤖 Detected: Frontend + Backend + Auth — multi-domain demand.
+Suggestion: activate the Orchestrator for structured planning.
+Prefer to proceed directly or structure the plan?
 ```
 
 ## 5. Post-Planning Visual Pipeline (Agency-Style Delivery)
 
-Após qualquer skill de planejamento gerar artefato, encadear apresentação visual.
-**Default: toda apresentação de spec ou plano vai para o OSForge Canvas** (servidor
-auto-iniciado por SessionStart hook; skill `skills/osforge-canvas`). Terminal recebe
-só um resumo curto com a URL. Exceções: usuário pediu "só texto"/"no terminal", ou
-pediu explicitamente documento standalone (→ `visual-planner`).
+After any planning skill generates an artifact, chain a visual presentation.
+**Default: every presentation of a spec or plan goes to the OSForge Canvas** (server
+auto-started by the SessionStart hook; skill `skills/osforge-canvas`). The terminal receives
+only a short summary with the URL. Exceptions: the user asked for "text only"/"in the terminal", or
+explicitly asked for a standalone document (→ `visual-planner`).
 
-| Gatilho | Ação automática |
+| Trigger | Automatic action |
 |---------|-----------------|
-| Apresentação de qualquer plano, spec ou breakdown (qualquer triage) | **Emitir artefato `skills/osforge-canvas` por default** + resumo curto no terminal com a URL |
-| Output de `spec-builder`, `prd-builder`, `arch-builder`, `epic-decomposer` em triage STANDARD/COMPLEX | Canvas (default acima); `skills/visual-planner` adicionalmente apenas se o usuário pedir documento standalone |
-| Usuário pede "só texto", "no terminal", "sem canvas" | Texto no terminal, sem canvas |
-| Usuário diz "visualizar", "breakdown visual", "apresentar", "tornar visual" | Executar `skills/visual-planner` + `skills/aesthetic-boost` |
-| Usuário diz "entrega de agência", "agency delivery", "apresentação profissional" | Pipeline completo: `visual-planner` → `aesthetic-boost` → `ui-design-intelligence` → `web-design-guidelines` |
+| Presentation of any plan, spec or breakdown (any triage) | **Emit a `skills/osforge-canvas` artifact by default** + short terminal summary with the URL |
+| Output of `spec-builder`, `prd-builder`, `arch-builder`, `epic-decomposer` in STANDARD/COMPLEX triage | Canvas (default above); `skills/visual-planner` additionally only if the user asks for a standalone document |
+| User asks for "text only", "in the terminal", "no canvas" | Text in the terminal, no canvas |
+| User says "visualize", "visual breakdown", "present", "make it visual" | Run `skills/visual-planner` + `skills/aesthetic-boost` |
+| User says "agency delivery", "professional presentation" | Full pipeline: `visual-planner` → `aesthetic-boost` → `ui-design-intelligence` → `web-design-guidelines` |
 
 ## 6. Design Taste Sub-Routing (when DESIGN detected)
 
-Após detectar DESIGN, executar análise secundária para escolher entre:
+After detecting DESIGN, perform a secondary analysis to choose between:
 
-| Sinal no prompt | Sub-skill ativada |
+| Signal in the prompt | Activated sub-skill |
 |---|---|
-| "premium", "awwwards", "agência", explicitamente "alto nível" | `taste-design-dials` (com dials default 8/6/4 ou ajustados pelo user) |
+| "premium", "awwwards", "agency", explicitly "high-end" | `taste-design-dials` (with default dials 8/6/4 or adjusted by the user) |
 | "minimal", "editorial", "Notion", "Linear", "warm", "document" | `aesthetic-modes` → `EDITORIAL_MINIMALIST` |
 | "brutalist", "industrial", "Swiss", "CRT", "terminal", "blueprint", "data-heavy" | `aesthetic-modes` → `INDUSTRIAL_BRUTALIST` |
 | "Apple-tier", "soft", "haptic", "glassmorphism", "luxury", "ethereal" | `aesthetic-modes` → `SOFT_PREMIUM` |
-| "redesenhar", "modernizar", "upgrade", "tirar cara de AI" | `redesign-audit` → depois `ui-audit` |
+| "redesign", "modernize", "upgrade", "remove AI look" | `redesign-audit` → then `ui-audit` |
 | "Google Stitch", "DESIGN.md" | `stitch-design-export` |
-| Sem sinal claro mas FRONTEND visual + alta importância | `taste-design-dials` (baseline) + `aesthetic-boost` (compact) |
+| No clear signal but visual FRONTEND + high importance | `taste-design-dials` (baseline) + `aesthetic-boost` (compact) |
 
-**Regra de bundling automático:**
-Toda task com domínio FRONTEND **E** indicadores de qualidade ("premium", "agency", "polish",
-"production-ready", "landing page", "hero", "marketing site") deve carregar:
-1. `frontend-design` (sempre — princípios + UX psychology)
-2. `aesthetic-boost` (sempre — anti-slop compact primer ~500 tokens)
+**Automatic bundling rule:**
+Every task with a FRONTEND domain **AND** quality indicators ("premium", "agency", "polish",
+"production-ready", "landing page", "hero", "marketing site") must load:
+1. `frontend-design` (always — principles + UX psychology)
+2. `aesthetic-boost` (always — anti-slop compact primer ~500 tokens)
 3. `taste-design-dials` (premium contexts)
-4. `aesthetic-modes` (se mood específico detectado)
-5. `ui-audit` (após implementação)
+4. `aesthetic-modes` (if a specific mood is detected)
+5. `ui-audit` (after implementation)
 
-**Accent color automático** (baseado no domínio detectado):
+**Automatic accent color** (based on the detected domain):
 - BACKEND / DATABASE / DEVOPS → Teal (`#2A7B9B`)
 - FRONTEND / DESIGN → Vermillion (`#D94F30`)
 - MOBILE / GAME → Coral (`#E06B56`)
 - SCAFFOLDING (dev tools, CLIs) → Forest (`#2D8B55`)
 - PERFORMANCE (fintech, analytics) → Amber (`#D4A843`)
 
-## Regras
+## Rules
 
-- Nunca bloquear o usuário — routing é sugestão inteligente, não barreira
-- Override explícito do usuário ("use o backend-engineer") sempre prevalece
-- Para requests ambíguos: fazer UMA pergunta de clarificação antes de rotear
-- Não anunciar routing para respostas simples (QUESTION, QUICK_FIX trivial)
-- Visual pipeline é automático em STANDARD/COMPLEX — mas o checkpoint de aprovação antes de prosseguir continua obrigatório
+- Never block the user — routing is an intelligent suggestion, not a barrier
+- An explicit user override ("use the backend-engineer") always prevails
+- For ambiguous requests: ask ONE clarification question before routing
+- Do not announce routing for simple responses (QUESTION, trivial QUICK_FIX)
+- The visual pipeline is automatic in STANDARD/COMPLEX — but the approval checkpoint before proceeding remains mandatory

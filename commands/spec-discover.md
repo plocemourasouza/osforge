@@ -1,78 +1,78 @@
 ---
-description: Phase 0 — Descobre e valida o problema do usuário antes de especificar qualquer solução. Garante que estamos construindo a coisa certa. Use ao iniciar qualquer feature que afete o usuário final. Gatilhos: "discover", "qual problema resolver", "por que construir", "validar hipótese", "problema do usuário", "/spec-discover [feature]".
+description: Phase 0 — Discovers and validates the user's problem before specifying any solution. Ensures we are building the right thing. Use when starting any feature that affects the end user. Triggers: "discover", "what problem to solve", "why build", "validate hypothesis", "user problem", "/spec-discover [feature]".
 ---
 
-## Contexto necessário
-Leia antes de executar:
-- `.specs/memory/constitution.md` (se existir)
-- `.specs/project/PROJECT.md` (se existir)
-- `.specs/project/STATE.md` (sessões anteriores)
+## Required context
+Read before executing:
+- `.specs/memory/constitution.md` (if it exists)
+- `.specs/project/PROJECT.md` (if it exists)
+- `.specs/project/STATE.md` (previous sessions)
 
-## Fase: Phase 0 — Discover (PDD)
+## Phase: Phase 0 — Discover (PDD)
 
-## Saída esperada
+## Expected output
 `.specs/features/[feature-name]/discovery.md`
 
-## Processo
+## Process
 
-O argumento passado após `/spec-discover` é a descrição da feature. Se vazio, pergunte: "Qual feature ou problema você quer explorar?"
+The argument passed after `/spec-discover` is the feature description. If empty, ask: "Which feature or problem do you want to explore?"
 
-1. **Gerar nome da feature**: 2-4 palavras em kebab-case extraindo as keywords mais significativas.
-   - "adicionar autenticação com Google" → `google-auth`
-   - "corrigir timeout no checkout" → `fix-checkout-timeout`
+1. **Generate feature name**: 2-4 words in kebab-case extracting the most meaningful keywords.
+   - "add authentication with Google" → `google-auth`
+   - "fix timeout at checkout" → `fix-checkout-timeout`
 
-2. **Criar diretório**: `.specs/features/[feature-name]/`
+2. **Create directory**: `.specs/features/[feature-name]/`
 
-3. **Fazer perguntas de discovery** (máximo 4, só se necessário):
-   - Quem é o usuário afetado por este problema?
-   - Qual evidência temos de que este é um problema real?
-   - Como saberemos que resolvemos o problema?
-   - O que NÃO está no escopo do MVP?
+3. **Ask discovery questions** (maximum 4, only if needed):
+   - Who is the user affected by this problem?
+   - What evidence do we have that this is a real problem?
+   - How will we know we solved the problem?
+   - What is NOT in the MVP scope?
 
-4. **Criar `discovery.md`** com a estrutura abaixo, usando informações do input e inferências do contexto:
+4. **Create `discovery.md`** with the structure below, using information from the input and inferences from context:
 
 ```markdown
 # Discovery: [Feature Name]
-**Feature:** [feature-name] | **Data:** [YYYY-MM-DD] | **Status:** Draft
+**Feature:** [feature-name] | **Date:** [YYYY-MM-DD] | **Status:** Draft
 
-## Problema do Usuário
-- **Quem sofre:** [persona específica]
-- **O que acontece:** [situação atual — dor concreta, observável]
-- **Evidência:** [dados, feedback, métricas ou observações]
-- **Frequência:** [diário / semanal / ocasional]
+## User Problem
+- **Who suffers:** [specific persona]
+- **What happens:** [current situation — concrete, observable pain]
+- **Evidence:** [data, feedback, metrics, or observations]
+- **Frequency:** [daily / weekly / occasional]
 
-## Hipótese
-Acreditamos que [solução proposta] vai [resultado esperado] para [persona]
-porque [razão baseada em evidência].
+## Hypothesis
+We believe that [proposed solution] will [expected result] for [persona]
+because [evidence-based reason].
 
-## Métricas de Sucesso
-| Métrica | Baseline (atual) | Target | Como medir | Prazo |
+## Success Metrics
+| Metric | Baseline (current) | Target | How to measure | Deadline |
 |---------|------------------|--------|------------|-------|
-| [primária] | [valor] | [meta] | [como] | [semanas] |
-| [secundária] | [valor] | [meta] | [como] | [semanas] |
+| [primary] | [value] | [goal] | [how] | [weeks] |
+| [secondary] | [value] | [goal] | [how] | [weeks] |
 
-## Critério de Decisão
-- **Sucesso:** [métrica primária atinge target em prazo]
-- **Pivotar:** [se métrica < X% do target]
-- **Abandonar:** [se após Y semanas sem melhora]
+## Decision Criteria
+- **Success:** [primary metric hits target on schedule]
+- **Pivot:** [if metric < X% of target]
+- **Abandon:** [if after Y weeks with no improvement]
 
 ## MVP Scope
-- **Inclui:** [funcionalidades mínimas para testar hipótese]
-- **NÃO inclui:** [o que pode esperar]
+- **Includes:** [minimal functionality to test the hypothesis]
+- **Does NOT include:** [what can wait]
 
-## Prioridade
-Impacto: [Alto/Médio/Baixo] × Confiança: [Alta/Média/Baixa] / Esforço: [Alto/Médio/Baixo]
-Score: [calcule: H=3, M=2, L=1 → (Impacto × Confiança) / Esforço]
+## Priority
+Impact: [High/Medium/Low] × Confidence: [High/Medium/Low] / Effort: [High/Medium/Low]
+Score: [compute: H=3, M=2, L=1 → (Impact × Confidence) / Effort]
 
-## Alternativas Consideradas
-- Não fazer nada: [consequência]
-- [Alternativa A]: descartada porque [razão]
+## Alternatives Considered
+- Do nothing: [consequence]
+- [Alternative A]: discarded because [reason]
 ```
 
-5. **Confirmar**: Apresente o discovery criado. Pergunte se deseja prosseguir para `/spec-specify` ou se há ajustes.
+5. **Confirm**: Present the created discovery. Ask whether to proceed to `/spec-specify` or whether there are adjustments.
 
-## Regras
-- NUNCA pule esta fase para features que tocam o usuário final
-- Para tasks puramente técnicas (refactoring, infra, CI/CD), esta fase é opcional
-- Se não há evidência do problema, sinalize e sugira coletar dados antes de especificar
-- Se não consegue definir métrica de sucesso, o escopo está vago demais — resolva antes de avançar
+## Rules
+- NEVER skip this phase for features that touch the end user
+- For purely technical tasks (refactoring, infra, CI/CD), this phase is optional
+- If there is no evidence of the problem, flag it and suggest collecting data before specifying
+- If you cannot define a success metric, the scope is too vague — resolve it before moving forward

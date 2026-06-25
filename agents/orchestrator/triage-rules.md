@@ -1,131 +1,131 @@
-# Regras de Triage
+# Triage Rules
 
-## Classificação de Complexidade
+## Complexity Classification
 
-### QUICK — Execução direta
+### QUICK — Direct execution
 
-**TODOS os critérios devem se aplicar:**
-- Escopo claro e limitado (1-3 arquivos)
-- Zero ambiguidade no que fazer
-- Sem decisões arquiteturais novas
-- Sem novos models/schemas no Prisma
-- Sem integrações externas novas
-- Zero blast radius (sem consequências não-intencionais)
+**ALL criteria must apply:**
+- Clear and limited scope (1-3 files)
+- Zero ambiguity about what to do
+- No new architectural decisions
+- No new Prisma models/schemas
+- No new external integrations
+- Zero blast radius (no unintended consequences)
 
-**Sinais típicos do usuário:**
-- "corrigir", "fix", "ajustar", "bug"
-- "adicionar campo", "mudar cor", "renomear"
-- "refatorar função", "extrair componente"
-- "adicionar validação em X"
-- "rodar lint", "formatar código", "atualizar dependência"
-- "melhorar SEO da página X", "corrigir meta tags"
-- "escrever documentação de X", "criar README"
+**Typical user signals:**
+- "corrigir", "fix", "adjust", "bug"
+- "add field", "change color", "rename"
+- "refactor function", "extract component"
+- "add validation in X"
+- "run lint", "format code", "update dependency"
+- "improve SEO of page X", "fix meta tags"
+- "write documentation for X", "create README"
 
 **Pipeline:** spec → implement → review
-**Artefatos:** tech-spec.md apenas
+**Artifacts:** tech-spec.md only
 
 ---
 
-### STANDARD — Feature com planejamento
+### STANDARD — Feature with planning
 
-**ALGUM dos critérios se aplica:**
-- Feature com escopo definido mas multi-arquivo (4-10 arquivos)
-- Precisa de novos models ou schema changes no Prisma
-- Impacta API routes ou Server Actions existentes
-- Cria novo fluxo de UI (mas domínio conhecido)
-- Integração com serviço já configurado (ex: Stripe já existe, adicionar novo webhook)
+**SOME of the criteria apply:**
+- Feature with defined but multi-file scope (4-10 files)
+- Needs new models or schema changes in Prisma
+- Impacts existing API routes or Server Actions
+- Creates a new UI flow (but a known domain)
+- Integration with an already-configured service (e.g., Stripe already exists, add a new webhook)
 
-**MAS domínio é conhecido e stack é o padrão do projeto.**
+**BUT the domain is known and the stack is the project default.**
 
-**Sinais típicos do usuário:**
-- "criar feature de", "adicionar módulo de"
-- "implementar fluxo de", "integrar com"
-- "novo CRUD de", "adicionar autenticação em"
-- "criar API de", "endpoint para", "GraphQL schema para"
-- "app mobile para", "tela mobile de"
-- "game com", "jogo de", "multiplayer"
-- "deploy com Docker", "configurar CI/CD"
-- "otimizar performance de", "profiling de"
+**Typical user signals:**
+- "create feature for", "add module for"
+- "implement flow for", "integrate with"
+- "new CRUD for", "add authentication in"
+- "create API for", "endpoint for", "GraphQL schema for"
+- "mobile app for", "mobile screen for"
+- "game with", "game of", "multiplayer"
+- "deploy with Docker", "configure CI/CD"
+- "optimize performance of", "profiling of"
 
-**Pipeline:** spec → arch-check (se schema) → stories → implement loop → review
-**Artefatos:** spec.md, stories/
+**Pipeline:** spec → arch-check (if schema) → stories → implement loop → review
+**Artifacts:** spec.md, stories/
 
 ---
 
-### COMPLEX — Sistema com planejamento completo
+### COMPLEX — System with full planning
 
-**ALGUM dos critérios se aplica:**
-- Sistema ou módulo inteiro novo
-- Requisitos ambíguos que precisam ser destilados
-- Múltiplas integrações externas novas
-- Decisões arquiteturais significativas (nova infra, novo padrão)
-- Impacto cross-cutting em vários módulos existentes
-- Requisitos de compliance (LGPD, TSE, ICP-Brasil)
-- Multi-tenant ou multi-role com regras complexas
+**SOME of the criteria apply:**
+- An entire new system or module
+- Ambiguous requirements that need to be distilled
+- Multiple new external integrations
+- Significant architectural decisions (new infra, new pattern)
+- Cross-cutting impact across several existing modules
+- Compliance requirements (LGPD, TSE, ICP-Brasil)
+- Multi-tenant or multi-role with complex rules
 
-**Sinais típicos do usuário:**
-- "construir sistema de", "novo produto", "nova plataforma"
-- "migrar de X para Y", "redesenhar módulo"
-- "sistema completo com", "quero que tenha"
-- Descrições longas com múltiplas features interconectadas
-- "criar jogo completo", "app mobile do zero", "SaaS de"
-- "novo projeto com" (→ usar `skills/app-builder` para scaffolding)
-- "arquitetura de microsserviços", "redesign completo"
-- "plataforma multi-tenant", "marketplace"
+**Typical user signals:**
+- "build a system for", "new product", "new platform"
+- "migrate from X to Y", "redesign module"
+- "complete system with", "I want it to have"
+- Long descriptions with multiple interconnected features
+- "create a complete game", "mobile app from scratch", "SaaS for"
+- "new project with" (→ use `skills/app-builder` for scaffolding)
+- "microservices architecture", "complete redesign"
+- "multi-tenant platform", "marketplace"
 
 **Pipeline:** prd → architecture → epics → readiness-gate → sprint loop
-**Artefatos:** prd.md, architecture.md, epics/, sprint-status.yaml
+**Artifacts:** prd.md, architecture.md, epics/, sprint-status.yaml
 
 ---
 
-## Decisão em Caso de Dúvida
+## Decision When in Doubt
 
-Quando a classificação não é clara:
+When the classification is not clear:
 
-1. **Na dúvida entre QUICK e STANDARD** → STANDARD
-   (é melhor planejar um pouco mais do que descobrir no meio que faltou)
+1. **In doubt between QUICK and STANDARD** → STANDARD
+   (it is better to plan a bit more than to discover mid-way that something was missing)
 
-2. **Na dúvida entre STANDARD e COMPLEX** → Perguntar ao usuário:
-   "Isso me parece entre STANDARD e COMPLEX. Se você já tem clareza do
-   que construir e é um módulo isolado, STANDARD basta. Se os requisitos
-   ainda estão se formando ou há muitas peças interconectadas, COMPLEX
-   garante que nada se perca. O que você acha?"
+2. **In doubt between STANDARD and COMPLEX** → Ask the user:
+   "This looks to me like it's between STANDARD and COMPLEX. If you already have clarity
+   about what to build and it is an isolated module, STANDARD is enough. If the requirements
+   are still forming or there are many interconnected pieces, COMPLEX
+   ensures nothing gets lost. What do you think?"
 
-3. **Override do usuário** sempre prevalece:
-   "Quero tratar como QUICK" → respeitar, mesmo que tecnicamente seja STANDARD
-   "Faz o planejamento completo" → COMPLEX independente da classificação
+3. **User override** always prevails:
+   "I want to treat it as QUICK" → respect it, even if it is technically STANDARD
+   "Do the full planning" → COMPLEX regardless of the classification
 
 ---
 
-## Skills Especializados por Tipo de Projeto
+## Specialized Skills by Project Type
 
-Quando a demanda envolve um domínio específico, carregar os skills correspondentes:
+When the request involves a specific domain, load the corresponding skills:
 
-| Tipo de Projeto | Skills Primários | Agente Principal |
+| Project Type | Primary Skills | Main Agent |
 |---|---|---|
-| App web Next.js | `nextjs-react-expert`, `frontend-ui-system`, `tailwind-patterns` | `frontend-engineer` |
+| Next.js web app | `nextjs-react-expert`, `frontend-ui-system`, `tailwind-patterns` | `frontend-engineer` |
 | Landing / Hero / Marketing site | `frontend-design`, `aesthetic-boost`, `taste-design-dials`, `aesthetic-modes` (mood-dependent), `frontend-ui-system` | `frontend-engineer` |
 | Premium / Awwwards / Agency-tier | `taste-design-dials`, `aesthetic-modes` → `SOFT_PREMIUM`, `aesthetic-boost`, `ui-audit` (post) | `frontend-engineer` |
 | Editorial / Minimalist (Notion/Linear) | `aesthetic-modes` → `EDITORIAL_MINIMALIST`, `frontend-design`, `taste-design-dials` (low motion/density) | `frontend-engineer` |
 | Brutalist / Industrial / Terminal | `aesthetic-modes` → `INDUSTRIAL_BRUTALIST`, `frontend-design`, `taste-design-dials` (high density) | `frontend-engineer` |
 | Redesign / Modernize existing UI | `redesign-audit` → `ui-audit` → fix loop | `frontend-engineer` |
-| Google Stitch export | `stitch-design-export`, `ui-design-intelligence` | (sem agente dedicado) |
-| Output longo / multi-arquivo | + `output-enforcement` (modifier, sempre) | (qualquer agente) |
+| Google Stitch export | `stitch-design-export`, `ui-design-intelligence` | (no dedicated agent) |
+| Long / multi-file output | + `output-enforcement` (modifier, always) | (any agent) |
 | API/Backend | `api-patterns`, `nodejs-best-practices`, `database-design` | `backend-engineer` |
-| App mobile | `mobile-design`, `app-builder` (react-native/flutter template) | `mobile-developer` |
-| Game | `game-development` + sub-skills relevantes | `game-developer` |
-| Segurança/Audit | `security-best-practices`, `red-team-tactics`, `vulnerability-scanner` | `security-auditor` + `penetration-tester` |
+| Mobile app | `mobile-design`, `app-builder` (react-native/flutter template) | `mobile-developer` |
+| Game | `game-development` + relevant sub-skills | `game-developer` |
+| Security/Audit | `security-best-practices`, `red-team-tactics`, `vulnerability-scanner` | `security-auditor` + `penetration-tester` |
 | Performance | `performance-profiling`, `react-performance`, `core-web-vitals` | `performance-optimizer` |
 | DevOps/Deploy | `deployment-procedures`, `server-management`, `claude-ci-actions` | `devops-engineer` |
 | SEO/GEO | `seo-fundamentals`, `seo`, `genai-optimization` | `seo-specialist` |
-| Documentação | `documentation-templates`, `docs-writer`, `technical-design-doc-creator` | `documentation-writer` |
+| Documentation | `documentation-templates`, `docs-writer`, `technical-design-doc-creator` | `documentation-writer` |
 | Legacy/Refactor | `clean-code`, `coding-guidelines` | `code-archaeologist` + `code-refactorer` |
-| Rust | `rust-pro` | (sem agente dedicado, usar expertise inline) |
-| Python | `python-patterns` | (sem agente dedicado, usar expertise inline) |
-| Scaffolding | `app-builder` (13 templates disponíveis) | (workflow do app-builder) |
-| Brainstorm | `brainstorming` | (workflow socrático) |
+| Rust | `rust-pro` | (no dedicated agent, use inline expertise) |
+| Python | `python-patterns` | (no dedicated agent, use inline expertise) |
+| Scaffolding | `app-builder` (13 templates available) | (app-builder workflow) |
+| Brainstorm | `brainstorming` | (Socratic workflow) |
 | Testing | `tdd-workflow`, `testing-patterns`, `e2e-testing-patterns`, `webapp-testing` | `test-engineer` + `qa-automation-engineer` |
 | Database | `database-design`, `prisma-expert`, `postgres-optimization` | `database-architect` |
-| Marketing/CRO | Ver `./triage-rules-marketing.md` | `marketing-growth-hacker` (The Agency) |
-| Mídia Paga | Ver `./triage-rules-marketing.md` | `paid-media-ppc-strategist` (The Agency) |
-| Vendas/RevOps | Ver `./triage-rules-marketing.md` | `sales-outbound-strategist` (The Agency) |
+| Marketing/CRO | See `./triage-rules-marketing.md` | `marketing-growth-hacker` (The Agency) |
+| Paid Media | See `./triage-rules-marketing.md` | `paid-media-ppc-strategist` (The Agency) |
+| Sales/RevOps | See `./triage-rules-marketing.md` | `sales-outbound-strategist` (The Agency) |

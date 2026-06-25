@@ -6,30 +6,30 @@ alwaysApply: true
 
 # TypeScript Strict Mode
 
-## Configuração Obrigatória
-Todo projeto TypeScript DEVE ter em tsconfig.json:
+## Mandatory Configuration
+Every TypeScript project MUST have in tsconfig.json:
 - `"strict": true`
 - `"noUncheckedIndexedAccess": true`
 - `"noImplicitReturns": true`
 - `"noFallthroughCasesInSwitch": true`
 - `"forceConsistentCasingInFileNames": true`
 
-Se encontrar um projeto sem strict mode, ALERTE o usuário e sugira correção.
+If you find a project without strict mode, ALERT the user and suggest a fix.
 
-## Rationale para Agentes
-Agentes não detectam erros de runtime. O compilador TypeScript com strict mode
-transfere a detecção de erros para build time, onde o agente PODE ler os logs
-de erro no terminal e aplicar correções.
+## Rationale for Agents
+Agents do not detect runtime errors. The TypeScript compiler with strict mode
+shifts error detection to build time, where the agent CAN read the error logs
+in the terminal and apply fixes.
 
-## Proibições
-- NUNCA use `any` para silenciar erros — use `unknown` + narrowing
-- NUNCA use `@ts-ignore` sem justificativa escrita
-- NUNCA desative strict mode para resolver um erro
-- NUNCA use non-null assertion `!` sem verificação prévia
+## Prohibitions
+- NEVER use `any` to silence errors — use `unknown` + narrowing
+- NEVER use `@ts-ignore` without a written justification
+- NEVER disable strict mode to resolve an error
+- NEVER use the non-null assertion `!` without a prior check
 
-## Padrões Preferidos
+## Preferred Patterns
 - Use type guards: `if ('key' in obj)`, `typeof x === 'string'`
-- Use assertion functions para validação de runtime
-- Use discriminated unions para state machines
-- Use `satisfies` para type-checking sem widening
-- Use Zod para validação de dados externos (API, forms)
+- Use assertion functions for runtime validation
+- Use discriminated unions for state machines
+- Use `satisfies` for type-checking without widening
+- Use Zod for validating external data (API, forms)

@@ -102,42 +102,42 @@ evaluate against multiple time horizons, and flag tasks that can run in parallel
 
 ## Contextualized Stories (Moderate/Complex tasks)
 
-Para tasks de complexidade Moderate ou Complex, após gerar o plano
-de tarefas, produza stories contextualizadas onde cada story contém
-100% do contexto necessário para implementar sem consultar outros arquivos.
+For Moderate or Complex tasks, after generating the task plan,
+produce contextualized stories where each story contains
+100% of the context needed to implement without consulting other files.
 
 ### Story Template
 ```markdown
-# STORY: [Título] (de tasks/todo.md item #N)
+# STORY: [Title] (from tasks/todo.md item #N)
 
-## Contexto Completo
-[Copie as decisões de design.md relevantes para ESTA story]
-[Copie as restrições de spec.md relevantes para ESTA story]
-[NÃO referencie — embuta. O dev não deve precisar abrir outro arquivo.]
+## Complete Context
+[Copy the design.md decisions relevant to THIS story]
+[Copy the spec.md constraints relevant to THIS story]
+[Do NOT reference — embed. The dev should not need to open another file.]
 
-## O Que Implementar
-[Descrição técnica precisa com file paths]
+## What to Implement
+[Precise technical description with file paths]
 
-## Padrão de Referência
-[Se existir código similar no projeto, indique: "ver src/X.ts linhas Y-Z"]
+## Reference Pattern
+[If similar code exists in the project, indicate it: "see src/X.ts lines Y-Z"]
 
-## Acceptance Criteria (copiados da spec)
-- [ ] [critério com condição de teste]
+## Acceptance Criteria (copied from the spec)
+- [ ] [criterion with test condition]
 
-## Abordagem de Teste (TDD order)
-1. RED: Criar teste em `src/__tests__/[file].test.ts` que verifica [behavior]
-2. GREEN: Implementar em `src/[path]/[file].ts`
-3. REFACTOR: [o que simplificar após green]
+## Test Approach (TDD order)
+1. RED: Create test in `src/__tests__/[file].test.ts` that verifies [behavior]
+2. GREEN: Implement in `src/[path]/[file].ts`
+3. REFACTOR: [what to simplify after green]
 
-## Gotchas Conhecidos
-[De tasks/lessons.md — problemas passados com patterns similares]
+## Known Gotchas
+[From tasks/lessons.md — past problems with similar patterns]
 ```
 
-### Quando criar stories
-- Simple tasks: inline no tasks/todo.md (sem story separada)
-- Moderate tasks: 1 story por fase do plano
-- Complex tasks: 1 story por task que envolve decisão arquitetural
-- Salvar em: `.specs/features/[feature]/stories/STORY-{N}.md`
+### When to create stories
+- Simple tasks: inline in tasks/todo.md (no separate story)
+- Moderate tasks: 1 story per plan phase
+- Complex tasks: 1 story per task that involves an architectural decision
+- Save to: `.specs/features/[feature]/stories/STORY-{N}.md`
 
 ## Rules
 - Output is documentation, NEVER code

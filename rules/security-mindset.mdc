@@ -1,89 +1,89 @@
 ---
-description: Segurança como propriedade permanente do código — fail-secure defaults, checklist por contexto, racionalizações a rejeitar. Aplique em Server Actions, API routes, auth, env handling e code review.
+description: Security as a permanent property of the code — fail-secure defaults, checklist by context, rationalizations to reject. Apply in Server Actions, API routes, auth, env handling and code review.
 globs: ["**/*.ts", "**/*.tsx", "src/actions/**", "src/app/api/**", "src/lib/**", ".env*"]
 alwaysApply: true
 ---
 
-# Segurança — Mentalidade Permanente
+# Security — Permanent Mindset
 
-Segurança não é uma fase separada do desenvolvimento — é uma propriedade de cada linha de código. Toda implementação deve ser segura por padrão.
+Security is not a separate phase of development — it is a property of every line of code. Every implementation must be secure by default.
 
 ---
 
-## Defaults Seguros (Fail-Secure)
+## Secure Defaults (Fail-Secure)
 
-A diferença entre seguro e vulnerável está frequentemente nos defaults:
+The difference between secure and vulnerable often lies in the defaults:
 
 ```typescript
-// ❌ FAIL-OPEN (VULNERÁVEL)
+// ❌ FAIL-OPEN (VULNERABLE)
 const SECRET = process.env.KEY || 'default-secret'
-// App roda com secret fraco em produção
+// App runs with a weak secret in production
 
-// ✅ FAIL-SECURE (SEGURO)
+// ✅ FAIL-SECURE (SECURE)
 const SECRET = process.env.KEY!
-// App crasha se config está faltando — isso é o comportamento correto
+// App crashes if config is missing — this is the correct behavior
 ```
 
-**Regra absoluta**: Nunca use valores default para secrets, tokens, ou chaves de API que permitam a aplicação rodar de forma insegura.
+**Absolute rule**: Never use default values for secrets, tokens, or API keys that would allow the application to run insecurely.
 
 ---
 
-## Checklist de Segurança por Contexto
+## Security Checklist by Context
 
 ### Auth & Sessions
-- Valide autenticação e autorização em **toda** entry point — Server Actions, API routes, middleware
-- Server Actions são acessíveis por qualquer HTTP client — trate como endpoints públicos
-- Expire sessões adequadamente; não confie em tokens sem validação server-side
-- RLS no Supabase: valide políticas para todas as tabelas com dados sensíveis ou multi-tenant
+- Validate authentication and authorization at **every** entry point — Server Actions, API routes, middleware
+- Server Actions are accessible by any HTTP client — treat them as public endpoints
+- Expire sessions appropriately; do not trust tokens without server-side validation
+- RLS on Supabase: validate policies for all tables with sensitive or multi-tenant data
 
 ### Input & Data
-- Valide e sanitize toda entrada do usuário com Zod **no entry point**
-- Use sempre Prisma ou queries parametrizadas — nunca concatene strings em queries SQL
-- Retorne erros genéricos ao cliente — nunca exponha stack traces ou detalhes internos
+- Validate and sanitize all user input with Zod **at the entry point**
+- Always use Prisma or parameterized queries — never concatenate strings in SQL queries
+- Return generic errors to the client — never expose stack traces or internal details
 
-### Infraestrutura
-- Configure CORS e CSP headers adequados; nunca use `*` em produção
-- Desconfie de dependências com poucos downloads ou mantidas por um único dev
-- Proteja `.env`, `.env.local` e qualquer arquivo com secrets do versionamento
+### Infrastructure
+- Configure proper CORS and CSP headers; never use `*` in production
+- Be wary of dependencies with few downloads or maintained by a single dev
+- Protect `.env`, `.env.local` and any file with secrets from version control
 
-### Modo de Revisão — Checklist Completo
+### Review Mode — Complete Checklist
 
-Ao revisar código (Parte 12.3):
+When reviewing code (Part 12.3):
 
-- [ ] **Correção**: O código faz o que deveria? Cobre edge cases?
-- [ ] **Segurança**: Inputs validados com Zod? Auth verificada em entry points? Secrets protegidos? Defaults fail-secure?
-- [ ] **Performance**: Waterfalls de fetch? Bundles inflados? Barrel imports? Re-renders desnecessários? N+1 queries?
-- [ ] **Legibilidade**: Nomes claros? Responsabilidade única? Complexidade justificada? Arquivos ≤300 linhas?
-- [ ] **Testes**: Cobertura adequada? Testes testam comportamento, não implementação?
-- [ ] **DRY**: Duplicação detectada? Oportunidades de extração?
-- [ ] **Acessibilidade**: Componentes shadcn usados corretamente? ARIA labels? Keyboard navigation?
+- [ ] **Correctness**: Does the code do what it should? Does it cover edge cases?
+- [ ] **Security**: Inputs validated with Zod? Auth checked at entry points? Secrets protected? Fail-secure defaults?
+- [ ] **Performance**: Fetch waterfalls? Bloated bundles? Barrel imports? Unnecessary re-renders? N+1 queries?
+- [ ] **Readability**: Clear names? Single responsibility? Justified complexity? Files ≤300 lines?
+- [ ] **Tests**: Adequate coverage? Do tests test behavior, not implementation?
+- [ ] **DRY**: Duplication detected? Extraction opportunities?
+- [ ] **Accessibility**: shadcn components used correctly? ARIA labels? Keyboard navigation?
 
 ---
 
-## Racionalizações a Rejeitar
+## Rationalizations to Reject
 
-Estas são desculpas comuns que abrem brechas. Rejeite todas:
+These are common excuses that open gaps. Reject them all:
 
-| Racionalização | Por que é falsa |
+| Rationalization | Why it's false |
 |---|---|
-| "É só um default de desenvolvimento" | Se chega ao código de produção, é uma vulnerabilidade |
-| "O config de prod sobrescreve" | Prove com code trace; muitos apps falham silenciosamente |
-| "Nunca vai rodar sem config" | Prove. Código defensivo > suposições otimistas |
-| "Está atrás de autenticação" | Defense in depth; sessão comprometida ainda explora defaults fracos |
-| "Vamos corrigir antes do release" | Documente e corrija agora; "depois" raramente chega |
-| "A informação é pública mesmo" | Vazamento de metadata pode ser usado para reconhecimento |
+| "It's just a development default" | If it reaches production code, it's a vulnerability |
+| "The prod config overrides it" | Prove it with a code trace; many apps fail silently |
+| "It will never run without config" | Prove it. Defensive code > optimistic assumptions |
+| "It's behind authentication" | Defense in depth; a compromised session still exploits weak defaults |
+| "We'll fix it before release" | Document and fix it now; "later" rarely arrives |
+| "The information is public anyway" | A metadata leak can be used for reconnaissance |
 
 ---
 
-## RLS no Supabase — Regra Obrigatória
+## RLS on Supabase — Mandatory Rule
 
-Quando o projeto utiliza Supabase, **sempre** valide se as políticas RLS estão criadas para todas as tabelas com dados sensíveis ou multi-tenant.
+When the project uses Supabase, **always** validate that RLS policies are created for all tables with sensitive or multi-tenant data.
 
-Ao iniciar trabalho em projeto Supabase, use o Supabase MCP para verificar estado atual das políticas. Se identificar tabelas sem políticas adequadas, proponha criação considerando:
+When starting work on a Supabase project, use the Supabase MCP to check the current state of the policies. If you identify tables without adequate policies, propose creating them considering:
 
-- Papéis de usuário existentes (anônimo, autenticado, admin)
-- Modelo de multi-tenancy (por usuário, por organização, híbrido)
-- Operações permitidas por papel e tabela (SELECT, INSERT, UPDATE, DELETE)
-- Coluna que identifica o proprietário ou tenant do registro
+- Existing user roles (anonymous, authenticated, admin)
+- The multi-tenancy model (per user, per organization, hybrid)
+- Operations allowed per role and table (SELECT, INSERT, UPDATE, DELETE)
+- The column that identifies the owner or tenant of the record
 
-Políticas RLS são a última linha de defesa contra vazamento de dados entre tenants. A ausência de RLS permite que queries mal formadas ou ataques de injeção acessem dados não autorizados, mesmo que a aplicação filtre corretamente.
+RLS policies are the last line of defense against data leakage between tenants. The absence of RLS allows malformed queries or injection attacks to access unauthorized data, even if the application filters correctly.

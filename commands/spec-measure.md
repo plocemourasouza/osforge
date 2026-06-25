@@ -1,77 +1,77 @@
 ---
-description: Phase 5 — Mede o impacto real da feature contra as métricas definidas no discovery.md. Execute após deploy em produção ou ao final de um ciclo de validação. Gatilhos: "measure", "medir impacto", "métricas pós-deploy", "resultado da feature", "ROI", "/spec-measure [feature]".
+description: Phase 5 — Measures the real impact of the feature against the metrics defined in discovery.md. Run after production deploy or at the end of a validation cycle. Triggers: "measure", "measure impact", "post-deploy metrics", "feature result", "ROI", "/spec-measure [feature]".
 ---
 
-## Contexto necessário
-Leia antes de executar:
-- `.specs/features/[feature]/discovery.md` — métricas de sucesso definidas antes da implementação
-- `.specs/features/[feature]/spec.md` — acceptance criteria como baseline
-- `.specs/features/[feature]/validation.md` (se existir) — evidências da implementação
+## Required context
+Read before executing:
+- `.specs/features/[feature]/discovery.md` — success metrics defined before implementation
+- `.specs/features/[feature]/spec.md` — acceptance criteria as a baseline
+- `.specs/features/[feature]/validation.md` (if it exists) — implementation evidence
 
-## Fase: Phase 5 — Measure (PDD)
+## Phase: Phase 5 — Measure (PDD)
 
-## Saída esperada
+## Expected output
 `.specs/features/[feature-name]/measure.md`
 
-## Processo
+## Process
 
-O argumento passado após `/spec-measure` é a feature. Se vazio, pergunte qual feature medir.
+The argument passed after `/spec-measure` is the feature. If empty, ask which feature to measure.
 
-1. **Leia `discovery.md`** e extraia as métricas de sucesso definidas na tabela "Métricas de Sucesso".
+1. **Read `discovery.md`** and extract the success metrics defined in the "Success Metrics" table.
 
-2. **Coletar dados**: Pergunte ao usuário os valores atuais das métricas (dados de produção, analytics, feedback). Se métricas não foram coletadas ainda, registre como "Pendente" com sugestão de como coletar.
+2. **Collect data**: Ask the user for the current values of the metrics (production data, analytics, feedback). If metrics have not been collected yet, record them as "Pending" with a suggestion on how to collect them.
 
-3. **Criar `measure.md`**:
+3. **Create `measure.md`**:
 
 ```markdown
 # Measure: [Feature Name]
-**Feature:** [feature-name] | **Deploy:** [data do deploy] | **Medido em:** [YYYY-MM-DD]
+**Feature:** [feature-name] | **Deploy:** [deploy date] | **Measured on:** [YYYY-MM-DD]
 
-## Resultado vs Hipótese
+## Result vs Hypothesis
 
-### Hipótese Original
-[copiar da discovery.md]
+### Original Hypothesis
+[copy from discovery.md]
 
-### Veredicto
-**[✅ VALIDADA / ⚠️ PARCIAL / ❌ REFUTAR / ⏳ AGUARDANDO DADOS]**
-[1-2 frases explicando o veredicto]
+### Verdict
+**[✅ VALIDATED / ⚠️ PARTIAL / ❌ REFUTED / ⏳ AWAITING DATA]**
+[1-2 sentences explaining the verdict]
 
-## Métricas
-| Métrica | Baseline | Target | Resultado | Δ% | Status |
+## Metrics
+| Metric | Baseline | Target | Result | Δ% | Status |
 |---------|----------|--------|-----------|-----|--------|
-| [primária] | [baseline] | [target] | [resultado] | [%] | ✅/⚠️/❌ |
-| [secundária] | [baseline] | [target] | [resultado] | [%] | ✅/⚠️/❌ |
+| [primary] | [baseline] | [target] | [result] | [%] | ✅/⚠️/❌ |
+| [secondary] | [baseline] | [target] | [result] | [%] | ✅/⚠️/❌ |
 
-## Análise
-### O que funcionou
-- [observação 1]
+## Analysis
+### What worked
+- [observation 1]
 
-### O que não funcionou
-- [observação 1]
+### What didn't work
+- [observation 1]
 
-### Surpresas
-- [comportamento inesperado, positivo ou negativo]
+### Surprises
+- [unexpected behavior, positive or negative]
 
-## Decisão
-- [ ] **Continuar** — ampliar rollout, iteração planejada
-- [ ] **Pivotar** — [hipótese alternativa a testar]
-- [ ] **Abandonar** — [motivo e o que foi aprendido]
-- [ ] **Aguardar** — [prazo para reavaliação: YYYY-MM-DD]
+## Decision
+- [ ] **Continue** — expand rollout, planned iteration
+- [ ] **Pivot** — [alternative hypothesis to test]
+- [ ] **Abandon** — [reason and what was learned]
+- [ ] **Wait** — [deadline for reevaluation: YYYY-MM-DD]
 
-## Próximos Passos
-- [ação 1 com responsável e prazo]
-- [ação 2 com responsável e prazo]
+## Next Steps
+- [action 1 with owner and deadline]
+- [action 2 with owner and deadline]
 
-## Aprendizados para o Projeto
-[insight relevante para decisões futuras — será extraído para tasks/lessons.md]
+## Learnings for the Project
+[relevant insight for future decisions — will be extracted into tasks/lessons.md]
 ```
 
-4. **Extrair aprendizados**: Se o measure.md contiver insights relevantes, atualize (ou crie) `tasks/lessons.md` no projeto com a lição aprendida.
+4. **Extract learnings**: If the measure.md contains relevant insights, update (or create) `tasks/lessons.md` in the project with the learned lesson.
 
-5. **Arquivar feature**: Se o veredicto for "Abandonar" ou "Continuar sem iteração próxima", mova o diretório para `.specs/features/_archived/[feature-name]/`.
+5. **Archive feature**: If the verdict is "Abandon" or "Continue with no near-term iteration", move the directory to `.specs/features/_archived/[feature-name]/`.
 
-## Regras
-- Se não há dados de produção disponíveis, registre "Pendente" e defina data de revisão — não invente números
-- Métricas ausentes no discovery.md são uma falha de processo — registre no measure.md como lição
-- O veredicto deve ser honesto, mesmo que o resultado seja negativo — features que ensinam têm valor
-- Aprendizados extraídos para lessons.md devem ser acionáveis ("Nunca X" ou "Sempre Y" ou "Quando Z, faça W")
+## Rules
+- If there is no production data available, record "Pending" and set a review date — do not invent numbers
+- Metrics missing from discovery.md are a process failure — record it in measure.md as a lesson
+- The verdict must be honest, even if the result is negative — features that teach something have value
+- Learnings extracted into lessons.md must be actionable ("Never X" or "Always Y" or "When Z, do W")

@@ -1,48 +1,48 @@
 ---
-description: Auxiliar — Resolve ambiguidades e lacunas na especificação ou no design antes de prosseguir para a próxima fase. Use sempre que um artefato de .specs/ tiver campos marcados como "NEEDS CLARIFICATION", "?", ou "A definir". Gatilhos: "clarify", "esclarecer", "lacunas", "ambiguidade", "o que significa", "/spec-clarify [feature]".
+description: Helper — Resolves ambiguities and gaps in the specification or design before proceeding to the next phase. Use whenever a .specs/ artifact has fields marked as "NEEDS CLARIFICATION", "?", or "TBD". Triggers: "clarify", "clear up", "gaps", "ambiguity", "what does this mean", "/spec-clarify [feature]".
 ---
 
-## Contexto necessário
-Leia antes de executar:
-- `.specs/features/[feature]/discovery.md` (se existir)
-- `.specs/features/[feature]/spec.md` (se existir)
-- `.specs/features/[feature]/design.md` (se existir)
-- `.specs/memory/constitution.md` (padrões e decisões existentes)
+## Required context
+Read before executing:
+- `.specs/features/[feature]/discovery.md` (if it exists)
+- `.specs/features/[feature]/spec.md` (if it exists)
+- `.specs/features/[feature]/design.md` (if it exists)
+- `.specs/memory/constitution.md` (existing standards and decisions)
 
-## Fase: Auxiliar — Clarification
+## Phase: Helper — Clarification
 
-## Saída esperada
-Atualização in-place dos artefatos em `.specs/features/[feature]/` com as lacunas resolvidas.
+## Expected output
+In-place update of the artifacts in `.specs/features/[feature]/` with the gaps resolved.
 
-## Processo
+## Process
 
-O argumento passado após `/spec-clarify` é a feature alvo. Se vazio, pergunte qual feature clarificar.
+The argument passed after `/spec-clarify` is the target feature. If empty, ask which feature to clarify.
 
-1. **Varredura de lacunas**: Leia todos os artefatos da feature e identifique:
-   - Campos com "NEEDS CLARIFICATION", "A definir", "?", "TODO", "TBD"
-   - Acceptance Criteria vagos (sem critério mensurável ou verificável)
-   - Campos de design sem decisão registrada (ex: schema sem tipos definidos, contrato sem exemplos)
-   - Premissas não validadas que impactam a implementação
+1. **Gap sweep**: Read all of the feature's artifacts and identify:
+   - Fields with "NEEDS CLARIFICATION", "TBD", "?", "TODO"
+   - Vague Acceptance Criteria (without a measurable or verifiable criterion)
+   - Design fields with no recorded decision (e.g., schema with no defined types, contract with no examples)
+   - Unvalidated assumptions that impact the implementation
 
-2. **Agrupar por urgência**:
-   - **Bloqueadores**: lacunas que impedem o início da próxima fase
-   - **Importantes**: lacunas que geram retrabalho se não resolvidas agora
-   - **Não-bloqueadoras**: podem ser resolvidas durante implementação
+2. **Group by urgency**:
+   - **Blockers**: gaps that prevent starting the next phase
+   - **Important**: gaps that cause rework if not resolved now
+   - **Non-blocking**: can be resolved during implementation
 
-3. **Formular perguntas precisas** (máximo 5 por rodada):
-   - Uma pergunta por lacuna
-   - Incluir contexto de por que importa
-   - Sugerir opções quando possível (facilita decisão rápida)
+3. **Formulate precise questions** (maximum 5 per round):
+   - One question per gap
+   - Include context on why it matters
+   - Suggest options when possible (makes for a faster decision)
 
-4. **Registrar respostas**: Após receber as respostas do usuário, atualize os artefatos in-place:
-   - Substitua "NEEDS CLARIFICATION" pela decisão tomada
-   - Adicione data e justificativa na seção de "Decisões" do design.md (se existir)
-   - Atualize campos de AC com critérios mensuráveis
+4. **Record answers**: After receiving the user's answers, update the artifacts in place:
+   - Replace "NEEDS CLARIFICATION" with the decision made
+   - Add date and rationale in the "Decisions" section of design.md (if it exists)
+   - Update AC fields with measurable criteria
 
-5. **Confirmar resolução**: Liste as lacunas resolvidas e as ainda pendentes. Se todas as lacunas bloqueadoras foram resolvidas, sugira a próxima fase.
+5. **Confirm resolution**: List the resolved gaps and those still pending. If all blocking gaps have been resolved, suggest the next phase.
 
-## Regras
-- Nunca avance para a próxima fase com lacunas bloqueadoras não resolvidas
-- Para lacunas não-bloqueadoras, registre a decisão padrão com uma nota explicando a escolha
-- Prefira fazer poucas perguntas bem formuladas a uma lista longa — o usuário tem custo cognitivo por pergunta
-- Se a lacuna puder ser resolvida pelo contexto do projeto (constitution.md, código existente), resolva sem perguntar
+## Rules
+- Never advance to the next phase with unresolved blocking gaps
+- For non-blocking gaps, record the default decision with a note explaining the choice
+- Prefer asking a few well-formulated questions over a long list — the user pays a cognitive cost per question
+- If the gap can be resolved from the project context (constitution.md, existing code), resolve it without asking

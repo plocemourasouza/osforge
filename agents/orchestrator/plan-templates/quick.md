@@ -1,31 +1,31 @@
 # Plan Template: QUICK
 
-## Plano: {título}
-**Complexidade:** QUICK
-**Fases:** 3
+## Plan: {title}
+**Complexity:** QUICK
+**Phases:** 3
 
-### Fase 1: Especificação
-- **Objetivo:** Definir exatamente o que fazer com acceptance criteria
+### Phase 1: Specification
+- **Objective:** Define exactly what to do with acceptance criteria
 - **Skill:** `skills/planning/spec-builder`
-- **Artefato:** `{output_dir}/tech-spec-{slug}.md`
-- **Tamanho:** Pequeno
+- **Artifact:** `{output_dir}/tech-spec-{slug}.md`
+- **Size:** Small
 
-### Fase 2: Implementação
-- **Objetivo:** Executar as tasks da spec
-- **Skill:** Skills de execução relevantes (identificar pelo tipo de mudança)
-- **Artefato:** Código + testes
-- **Tamanho:** {estimar baseado na spec}
+### Phase 2: Implementation
+- **Objective:** Execute the spec's tasks
+- **Skill:** Relevant execution skills (identify by the type of change)
+- **Artifact:** Code + tests
+- **Size:** {estimate based on the spec}
 
-### Fase 3: Review
-- **Objetivo:** Validar implementação
+### Phase 3: Review
+- **Objective:** Validate the implementation
 - **Skill:** `skills/quality/code-review`
-- **Artefato:** Review report (aprovado ou changes requested)
-- **Tamanho:** Pequeno
+- **Artifact:** Review report (approved or changes requested)
+- **Size:** Small
 
 ### Checkpoints
-- Após Fase 1: aprovar spec antes de implementar
-- Após Fase 3: verificar se tudo está coberto
+- After Phase 1: approve the spec before implementing
+- After Phase 3: verify that everything is covered
 
-### Notas
-- Se durante implementação surgirem complicações, reclassificar para STANDARD
-- Spec deve ter no máximo ~1600 tokens (escopo contido)
+### Notes
+- If complications arise during implementation, reclassify as STANDARD
+- The spec should have at most ~1600 tokens (contained scope)

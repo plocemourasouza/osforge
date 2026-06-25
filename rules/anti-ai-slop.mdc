@@ -6,66 +6,66 @@ alwaysApply: true
 
 # Anti-AI-Slop Rule
 
-> LLMs convergem para designs genéricos porque tokens de alta probabilidade dominam o sampling.
-> Esta rule existe para quebrar essa convergência em TODO output frontend.
+> LLMs converge toward generic designs because high-probability tokens dominate sampling.
+> This rule exists to break that convergence in ALL frontend output.
 
-## Ao gerar QUALQUER código frontend:
+## When generating ANY frontend code:
 
-### Tipografia
-1. **NUNCA** use Inter, Roboto, Arial, Open Sans, Lato ou system fonts como escolha primária
-2. **NUNCA** use serifas genéricas (Times New Roman, Georgia, Garamond, Palatino) — se serifa for
-   necessária, use apenas Fraunces, Gambarino, Editorial New, Instrument Serif
-3. **NUNCA** use serifa em dashboards / software UIs — somente sans-serif pairings (Geist + Geist Mono,
+### Typography
+1. **NEVER** use Inter, Roboto, Arial, Open Sans, Lato or system fonts as the primary choice
+2. **NEVER** use generic serifs (Times New Roman, Georgia, Garamond, Palatino) — if a serif is
+   needed, use only Fraunces, Gambarino, Editorial New, Instrument Serif
+3. **NEVER** use a serif in dashboards / software UIs — only sans-serif pairings (Geist + Geist Mono,
    Satoshi + JetBrains Mono)
-4. **NUNCA** gere H1 com mais de 2-3 linhas — use `max-w-5xl/6xl` + `clamp()` para forçar wrap horizontal
-5. **SEMPRE** use Geist, Outfit, Cabinet Grotesk ou Satoshi para display em contextos premium
+4. **NEVER** generate an H1 with more than 2-3 lines — use `max-w-5xl/6xl` + `clamp()` to force horizontal wrap
+5. **ALWAYS** use Geist, Outfit, Cabinet Grotesk or Satoshi for display in premium contexts
 
-### Cor
-6. **NUNCA** use gradientes roxos em fundo branco — clichê AI slop número 1
-7. **NUNCA** use neon/outer glow `box-shadow` — use inner borders ou tinted shadows
-8. **NUNCA** use `#000000` puro — use Off-Black, Zinc-950 ou Charcoal
-9. **NUNCA** use accent oversaturado (saturação > 80%)
-10. **NUNCA** misture warm e cool grays no mesmo projeto
-11. **SEMPRE** limite a 1 accent color por output
-12. **SEMPRE** use neutros (Zinc/Slate) como base + 1 accent contrastante
+### Color
+6. **NEVER** use purple gradients on a white background — AI slop cliché number 1
+7. **NEVER** use neon/outer glow `box-shadow` — use inner borders or tinted shadows
+8. **NEVER** use pure `#000000` — use Off-Black, Zinc-950 or Charcoal
+9. **NEVER** use an oversaturated accent (saturation > 80%)
+10. **NEVER** mix warm and cool grays in the same project
+11. **ALWAYS** limit to 1 accent color per output
+12. **ALWAYS** use neutrals (Zinc/Slate) as the base + 1 contrasting accent
 
 ### Layout
-13. **NUNCA** replique o layout "Vercel template" (hero split left/right, bento grid genérico, 3 cards iguais)
-14. **NUNCA** use 3 cards iguais horizontalmente em feature row — use zig-zag 2-col, asymmetric grid, ou horizontal scroll
-15. **NUNCA** use `h-screen` para hero — sempre `min-h-[100dvh]` (iOS Safari bug)
-16. **NUNCA** use flexbox math com `calc()` — sempre CSS Grid para multi-column
-17. **NUNCA** centralize Hero quando ambição visual > 4 (variance) — force Split Screen ou Asymmetric
+13. **NEVER** replicate the "Vercel template" layout (hero split left/right, generic bento grid, 3 identical cards)
+14. **NEVER** use 3 identical cards horizontally in a feature row — use a zig-zag 2-col, asymmetric grid, or horizontal scroll
+15. **NEVER** use `h-screen` for hero — always `min-h-[100dvh]` (iOS Safari bug)
+16. **NEVER** use flexbox math with `calc()` — always CSS Grid for multi-column
+17. **NEVER** center the Hero when visual ambition > 4 (variance) — force Split Screen or Asymmetric
 
-### Conteúdo (Jane Doe Effect)
-18. **NUNCA** use nomes genéricos: "John Doe", "Sarah Chan", "Jack Su" — invente nomes criativos realistas
-19. **NUNCA** use empresas genéricas: "Acme", "Nexus", "SmartFlow" — invente brand names contextuais
-20. **NUNCA** use números falsos: `99.99%`, `50%`, `1234567` — use orgânicos (`47.2%`, `+1 (312) 847-1928`)
-21. **NUNCA** use copywriting AI: "Elevate", "Seamless", "Unleash", "Next-Gen", "Game-changer", "Delve", "Tapestry"
-22. **NUNCA** use meta-labels: "SECTION 01", "QUESTION 05", "ABOUT US"
-23. **NUNCA** use filler UI: "Scroll to explore", "Swipe down", scroll arrows, bouncing chevrons
-24. **NUNCA** use Unsplash quebrado — use `https://picsum.photos/seed/{string}/W/H`
+### Content (Jane Doe Effect)
+18. **NEVER** use generic names: "John Doe", "Sarah Chan", "Jack Su" — invent realistic creative names
+19. **NEVER** use generic companies: "Acme", "Nexus", "SmartFlow" — invent contextual brand names
+20. **NEVER** use fake numbers: `99.99%`, `50%`, `1234567` — use organic ones (`47.2%`, `+1 (312) 847-1928`)
+21. **NEVER** use AI copywriting: "Elevate", "Seamless", "Unleash", "Next-Gen", "Game-changer", "Delve", "Tapestry"
+22. **NEVER** use meta-labels: "SECTION 01", "QUESTION 05", "ABOUT US"
+23. **NEVER** use filler UI: "Scroll to explore", "Swipe down", scroll arrows, bouncing chevrons
+24. **NEVER** use broken Unsplash — use `https://picsum.photos/seed/{string}/W/H`
 
-### Componentes
-25. **NUNCA** use shadcn/ui em estado default genérico — customize radii, cores, shadows
-26. **NUNCA** use Lucide/Feather como única opção de ícones — use Phosphor, Radix, Heroicons
-27. **NUNCA** misture stroke-widths de ícones diferentes — padronize em 1.5 ou 2.0
-28. **NUNCA** use emojis em código, markup, alt text — use ícones ou SVG primitives
+### Components
+25. **NEVER** use shadcn/ui in its generic default state — customize radii, colors, shadows
+26. **NEVER** use Lucide/Feather as the only icon option — use Phosphor, Radix, Heroicons
+27. **NEVER** mix stroke-widths from different icons — standardize on 1.5 or 2.0
+28. **NEVER** use emojis in code, markup, alt text — use icons or SVG primitives
 
 ### Performance
-29. **NUNCA** anime `top`, `left`, `width` ou `height` — apenas `transform` e `opacity`
-30. **NUNCA** aplique `backdrop-blur` em scrolling containers — apenas em fixed/sticky
-31. **NUNCA** aplique grain/noise em scrolling containers — apenas em `fixed inset-0 pointer-events-none`
-32. **NUNCA** use `window.addEventListener('scroll')` — use IntersectionObserver ou Framer `whileInView`
+29. **NEVER** animate `top`, `left`, `width` or `height` — only `transform` and `opacity`
+30. **NEVER** apply `backdrop-blur` on scrolling containers — only on fixed/sticky
+31. **NEVER** apply grain/noise on scrolling containers — only on `fixed inset-0 pointer-events-none`
+32. **NEVER** use `window.addEventListener('scroll')` — use IntersectionObserver or Framer `whileInView`
 
 ### Meta
-33. **NUNCA** repita a mesma escolha estética de uma geração anterior NA MESMA SESSÃO (anti-convergência de segunda ordem)
-34. **NUNCA** crie output incompleto: `// ... rest of code`, `// TODO`, "for brevity" → ative `output-enforcement`
-35. **SEMPRE** commita com uma direção estética intencional antes de codificar (acione `aesthetic-modes` se necessário)
-36. **SEMPRE** use CSS variables para tokens de design
-37. **SEMPRE** verifique deps em `package.json` antes de importar libs (framer-motion, gsap, etc.)
-38. Se o projeto tem brand assets → use como fundação
-39. Se não tem → crie direção original que sirva o contexto
-40. **Complexity matching:** design maximalista = código elaborado; design minimalista = restraint e precisão
+33. **NEVER** repeat the same aesthetic choice from a previous generation IN THE SAME SESSION (second-order anti-convergence)
+34. **NEVER** create incomplete output: `// ... rest of code`, `// TODO`, "for brevity" → activate `output-enforcement`
+35. **ALWAYS** commit to an intentional aesthetic direction before coding (trigger `aesthetic-modes` if needed)
+36. **ALWAYS** use CSS variables for design tokens
+37. **ALWAYS** check deps in `package.json` before importing libs (framer-motion, gsap, etc.)
+38. If the project has brand assets → use them as the foundation
+39. If it doesn't → create an original direction that serves the context
+40. **Complexity matching:** maximalist design = elaborate code; minimalist design = restraint and precision
 
-> **Para deep-dive:** `skills/aesthetic-boost` (compact primer), `skills/taste-design-dials` (3-dial system),
+> **For a deep-dive:** `skills/aesthetic-boost` (compact primer), `skills/taste-design-dials` (3-dial system),
 > `skills/aesthetic-modes` (Editorial / Brutalist / Soft modes).

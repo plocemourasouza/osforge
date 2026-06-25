@@ -1,92 +1,92 @@
 # Plan Template: COMPLEX
 
-## Plano: {título}
-**Complexidade:** COMPLEX
-**Fases:** 7+ (adaptar conforme necessidade)
+## Plan: {title}
+**Complexity:** COMPLEX
+**Phases:** 7+ (adapt as needed)
 
-### Fase 1: Definição de Requisitos (PRD)
-- **Objetivo:** Definir problema, usuários, requisitos funcionais e não-funcionais, escopo MVP
+### Phase 1: Requirements Definition (PRD)
+- **Objective:** Define the problem, users, functional and non-functional requirements, MVP scope
 - **Skill:** `skills/planning/prd-builder`
-- **Artefato:** `{output_dir}/prd-{slug}.md`
-- **Tamanho:** Médio a Grande
-- **Facilitação:** Colaborativa — perguntas guiadas, não geração autônoma
+- **Artifact:** `{output_dir}/prd-{slug}.md`
+- **Size:** Medium to Large
+- **Facilitation:** Collaborative — guided questions, not autonomous generation
 
-### Fase 2: Arquitetura
-- **Objetivo:** Decisões técnicas, data model, API design, integrações
+### Phase 2: Architecture
+- **Objective:** Technical decisions, data model, API design, integrations
 - **Skill:** `skills/planning/arch-builder`
-- **Artefato:** `{output_dir}/architecture-{slug}.md` (com ADRs)
-- **Tamanho:** Médio
-- **Input:** PRD da Fase 1 + project-context.md
+- **Artifact:** `{output_dir}/architecture-{slug}.md` (with ADRs)
+- **Size:** Medium
+- **Input:** PRD from Phase 1 + project-context.md
 
-### Fase 3: Decomposição em Épicos e Stories
-- **Objetivo:** Transformar requisitos em work items implementáveis
+### Phase 3: Decomposition into Epics and Stories
+- **Objective:** Turn requirements into implementable work items
 - **Skill:** `skills/planning/epic-decomposer`
-- **Artefato:** `{output_dir}/epics/{slug}/` (1 arquivo por épico com stories)
-- **Tamanho:** Médio a Grande
+- **Artifact:** `{output_dir}/epics/{slug}/` (1 file per epic with stories)
+- **Size:** Medium to Large
 - **Input:** PRD + Architecture
 
-### Fase 4: Quality Gate — Readiness Check
-- **Objetivo:** Validar que PRD, Architecture e Épicos estão alinhados e completos
+### Phase 4: Quality Gate — Readiness Check
+- **Objective:** Validate that PRD, Architecture, and Epics are aligned and complete
 - **Skill:** `skills/quality/readiness-gate`
-- **Artefato:** Readiness report (PASS / CONCERNS / FAIL)
-- **Tamanho:** Pequeno
-- **Decisão:**
-  - PASS → avançar para implementação
-  - CONCERNS → resolver concerns e re-check
-  - FAIL → voltar para fase que falhou
+- **Artifact:** Readiness report (PASS / CONCERNS / FAIL)
+- **Size:** Small
+- **Decision:**
+  - PASS → advance to implementation
+  - CONCERNS → resolve concerns and re-check
+  - FAIL → go back to the phase that failed
 
-### Fase 5: Sprint Planning
-- **Objetivo:** Sequenciar stories por dependência e prioridade
-- **Skill:** Orchestrator (inline — não precisa de skill separado)
-- **Artefato:** Atualizar `.osforge/status.yaml` com sequência de stories
-- **Tamanho:** Pequeno
+### Phase 5: Sprint Planning
+- **Objective:** Sequence stories by dependency and priority
+- **Skill:** Orchestrator (inline — no separate skill needed)
+- **Artifact:** Update `.osforge/status.yaml` with the story sequence
+- **Size:** Small
 
-### Fase 6-N: Implementação (sprint loop)
-- **Objetivo:** Implementar stories em sequência
-- **Skill:** `skills/planning/story-executor` → skills de execução
-- **Artefato:** Código + testes por story
+### Phase 6-N: Implementation (sprint loop)
+- **Objective:** Implement stories in sequence
+- **Skill:** `skills/planning/story-executor` → execution skills
+- **Artifact:** Code + tests per story
 
-Para cada story:
-1. Criar/refinar story context (`skills/planning/story-executor`)
-2. Implementar tasks
+For each story:
+1. Create/refine story context (`skills/planning/story-executor`)
+2. Implement tasks
 3. Code review (`skills/quality/code-review`)
-4. Se aprovado → atualizar status → próxima story
-5. Se changes requested → corrigir e re-review
+4. If approved → update status → next story
+5. If changes requested → fix and re-review
 
-#### Metadados de paralelismo por task
+#### Parallelism metadata per task
 
-Cada task gerada para este plano DEVE incluir o bloco YAML abaixo logo após o cabeçalho `### TN:`:
+Each task generated for this plan MUST include the YAML block below right after the `### TN:` header:
 
 ```yaml
 id: T<N>
-depends_on: []      # ids de tasks pré-requisito (ex: [T1, T2])
-wave: 1             # onda de execução derivada de depends_on
-parallel_ok: true   # false se toca arquivo compartilhado com outra task da mesma wave
+depends_on: []      # ids of prerequisite tasks (e.g., [T1, T2])
+wave: 1             # execution wave derived from depends_on
+parallel_ok: true   # false if it touches a file shared with another task in the same wave
 ```
 
-Regras de derivação:
-- Tasks sem predecessoras → `wave: 1`.
-- Tasks cujo predecessor mais tardio está na wave N → `wave: N+1`.
-- Tasks na mesma wave com `parallel_ok: true` são despachadas em paralelo pelo orchestrator.
-- Duas tasks que editam o mesmo arquivo → `parallel_ok: false` ou waves diferentes.
+Derivation rules:
+- Tasks with no predecessors → `wave: 1`.
+- Tasks whose latest predecessor is in wave N → `wave: N+1`.
+- Tasks in the same wave with `parallel_ok: true` are dispatched in parallel by the orchestrator.
+- Two tasks that edit the same file → `parallel_ok: false` or different waves.
 
-### Fase Final: Review de Qualidade
-- **Objetivo:** Revisão adversarial completa + edge case analysis
+### Final Phase: Quality Review
+- **Objective:** Complete adversarial review + edge case analysis
 - **Skill:** `skills/quality/adversarial-review` + `skills/quality/edge-case-hunter`
-- **Artefato:** Review report consolidado + lista de edge cases
-- **Tamanho:** Médio a Grande
+- **Artifact:** Consolidated review report + list of edge cases
+- **Size:** Medium to Large
 
 ### Checkpoints
-- Após Fase 1: aprovar PRD (todos os requisitos cobertos?)
-- Após Fase 2: aprovar arquitetura (decisões fazem sentido?)
-- Após Fase 3: aprovar decomposição (stories são implementáveis?)
-- Após Fase 4: readiness gate deve PASS
-- Após cada story: code review
-- Após Fase Final: aprovar para merge/deploy
+- After Phase 1: approve the PRD (are all requirements covered?)
+- After Phase 2: approve the architecture (do the decisions make sense?)
+- After Phase 3: approve the decomposition (are stories implementable?)
+- After Phase 4: readiness gate must PASS
+- After each story: code review
+- After the Final Phase: approve for merge/deploy
 
-### Notas
-- Se PRD for muito grande (>5000 tokens), usar `context-distillator` para comprimir
-- Se docs grandes surgirem, usar `doc-shard` para dividir
-- Course correction pode acontecer em qualquer ponto — voltar ao Orchestrator
-- Para projetos com compliance (LGPD, TSE), incluir review de compliance como sub-fase
-- Para projetos multi-tenant, incluir review de RLS como sub-fase
+### Notes
+- If the PRD is too large (>5000 tokens), use `context-distillator` to compress it
+- If large docs appear, use `doc-shard` to split them
+- Course correction can happen at any point — return to the Orchestrator
+- For projects with compliance (LGPD, TSE), include a compliance review as a sub-phase
+- For multi-tenant projects, include an RLS review as a sub-phase

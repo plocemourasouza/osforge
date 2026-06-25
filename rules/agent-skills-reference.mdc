@@ -1,81 +1,81 @@
 ---
-description: Referência ao repositório local de 770+ Agent Skills — quando e como consultar, Tiers 1/2/3, busca e instalação em projetos
+description: Reference to the local repository of 770+ Agent Skills — when and how to consult it, Tiers 1/2/3, search and installation in projects
 globs: ["**/*.ts", "**/*.tsx", "**/*.md"]
 alwaysApply: true
 ---
 
-# Repositório Local de Agent Skills
+# Local Agent Skills Repository
 
-As coleções upstream com 770+ Agent Skills vivem em `~/Development/osforge/sources/` (ADR-009; gitignored, disco apenas).
+The upstream collections with 770+ Agent Skills live in `~/Development/osforge/sources/` (ADR-009; gitignored, disk only).
 
-Skills são referências de melhores práticas extraídas de repositórios oficiais (Anthropic, Vercel, Supabase, Trail of Bits, Cloudflare, Expo, Sentry) e da comunidade.
+Skills are best-practice references extracted from official repositories (Anthropic, Vercel, Supabase, Trail of Bits, Cloudflare, Expo, Sentry) and from the community.
 
-**Quando consultar**: Ao enfrentar um problema complexo em domínio específico (segurança, performance React, otimização PostgreSQL, fuzzing, etc.), verifique se existe uma skill relevante antes de improvisar uma solução.
+**When to consult**: When facing a complex problem in a specific domain (security, React performance, PostgreSQL optimization, fuzzing, etc.), check whether a relevant skill exists before improvising a solution.
 
 ---
 
-## Tier 1 — Skills Essenciais (dominar e aplicar sempre)
+## Tier 1 — Essential Skills (master and always apply)
 
-| Pasta | Foco | Skills Principais |
+| Folder | Focus | Main Skills |
 |-------|------|-------------------|
 | `01-anthropic/` | Documents, design, dev | `frontend-design`, `docx`, `pdf`, `xlsx`, `pptx`, `mcp-builder`, `webapp-testing` |
-| `02-superpowers/` | Workflow completo com TDD | `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `subagent-driven-development` |
-| `04-vercel/` | React/Next.js performance | `react-best-practices` (57 regras em 8 categorias), `web-design-guidelines` (100+ regras), `composition-patterns` |
+| `02-superpowers/` | Complete workflow with TDD | `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `subagent-driven-development` |
+| `04-vercel/` | React/Next.js performance | `react-best-practices` (57 rules in 8 categories), `web-design-guidelines` (100+ rules), `composition-patterns` |
 | `08-supabase/` | PostgreSQL optimization | `supabase-postgres-best-practices` |
-| `07-trailofbits/` | Segurança & auditoria | `static-analysis`, `insecure-defaults`, `sharp-edges`, `audit-context-building` |
+| `07-trailofbits/` | Security & auditing | `static-analysis`, `insecure-defaults`, `sharp-edges`, `audit-context-building` |
 
-## Tier 2 — Skills Seletivas (conforme necessidade do projeto)
+## Tier 2 — Selective Skills (as the project requires)
 
-| Pasta | Foco | Quando Usar |
+| Folder | Focus | When to Use |
 |-------|------|-------------|
-| `05-context-engineering/` | Context engineering | Otimizar uso de contexto em agents, multi-agent patterns |
+| `05-context-engineering/` | Context engineering | Optimize context usage in agents, multi-agent patterns |
 | `10-cloudflare/` | Cloudflare platform | Workers, R2, Durable Objects, Agents SDK |
 | `11-sentry/` | Dev workflow | Code review, commit conventions, PR workflow |
-| `03-claude-mem/` | Memória persistente | Claude Code com sessões longas |
+| `03-claude-mem/` | Persistent memory | Claude Code with long sessions |
 
-## Tier 3 — Cherry-Pick (buscar conforme demanda)
+## Tier 3 — Cherry-Pick (search on demand)
 
-| Pasta | Foco | Destaques |
+| Folder | Focus | Highlights |
 |-------|------|-----------|
-| `06-antigravity/` | 634 skills universais | `typescript-expert`, `prisma-patterns`, `docker-expert`, `architecture`, `senior-architect` |
+| `06-antigravity/` | 634 universal skills | `typescript-expert`, `prisma-patterns`, `docker-expert`, `architecture`, `senior-architect` |
 | `09-expo/` | Mobile | `expo-app-design`, `expo-deployment` |
-| `12-curadoria/` | Awesome lists | Referências para Stripe, Hugging Face, HashiCorp, WordPress |
+| `12-curadoria/` | Awesome lists | References for Stripe, Hugging Face, HashiCorp, WordPress |
 
 ---
 
-## Instalar Skills num Projeto
+## Install Skills into a Project
 
 ```bash
-# Skill específica
-cp -R ~/Development/osforge/sources/<pasta>/<skill> .claude/skills/
+# Specific skill
+cp -R ~/Development/osforge/sources/<folder>/<skill> .claude/skills/
 
-# Buscar skill por termo
-python3 ~/Development/osforge/scripts/buscar-skill.py <termo>
+# Search skill by term
+python3 ~/Development/osforge/scripts/buscar-skill.py <term>
 python3 ~/Development/osforge/scripts/buscar-skill.py --cat security
 python3 ~/Development/osforge/scripts/buscar-skill.py --install prisma
 ```
 
-## Índice Completo
+## Complete Index
 
-- **JSON (programático):** `~/Development/osforge/INDICE-SKILLS.json`
-- **Markdown (legível):** `~/Development/osforge/docs/INDICE-SKILLS.md`
+- **JSON (programmatic):** `~/Development/osforge/INDICE-SKILLS.json`
+- **Markdown (readable):** `~/Development/osforge/docs/INDICE-SKILLS.md`
 
 ---
 
-## Sistema Spec Unificado (spec:*)
+## Unified Spec System (spec:*)
 
-O workflow de especificação e implementação de features é executado via commands `spec-*` disponíveis globalmente:
+The feature specification and implementation workflow runs via the `spec-*` commands available globally:
 
-| Command | Fase | Artefato gerado |
+| Command | Phase | Generated artifact |
 |---|---|---|
-| `/spec-constitution` | Pré-projeto | `.specs/memory/constitution.md` |
+| `/spec-constitution` | Pre-project | `.specs/memory/constitution.md` |
 | `/spec-discover` | Phase 0 — Discover | `.specs/features/[f]/discovery.md` |
 | `/spec-specify` | Phase 1 — Specify | `.specs/features/[f]/spec.md` |
 | `/spec-design` | Phase 2 — Design | `.specs/features/[f]/design.md` |
 | `/spec-tasks` | Phase 3 — Tasks | `.specs/features/[f]/tasks.md` |
-| `/spec-implement` | Phase 4 — Implement+Validate | (análise + validação) |
-| `/spec-clarify` | Auxiliar | Resolve ambiguidades em spec.md |
-| `/spec-checklist` | Auxiliar | Critérios de aceite da feature |
+| `/spec-implement` | Phase 4 — Implement+Validate | (analysis + validation) |
+| `/spec-clarify` | Auxiliary | Resolves ambiguities in spec.md |
+| `/spec-checklist` | Auxiliary | Feature acceptance criteria |
 | `/spec-measure` | Phase 5 — Measure | `.specs/features/[f]/metrics.md` |
 
-A especificação de comportamento completa está na SKILL `tlc-spec-driven` (em `~/.claude/SKILLS.md` ou `~/.cursor/skills/tlc-spec-driven/SKILL.md`).
+The complete behavior specification is in the `tlc-spec-driven` SKILL (in `~/.claude/SKILLS.md` or `~/.cursor/skills/tlc-spec-driven/SKILL.md`).

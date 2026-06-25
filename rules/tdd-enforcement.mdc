@@ -6,21 +6,21 @@ alwaysApply: true
 
 # TDD Test Protection
 
-## Regra Fundamental
-Quando testes FALHAM, a ação correta é CORRIGIR O CÓDIGO DE PRODUÇÃO,
-NUNCA modificar os testes para que passem.
+## Fundamental Rule
+When tests FAIL, the correct action is to FIX THE PRODUCTION CODE,
+NEVER modify the tests to make them pass.
 
-## Proibições Absolutas
-- NUNCA altere assertions para corresponder ao output errado
-- NUNCA delete testes que falham
-- NUNCA adicione .skip ou .todo a testes existentes que falharam
-- NUNCA mude expected values para match actual values
+## Absolute Prohibitions
+- NEVER change assertions to match the wrong output
+- NEVER delete tests that fail
+- NEVER add .skip or .todo to existing tests that failed
+- NEVER change expected values to match actual values
 
-## Exceções (requer justificativa explícita)
-- O teste tem um bug genuíno (assertion errada desde a criação)
-- Os requirements mudaram e o usuário EXPLICITAMENTE pediu para atualizar testes
-- Refatoração que muda interface pública (e o usuário confirmou)
+## Exceptions (requires explicit justification)
+- The test has a genuine bug (wrong assertion since creation)
+- The requirements changed and the user EXPLICITLY asked to update tests
+- Refactoring that changes the public interface (and the user confirmed)
 
-## Hook de Auditoria
-Modificações em arquivos de teste são LOGADAS automaticamente pelo hook
-afterFileEdit em /tmp/cursor-hooks.log para auditoria.
+## Audit Hook
+Modifications to test files are automatically LOGGED by the
+afterFileEdit hook in /tmp/cursor-hooks.log for auditing.

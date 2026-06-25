@@ -1,40 +1,40 @@
 ---
 name: artifact-chain
 description: >
-  Rule always-on que garante rastreabilidade entre artefatos de planning
-  e respeito ao project-context.md como constituição do projeto.
+  Always-on rule that guarantees traceability between planning artifacts
+  and respect for project-context.md as the project's constitution.
 type: always-on
 version: 1.0.0
 ---
 
 # Rule: Artifact Chain
 
-## Rastreabilidade
+## Traceability
 
-- Toda spec deve referenciar project-context.md (se existir).
-- Todo story deve referenciar a spec ou épico que o originou.
-- Todo code review deve referenciar a story sendo revisada.
-- Toda decisão de arquitetura deve ser documentada como ADR.
-- Frontmatter com `depends_on: []` em artefatos que dependem de outros.
+- Every spec must reference project-context.md (if it exists).
+- Every story must reference the spec or epic that originated it.
+- Every code review must reference the story being reviewed.
+- Every architecture decision must be documented as an ADR.
+- Frontmatter with `depends_on: []` in artifacts that depend on others.
 
-## Project Context como Constituição
+## Project Context as Constitution
 
-- Se `project-context.md` existe no projeto, ele é a fonte de verdade para:
-  - Stack e versões
+- If `project-context.md` exists in the project, it is the source of truth for:
+  - Stack and versions
   - Naming conventions
-  - Patterns de código
-  - Regras de segurança
-  - Anti-patterns proibidos
-- Qualquer skill ou agent DEVE carregar project-context.md antes de gerar
-  código ou tomar decisões técnicas.
-- Se uma decisão conflitar com project-context.md, HALT e perguntar ao
-  usuário qual prevalece.
-- Se project-context.md não existir em projeto existente: sugerir geração
-  via `skills/context/project-context-generator` antes de trabalho significativo.
+  - Code patterns
+  - Security rules
+  - Forbidden anti-patterns
+- Any skill or agent MUST load project-context.md before generating
+  code or making technical decisions.
+- If a decision conflicts with project-context.md, HALT and ask the
+  user which one prevails.
+- If project-context.md does not exist in an existing project: suggest generating it
+  via `skills/context/project-context-generator` before significant work.
 
-## Linguagem
+## Language
 
-- Comunicação com o dev: Português Brasileiro (default)
-- Output de documentos técnicos: Inglês (default, override com instrução explícita)
-- Código: sempre em inglês (variáveis, funções, comments, commits)
-- Conventional Commits em inglês: `feat:`, `fix:`, `refactor:`, etc.
+- Communication with the dev: reply in the user's language (ADR-011)
+- All repository content and artifacts: English (ADR-011)
+- Code: always in English (variables, functions, comments, commits)
+- Conventional Commits in English: `feat:`, `fix:`, `refactor:`, etc.

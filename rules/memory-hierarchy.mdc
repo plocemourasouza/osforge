@@ -1,5 +1,5 @@
 ---
-description: Hierarquia de 4 camadas de memória (CLAUDE.md) com regras explícitas de precedência, @include directive, e conditional path injection. Formaliza como configuração de instruções é carregada e priorizada.
+description: 4-layer memory hierarchy (CLAUDE.md) with explicit precedence rules, @include directive, and conditional path injection. Formalizes how instruction configuration is loaded and prioritized.
 globs: ["**/*.md", "**/CLAUDE.md", "**/.claude/**", "**/.cursor/**"]
 alwaysApply: true
 ---
@@ -11,48 +11,48 @@ alwaysApply: true
 
 ## Memory File Loading Order
 
-Carregamento em ordem REVERSA de prioridade (último carregado = maior prioridade):
+Loading happens in REVERSE order of priority (last loaded = highest priority):
 
-| # | Camada | Path | Escopo |
+| # | Layer | Path | Scope |
 |---|---|---|---|
-| 1 | **Managed** | `/etc/claude-code/CLAUDE.md` | Enterprise global, todos usuários da máquina |
-| 2 | **User** | `~/.claude/CLAUDE.md` | Pessoal global, todos os projetos do usuário |
-| 3 | **Project** | `CLAUDE.md`, `.claude/CLAUDE.md`, `.claude/rules/*.md` | Compartilhado via repo, todos no time |
-| 4 | **Local** | `CLAUDE.local.md` | Privado por projeto, `.gitignore`-able |
+| 1 | **Managed** | `/etc/claude-code/CLAUDE.md` | Enterprise global, all users of the machine |
+| 2 | **User** | `~/.claude/CLAUDE.md` | Personal global, all of the user's projects |
+| 3 | **Project** | `CLAUDE.md`, `.claude/CLAUDE.md`, `.claude/rules/*.md` | Shared via repo, everyone on the team |
+| 4 | **Local** | `CLAUDE.local.md` | Private per project, `.gitignore`-able |
 
-**Prioridade resolução de conflitos:** Local > Project > User > Managed
+**Conflict resolution priority:** Local > Project > User > Managed
 
 ## File Discovery Protocol
 
-1. **User memory**: lido sempre de `~/.claude/`
-2. **Project + Local**: discovery por traversal de diretórios — do `cwd` até `/`
-3. **Files closer to cwd têm precedência mais alta** (carregados depois)
-4. Em cada diretório, checar:
+1. **User memory**: always read from `~/.claude/`
+2. **Project + Local**: discovery by directory traversal — from `cwd` up to `/`
+3. **Files closer to cwd have higher precedence** (loaded later)
+4. In each directory, check:
    - `CLAUDE.md` (canonical)
-   - `.claude/CLAUDE.md` (canonical alternativo)
-   - Todo `*.md` em `.claude/rules/` (sub-rules)
-5. Sempre ler `CLAUDE.local.md` ANTES de `CLAUDE.md` no mesmo diretório (Local sobrescreve)
+   - `.claude/CLAUDE.md` (canonical alternative)
+   - Every `*.md` in `.claude/rules/` (sub-rules)
+5. Always read `CLAUDE.local.md` BEFORE `CLAUDE.md` in the same directory (Local overrides)
 
 ## `@include` Directive
 
-Memory files suportam inclusão transitiva de outros arquivos:
+Memory files support transitive inclusion of other files:
 
-### Sintaxe
-| Forma | Resolve para |
+### Syntax
+| Form | Resolves to |
 |---|---|
-| `@path/to/file.md` | Relativo ao arquivo atual |
-| `@./relative/path.md` | Relativo ao arquivo atual (explícito) |
-| `@~/global/path.md` | Relativo ao `$HOME` |
-| `@/absolute/path.md` | Path absoluto |
+| `@path/to/file.md` | Relative to the current file |
+| `@./relative/path.md` | Relative to the current file (explicit) |
+| `@~/global/path.md` | Relative to `$HOME` |
+| `@/absolute/path.md` | Absolute path |
 
-### Regras
-- Funciona apenas em **leaf text nodes** (NÃO dentro de code blocks)
-- **Circular references** são prevenidas por tracking de arquivos processados
-- **Non-existent files** são silenciosamente ignorados (não falham)
-- **Maximum include depth**: 5 níveis
-- Apenas extensões de **arquivo de texto** são permitidas (bloqueia imagens, PDFs, binários)
+### Rules
+- Works only in **leaf text nodes** (NOT inside code blocks)
+- **Circular references** are prevented by tracking processed files
+- **Non-existent files** are silently ignored (do not fail)
+- **Maximum include depth**: 5 levels
+- Only **text file** extensions are allowed (blocks images, PDFs, binaries)
 
-### Exemplo
+### Example
 ```markdown
 # CLAUDE.md (project root)
 
@@ -67,7 +67,7 @@ Memory files suportam inclusão transitiva de outros arquivos:
 
 ## Frontmatter `paths` (Conditional Injection)
 
-Memory files podem ter YAML frontmatter com `paths` glob — só injetam quando arquivo ativo casa:
+Memory files can have YAML frontmatter with a `paths` glob — they inject only when the active file matches:
 
 ```yaml
 ---
@@ -84,54 +84,54 @@ paths:
 ```
 
 Use cases:
-- Convenções específicas a partes do monorepo
-- Rules que aplicam só a stacks específicas (ex: rules de React só em `*.tsx`)
-- Skills/rules avançadas que só carregam em contextos cirúrgicos
+- Conventions specific to parts of the monorepo
+- Rules that apply only to specific stacks (e.g., React rules only in `*.tsx`)
+- Advanced skills/rules that load only in surgical contexts
 
 ## Configuration
 
 | Setting | Default | Purpose |
 |---|---|---|
-| `MAX_MEMORY_CHARACTER_COUNT` | 40 000 | Recomendação máxima por arquivo (acima → degrada performance) |
-| `MAX_INCLUDE_DEPTH` | 5 | Profundidade máxima de `@include` transitivo |
-| `claudeMdExcludes` | `[]` | Glob patterns para excluir CLAUDE.md específicos |
-| HTML comments | stripped | `<!-- ... -->` é removido antes de injeção |
+| `MAX_MEMORY_CHARACTER_COUNT` | 40 000 | Maximum recommendation per file (above → degrades performance) |
+| `MAX_INCLUDE_DEPTH` | 5 | Maximum depth of transitive `@include` |
+| `claudeMdExcludes` | `[]` | Glob patterns to exclude specific CLAUDE.md files |
+| HTML comments | stripped | `<!-- ... -->` is removed before injection |
 
 ## Best Practices
 
-### ✅ Faça
+### ✅ Do
 
-- **Cada camada tem propósito distinto**:
-  - Managed: políticas da empresa (security, compliance)
-  - User: preferências pessoais (estilo, ferramentas)
-  - Project: convenções do time (stack, padrões)
-  - Local: notas privadas (TODOs, branch atual, contexto pessoal)
-- **Use @include pra DRY**: extrair regras compartilhadas e referenciar
-- **Frontmatter `paths`** pra rules específicas de pasta
-- **Comente seu CLAUDE.md** com HTML comments — eles são stripados na injeção mas ajudam você
-- **Cap em ~40k chars por arquivo** — split via @include se passar disso
+- **Each layer has a distinct purpose**:
+  - Managed: company policies (security, compliance)
+  - User: personal preferences (style, tooling)
+  - Project: team conventions (stack, patterns)
+  - Local: private notes (TODOs, current branch, personal context)
+- **Use @include for DRY**: extract shared rules and reference them
+- **Frontmatter `paths`** for folder-specific rules
+- **Comment your CLAUDE.md** with HTML comments — they are stripped on injection but help you
+- **Cap at ~40k chars per file** — split via @include if you exceed it
 
-### ❌ Evite
+### ❌ Avoid
 
-- ❌ Sobrescrever rules base sem entender o impacto
-- ❌ Skip `.claude/rules/` directory — perde rules modulares
-- ❌ Symlinks circulares entre includes
-- ❌ Memory file > 40k chars (degrada token budget)
-- ❌ Confiar em `Managed` para regras críticas sem testar local override
-- ❌ Commitar `CLAUDE.local.md` (defeat the purpose — colocar em .gitignore)
+- ❌ Overriding base rules without understanding the impact
+- ❌ Skipping the `.claude/rules/` directory — you lose modular rules
+- ❌ Circular symlinks between includes
+- ❌ Memory file > 40k chars (degrades token budget)
+- ❌ Relying on `Managed` for critical rules without testing a local override
+- ❌ Committing `CLAUDE.local.md` (defeats the purpose — put it in .gitignore)
 
-## Integration com OSForge
+## Integration with OSForge
 
-OSForge usa essa hierarquia para deployment:
+OSForge uses this hierarchy for deployment:
 
 ```
-~/.claude/CLAUDE.md           ← User layer (instalado por deploy.sh)
+~/.claude/CLAUDE.md           ← User layer (installed by deploy.sh)
 ~/.claude/SKILLS.md           ← Skills index (122 triggers)
 .claude/rules/*.mdc           ← Project layer (12 always-on rules)
-CLAUDE.local.md               ← Local layer (não rastreado)
+CLAUDE.local.md               ← Local layer (untracked)
 ```
 
-E suporta `@include` para load de `.osforge/status.yaml`:
+And it supports `@include` to load `.osforge/status.yaml`:
 
 ```markdown
 # CLAUDE.md (top of file)
@@ -139,23 +139,23 @@ E suporta `@include` para load de `.osforge/status.yaml`:
 @~/.claude/SKILLS.md
 ```
 
-Isso permite que o agente carregue automaticamente:
-1. Estado atual do projeto (status.yaml)
-2. Skills disponíveis (SKILLS.md)
-3. Sem precisar repetir essa info em todo prompt
+This lets the agent automatically load:
+1. Current project state (status.yaml)
+2. Available skills (SKILLS.md)
+3. Without having to repeat this info in every prompt
 
 ## Override Semantics
 
-Quando duas camadas conflitam:
+When two layers conflict:
 
-| Conflict | Resolução |
+| Conflict | Resolution |
 |---|---|
-| Local diz X, Project diz Y | **Local vence** (X) |
-| Project diz X, User diz Y | **Project vence** (X) |
-| User diz X, Managed diz Y | **User vence** (X) — para preferências pessoais |
-| **Segurança crítica em Managed** | Managed VENCE (override de Local não pode disable security) |
+| Local says X, Project says Y | **Local wins** (X) |
+| Project says X, User says Y | **Project wins** (X) |
+| User says X, Managed says Y | **User wins** (X) — for personal preferences |
+| **Critical security in Managed** | Managed WINS (a Local override cannot disable security) |
 
-**Exceção crítica:** Se Managed tem flag `enforced: true` no frontmatter, não pode ser sobrescrito por camadas inferiores. Reservado para policies de compliance corporativo.
+**Critical exception:** If Managed has the `enforced: true` flag in its frontmatter, it cannot be overridden by lower layers. Reserved for corporate compliance policies.
 
 ```yaml
 ---
@@ -169,26 +169,26 @@ paths: ["**"]
 - NO eval() in production code
 ```
 
-## Verificação
+## Verification
 
-Para validar que hierarchy está funcionando:
+To validate that the hierarchy is working:
 
 ```bash
-# Listar arquivos de memória carregados na ordem
+# List loaded memory files in order
 claude memory list
 
-# Validar resolução de conflitos
+# Validate conflict resolution
 claude memory resolve <rule-key>
 
-# Debug: ver injeção final no system prompt
+# Debug: see the final injection in the system prompt
 claude memory inject --dry-run
 ```
 
 ---
 
-## Referências
+## References
 
-- `claude-code/CLAUDE.md` — Entry point para Claude Code
-- `claude-code/SKILLS.md` — Skills index injectado via @include
-- `rules/intelligent-routing.mdc` — Routing baseado em memória + contexto
-- `rules/orchestrator-awareness.md` — Coordenação cross-camadas
+- `claude-code/CLAUDE.md` — Entry point for Claude Code
+- `claude-code/SKILLS.md` — Skills index injected via @include
+- `rules/intelligent-routing.mdc` — Routing based on memory + context
+- `rules/orchestrator-awareness.md` — Cross-layer coordination

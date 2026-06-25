@@ -1,71 +1,71 @@
 # Plan Template: STANDARD
 
-## Plano: {título}
-**Complexidade:** STANDARD
-**Fases:** 4-6 (adaptar conforme necessidade)
+## Plan: {title}
+**Complexity:** STANDARD
+**Phases:** 4-6 (adapt as needed)
 
-### Fase 1: Especificação Técnica
-- **Objetivo:** Definir requisitos, escopo e acceptance criteria
+### Phase 1: Technical Specification
+- **Objective:** Define requirements, scope, and acceptance criteria
 - **Skill:** `skills/planning/spec-builder`
-- **Artefato:** `{output_dir}/tech-spec-{slug}.md`
-- **Tamanho:** Pequeno a Médio
+- **Artifact:** `{output_dir}/tech-spec-{slug}.md`
+- **Size:** Small to Medium
 
-### Fase 2: Verificação de Arquitetura (se schema/API changes)
-- **Objetivo:** Validar decisões técnicas contra o stack do projeto
+### Phase 2: Architecture Check (if schema/API changes)
+- **Objective:** Validate technical decisions against the project's stack
 - **Skill:** `skills/planning/arch-builder`
-- **Artefato:** Seção de ADRs na spec ou `{output_dir}/arch-decisions-{slug}.md`
-- **Tamanho:** Pequeno
-- **Condição:** Pular se a mudança não afeta schema, API ou patterns existentes
+- **Artifact:** ADRs section in the spec or `{output_dir}/arch-decisions-{slug}.md`
+- **Size:** Small
+- **Condition:** Skip if the change does not affect schema, API, or existing patterns
 
-### Fase 3: Decomposição em Stories
-- **Objetivo:** Quebrar spec em stories implementáveis e ordenadas
+### Phase 3: Decomposition into Stories
+- **Objective:** Break the spec into implementable and ordered stories
 - **Skill:** `skills/planning/epic-decomposer`
-- **Artefato:** `{output_dir}/stories/{slug}/` (1 arquivo por story)
-- **Tamanho:** Pequeno a Médio
+- **Artifact:** `{output_dir}/stories/{slug}/` (1 file per story)
+- **Size:** Small to Medium
 
-### Fase 4-N: Implementação (loop por story)
-- **Objetivo:** Implementar cada story em sequência de dependência
-- **Skill:** `skills/planning/story-executor` → skills de execução
-- **Artefato:** Código + testes por story
-- **Tamanho:** Varia por story (S/M/L)
+### Phase 4-N: Implementation (loop per story)
+- **Objective:** Implement each story in dependency order
+- **Skill:** `skills/planning/story-executor` → execution skills
+- **Artifact:** Code + tests per story
+- **Size:** Varies per story (S/M/L)
 
-Para cada story:
-1. Implementar tasks da story
+For each story:
+1. Implement the story's tasks
 2. Code review (`skills/quality/code-review`)
-3. Se aprovado → próxima story
-4. Se changes requested → corrigir e re-review
+3. If approved → next story
+4. If changes requested → fix and re-review
 
-#### Metadados de paralelismo por task
+#### Parallelism metadata per task
 
-Cada task gerada para este plano DEVE incluir o bloco YAML abaixo logo após o cabeçalho `### TN:`:
+Each task generated for this plan MUST include the YAML block below right after the `### TN:` header:
 
 ```yaml
 id: T<N>
-depends_on: []      # ids de tasks pré-requisito (ex: [T1, T2])
-wave: 1             # onda de execução derivada de depends_on
-parallel_ok: true   # false se toca arquivo compartilhado com outra task da mesma wave
+depends_on: []      # ids of prerequisite tasks (e.g., [T1, T2])
+wave: 1             # execution wave derived from depends_on
+parallel_ok: true   # false if it touches a file shared with another task in the same wave
 ```
 
-Regras de derivação:
-- Tasks sem predecessoras → `wave: 1`.
-- Tasks cujo predecessor mais tardio está na wave N → `wave: N+1`.
-- Tasks na mesma wave com `parallel_ok: true` são despachadas em paralelo pelo orchestrator.
-- Duas tasks que editam o mesmo arquivo → `parallel_ok: false` ou waves diferentes.
+Derivation rules:
+- Tasks with no predecessors → `wave: 1`.
+- Tasks whose latest predecessor is in wave N → `wave: N+1`.
+- Tasks in the same wave with `parallel_ok: true` are dispatched in parallel by the orchestrator.
+- Two tasks that edit the same file → `parallel_ok: false` or different waves.
 
-### Fase Final: Review de Qualidade
-- **Objetivo:** Validação adversarial do conjunto completo
+### Final Phase: Quality Review
+- **Objective:** Adversarial validation of the complete set
 - **Skill:** `skills/quality/adversarial-review` + `skills/quality/edge-case-hunter`
-- **Artefato:** Review report consolidado
-- **Tamanho:** Médio
+- **Artifact:** Consolidated review report
+- **Size:** Medium
 
 ### Checkpoints
-- Após Fase 1: aprovar spec
-- Após Fase 2: aprovar decisões de arquitetura (se aplicável)
-- Após Fase 3: aprovar decomposição em stories antes de implementar
-- Após cada story: code review
-- Após Fase Final: aprovar para merge/deploy
+- After Phase 1: approve the spec
+- After Phase 2: approve the architecture decisions (if applicable)
+- After Phase 3: approve the decomposition into stories before implementing
+- After each story: code review
+- After the Final Phase: approve for merge/deploy
 
-### Notas
-- Se spec exceder ~1600 tokens, considerar split ou reclassificar para COMPLEX
-- Stories devem ser independentes o suficiente para review isolado
-- Se surgir ambiguidade nos requisitos durante implementação → course correction
+### Notes
+- If the spec exceeds ~1600 tokens, consider splitting or reclassifying as COMPLEX
+- Stories should be independent enough for isolated review
+- If ambiguity arises in the requirements during implementation → course correction

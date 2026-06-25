@@ -1,99 +1,99 @@
 ---
-description: Princípios fundamentais, product thinking, PDD, granularidade de tarefas e modo de planejamento — aplique em toda decisão técnica e de produto
+description: Fundamental principles, product thinking, PDD, task granularity and planning mode — apply to every technical and product decision
 globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.md"]
 alwaysApply: true
 ---
 
-# Princípios Fundamentais e Product Thinking
+# Fundamental Principles and Product Thinking
 
-## Três Princípios que Governam Toda Decisão
+## Three Principles That Govern Every Decision
 
-**Simplicidade primeiro**: Faça cada mudança tão simples quanto possível. Impacte o mínimo de código necessário para resolver o problema. Complexidade só é justificada quando simplicidade é comprovadamente insuficiente. YAGNI: não implemente o que não é necessário agora.
+**Simplicity first**: Make each change as simple as possible. Touch the minimum amount of code needed to solve the problem. Complexity is only justified when simplicity is provably insufficient. YAGNI: don't implement what isn't needed now.
 
-**Sem preguiça**: Encontre causas raiz. Não aplique correções temporárias ou "band-aids" que mascaram problemas. Mantenha padrões de desenvolvedor sênior em todo código produzido. Se uma correção parece fácil demais, questione se está realmente resolvendo o problema ou apenas escondendo-o.
+**No laziness**: Find root causes. Don't apply temporary fixes or "band-aids" that mask problems. Maintain senior-developer standards in all code produced. If a fix seems too easy, question whether it's actually solving the problem or just hiding it.
 
-**Impacto mínimo**: Alterações devem tocar apenas o que é necessário. Cada linha modificada é uma potencial fonte de bugs. Evite refatorações oportunistas fora do escopo da tarefa atual.
-
----
-
-## Granularidade de Tarefas no Plano
-
-Cada etapa do plano deve ser uma ação atômica de 2-5 minutos. A decomposição correta:
-
-- "Escrever o teste que falha" → uma etapa
-- "Rodar o teste e confirmar que falha" → uma etapa
-- "Implementar o código mínimo para passar" → uma etapa
-- "Rodar os testes e confirmar que passam" → uma etapa
-- "Commit" → uma etapa
-
-Cada etapa deve especificar os paths exatos dos arquivos a criar ou editar. Assuma que o executor não tem contexto do codebase — documente tudo que ele precisa saber.
+**Minimal impact**: Changes should touch only what is necessary. Every modified line is a potential source of bugs. Avoid opportunistic refactors outside the scope of the current task.
 
 ---
 
-## Gestão de Tarefas e Rastreabilidade
+## Task Granularity in the Plan
 
-**Planejar primeiro**: Documente o plano em `tasks/todo.md` com itens verificáveis antes de qualquer implementação.
+Each step of the plan should be an atomic 2-5 minute action. The correct decomposition:
 
-**Validar o plano**: Apresente ao usuário e aguarde confirmação antes de iniciar.
+- "Write the failing test" → one step
+- "Run the test and confirm it fails" → one step
+- "Implement the minimal code to pass" → one step
+- "Run the tests and confirm they pass" → one step
+- "Commit" → one step
 
-**Rastrear progresso**: Marque itens como completos à medida que avança.
-
-**Documentar resultados**: Ao concluir, adicione seção de revisão ao `tasks/todo.md` com resultado, decisões e pendências.
-
-**Capturar aprendizados**: Após correções ou feedback, atualize `tasks/lessons.md`. Este registro previne repetição de erros.
-
-**Persistência em sessões longas**: Em tarefas que podem exceder o limite de contexto, utilize `tasks/todo.md` e `tasks/lessons.md` para registrar estado e permitir continuidade.
+Each step should specify the exact paths of the files to create or edit. Assume the executor has no context of the codebase — document everything it needs to know.
 
 ---
 
-## Sistema de Skills — Ciclo de Desenvolvimento
+## Task Management and Traceability
 
-Ao receber qualquer tarefa relacionada ao ciclo de desenvolvimento, avalie primeiro quais skills são aplicáveis:
+**Plan first**: Document the plan in `tasks/todo.md` with verifiable items before any implementation.
 
-- Análise de requisitos → Skill de Planejamento
-- Implementação → Skill de Desenvolvimento
-- Revisão de código → Skill de Revisão
-- Depuração → Skill de Depuração
+**Validate the plan**: Present it to the user and wait for confirmation before starting.
 
-Identifique em qual etapa a tarefa se encontra e ative o comportamento correspondente.
+**Track progress**: Mark items as complete as you advance.
 
-**Skill de Planejamento**: Analise profundamente antes de propor. Questione ambiguidades. Identifique riscos. Decomponha em tarefas com estimativas. O output deve ser documentação estruturada, não código.
+**Document results**: When finishing, add a review section to `tasks/todo.md` with the outcome, decisions and pending items.
 
-**Skill de Desenvolvimento**: Siga estritamente os padrões. Implemente código limpo e testável. Utilize MCPs para informações precisas. Minimize discussões teóricas; foque na entrega.
+**Capture learnings**: After fixes or feedback, update `tasks/lessons.md`. This record prevents the repetition of mistakes.
 
-**Transição explícita**: Ao iniciar, identifique qual skill é mais adequada. Se requer ambas, execute o planejamento completo antes do desenvolvimento.
+**Persistence in long sessions**: In tasks that may exceed the context limit, use `tasks/todo.md` and `tasks/lessons.md` to record state and allow continuity.
 
 ---
 
-## Modo Planejador (/plan)
+## Skills System — Development Cycle
 
-Ao receber `/plan` ou solicitação explícita de planejamento, execute:
+When receiving any task related to the development cycle, first evaluate which skills are applicable:
 
-1. Análise técnica do projeto (configs, MCPs, sistema de arquivos)
-2. Perguntas esclarecedoras — máximo 4-6 focadas
-3. Plano estruturado com:
-   - Etapas atômicas de 2-5 minutos
-   - Dependências entre etapas
-   - Paths exatos de arquivos a criar/editar
-   - Critérios de conclusão verificáveis
+- Requirements analysis → Planning Skill
+- Implementation → Development Skill
+- Code review → Review Skill
+- Debugging → Debugging Skill
 
-O output do Modo Planejador é documentação, nunca código.
+Identify which stage the task is in and activate the corresponding behavior.
+
+**Planning Skill**: Analyze deeply before proposing. Question ambiguities. Identify risks. Decompose into tasks with estimates. The output should be structured documentation, not code.
+
+**Development Skill**: Strictly follow the patterns. Implement clean, testable code. Use MCPs for precise information. Minimize theoretical discussion; focus on delivery.
+
+**Explicit transition**: When starting, identify which skill is most appropriate. If both are required, complete the full planning before development.
 
 ---
 
-## Higienização de Documentação
+## Planner Mode (/plan)
 
-**Regra fundamental**: Documentos não consultados ou atualizados há mais de 30 dias são candidatos a consolidação ou remoção.
+When receiving `/plan` or an explicit planning request, execute:
 
-**Acionamento**: `/clean-docs`, "revisar documentação", "limpar docs", ou sugestão automática a cada 10 interações.
+1. Technical analysis of the project (configs, MCPs, file system)
+2. Clarifying questions — maximum 4-6 focused ones
+3. A structured plan with:
+   - Atomic 2-5 minute steps
+   - Dependencies between steps
+   - Exact paths of files to create/edit
+   - Verifiable completion criteria
 
-**Estrutura permanente obrigatória**:
-- `README.md` — visão geral e setup
-- `tasks/todo.md` — tarefas em andamento
-- `tasks/lessons.md` — aprendizados e regras do projeto
-- `docs/architecture.md` — decisões arquiteturais
-- `docs/features.md` — features do sistema
+The output of Planner Mode is documentation, never code.
 
-**Documentos temporários** (specs, plans, notes) expiram 30 dias após conclusão da feature. Extraia o que for relevante para os permanentes antes de remover.
+---
 
-**Nunca remova sem confirmação explícita do usuário.**
+## Documentation Hygiene
+
+**Fundamental rule**: Documents not consulted or updated in more than 30 days are candidates for consolidation or removal.
+
+**Trigger**: `/clean-docs`, "review documentation", "clean up docs", or an automatic suggestion every 10 interactions.
+
+**Mandatory permanent structure**:
+- `README.md` — overview and setup
+- `tasks/todo.md` — tasks in progress
+- `tasks/lessons.md` — learnings and project rules
+- `docs/architecture.md` — architectural decisions
+- `docs/features.md` — system features
+
+**Temporary documents** (specs, plans, notes) expire 30 days after the feature is completed. Extract whatever is relevant into the permanent ones before removing.
+
+**Never remove without explicit confirmation from the user.**

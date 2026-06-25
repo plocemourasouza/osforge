@@ -1,67 +1,67 @@
 ---
-description: Cria ou atualiza a constituição do projeto — princípios, convenções e governança que guiam todas as decisões técnicas. Use ao iniciar um projeto novo ou quando precisar formalizar regras do time. Gatilhos: "constituição do projeto", "criar constitution", "definir princípios", "governance".
+description: Creates or updates the project constitution — principles, conventions, and governance that guide all technical decisions. Use when starting a new project or when you need to formalize team rules. Triggers: "project constitution", "create constitution", "define principles", "governance".
 ---
 
-## Contexto necessário
-Leia antes de executar:
-- `README.md` (se existir) — visão geral do projeto
-- `.specs/memory/constitution.md` (se existir) — versão anterior a atualizar
-- `package.json` — stack atual
+## Required context
+Read before executing:
+- `README.md` (if it exists) — project overview
+- `.specs/memory/constitution.md` (if it exists) — previous version to update
+- `package.json` — current stack
 
-## Fase: Pré-projeto — Constituição
+## Phase: Pre-project — Constitution
 
-## Saída esperada
+## Expected output
 `.specs/memory/constitution.md`
 
-## Processo
+## Process
 
-1. **Verificar existência**: Se `.specs/memory/constitution.md` existe, carregue-o e identifique a versão atual.
+1. **Check existence**: If `.specs/memory/constitution.md` exists, load it and identify the current version.
 
-2. **Coletar valores** para os seguintes elementos:
-   - Nome do projeto e propósito central
-   - Princípios de desenvolvimento (máximo 7, mínimo 3)
-   - Stack técnica obrigatória
-   - Padrões de qualidade (testes, code review, deploy)
-   - Convenções de nomenclatura e estrutura
-   - Critérios para aceitar ou rejeitar mudanças arquiteturais
+2. **Collect values** for the following elements:
+   - Project name and core purpose
+   - Development principles (maximum 7, minimum 3)
+   - Mandatory technical stack
+   - Quality standards (tests, code review, deploy)
+   - Naming and structure conventions
+   - Criteria for accepting or rejecting architectural changes
 
-3. **Versionar**: Se é nova constituição → v1.0.0. Se é atualização:
-   - Mudança de princípio → MAJOR (v2.0.0)
-   - Novo princípio adicionado → MINOR (v1.1.0)
-   - Clarificação ou correção → PATCH (v1.0.1)
+3. **Version**: If it's a new constitution → v1.0.0. If it's an update:
+   - Principle change → MAJOR (v2.0.0)
+   - New principle added → MINOR (v1.1.0)
+   - Clarification or fix → PATCH (v1.0.1)
 
-4. **Criar** `.specs/memory/` (se não existir) e salvar o arquivo:
+4. **Create** `.specs/memory/` (if it doesn't exist) and save the file:
 
 ```markdown
-# Constituição do Projeto: [NOME]
-**Versão:** [x.y.z] | **Ratificado:** [YYYY-MM-DD] | **Última alteração:** [YYYY-MM-DD]
+# Project Constitution: [NAME]
+**Version:** [x.y.z] | **Ratified:** [YYYY-MM-DD] | **Last changed:** [YYYY-MM-DD]
 
-## Propósito
-[Uma frase que define o que este projeto faz e para quem]
+## Purpose
+[A single sentence defining what this project does and for whom]
 
-## Princípios
-1. **[Nome]**: [Descrição — como aplicar, o que implica]
-2. **[Nome]**: [Descrição]
+## Principles
+1. **[Name]**: [Description — how to apply it, what it implies]
+2. **[Name]**: [Description]
 ...
 
-## Stack Obrigatória
-[Lista com versões fixas]
+## Mandatory Stack
+[List with pinned versions]
 
-## Padrões de Qualidade
-- Cobertura mínima de testes: [%]
-- Code review: [quem revisa, critérios]
-- Deploy: [processo, branches]
+## Quality Standards
+- Minimum test coverage: [%]
+- Code review: [who reviews, criteria]
+- Deploy: [process, branches]
 
-## Convenções
-[Nomenclatura, estrutura de pastas, padrões de commits]
+## Conventions
+[Naming, folder structure, commit patterns]
 
-## Critérios para Mudanças Arquiteturais
-[O que justifica mudar a arquitetura vs. adaptar dentro dela]
+## Criteria for Architectural Changes
+[What justifies changing the architecture vs. adapting within it]
 ```
 
-5. **Confirmar** ao usuário: versão criada/atualizada, path do arquivo, próximos passos.
+5. **Confirm** with the user: version created/updated, file path, next steps.
 
-## Notas
-- Não pergunte por cada campo individualmente — use o contexto existente e inferência do README/package.json
-- Se o usuário forneceu input, use-o diretamente sem reconfirmar cada item
-- A constituição é referenciada pelos commands `/spec-specify` e `/spec-design`
+## Notes
+- Do not ask for each field individually — use existing context and inference from the README/package.json
+- If the user provided input, use it directly without re-confirming each item
+- The constitution is referenced by the `/spec-specify` and `/spec-design` commands
