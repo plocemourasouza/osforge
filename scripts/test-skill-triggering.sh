@@ -69,6 +69,16 @@ MAX_TURNS="${OSFORGE_TEST_MAX_TURNS:-3}"
 TIMEOUT_SECS="${OSFORGE_TEST_TIMEOUT:-120}"
 VERBOSE="${OSFORGE_TEST_VERBOSE:-0}"
 
+# Detect a timeout binary (macOS lacks `timeout`; coreutils provides `gtimeout`)
+if command -v timeout &>/dev/null; then
+    TIMEOUT_CMD="timeout $TIMEOUT_SECS"
+elif command -v gtimeout &>/dev/null; then
+    TIMEOUT_CMD="gtimeout $TIMEOUT_SECS"
+else
+    TIMEOUT_CMD=""
+    echo "[WARN] no timeout/gtimeout found — running without per-case timeout" >&2
+fi
+
 # ---------------------------------------------------------------------------
 # Detectar jq (degradar para grep se ausente)
 # ---------------------------------------------------------------------------
@@ -148,12 +158,13 @@ run_case() {
     # Rodar claude headless com output stream-json
     # --dangerously-skip-permissions: necessário em modo headless/não-interativo
     set +e
-    timeout "$TIMEOUT_SECS" claude \
+    $TIMEOUT_CMD claude \
         -p "$prompt" \
         --dangerously-skip-permissions \
         --max-turns "$MAX_TURNS" \
         --output-format stream-json \
-        > "$log_file" 2>&1
+        --verbose \
+        < /dev/null > "$log_file" 2>&1
     local exit_code=$?
     set -e
 
