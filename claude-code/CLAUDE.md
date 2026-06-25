@@ -142,7 +142,8 @@ After any significant feature/fix: record lessons in `tasks/lessons.md`
 
 ## Language (ADR-011)
 - All repository content (skills, agents, rules, `CLAUDE.md`, `SKILLS.md`, commands, ADRs, code comments) is authored in **English**.
-- ALWAYS reply to the user in the language they wrote in (user writes Brazilian Portuguese → reply in Brazilian Portuguese). Translate as needed; never force the user into English.
+- **Internal scope = English.** Everything from the orchestrator inward — plans, specs, artifacts, sub-agent/worker prompts, and inter-agent messages — is in English, regardless of the user's language.
+- **Translation boundary = the orchestrator** (or the top-level agent): understand the user's input in their language → transcribe the intent to English → coordinate internally in English → synthesize the result and **reply to the user in the user's language**. Never force the user into English; never leak the user's language into worker prompts or artifacts.
 
 ## Alignment before building (grilling)
 - Ask ONE question at a time — multiple at once is bewildering.

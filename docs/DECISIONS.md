@@ -168,7 +168,7 @@ A primeira escolha (`nomic-embed-text`, 768d) falhou em avaliação empírica co
 
 **Decision.**
 1. **Authoring = English.** All repo content (skills, agents, rules, `CLAUDE.md`, `SKILLS.md`, commands, ADRs, comments) is authored in English. Supersedes the prior "prose largely pt-BR — match that" convention.
-2. **Runtime = user's language.** The agent replies in whatever language the user writes in. Encoded as a global rule in `claude-code/CLAUDE.md`.
+2. **Runtime = user's language, via a translation boundary.** The orchestrator (or top-level agent) is the single language boundary: it understands the user's input in their language, transcribes the intent to English, coordinates the entire internal pipeline in English (plans, specs, artifacts, sub-agent/worker prompts, inter-agent messages), and replies to the user in the user's language. Internal scope = English; only the user-facing layer uses the user's language. Encoded in `claude-code/CLAUDE.md` and `agents/orchestrator/AGENT.md`.
 3. **Unified skill standard.** Adopt `docs/SKILL-STANDARD.md` + `docs/SKILL.template.md` as single source of truth: activation via `Use when / Keywords / Do NOT use for`; explicit invocation axis (`disable-model-invocation`); execution-routing frontmatter (`model/context/agent/allowed-tools`); canonical body (Iron Law → When NOT to use → numbered steps with checkable "Done when" → anti-patterns → progressive-disclosure references); leading words; failure-mode audit. Merges OSForge's activation/routing strengths with mattpocock/skills' predictability theory (`inspired_by`, MIT).
 
 **Consequences.**
