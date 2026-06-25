@@ -197,3 +197,21 @@ A primeira escolha (`nomic-embed-text`, 768d) falhou em avaliação empírica co
 - Express stays under `nodejs-best-practices`; pytest/Django/FastAPI/Flask stay under `python-patterns`.
 
 **Date:** 2026-06-25.
+
+## ADR-013: Plan Mode Standard — read-only plan as a parallel-dispatch manifest
+
+**Context.** Claude Code's Plan Mode had no defined standard in OSForge. Plans risked being free-form prose that the agent (or the user) could not turn into autonomous, parallel execution. The goal: a single plan — small or large — that multiple agents can execute in parallel without the user mediating each step.
+
+**Decision.** Plan Mode is the **read-only** half of the orchestrator flow (`DETECT → INTAKE → TRIAGE → PLAN`), stopping at an approval HALT. Its output is a **dispatch manifest**, authored from `docs/PLAN.template.md`, containing: Objective · Feature structure (modules/seams, data model, API) · User stories (US-xx + acceptance criteria) · Roster (models/agents/skills declared up front) · Task manifest · Waves · Risks/rollback · Out of scope · Verification. **Every task carries full metadata** — `story · wave · depends_on · model · agent · skills · files · done-when · verify` — so each is a self-contained worker prompt.
+
+- **Grilling on intake** (one question at a time); triage scales plan depth.
+- **Language boundary (ADR-011):** plan authored in English; reply in the user's language.
+- **Presentation:** OSForge Canvas by default.
+- **Default autonomy: checkpoint per wave** — on approval, dispatch each wave in parallel (`dispatching-parallel-agents`), then stop for review before the next wave. (User may opt into full auto-run or per-task checkpoints.)
+
+**Consequences.**
+- Encoded in `rules/plan-mode.mdc` (Cursor) + a Plan Mode section in `claude-code/CLAUDE.md` (Claude Code); template in `docs/PLAN.template.md`.
+- The task manifest maps 1:1 to `osforge-db` (`add-task` with existing `wave`/`depends_on` columns) and to `.specs/` artifacts — plan → tracked execution with no re-modeling.
+- Rule count rises 13 → 14.
+
+**Date:** 2026-06-25.

@@ -7,7 +7,7 @@ maintain the framework; `claude-code/CLAUDE.md` = how to behave in a session.
 
 ## What this repo is
 
-OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **173 skills, 27 agents** (orchestrator + 26 specialists), **13 always-on rules, 9 `spec-*` commands, 8 MCP servers**, hooks, and the `osforge-db` SQLite state CLI (now with local vector memory). There is no build, lint, or test suite. The "build" is the deploy.
+OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **173 skills, 27 agents** (orchestrator + 26 specialists), **14 always-on rules, 9 `spec-*` commands, 8 MCP servers**, hooks, and the `osforge-db` SQLite state CLI (now with local vector memory). There is no build, lint, or test suite. The "build" is the deploy.
 
 **ADR-001 (docs/DECISIONS.md): never edit `~/.claude/` or `~/.cursor/` directly.** All changes happen here, get committed, then deployed via `./deploy.sh`.
 

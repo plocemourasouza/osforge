@@ -8,7 +8,7 @@
 > **ADR-001:** never edit `~/.claude/` directly. Edit `claude-code/CLAUDE.md` in the repo and run
 > `./deploy.sh`. Changing this file invalidates the prompt cache of every session — keep it stable.
 
-OSForge ships **173 skills**, **27 agents** (orchestrator + 26 specialists), **13** always-on **rules**,
+OSForge ships **173 skills**, **27 agents** (orchestrator + 26 specialists), **14** always-on **rules**,
 **9 `spec-*` commands**, hooks, and `osforge-db` (SQLite state + vector memory). Full rosters and
 operational reference live in the repo's `USAGE.md` — this file describes *how to orchestrate*, it doesn't catalog.
 
@@ -72,6 +72,20 @@ Skill `dispatching-parallel-agents`. `osforge-db` (tasks/board) is the wave trac
 **Security review:** security-auditor (Trail of Bits, threat model) → fix → re-audit.
 
 **Rule:** don't skip steps. A trivial feature = a fast cycle; a complex feature = skipping costs more than following.
+
+---
+
+## Plan Mode (read-only → dispatch manifest)
+
+Plan Mode is the **read-only** half of the orchestrator flow (`DETECT → INTAKE → TRIAGE → PLAN`), stopping at the
+approval HALT. Understand and plan — never execute (no writes/edits/mutating commands). Full protocol: rule `plan-mode.mdc`.
+
+- **Grill first** (one question at a time; explore the code instead of asking). Triage scales depth (QUICK 3–5 steps · STANDARD full · COMPLEX + alternatives/risks).
+- **The plan is a dispatch manifest**, authored from `docs/PLAN.template.md`, containing: **Objective · Feature structure** (modules/seams, data model, API) **· User stories** (US-xx + acceptance criteria) **· Roster** (models/agents/skills declared up front) **· Task manifest** **· Waves · Risks/rollback · Out of scope · Verification**.
+- **Every task carries full metadata:** `story · wave · depends_on · model · agent · skills · files · done-when · verify` — so a worker can run it self-contained, in parallel within its wave.
+- **Language boundary:** plan written in English; reply in the user's language. **Present via Canvas** by default.
+- **HALT:** `[A]pprove · [E]dit · [S]implify` — never roll into implementation.
+- **On approval:** persist to `.specs/` + import the manifest into `osforge-db` (`add-task` with `wave`/`depends_on`); dispatch each wave **in parallel** (`dispatching-parallel-agents`), each task at its `model` tier with its `agent` + `skills`. **Default autonomy = checkpoint per wave** (report + stop after each wave before the next).
 
 ---
 

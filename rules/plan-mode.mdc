@@ -1,0 +1,56 @@
+---
+description: Plan Mode protocol — read-only research + a plan that doubles as a parallel-dispatch manifest (feature structure, user stories, tasks bound to model/agent/skills/wave), ending at an approval HALT. Applies whenever the agent is asked to plan before executing.
+globs: ["**/*.ts", "**/*.tsx", "**/*.md", "**/*.prisma", "**/CLAUDE.md"]
+alwaysApply: true
+---
+
+# Plan Mode Protocol
+
+Plan Mode is the **read-only** half of the orchestrator flow: `DETECT → INTAKE (grilling) → TRIAGE → PLAN`,
+stopping at the approval HALT. Understand and plan — never execute. No writes, edits, or mutating commands.
+The output is not prose; it is a **dispatch manifest** that lets multiple agents work in parallel from one plan.
+
+## Contract
+- **Read-only.** Only read, search, and ask. Zero edits / mutating commands.
+- **Trivial request?** If it's a 1-file, zero-ambiguity change, say so and suggest leaving Plan Mode instead of inflating a plan.
+- **Grill first** (one question at a time, with a recommended answer; explore the code instead of asking when the answer is discoverable). Resolve the decision tree before writing the plan.
+- **Triage scales depth:** QUICK = 3–5 steps · STANDARD = full plan · COMPLEX = full plan + alternatives + risks.
+- **Language boundary (ADR-011):** the plan is an artifact → written in **English**; reply to the user in the user's language.
+
+## Plan shape (fixed)
+Author from `docs/PLAN.template.md`. The plan MUST contain:
+
+1. **Objective** — 1–2 sentences.
+2. **Feature structure** — modules/seams (`codebase-design` vocabulary), data model, API surface.
+3. **User stories** — `US-xx` with testable acceptance criteria (`epic-decomposer`).
+4. **Roster (declared up front)** — the models, agents, and skills this plan will use, so cost/scope is auditable before execution.
+5. **Task manifest** — atomic, self-contained tasks; each task carries the FULL metadata:
+   `story · wave · depends_on · model · agent · skills · files · done-when · verify`.
+6. **Execution plan (waves)** — which tasks run in parallel; advance a wave only when the previous closes.
+7. **Risks & rollback** · **Out of scope** · **Verification**.
+
+### Task metadata schema (every task)
+```
+### T-<n> — <title>
+- story:       US-<n>
+- wave:        <int>
+- depends_on:  [T-<n>, ...]
+- model:       haiku | sonnet | opus | fable   # tier per smart-model-dispatch
+- agent:       <agent-name>
+- skills:      <skill>, <skill>
+- files:       <path>, <path>
+- done when:   <checkable, exhaustive criterion>
+- verify:      <command / test that proves it>
+```
+
+## Presentation
+Present the plan via **OSForge Canvas** by default (cards, dependency graph, approve/edit/reject); the terminal gets a short summary + URL. Exception: the user asks for "text only".
+
+## HALT (end of Plan Mode)
+Stop and offer: **[A]pprove · [E]dit · [S]implify**. Never roll straight into implementation.
+
+## On approval (leaving Plan Mode → execution)
+1. Persist: write the plan to `.specs/features/<slug>/` and import the task manifest into `osforge-db` (`add-task` with `wave`/`depends_on`).
+2. Dispatch by wave: run the tasks of a wave **in parallel** (`dispatching-parallel-agents`), each task as a self-contained English worker prompt (Coordinator Protocol) at its `model` tier, with its `agent` + `skills`.
+3. **Checkpoint per wave (default autonomy):** after each wave closes, report results and stop for review before the next wave. (The user may opt into full auto-run or per-task checkpoints.)
+4. Track in `osforge-db` (`set-task`, `board`); synthesize wave results to the user in the user's language.
