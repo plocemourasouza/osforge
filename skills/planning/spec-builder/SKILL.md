@@ -1,83 +1,83 @@
 ---
 name: spec-builder
-description: "Facilitação colaborativa de tech spec com ACs testáveis. ACIONE quando: especificar uma feature, definir o que construir, escrever spec técnica, detalhar requisitos antes de implementar. Keywords: spec, especificar, definir feature, tech spec, acceptance criteria, escrever spec, o que construir, requisitos, ACs."
+description: "Collaborative facilitation of a tech spec with testable ACs. Use when: specifying a feature, defining what to build, writing a technical spec, detailing requirements before implementing. Keywords: spec, specify, define feature, tech spec, acceptance criteria, write spec, what to build, requirements, ACs."
 model: sonnet
 allowed-tools: Read, Write, Glob, Grep
 metadata:
   version: '1.1'
 ---
 
-## Contexto do projeto
-!`[ -f project-context.md ] && head -30 project-context.md || echo "project-context.md não encontrado"`
-!`ls docs/specs/ 2>/dev/null | head -5 && echo "Specs existentes encontradas" || echo "Nenhuma spec anterior encontrada em docs/specs/"`
-!`ls .osforge/designs/ 2>/dev/null | head -5 && echo "Design documents encontrados" || echo "Nenhum design document encontrado"`
+## Project context
+!`[ -f project-context.md ] && head -30 project-context.md || echo "project-context.md not found"`
+!`ls docs/specs/ 2>/dev/null | head -5 && echo "Existing specs found" || echo "No previous spec found in docs/specs/"`
+!`ls .osforge/designs/ 2>/dev/null | head -5 && echo "Design documents found" || echo "No design document found"`
 
-## Dois modos de operação
+## Two operating modes
 
-### Modo Greenfield (feature nova, do zero)
-Processo padrão: clarificar → especificar → tasks ordenadas → ACs → riscos.
+### Greenfield mode (new feature, from scratch)
+Standard process: clarify → specify → ordered tasks → ACs → risks.
 
-### Modo Delta / Brownfield (extensão de feature existente — padrão OpenSpec)
-Para features que MODIFICAM comportamento existente, adicionar seções de delta:
+### Delta / Brownfield mode (extension of an existing feature — OpenSpec pattern)
+For features that MODIFY existing behavior, add delta sections:
 
 ```markdown
-## Baseline (como está hoje)
-{descrição do comportamento atual — o que NÃO vai mudar}
+## Baseline (how it is today)
+{description of the current behavior — what will NOT change}
 
-## Delta (o que vai mudar)
-**Adicionado:** {o que é novo}
-**Modificado:** {o que muda no comportamento existente}
-**Removido:** {o que para de existir}
-**Migração necessária:** {dados ou configurações que precisam ser migrados}
+## Delta (what will change)
+**Added:** {what is new}
+**Modified:** {what changes in the existing behavior}
+**Removed:** {what stops existing}
+**Migration needed:** {data or configuration that needs to be migrated}
 
-## Riscos de Regressão
-- {área que pode quebrar} → {como verificar que não quebrou}
+## Regression Risks
+- {area that may break} → {how to verify it did not break}
 ```
 
-Usar modo Delta quando o usuário diz: "adicionar ao", "modificar o", "extender o", "melhorar o", em vez de "criar um novo".
+Use Delta mode when the user says: "add to the", "modify the", "extend the", "improve the", instead of "create a new".
 
 
 # Spec Builder
 
-## Papel
-Facilitador técnico. Você NÃO gera conteúdo autonomamente — você FACILITA
-que o usuário articule O QUE quer construir e COMO validar que está pronto.
-Traga estrutura e perguntas, não respostas prontas.
+## Role
+Technical facilitator. You do NOT generate content autonomously — you FACILITATE
+the user articulating WHAT they want to build and HOW to validate that it is ready.
+Bring structure and questions, not ready-made answers.
 
 ## Inputs
-- **intent** — Descrição da demanda (do Orchestrator ou direto do usuário)
-- **project-context.md** — Se existir, carregar e respeitar stack/patterns
+- **intent** — Description of the demand (from the Orchestrator or directly from the user)
+- **project-context.md** — If it exists, load it and respect the stack/patterns
 
-## Processo
+## Process
 
-### 1. Investigar Codebase
-- Identificar arquivos que serão afetados pela mudança
-- Mapear patterns existentes relevantes (naming, estrutura, data flow)
-- Se project-context.md existir: verificar regras que se aplicam
+### 1. Investigate the Codebase
+- Identify files that will be affected by the change
+- Map relevant existing patterns (naming, structure, data flow)
+- If project-context.md exists: check the rules that apply
 
-### 2. Clarificar Intent
-- Se a demanda tem ambiguidade → perguntas numeradas
-- Verificar que TODAS foram respondidas antes de avançar
-- Não fantasiar — se não sabe, perguntar
+### 2. Clarify Intent
+- If the demand has ambiguity → numbered questions
+- Verify that ALL were answered before moving forward
+- Do not make things up — if you do not know, ask
 
-### 3. Produzir Tech Spec
+### 3. Produce the Tech Spec
 
-Formato do artefato:
+Artifact format:
 
 ```markdown
 ---
 type: osforge-spec
-project: "{nome}"
+project: "{name}"
 status: draft
-created: "{data}"
+created: "{date}"
 ---
 
-# Tech Spec: {título}
+# Tech Spec: {title}
 
-## Objetivo
-{1 frase clara do que será feito}
+## Objective
+{1 clear sentence of what will be done}
 
-## Escopo
+## Scope
 **In scope:**
 - {item}
 
@@ -85,41 +85,41 @@ created: "{data}"
 - {item}
 
 ## Acceptance Criteria
-- [ ] **AC1:** Given {contexto}, When {ação}, Then {resultado esperado}
-- [ ] **AC2:** Given {contexto}, When {ação}, Then {resultado esperado}
+- [ ] **AC1:** Given {context}, When {action}, Then {expected result}
+- [ ] **AC2:** Given {context}, When {action}, Then {expected result}
 
-## Tasks (ordenadas por dependência)
-1. **{arquivo}** — {ação específica}
-2. **{arquivo}** — {ação específica}
-3. **{arquivo}** — {ação específica}
+## Tasks (ordered by dependency)
+1. **{file}** — {specific action}
+2. **{file}** — {specific action}
+3. **{file}** — {specific action}
 
-## Riscos
-- {risco identificado} → {mitigação}
+## Risks
+- {identified risk} → {mitigation}
 
-## Notas Técnicas
-- {decisão técnica relevante}
+## Technical Notes
+- {relevant technical decision}
 ```
 
 ### 4. Self-Check — Ready for Development?
 
-Antes de apresentar, validar:
-- [ ] **Actionable:** Cada task tem file path e ação específica?
-- [ ] **Logical:** Tasks ordenadas por dependência?
-- [ ] **Testable:** Todos ACs usam Given/When/Then?
-- [ ] **Complete:** Sem placeholders, TBDs ou ambiguidades?
-- [ ] **Scoped:** Spec tem no máximo ~1600 tokens?
+Before presenting, validate:
+- [ ] **Actionable:** Does each task have a file path and a specific action?
+- [ ] **Logical:** Are the tasks ordered by dependency?
+- [ ] **Testable:** Do all ACs use Given/When/Then?
+- [ ] **Complete:** No placeholders, TBDs, or ambiguities?
+- [ ] **Scoped:** Is the spec at most ~1600 tokens?
 
-Se spec exceder 1600 tokens, propor split ao usuário.
+If the spec exceeds 1600 tokens, propose a split to the user.
 
 ### 5. CHECKPOINT
-Apresentar spec completa ao usuário.
-- **[A] Aprovar** — spec fica `status: ready`
-- **[E] Editar** — ajustar e re-apresentar
-- **[R] Refinar** — invocar `skills/quality/elicitation-engine` na spec
+Present the complete spec to the user.
+- **[A] Approve** — the spec becomes `status: ready`
+- **[E] Edit** — adjust and re-present
+- **[R] Refine** — invoke `skills/quality/elicitation-engine` on the spec
 
-Não avançar sem aprovação explícita.
+Do not move forward without explicit approval.
 
-### Exemplo de output (esqueleto preenchido, abreviado)
+### Output example (filled skeleton, abbreviated)
 
 ```markdown
 ---
@@ -129,36 +129,36 @@ status: ready
 created: "2026-06-07"
 ---
 
-# Tech Spec: Arquivar projetos
+# Tech Spec: Archive projects
 
-## Objetivo
-Permitir que o dono arquive um projeto, ocultando-o da listagem padrão.
+## Objective
+Allow the owner to archive a project, hiding it from the default listing.
 
-## Escopo
-**In scope:** botão de arquivar, filtro "mostrar arquivados"
-**Out of scope:** exclusão definitiva, restauração em lote
+## Scope
+**In scope:** archive button, "show archived" filter
+**Out of scope:** permanent deletion, bulk restore
 
 ## Acceptance Criteria
-- [ ] **AC1:** Given um projeto ativo, When o dono clica em "Arquivar", Then o projeto sai da listagem padrão e `archivedAt` é preenchido
+- [ ] **AC1:** Given an active project, When the owner clicks "Archive", Then the project leaves the default listing and `archivedAt` is set
 
-## Tasks (ordenadas por dependência)
-1. **prisma/schema.prisma** — adicionar campo `archivedAt DateTime?` ao model Project
-2. **app/api/projects/[id]/archive/route.ts** — POST handler que seta `archivedAt`
-3. **app/api/projects/[id]/archive/route.test.ts** — testes cobrindo AC1
+## Tasks (ordered by dependency)
+1. **prisma/schema.prisma** — add field `archivedAt DateTime?` to the Project model
+2. **app/api/projects/[id]/archive/route.ts** — POST handler that sets `archivedAt`
+3. **app/api/projects/[id]/archive/route.test.ts** — tests covering AC1
 
-## Riscos
-- Queries existentes listarem arquivados → adicionar filtro default `archivedAt: null`
+## Risks
+- Existing queries listing archived ones → add default filter `archivedAt: null`
 
-## Notas Técnicas
-- Soft-delete via timestamp, sem flag booleana
+## Technical Notes
+- Soft-delete via timestamp, no boolean flag
 ```
 
 
 ## Gotchas
 
-- **Gerar spec sem clarificar ambiguidades**: nunca avançar para a spec se a demanda tem termos vagos ("notificações", "integração", "relatório"). Perguntar sempre ANTES — spec escrita sobre base ambígua vai ser reescrita.
-- **ACs não testáveis**: "o sistema deve ser rápido" não é AC. Todo AC deve seguir Given/When/Then e ser verificável por um humano ou teste automatizado. Se não dá para escrever um teste para o AC, ele está errado.
-- **Tasks sem file path**: cada task deve ter um arquivo específico para criar/modificar. "Implementar o backend" não é uma task — "Criar `app/api/projects/route.ts` com GET + POST handlers" é.
-- **Spec acima de 1600 tokens**: specs longas não são lidas completamente pelos agentes de implementação. Se a spec está ficando grande, propor ao usuário split em múltiplas specs por épico antes de continuar.
-- **Ignorar CONTEXT.md da fase**: se existe `.osforge/phases/{N}-CONTEXT.md`, as decisões ali são insumo obrigatório para os ACs. Spec gerada sem CONTEXT.md vai contradizer decisões que o usuário já tomou.
-- **Avançar sem CHECKPOINT**: a spec só está "pronta" após aprovação explícita do usuário (`[A] Aprovar`). Passar direto para implementação sem checkpoint é contornar o processo de validação — que existe justamente para evitar retrabalho.
+- **Generating a spec without clarifying ambiguities**: never move on to the spec if the demand has vague terms ("notifications", "integration", "report"). Always ask BEFORE — a spec written on an ambiguous base will be rewritten.
+- **Non-testable ACs**: "the system must be fast" is not an AC. Every AC must follow Given/When/Then and be verifiable by a human or an automated test. If you cannot write a test for the AC, it is wrong.
+- **Tasks without a file path**: each task must have a specific file to create/modify. "Implement the backend" is not a task — "Create `app/api/projects/route.ts` with GET + POST handlers" is.
+- **Spec above 1600 tokens**: long specs are not read in full by the implementation agents. If the spec is getting large, propose to the user splitting it into multiple specs per epic before continuing.
+- **Ignoring the phase's CONTEXT.md**: if `.osforge/phases/{N}-CONTEXT.md` exists, the decisions there are mandatory input for the ACs. A spec generated without CONTEXT.md will contradict decisions the user has already made.
+- **Moving forward without a CHECKPOINT**: the spec is only "ready" after explicit user approval (`[A] Approve`). Going straight to implementation without a checkpoint bypasses the validation process — which exists precisely to avoid rework.

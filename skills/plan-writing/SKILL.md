@@ -1,6 +1,6 @@
 ---
 name: plan-writing
-description: "Planejamento estruturado de trabalho com breakdown em tarefas pequenas, dependências e critérios de verificação. ACIONE quando: planeja a implementação de uma feature, quebra em tarefas um trabalho multi-step, criar plano curto e específico antes de codar, ordenar dependências e caminho crítico, definir critérios verificáveis de pronto. Keywords: plano, plan, planejamento, tarefas, tasks, breakdown, dependências, checklist, verificação, implementação. Não acione para: execução direta de tarefas triviais de um passo ou escrita de specs de produto completas."
+description: "Structured work planning with breakdown into small tasks, dependencies, and verification criteria. Use when: planning a feature implementation, breaking multi-step work into tasks, creating a short, specific plan before coding, ordering dependencies and the critical path, defining verifiable done criteria. Keywords: plan, planning, tasks, breakdown, dependencies, checklist, verification, implementation. Do NOT use for: directly executing trivial one-step tasks or writing complete product specs."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

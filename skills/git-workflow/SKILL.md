@@ -12,61 +12,61 @@ metadata:
   version: "1.0.0"
 ---
 
-# Git Workflow para Desenvolvimento com Agentes
+# Git Workflow for Agent-Driven Development
 
 ## Branching Strategy
 
 ### Branch Naming (Conventional)
 ```
-feature/descricao-curta
-bugfix/descricao-do-bug
-hotfix/correcao-critica
-chore/manutencao
-refactor/area-refatorada
+feature/short-description
+bugfix/bug-description
+hotfix/critical-fix
+chore/maintenance
+refactor/refactored-area
 ```
 
-### Workflow Básico
-1. Sempre crie branch a partir de `main` (ou `develop` se o projeto usar)
-2. Commits pequenos e frequentes (1 mudança lógica por commit)
-3. Conventional Commits obrigatório (ver rule commit-conventions)
-4. PR com squash merge para main
-5. Delete branch após merge
+### Basic Workflow
+1. Always create the branch from `main` (or `develop` if the project uses it)
+2. Small, frequent commits (1 logical change per commit)
+3. Conventional Commits required (see the commit-conventions rule)
+4. PR with squash merge to main
+5. Delete the branch after merge
 
-## Git Worktrees — Paralelismo para Agentes
+## Git Worktrees — Parallelism for Agents
 
-### Quando Usar Worktrees
-- Múltiplas features independentes precisam ser implementadas
-- Agentes paralelos trabalhando simultaneamente
-- Features que tocam arquivos diferentes (sem conflito)
+### When to Use Worktrees
+- Multiple independent features need to be implemented
+- Parallel agents working simultaneously
+- Features that touch different files (no conflict)
 
-### Quando NÃO Usar Worktrees
-- Features dependentes entre si (uma precisa da outra)
-- Feature única que toca muitos arquivos
-- Trabalho sequencial (uma feature por vez)
+### When NOT to Use Worktrees
+- Features that depend on each other (one needs the other)
+- A single feature that touches many files
+- Sequential work (one feature at a time)
 
-### Por Que Worktrees > Branches para Agentes
-Branches compartilham o mesmo working directory. Se dois agentes tentam
-trabalhar em branches diferentes do mesmo repo, eles pisam nos arquivos
-um do outro. Worktrees criam diretórios separados, cada um com seu
-working directory isolado.
+### Why Worktrees > Branches for Agents
+Branches share the same working directory. If two agents try to
+work on different branches of the same repo, they step on each
+other's files. Worktrees create separate directories, each with its
+own isolated working directory.
 
-### Setup de Worktrees
+### Worktree Setup
 
 ```bash
-# 1. A partir do repo principal, criar worktrees
+# 1. From the main repo, create worktrees
 git worktree add ../project-feature-auth feature/auth
 git worktree add ../project-feature-dashboard feature/dashboard
 git worktree add ../project-feature-api feature/api
 
-# 2. Verificar worktrees ativas
+# 2. Check active worktrees
 git worktree list
 
-# 3. Cada agente trabalha em seu diretório
-# Agente 1 → ../project-feature-auth/
-# Agente 2 → ../project-feature-dashboard/
-# Agente 3 → ../project-feature-api/
+# 3. Each agent works in its own directory
+# Agent 1 → ../project-feature-auth/
+# Agent 2 → ../project-feature-dashboard/
+# Agent 3 → ../project-feature-api/
 
-# 4. Após implementação, merge sequencial
+# 4. After implementation, sequential merge
 cd /path/to/main-repo
 git merge feature/auth
 git merge feature/dashboard
@@ -78,63 +78,63 @@ git worktree remove ../project-feature-dashboard
 git worktree remove ../project-feature-api
 ```
 
-### Regras para Worktrees com Agentes
-- SEMPRE faça commit no worktree antes de tentar merge
-- NUNCA delete o worktree sem fazer merge ou confirmar abandono
-- Cada worktree deve ter seus próprios `node_modules` (rode `npm install`)
-- Resolva conflitos de merge um por vez, do mais simples ao mais complexo
-- Após merge de todos, rode testes completos na branch principal
+### Rules for Worktrees with Agents
+- ALWAYS commit in the worktree before attempting a merge
+- NEVER delete the worktree without merging or confirming abandonment
+- Each worktree must have its own `node_modules` (run `npm install`)
+- Resolve merge conflicts one at a time, from simplest to most complex
+- After merging all of them, run the full test suite on the main branch
 
-## Commit Discipline para Agentes
+## Commit Discipline for Agents
 
-### Estrutura de Commits
+### Commit Structure
 ```
-tipo(escopo): descrição curta
+type(scope): short description
 
-- Detalhe 1
-- Detalhe 2
+- Detail 1
+- Detail 2
 
-Refs: #issue-number (se aplicável)
+Refs: #issue-number (if applicable)
 ```
 
-### Frequência
-- Commit após cada unidade lógica de trabalho completa
-- NUNCA acumule múltiplas features num único commit
-- Se o agente implementou algo que funciona, commite imediatamente
+### Frequency
+- Commit after each complete logical unit of work
+- NEVER pile multiple features into a single commit
+- If the agent implemented something that works, commit it immediately
 
 ### Pre-Commit Checklist
-Antes de cada commit, verificar:
-1. `npx tsc --noEmit` passa (TypeScript)
-2. `npm run lint` passa (ESLint)
-3. Nenhum `console.log` de debug
-4. Nenhum arquivo `.env` ou secret no staging
-5. Testes relevantes passam
+Before each commit, verify:
+1. `npx tsc --noEmit` passes (TypeScript)
+2. `npm run lint` passes (ESLint)
+3. No debug `console.log`
+4. No `.env` file or secret in staging
+5. Relevant tests pass
 
-O hook `scan-secrets.sh` faz verificação automática de secrets antes do commit.
+The `scan-secrets.sh` hook performs an automatic secret check before the commit.
 
 ## Merge & Conflict Resolution
 
-### Estratégia de Merge
-- **Feature → main**: Squash merge (histórico limpo)
-- **Hotfix → main**: Regular merge (preserva contexto do fix)
-- **Worktree merges**: Regular merge (preserva commits individuais)
+### Merge Strategy
+- **Feature → main**: Squash merge (clean history)
+- **Hotfix → main**: Regular merge (preserves the fix's context)
+- **Worktree merges**: Regular merge (preserves individual commits)
 
-### Resolução de Conflitos
-1. Identifique os arquivos em conflito: `git diff --name-only --diff-filter=U`
-2. Para cada arquivo, entenda a intenção de AMBOS os lados
-3. Resolva preservando a funcionalidade de ambas as features
-4. Rode testes após resolver cada arquivo
-5. Commit do merge com mensagem descritiva
+### Conflict Resolution
+1. Identify the conflicting files: `git diff --name-only --diff-filter=U`
+2. For each file, understand the intent of BOTH sides
+3. Resolve while preserving the functionality of both features
+4. Run tests after resolving each file
+5. Commit the merge with a descriptive message
 
 ### Anti-patterns
-- NUNCA use `git merge --strategy=ours` sem revisão (descarta trabalho)
-- NUNCA force push em branches compartilhadas
-- NUNCA resolva conflitos escolhendo cegamente um lado
-- NUNCA faça merge sem rodar testes primeiro
+- NEVER use `git merge --strategy=ours` without review (discards work)
+- NEVER force push to shared branches
+- NEVER resolve conflicts by blindly picking one side
+- NEVER merge without running tests first
 
-## Integração com Outros Skills e Rules
-- **commit-conventions rule**: Formato de commits é enforced globalmente
-- **tdd-enforcement rule**: Testes são protegidos durante implementação
-- **scan-secrets hook**: Verifica secrets antes de git commit/push
-- **validator agent**: Valide contra spec antes de criar PR
-- **tlc-spec-driven**: Use STATE.md para tracking entre sessões
+## Integration with Other Skills and Rules
+- **commit-conventions rule**: Commit format is enforced globally
+- **tdd-enforcement rule**: Tests are protected during implementation
+- **scan-secrets hook**: Checks for secrets before git commit/push
+- **validator agent**: Validate against the spec before creating a PR
+- **tlc-spec-driven**: Use STATE.md for cross-session tracking

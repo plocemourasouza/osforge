@@ -1,6 +1,6 @@
 ---
 name: deployment-procedures
-description: "Workflows seguros de deploy em produção com backup, verificação pós-deploy e rollback para Vercel, Railway, VPS+PM2, Docker e Kubernetes. ACIONE quando: deploy falhou ou quebrou produção, serviço caiu após release e precisa de rollback rápido, decidir entre rolling, blue-green e canary, montar checklist pré-deploy com migrations pendentes, planejar deploy zero-downtime, emergência com serviço fora do ar após mudança. Keywords: deploy, deployment, rollback, produção, release, blue-green, canary, zero-downtime, PM2, Kubernetes. Não acione para: gerenciamento contínuo de servidores, monitoramento de rotina ou escrita de pipelines de CI específicos."
+description: "Safe production deployment workflows with backup, post-deploy verification, and rollback for Vercel, Railway, VPS+PM2, Docker, and Kubernetes. Use when: a deploy failed or broke production, a service went down after a release and needs a quick rollback, deciding between rolling, blue-green, and canary, building a pre-deploy checklist with pending migrations, planning a zero-downtime deploy, an emergency with a service down after a change. Keywords: deploy, deployment, rollback, production, release, blue-green, canary, zero-downtime, PM2, Kubernetes. Do NOT use for: continuous server management, routine monitoring, or writing specific CI pipelines."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

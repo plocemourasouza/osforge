@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: "Debugging sistemático em 4 fases com análise de causa raiz. ACIONE quando: bug difícil de reproduzir, crash sem stacktrace claro, comportamento intermitente, regressão sem causa óbvia, investigação profunda de root cause. Keywords: debug, bug, error, crash, fix, issue, not working, broken, regression, investigate."
+description: "Systematic 4-phase debugging with root-cause analysis. Use when: a bug is hard to reproduce, a crash has no clear stacktrace, intermittent behavior, a regression with no obvious cause, deep root-cause investigation. Keywords: debug, bug, error, crash, fix, issue, not working, broken, regression, investigate."
 model: sonnet
 context: fork
 agent: general-purpose
@@ -119,9 +119,9 @@ pm2 logs app-name --err --lines 100
 
 ## Gotchas
 
-- **Começar a corrigir antes de reproduzir**: a causa mais comum de fix errado. Sempre reproduza de forma confiável antes de qualquer mudança — se não consegue reproduzir, não sabe o que está corrigindo.
-- **Parar nos sintomas**: "o botão não funciona" é sintoma, não causa. Sempre aprofundar com os 5 Whys até chegar a uma causa que faz sentido mecanicamente. Parar na primeira explicação plausível é o erro mais frequente.
-- **Não checar `git log` primeiro**: a maioria dos bugs tem correlação temporal com uma mudança recente. `git log --oneline -20` deve ser a primeira ação, não a última.
-- **Múltiplas mudanças simultâneas**: ao testar uma hipótese, faça UMA mudança por vez. Múltiplas mudanças simultâneas tornam impossível identificar o que corrigiu o problema — ou introduziu outro.
-- **Assumir ambiente idêntico**: comportamentos diferentes entre dev/staging/prod geralmente indicam variáveis de ambiente, dados de seed ou versões de dependência diferentes. Sempre verificar com `node -e "require('./package.json').dependencies"` ou equivalente.
-- **Não adicionar regression test**: depois de corrigir, sempre adicionar um teste que falha sem o fix e passa com ele. Sem isso, o bug voltará em 3 meses.
+- **Starting to fix before reproducing**: the most common cause of a wrong fix. Always reproduce reliably before any change — if you can't reproduce it, you don't know what you're fixing.
+- **Stopping at symptoms**: "the button doesn't work" is a symptom, not a cause. Always dig deeper with the 5 Whys until you reach a cause that makes mechanical sense. Stopping at the first plausible explanation is the most frequent mistake.
+- **Not checking `git log` first**: most bugs have a temporal correlation with a recent change. `git log --oneline -20` should be the first action, not the last.
+- **Multiple simultaneous changes**: when testing a hypothesis, make ONE change at a time. Multiple simultaneous changes make it impossible to identify what fixed the problem — or introduced another.
+- **Assuming an identical environment**: different behaviors across dev/staging/prod usually indicate different environment variables, seed data, or dependency versions. Always verify with `node -e "require('./package.json').dependencies"` or equivalent.
+- **Not adding a regression test**: after fixing, always add a test that fails without the fix and passes with it. Without it, the bug will come back in 3 months.

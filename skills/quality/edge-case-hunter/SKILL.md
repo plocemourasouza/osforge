@@ -1,67 +1,67 @@
 ---
 name: edge-case-hunter
-description: "Caça exaustiva de edge cases por enumeração sistemática de branches e boundaries, reportando em JSON apenas caminhos sem handling. ACIONE quando: pedirem edge cases ou boundary conditions de um diff/arquivo/função, verificar inputs null/vazios e off-by-one antes de mergear, checar race conditions e divisão por zero, validar handling de datas/timezone/unicode, auditar um PR por caminhos sem guard. Keywords: edge case, boundary, branch, null, off-by-one, overflow, race condition, unhandled path, guard, caça. Não acione para: review geral de qualidade de código (use code-review-checklist) nem refinamento de specs e documentos (use elicitation-engine)."
+description: "Exhaustive edge-case hunt via systematic enumeration of branches and boundaries, reporting in JSON only the paths without handling. Use when: asked for edge cases or boundary conditions of a diff/file/function, verifying null/empty inputs and off-by-one before merging, checking race conditions and division by zero, validating date/timezone/unicode handling, auditing a PR for unguarded paths. Keywords: edge case, boundary, branch, null, off-by-one, overflow, race condition, unhandled path, guard, hunt. Do NOT use for: general code quality review (use code-review-checklist) nor refinement of specs and documents (use elicitation-engine)."
 trigger: edge case|boundary|hunt edges|caça edge
 model-tier: sonnet
 ---
 
 # Edge Case Hunter
 
-## Método
-Enumeração exaustiva de caminhos — percorrer mecanicamente cada branch,
-NÃO caçar por intuição. Reportar APENAS caminhos e condições sem handling.
-Descartar silenciosamente os handled. NÃO editorialize — apenas findings.
+## Method
+Exhaustive path enumeration — walk through each branch mechanically,
+do NOT hunt by intuition. Report ONLY paths and conditions without handling.
+Silently discard the handled ones. Do NOT editorialize — findings only.
 
 ## Inputs
-- **content** — Diff, arquivo completo, ou função
-- **also_consider** (opcional) — Áreas adicionais para considerar
+- **content** — Diff, full file, or function
+- **also_consider** (optional) — Additional areas to consider
 
-## Escopo
-- Se diff: analisar APENAS hunks do diff; listar boundaries diretamente
-  alcançáveis a partir das linhas alteradas que não têm guard explícito
-- Se arquivo/função: tratar todo o conteúdo como escopo
-- Ignorar resto do codebase a menos que conteúdo referencie funções externas
+## Scope
+- If diff: analyze ONLY the diff hunks; list boundaries directly
+  reachable from the changed lines that have no explicit guard
+- If file/function: treat the whole content as scope
+- Ignore the rest of the codebase unless the content references external functions
 
-## Execução
+## Execution
 
-### 1. Receber Conteúdo
-- Se vazio ou indecodificável → retornar JSON de erro e parar
+### 1. Receive Content
+- If empty or undecodable → return error JSON and stop
 
-### 2. Análise Exaustiva de Caminhos
-Percorrer TODOS os branching paths e boundary conditions:
-- Control flow: condicionais, loops, error handlers, early returns
-- Domain boundaries: transições de valores, estados, condições
+### 2. Exhaustive Path Analysis
+Walk through ALL branching paths and boundary conditions:
+- Control flow: conditionals, loops, error handlers, early returns
+- Domain boundaries: value transitions, states, conditions
 
-Classes de edge derivadas do conteúdo (não checklist fixo):
+Edge classes derived from the content (not a fixed checklist):
 - Missing else/default/catch
-- Inputs null/undefined/empty string/empty array
-- Off-by-one em loops e slices
-- Arithmetic overflow/underflow e divisão por zero
-- Type coercion implícita (especialmente em comparações ==)
-- Race conditions e concurrent access
-- Timeout gaps e network failures
-- Array vazio vs 1 item vs muitos items
-- Unicode e caracteres especiais em strings
+- null/undefined/empty string/empty array inputs
+- Off-by-one in loops and slices
+- Arithmetic overflow/underflow and division by zero
+- Implicit type coercion (especially in == comparisons)
+- Race conditions and concurrent access
+- Timeout gaps and network failures
+- Empty array vs 1 item vs many items
+- Unicode and special characters in strings
 - Date/timezone edge cases
-- File/path separators cross-platform
+- Cross-platform file/path separators
 
-### 3. Validar Completude
-Revisitar cada classe de edge do Step 2.
-Adicionar novos unhandled paths encontrados.
+### 3. Validate Completeness
+Revisit each edge class from Step 2.
+Add any new unhandled paths found.
 
 ### 4. Output — JSON Array
 
 ```json
 [{
   "location": "file:start-end",
-  "trigger_condition": "descrição em até 15 palavras",
-  "guard_snippet": "sketch mínimo de código que fecha o gap",
-  "potential_consequence": "o que pode dar errado em até 15 palavras"
+  "trigger_condition": "description in up to 15 words",
+  "guard_snippet": "minimal code sketch that closes the gap",
+  "potential_consequence": "what can go wrong in up to 15 words"
 }]
 ```
 
-Array vazio `[]` é válido quando nenhum path unhandled encontrado.
-Sem texto extra, sem explicações, sem markdown wrapping.
+An empty array `[]` is valid when no unhandled path is found.
+No extra text, no explanations, no markdown wrapping.
 
 ## Halt Conditions
-- Input vazio → retornar `[{"location":"N/A","trigger_condition":"Input empty","guard_snippet":"Provide content","potential_consequence":"No analysis"}]`
+- Empty input → return `[{"location":"N/A","trigger_condition":"Input empty","guard_snippet":"Provide content","potential_consequence":"No analysis"}]`

@@ -1,14 +1,14 @@
 # Edge Case Hunter
 
-**Trigger:** "edge cases", "boundary conditions", "o que pode dar errado?", ou invocado automaticamente por code-review e adversarial-review.
+**Trigger:** "edge cases", "boundary conditions", "what can go wrong?", or invoked automatically by code-review and adversarial-review.
 
 ---
 
 ## Purpose
 
-Caça exaustiva de edge cases por enumeração sistemática de caminhos. Method-driven, não attitude-driven (ortogonal ao adversarial-review).
+Exhaustive hunt for edge cases through systematic path enumeration. Method-driven, not attitude-driven (orthogonal to adversarial-review).
 
-**Reports ONLY paths sem handling adequado.**
+**Reports ONLY paths without adequate handling.**
 
 ---
 

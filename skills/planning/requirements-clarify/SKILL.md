@@ -1,6 +1,6 @@
 ---
 name: requirements-clarify
-description: "Clarificação estruturada de requisitos ANTES do plano técnico. ACIONE quando: spec tem áreas vagas ou underspecificadas, usuário disse 'pode ser qualquer coisa', os requisitos deixam margem para múltiplas interpretações, ANTES de spec-builder em demandas novas. Keywords: clarificar requisitos, requirements clarification, underspecified, ambiguous requirements, clarify, antes do plano, esclarecer requisitos."
+description: "Structured requirements clarification BEFORE the technical plan. Use when: a spec has vague or underspecified areas, the user said 'it can be anything', the requirements leave room for multiple interpretations, BEFORE spec-builder on new demands. Keywords: clarify requirements, requirements clarification, underspecified, ambiguous requirements, clarify, before the plan, clarify requirements."
 model: sonnet
 allowed-tools: Read, Write, Glob
 metadata:
@@ -10,154 +10,154 @@ metadata:
   adapted_by: osforge
 ---
 
-## Contexto
-!`[ -f project-context.md ] && head -15 project-context.md || echo "project-context.md não encontrado"`
-!`ls .osforge/designs/ 2>/dev/null | head -5 && echo "Designs encontrados" || echo "Nenhum design document encontrado"`
+## Context
+!`[ -f project-context.md ] && head -15 project-context.md || echo "project-context.md not found"`
+!`ls .osforge/designs/ 2>/dev/null | head -5 && echo "Designs found" || echo "No design document found"`
 
 # Requirements Clarify
 
-## Papel
+## Role
 
-Facilitador de clarificação baseado em cobertura. Identifica sistematicamente
-as áreas underspecificadas de uma demanda e as resolve antes que o plano
-técnico seja gerado — prevenindo retrabalho de spec e implementação.
+Coverage-based clarification facilitator. Systematically identifies
+the underspecified areas of a demand and resolves them before the technical
+plan is generated — preventing spec and implementation rework.
 
-Adaptado do padrão `/speckit.clarify` do github/spec-kit.
+Adapted from the `/speckit.clarify` pattern of github/spec-kit.
 
 ---
 
-## Quando usar
+## When to use
 
-- Antes de `spec-builder` para demandas com termos vagos
-- Quando brainstorming gerou design aprovado mas com gaps
-- Sempre que o usuário usar palavras como "funcionar bem", "ser rápido", "integrar com X", "de alguma forma", sem detalhar
-- Para features complexas com múltiplos stakeholders ou fluxos alternativos
+- Before `spec-builder` for demands with vague terms
+- When brainstorming produced an approved design but with gaps
+- Whenever the user uses words like "work well", "be fast", "integrate with X", "somehow", without detailing
+- For complex features with multiple stakeholders or alternative flows
 
-**Exemplos de palavras vagas e a pergunta concreta que as resolve:**
+**Examples of vague words and the concrete question that resolves them:**
 
-| Palavra vaga | Pergunta de clarificação |
+| Vague word | Clarification question |
 |---|---|
-| "funcionar bem" | Qual latência é aceitável? Qual taxa de erro tolerada? |
-| "rápido" | Quantos ms de resposta? P50 ou P95? |
-| "muitos usuários" | Quantos usuários simultâneos? 100, 10 mil, 1 milhão? |
-| "integrar com X" | Via API REST, webhook, ou import manual? Sync ou async? |
-| "seguro" | Quem pode acessar o quê? Precisa de auditoria ou criptografia em repouso? |
-| "de alguma forma" | Quais são as 2-3 formas possíveis e qual o critério de escolha? |
+| "work well" | What latency is acceptable? What error rate is tolerated? |
+| "fast" | How many ms response? P50 or P95? |
+| "many users" | How many concurrent users? 100, 10k, 1 million? |
+| "integrate with X" | Via REST API, webhook, or manual import? Sync or async? |
+| "secure" | Who can access what? Does it need auditing or encryption at rest? |
+| "somehow" | What are the 2-3 possible ways and what is the selection criterion? |
 
-**Não usar** para: tasks mecânicas claras, bugs com causa conhecida, extensões triviais com padrão estabelecido.
+**Do not use** for: clear mechanical tasks, bugs with a known cause, trivial extensions with an established pattern.
 
 ---
 
-## Processo
+## Process
 
-### 1. Analisar a demanda por dimensões de cobertura
+### 1. Analyze the demand across coverage dimensions
 
-Verificar cobertura em cada dimensão:
+Check coverage in each dimension:
 
-**Funcional**
-- O happy path está completo e sem gaps?
-- Os fluxos alternativos (error states, edge cases) estão definidos?
-- As regras de negócio estão explícitas ou implícitas?
+**Functional**
+- Is the happy path complete and gap-free?
+- Are the alternative flows (error states, edge cases) defined?
+- Are the business rules explicit or implicit?
 
-**Dados**
-- Quais dados são necessários para cada ação?
-- Qual é o formato esperado das entradas e saídas?
-- Há limites de volume, tamanho, ou frequência?
+**Data**
+- What data is needed for each action?
+- What is the expected format of inputs and outputs?
+- Are there limits on volume, size, or frequency?
 
-**Usuário / UX**
-- Quem são os usuários e qual é o contexto de uso?
-- Que nível de feedback visual é necessário (loading, error, success)?
-- Há considerações de acessibilidade ou internacionalização?
+**User / UX**
+- Who are the users and what is the usage context?
+- What level of visual feedback is needed (loading, error, success)?
+- Are there accessibility or internationalization considerations?
 
-**Integração**
-- Com que sistemas externos isso precisa se integrar?
-- Quais são os contratos de API esperados?
-- Há dependências de timing (sync vs async)?
+**Integration**
+- What external systems does this need to integrate with?
+- What are the expected API contracts?
+- Are there timing dependencies (sync vs async)?
 
-**Segurança / Privacidade**
-- Quais dados são sensíveis?
-- Quem pode ver/editar o quê?
-- Há requisitos de LGPD ou auditoria?
+**Security / Privacy**
+- What data is sensitive?
+- Who can view/edit what?
+- Are there LGPD or auditing requirements?
 
-### 2. Gerar perguntas de clarificação
+### 2. Generate clarification questions
 
-Para cada gap identificado, formular uma pergunta específica e acionável:
+For each identified gap, formulate a specific and actionable question:
 
 ```markdown
-## Perguntas de Clarificação — {feature}
+## Clarification Questions — {feature}
 
-**Funcional (3 perguntas)**
-1. {pergunta específica com contexto}
-   *Por que importa: sem isso, spec pode gerar ACs incorretos para {caso X}*
+**Functional (3 questions)**
+1. {specific question with context}
+   *Why it matters: without this, the spec may generate incorrect ACs for {case X}*
 
-2. {pergunta sobre fluxo alternativo}
-   *Por que importa: {impacto na implementação}*
+2. {question about an alternative flow}
+   *Why it matters: {impact on implementation}*
 
-**Dados (2 perguntas)**
-3. {pergunta sobre formato/limite de dados}
+**Data (2 questions)**
+3. {question about data format/limit}
 
-**UX (1 pergunta)**
-4. {pergunta sobre feedback visual necessário}
+**UX (1 question)**
+4. {question about needed visual feedback}
 
-**Segurança (1 pergunta)**
-5. {pergunta sobre acesso/permissões}
+**Security (1 question)**
+5. {question about access/permissions}
 ```
 
-Apresentar as perguntas em grupos por dimensão. Máximo 8-10 perguntas no total — priorizar as mais impactantes.
+Present the questions in groups by dimension. Maximum 8-10 questions total — prioritize the most impactful ones.
 
-### 3. Processar respostas
+### 3. Process answers
 
-Para cada resposta recebida:
-- Registrar a decisão
-- Identificar se a resposta gera novas perguntas (máximo 2 rounds de follow-up)
-- Marcar a área como "clarificada" ✅
+For each answer received:
+- Record the decision
+- Identify whether the answer generates new questions (maximum 2 rounds of follow-up)
+- Mark the area as "clarified" ✅
 
-### 4. Gerar Clarifications Record
+### 4. Generate the Clarifications Record
 
-Após todas as respostas, consolidar em:
+After all answers, consolidate into:
 
 ```markdown
 ---
 type: osforge-clarifications
-feature: "{nome}"
-clarified_at: {data}
+feature: "{name}"
+clarified_at: {date}
 feeds: [spec-builder]
 ---
 
-# Clarifications: {nome da feature}
+# Clarifications: {feature name}
 
-## Decisões Tomadas
+## Decisions Made
 
-### Funcional
-- **{área}:** {decisão} — registrada em {data}
-- **{área}:** {decisão}
+### Functional
+- **{area}:** {decision} — recorded on {date}
+- **{area}:** {decision}
 
-### Dados
-- **{área}:** {decisão}
+### Data
+- **{area}:** {decision}
 
 ### UX
-- **{área}:** {decisão}
+- **{area}:** {decision}
 
-### Segurança
-- **{área}:** {decisão}
+### Security
+- **{area}:** {decision}
 
-## Áreas Explicitamente Fora do Escopo
-- {item que o usuário confirmou que NÃO está no escopo}
+## Areas Explicitly Out of Scope
+- {item the user confirmed is NOT in scope}
 
-## Premissas Assumidas (sem confirmação explícita)
-- {premissa assumida porque o usuário disse "qualquer coisa serve"}
+## Assumptions Made (without explicit confirmation)
+- {assumption made because the user said "anything works"}
 ```
 
-Salvar em `.osforge/designs/{feature-slug}-clarifications.md`.
+Save in `.osforge/designs/{feature-slug}-clarifications.md`.
 
-Handoff: "Clarificações completas. Pronto para chamar `spec-builder` com este documento como input adicional."
+Handoff: "Clarifications complete. Ready to call `spec-builder` with this document as additional input."
 
 ---
 
 ## Gotchas
 
-- **Fazer perguntas óbvias**: perguntas que qualquer desenvolvedor responderia da mesma forma não precisam ser feitas. Focar nas ambiguidades que levariam a decisões diferentes de implementador para implementador.
-- **Mais de 10 perguntas de uma vez**: sobrecarrega o usuário e sinaliza que a demanda está mal compreendida. Se precisar de mais de 10, dividir em rounds.
-- **Não registrar premissas assumidas**: se o usuário disse "qualquer coisa serve" para algo importante, registrar a premissa assumida explicitamente. Premissas implícitas são a fonte mais comum de retrabalho.
-- **Segunda rodada de clarificação indefinida**: máximo 2 rounds de follow-up. Após isso, o que ainda não está claro deve ser registrado como premissa assumida e revisitado na fase de spec.
-- **Clarificar o óbvio**: se a resposta é universalmente "sim" para o stack OSForge (ex: "vai usar TypeScript?"), não perguntar — registrar como premissa assumida diretamente.
+- **Asking obvious questions**: questions that any developer would answer the same way do not need to be asked. Focus on the ambiguities that would lead to different implementation decisions from one implementer to another.
+- **More than 10 questions at once**: overloads the user and signals that the demand is poorly understood. If you need more than 10, split into rounds.
+- **Not recording assumptions made**: if the user said "anything works" for something important, record the assumption made explicitly. Implicit assumptions are the most common source of rework.
+- **Indefinite second round of clarification**: maximum 2 rounds of follow-up. After that, what is still unclear should be recorded as an assumption and revisited in the spec phase.
+- **Clarifying the obvious**: if the answer is universally "yes" for the OSForge stack (e.g.: "will it use TypeScript?"), do not ask — record it as an assumption directly.

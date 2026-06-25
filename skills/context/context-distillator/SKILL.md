@@ -1,92 +1,92 @@
 ---
 name: context-distillator
-description: "Compressão lossless de documentos longos para consumo otimizado por LLMs, preservando 100% da informação factual e eliminando overhead textual. ACIONE quando: comprime esse doc longo, destila o contexto antes de passar para outra skill, PRD/spec/architecture grande demais para a janela de contexto, consolidar múltiplos docs em um único distillate, preparar contexto enxuto para implementação ou review. Keywords: distill, destilar, comprimir, compress, distillate, contexto, lossless, tokens, condensar, context. Não acione para: sumarização lossy voltada a humanos, escrita de documentos novos ou tradução."
-trigger: distill|comprimir|compress context|distilat
+description: "Lossless compression of long documents for optimized LLM consumption, preserving 100% of the factual information and eliminating textual overhead. Use when: compress this long doc, distill the context before passing it to another skill, a PRD/spec/architecture too large for the context window, consolidating multiple docs into a single distillate, preparing lean context for implementation or review. Keywords: distill, compress, distillate, context, lossless, tokens, condense. Do NOT use for: lossy summarization aimed at humans, writing new documents, or translation."
+trigger: distill|compress|compress context|distillate
 model-tier: sonnet
 ---
 
 # Context Distillator
 
-## Objetivo
-Produzir documentos hiper-comprimidos (distillates) a partir de fontes,
-preservando cada fato, decisão, constraint e relacionamento, eliminando
-overhead que humanos precisam e LLMs não.
+## Objective
+Produce hyper-compressed documents (distillates) from sources,
+preserving every fact, decision, constraint, and relationship while eliminating
+overhead that humans need and LLMs don't.
 
 ## Inputs
-- **source_paths** (obrigatório) — Caminhos de arquivos/diretórios para distillar
-- **downstream_consumer** (opcional) — Skill que vai consumir ("implementação", "arquitetura", "review")
-- **output_path** (opcional) — Onde salvar. Default: `{source}-distillate.md`
+- **source_paths** (required) — File/directory paths to distill
+- **downstream_consumer** (optional) — Skill that will consume it ("implementation", "architecture", "review")
+- **output_path** (optional) — Where to save. Default: `{source}-distillate.md`
 
-## Processo
+## Process
 
-### 1. Análise de Fontes
-- Ler todos os arquivos fonte completamente
-- Classificar tipo: PRD, architecture, spec, code, config, docs
-- Estimar tamanho total em tokens
+### 1. Source Analysis
+- Read all source files completely
+- Classify type: PRD, architecture, spec, code, config, docs
+- Estimate total size in tokens
 
-### 2. Extração de Entidades
-Extrair TODA informação discreta:
-- Fatos e dados (números, datas, versões, percentuais)
-- Decisões tomadas + rationale
-- Alternativas rejeitadas + motivo
-- Requisitos e constraints (explícitos e implícitos)
-- Dependências e relacionamentos entre entidades
-- Named entities (produtos, tecnologias, pessoas)
-- Questões em aberto e itens não resolvidos
-- Limites de escopo (in/out/deferred)
-- Critérios de sucesso e validação
-- Riscos com severidade
+### 2. Entity Extraction
+Extract ALL discrete information:
+- Facts and data (numbers, dates, versions, percentages)
+- Decisions made + rationale
+- Rejected alternatives + reason
+- Requirements and constraints (explicit and implicit)
+- Dependencies and relationships between entities
+- Named entities (products, technologies, people)
+- Open questions and unresolved items
+- Scope boundaries (in/out/deferred)
+- Success and validation criteria
+- Risks with severity
 
-### 3. Deduplicação
-Aplicar regras de `./compression-rules.md`:
-- Mesmo fato em múltiplos docs → manter versão com mais contexto
-- Mesmo conceito em diferentes níveis de detalhe → manter o detalhado
-- Listas sobrepostas → merge sem duplicatas
-- Docs discordantes → notar conflito: "Doc A diz X; Doc B diz Y — não resolvido"
+### 3. Deduplication
+Apply the rules in `./compression-rules.md`:
+- Same fact in multiple docs → keep the version with the most context
+- Same concept at different levels of detail → keep the detailed one
+- Overlapping lists → merge without duplicates
+- Conflicting docs → note the conflict: "Doc A says X; Doc B says Y — unresolved"
 
-### 4. Filtragem (se downstream_consumer informado)
-Para cada item: "O skill downstream precisa disso?"
-- Eliminar itens claramente irrelevantes
-- Na dúvida, MANTER — errar para preservação
-- NUNCA eliminar: decisões, alternativas rejeitadas, questões abertas, constraints
+### 4. Filtering (if downstream_consumer is provided)
+For each item: "Does the downstream skill need this?"
+- Eliminate clearly irrelevant items
+- When in doubt, KEEP — err toward preservation
+- NEVER eliminate: decisions, rejected alternatives, open questions, constraints
 
-### 5. Agrupamento Temático
-Organizar em temas derivados do conteúdo (não template fixo).
-Temas comuns: core/problema, solução/approach, stack/decisões técnicas,
-escopo, critérios de sucesso, riscos, questões abertas.
+### 5. Thematic Grouping
+Organize into themes derived from the content (not a fixed template).
+Common themes: core/problem, solution/approach, stack/technical decisions,
+scope, success criteria, risks, open questions.
 
-### 6. Compressão de Linguagem
-Aplicar `./compression-rules.md` item por item:
-- Eliminar transições, hedging, retórica, auto-referência
-- Preservar números, nomes, versões, decisões
-- Cada bullet autocontido e compreensível isoladamente
-- Relacionamentos explícitos: "X porque Y", "X bloqueia Y"
+### 6. Language Compression
+Apply `./compression-rules.md` item by item:
+- Eliminate transitions, hedging, rhetoric, self-reference
+- Preserve numbers, names, versions, decisions
+- Each bullet self-contained and understandable in isolation
+- Explicit relationships: "X because Y", "X blocks Y"
 
-### 7. Formato de Saída
+### 7. Output Format
 
 ```yaml
 ---
 type: osforge-distillate
 sources:
-  - "{caminho relativo fonte 1}"
-  - "{caminho relativo fonte 2}"
-downstream_consumer: "{consumer ou 'general'}"
-created: "{data}"
-token_estimate: {contagem aprox}
+  - "{relative path source 1}"
+  - "{relative path source 2}"
+downstream_consumer: "{consumer or 'general'}"
+created: "{date}"
+token_estimate: {approx count}
 compression_ratio: "{X:1}"
 ---
 ```
 
-Corpo: bullets densos agrupados por `##` temáticos.
-Sem prosa, sem parágrafos — apenas bullets.
-Sem formatação decorativa. Semicolons para itens curtos relacionados.
+Body: dense bullets grouped by thematic `##` headings.
+No prose, no paragraphs — bullets only.
+No decorative formatting. Semicolons for short related items.
 
-### 8. Splitting (se distillate > ~5000 tokens)
-Criar diretório `{base}-distillate/`:
-- `_index.md` — Orientação + manifest + itens cross-cutting
-- `01-{topic}.md` — Seção autocontida com header "Parte N de M"
+### 8. Splitting (if distillate > ~5000 tokens)
+Create a `{base}-distillate/` directory:
+- `_index.md` — Orientation + manifest + cross-cutting items
+- `01-{topic}.md` — Self-contained section with header "Part N of M"
 - `02-{topic}.md`
 
 ### 9. Report
-Informar: "Comprimido {N} fontes ({X} tokens) → distillate ({Y} tokens).
-Ratio: {X/Y}:1. Salvo em {path}."
+Report: "Compressed {N} sources ({X} tokens) → distillate ({Y} tokens).
+Ratio: {X/Y}:1. Saved to {path}."

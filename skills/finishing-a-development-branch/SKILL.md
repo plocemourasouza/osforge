@@ -1,6 +1,6 @@
 ---
 name: finishing-a-development-branch
-description: "Workflow de finalização de branch de desenvolvimento. ACIONE quando: todas as tasks de uma branch estão completas, usuário quer mergear ou abrir PR, pronto para ship. Keywords: finalizar branch, merge, pull request, PR, ship, branch completa, done, concluído, terminar feature, fechar branch."
+description: "Development branch finalization workflow. Use when: all tasks on a branch are complete, the user wants to merge or open a PR, ready to ship. Keywords: finalize branch, merge, pull request, PR, ship, branch complete, done, completed, finish feature, close branch."
 model: sonnet
 allowed-tools: Read, Bash, Glob, Grep
 metadata:
@@ -10,92 +10,92 @@ metadata:
   adapted_by: osforge
 ---
 
-## Estado da branch
-!`git log --oneline -5 2>/dev/null || echo "Git não disponível"`
-!`git status --short 2>/dev/null | head -10 || echo "Status não disponível"`
-!`git diff --stat main...HEAD 2>/dev/null | tail -3 || echo "Diff não disponível"`
+## Branch state
+!`git log --oneline -5 2>/dev/null || echo "Git not available"`
+!`git status --short 2>/dev/null | head -10 || echo "Status not available"`
+!`git diff --stat main...HEAD 2>/dev/null | tail -3 || echo "Diff not available"`
 
 # Finishing a Development Branch
 
-## Papel
+## Role
 
-Agente de finalização. Verifica que o trabalho está realmente completo,
-apresenta opções claras para o usuário, e executa a ação escolhida de forma
-segura. Foco em não shipar código quebrado e não perder trabalho.
+Finalization agent. Verifies that the work is genuinely complete,
+presents clear options to the user, and executes the chosen action
+safely. Focused on not shipping broken code and not losing work.
 
-Inspirado no padrão `finishing-a-development-branch` do obra/superpowers.
+Inspired by the `finishing-a-development-branch` pattern from obra/superpowers.
 
 ---
 
-## Processo
+## Process
 
-### 1. Verificação pré-finalização
+### 1. Pre-finalization checks
 
-Antes de qualquer ação, verificar:
+Before any action, verify:
 
 ```bash
-# Testes passando?
+# Tests passing?
 bun test 2>&1 | tail -20
 
-# TypeScript limpo?
+# TypeScript clean?
 bun tsc --noEmit 2>&1
 
-# Lint limpo?
+# Lint clean?
 bun lint 2>&1 | tail -10
 
-# Sem arquivos não commitados?
+# No uncommitted files?
 git status --short
 
-# Sem conflicts?
+# No conflicts?
 git diff --check
 ```
 
-**Se qualquer verificação falhar:** parar, reportar o problema ao usuário, não avançar.
+**If any check fails:** stop, report the problem to the user, do not proceed.
 
-### 2. Resumo do trabalho
+### 2. Work summary
 
-Apresentar resumo do que foi feito na branch:
+Present a summary of what was done on the branch:
 
 ```markdown
-## Resumo da Branch: {nome-da-branch}
+## Branch Summary: {branch-name}
 
 **Commits:** {N} commits
-**Arquivos modificados:** {N} arquivos
-**Principais mudanças:**
-- {arquivo}: {o que mudou}
-- {arquivo}: {o que mudou}
+**Files modified:** {N} files
+**Main changes:**
+- {file}: {what changed}
+- {file}: {what changed}
 
-**Testes:** {N} passing / {N} failing
-**TypeScript:** limpo ✅ / {N} errors ❌
+**Tests:** {N} passing / {N} failing
+**TypeScript:** clean ✅ / {N} errors ❌
 ```
 
-### 3. Apresentar opções
+### 3. Present options
 
 ```markdown
-## O que você quer fazer?
+## What do you want to do?
 
-**[M] Merge direto** — faz merge para main agora
-   Ideal quando: trabalho solo, branch pequena, CI passa
+**[M] Direct merge** — merges to main now
+   Ideal when: solo work, small branch, CI passes
 
-**[P] Abrir Pull Request** — abre PR para review antes do merge
-   Ideal quando: trabalho em equipe, mudanças significativas, quer review
+**[P] Open Pull Request** — opens a PR for review before merge
+   Ideal when: team work, significant changes, want review
 
-**[K] Keep branch** — manter branch aberta sem meritar
-   Ideal quando: trabalho incompleto, quer continuar depois
+**[K] Keep branch** — keep the branch open without merging
+   Ideal when: incomplete work, want to continue later
 
-**[D] Discard branch** — descartar todo o trabalho
-   Ideal quando: abordagem errada, quer recomeçar do zero
-   ⚠️  IRREVERSÍVEL — confirmar explicitamente
+**[D] Discard branch** — discard all the work
+   Ideal when: wrong approach, want to start over
+   ⚠️  IRREVERSIBLE — confirm explicitly
 ```
 
-Aguardar escolha explícita do usuário.
+Wait for an explicit choice from the user.
 
-### 4. Executar ação escolhida
+### 4. Execute the chosen action
 
-**[M] Merge direto:**
+**[M] Direct merge:**
 ```bash
 git checkout main
-git merge {branch} --no-ff -m "feat: {descrição da feature}"
+git merge {branch} --no-ff -m "feat: {feature description}"
 git push origin main
 git branch -d {branch}
 ```
@@ -104,13 +104,13 @@ git branch -d {branch}
 ```bash
 git push origin {branch}
 
-# Verificar se o gh CLI está instalado e autenticado antes de criar o PR
+# Check whether the gh CLI is installed and authenticated before creating the PR
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-  gh pr create --title "{título}" --body "{descrição}" --base main
+  gh pr create --title "{title}" --body "{description}" --base main
 else
-  # Fallback: gh não disponível — montar URL de criação de PR para o usuário
+  # Fallback: gh not available — build a PR creation URL for the user
   remote_url=$(git remote get-url origin | sed -e 's/\.git$//' -e 's#git@github\.com:#https://github.com/#')
-  echo "gh CLI não instalado/autenticado. Abra manualmente:"
+  echo "gh CLI not installed/authenticated. Open manually:"
   echo "${remote_url}/compare/main...{branch}?expand=1"
 fi
 ```
@@ -118,33 +118,33 @@ fi
 **[K] Keep branch:**
 ```bash
 git push origin {branch}
-echo "Branch mantida em origin/{branch}"
+echo "Branch kept at origin/{branch}"
 ```
 
 **[D] Discard branch:**
 ```bash
-# CHECKPOINT OBRIGATÓRIO antes de discard
-echo "ATENÇÃO: Isso vai apagar todo o trabalho da branch {branch}."
-echo "Digite 'confirmar descarte' para prosseguir:"
-# Aguardar confirmação explícita
+# MANDATORY CHECKPOINT before discard
+echo "WARNING: This will delete all the work on branch {branch}."
+echo "Type 'confirm discard' to proceed:"
+# Wait for explicit confirmation
 git checkout main
 git branch -D {branch}
 ```
 
-### 5. Atualizar STATUS.md
+### 5. Update STATUS.md
 
-Após merge ou PR:
+After merge or PR:
 ```bash
-# Marcar feature como completa no .osforge/status.yaml
-# Arquivar specs em .osforge/archive/
+# Mark the feature as complete in .osforge/status.yaml
+# Archive specs in .osforge/archive/
 ```
 
 ---
 
 ## Gotchas
 
-- **Não verificar testes antes de mergear**: um merge com testes falhando quebra main para toda a equipe. A verificação pré-finalização é obrigatória, não opcional.
-- **Discard sem checkpoint**: descarte de branch é irreversível. Sempre confirmar com o usuário de forma explícita antes de executar `git branch -D`.
-- **Merge sem --no-ff em branches de feature**: `--no-ff` preserva a história da branch no grafo de commits. Sem ele, commits de feature aparecem como parte direta do main, dificultando rollback e bisect.
-- **Não arquivar specs**: specs das features concluídas devem ir para `.osforge/archive/` após merge. Sem arquivamento, `.osforge/` acumula specs de features antigas sem distinção de estado.
-- **PR sem descrição**: PRs sem descrição chegam ao reviewer sem contexto. Sempre incluir: o que mudou, por que mudou, como testar.
+- **Not checking tests before merging**: a merge with failing tests breaks main for the whole team. The pre-finalization check is mandatory, not optional.
+- **Discard without a checkpoint**: discarding a branch is irreversible. Always confirm with the user explicitly before running `git branch -D`.
+- **Merge without --no-ff on feature branches**: `--no-ff` preserves the branch's history in the commit graph. Without it, feature commits appear as a direct part of main, making rollback and bisect harder.
+- **Not archiving specs**: specs of completed features should go to `.osforge/archive/` after merge. Without archiving, `.osforge/` accumulates specs of old features with no state distinction.
+- **PR without a description**: PRs without a description reach the reviewer with no context. Always include: what changed, why it changed, how to test.

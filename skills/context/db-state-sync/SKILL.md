@@ -1,6 +1,6 @@
 ---
 name: db-state-sync
-description: "Gerencia estado de projetos no banco SQLite local do OSForge (~/.osforge/osforge.db). ACIONE quando: salvar progresso de uma fase, registrar decisão arquitetural, adicionar/resolver blocker, rastrear tasks, ver board cross-project, retomar sessão anterior, buscar decisões passadas. Keywords: salvar estado, registrar decisão, add-decision, set-phase, add-task, set-task, list-tasks, board, resumir sessão, buscar decisão, osforge-db, estado do projeto."
+description: "Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db). Use when: saving phase progress, recording an architectural decision, adding/resolving a blocker, tracking tasks, viewing the cross-project board, resuming a previous session, searching past decisions. Keywords: save state, record decision, add-decision, set-phase, add-task, set-task, list-tasks, board, resume session, search decision, osforge-db, project state."
 model: haiku
 allowed-tools: Bash
 metadata:
@@ -8,168 +8,168 @@ metadata:
   version: '1.1'
 ---
 
-## Banco disponível
-!`osforge-db stats 2>/dev/null || echo "banco não inicializado — rode: osforge-db init"`
+## Database available
+!`osforge-db stats 2>/dev/null || echo "database not initialized — run: osforge-db init"`
 
 # DB State Sync
 
-## Papel
+## Role
 
-Interface entre o orchestrator e o banco SQLite local do OSForge.
-Executa queries via `osforge-db` CLI sem token overhead — toda leitura
-de estado retorna apenas o que é necessário.
-
----
-
-## Banco de dados
-
-Localização padrão: `~/.osforge/osforge.db` (global, cross-project)
-Localização local: `.osforge/osforge.db` (por projeto, via `--scope=local`)
-
-`osforge-db` usa Python built-in `sqlite3` — zero dependências externas.
+Interface between the orchestrator and OSForge's local SQLite database.
+Runs queries via the `osforge-db` CLI without token overhead — every state
+read returns only what is needed.
 
 ---
 
-## Comandos por situação
+## Database
 
-### INTAKE — retomar sessão
+Default location: `~/.osforge/osforge.db` (global, cross-project)
+Local location: `.osforge/osforge.db` (per project, via `--scope=local`)
+
+`osforge-db` uses Python's built-in `sqlite3` — zero external dependencies.
+
+---
+
+## Commands by situation
+
+### INTAKE — resume session
 
 ```bash
-# Retorna fase atual + resume point (shell injection compacta, ~50 tokens)
+# Returns current phase + resume point (compact shell injection, ~50 tokens)
 osforge-db resume <slug>
 
-# Retorna estado completo (todas as fases, blockers, decisões recentes)
+# Returns complete state (all phases, blockers, recent decisions)
 osforge-db status <slug>
 
-# Listar todos os projetos ativos
+# List all active projects
 osforge-db list-projects
 ```
 
-**Shell injection no SKILL.md** (usar dentro de qualquer skill de planning):
+**Shell injection in SKILL.md** (use inside any planning skill):
 ```
-!`osforge-db resume SLUG_DO_PROJETO`
+!`osforge-db resume PROJECT_SLUG`
 ```
 
-### TRACK — atualizar progresso
+### TRACK — update progress
 
 ```bash
-# Criar/atualizar projeto
-osforge-db upsert-project <slug> "<descrição>" <triage> <status>
+# Create/update project
+osforge-db upsert-project <slug> "<description>" <triage> <status>
 
-# Mudar status de uma fase
-osforge-db set-phase <slug> "<nome da fase>" in-progress skills/planning/spec-builder
-osforge-db set-phase <slug> "<nome da fase>" complete skills/planning/spec-builder docs/specs/feature.md
+# Change a phase's status
+osforge-db set-phase <slug> "<phase name>" in-progress skills/planning/spec-builder
+osforge-db set-phase <slug> "<phase name>" complete skills/planning/spec-builder docs/specs/feature.md
 
-# Salvar ponto de retomada (encerrar sessão)
-osforge-db set-resume <slug> "<onde parou e próximo passo exato>"
+# Save resume point (end session)
+osforge-db set-resume <slug> "<where you stopped and the exact next step>"
 ```
 
-### DECISÕES — registrar e buscar
+### DECISIONS — record and search
 
 ```bash
-# Registrar decisão
-osforge-db add-decision <slug> "<decisão>" --category=arch
-osforge-db add-decision <slug> "<decisão>" --category=product
-osforge-db add-decision <slug> "<decisão>" --category=ux
-osforge-db add-decision <slug> "<decisão>" --category=data
-osforge-db add-decision <slug> "<decisão>" --category=security
+# Record decision
+osforge-db add-decision <slug> "<decision>" --category=arch
+osforge-db add-decision <slug> "<decision>" --category=product
+osforge-db add-decision <slug> "<decision>" --category=ux
+osforge-db add-decision <slug> "<decision>" --category=data
+osforge-db add-decision <slug> "<decision>" --category=security
 
-# Listar decisões recentes
+# List recent decisions
 osforge-db list-decisions <slug> --category=arch --limit=10
 
-# Busca FTS5 cross-project (retorna decisões semanticamente relacionadas)
+# Cross-project FTS5 search (returns semantically related decisions)
 osforge-db search "Prisma RLS multi-tenant"
-osforge-db search "autenticação OAuth" --project=<slug>
+osforge-db search "OAuth authentication" --project=<slug>
 ```
 
-### TASKS — rastrear tarefas + board cross-project
+### TASKS — track tasks + cross-project board
 
 ```bash
-# Criar task (status inicial: pending). Flags todas opcionais.
-osforge-db add-task <slug> "<título>"
-osforge-db add-task <slug> "<título>" --phase="<nome da fase>" --wave=1 --depends=1,2 --priority=p0
-# → imprime o id da task criada (ex.: "Task #5 criada")
-# --phase resolve por nome (a fase deve existir; crie com set-phase antes)
-# --depends é CSV de task ids (texto livre, não validado contra FK)
-# --priority: p0 (crítica) | p1 (padrão) | p2
+# Create task (initial status: pending). All flags optional.
+osforge-db add-task <slug> "<title>"
+osforge-db add-task <slug> "<title>" --phase="<phase name>" --wave=1 --depends=1,2 --priority=p0
+# → prints the id of the created task (e.g.: "Task #5 created")
+# --phase resolves by name (the phase must exist; create it with set-phase first)
+# --depends is a CSV of task ids (free text, not validated against FK)
+# --priority: p0 (critical) | p1 (default) | p2
 
-# Atualizar status de uma task
+# Update a task's status
 osforge-db set-task <slug> <task_id> in-progress
 osforge-db set-task <slug> <task_id> done
-# status válidos: pending | in-progress | done | blocked | cancelled
+# valid statuses: pending | in-progress | done | blocked | cancelled
 
-# Listar tasks de um projeto (compacto)
+# List a project's tasks (compact)
 osforge-db list-tasks <slug>
 osforge-db list-tasks <slug> --status=in-progress
-# formato: [id] status priority wave:N title (deps: ...)
+# format: [id] status priority wave:N title (deps: ...)
 
-# Board cross-project: tasks de todos os projetos agrupadas por status
-osforge-db board                 # default: só projetos status=active
-osforge-db board --status=all    # inclui projetos arquivados/inativos
-# ordem dos grupos: in-progress → blocked → pending → done (só as 3 últimas)
-# projetos sem tasks aparecem como "<slug>: sem tasks"
+# Cross-project board: tasks from all projects grouped by status
+osforge-db board                 # default: only projects with status=active
+osforge-db board --status=all    # includes archived/inactive projects
+# group order: in-progress → blocked → pending → done (only the last 3)
+# projects with no tasks appear as "<slug>: no tasks"
 ```
 
-### BLOCKERS — rastrear impedimentos
+### BLOCKERS — track impediments
 
 ```bash
-# Adicionar blocker
-osforge-db add-blocker <slug> "<descrição>" --waiting="<o que está esperando>"
+# Add blocker
+osforge-db add-blocker <slug> "<description>" --waiting="<what it is waiting on>"
 
-# Listar blockers ativos
+# List active blockers
 osforge-db list-blockers <slug>
 
-# Resolver blocker
+# Resolve blocker
 osforge-db resolve-blocker <slug> <id>
 ```
 
-### MIGRAÇÃO — importar status.yaml existente
+### MIGRATION — import existing status.yaml
 
 ```bash
-# Migra .osforge/status.yaml para o banco
+# Migrates .osforge/status.yaml into the database
 osforge-db import-yaml .osforge/status.yaml <slug>
 ```
 
 ---
 
-## Categorias de decisão
+## Decision categories
 
-| Categoria | Quando usar |
+| Category | When to use |
 |---|---|
-| `arch` | Decisões de arquitetura e stack (padrão) |
-| `product` | Decisões de produto, escopo, prioridade |
-| `ux` | Decisões de interface e experiência |
-| `data` | Decisões de schema, migrations, dados |
-| `security` | Decisões de segurança, auth, LGPD |
+| `arch` | Architecture and stack decisions (default) |
+| `product` | Product, scope, priority decisions |
+| `ux` | Interface and experience decisions |
+| `data` | Schema, migrations, data decisions |
+| `security` | Security, auth, LGPD decisions |
 
 ---
 
-## Integração com o orchestrator
+## Integration with the orchestrator
 
-O orchestrator usa `osforge-db` em dois momentos:
+The orchestrator uses `osforge-db` at two moments:
 
-**INTAKE** — ao iniciar sessão:
+**INTAKE** — when starting a session:
 ```bash
-# Verificar se há trabalho em progresso
+# Check whether there is work in progress
 osforge-db list-projects --status=active
 
-# Carregar estado do projeto atual
+# Load the current project's state
 osforge-db status <slug>
 ```
 
-**TRACK** — ao completar cada fase:
+**TRACK** — when completing each phase:
 ```bash
-osforge-db set-phase <slug> "<fase>" complete <skill-path> <artifact-path>
-osforge-db add-decision <slug> "<decisão tomada nessa fase>"
-osforge-db set-resume <slug> "Próximo: <fase> via <skill>"
+osforge-db set-phase <slug> "<phase>" complete <skill-path> <artifact-path>
+osforge-db add-decision <slug> "<decision made in this phase>"
+osforge-db set-resume <slug> "Next: <phase> via <skill>"
 ```
 
 ---
 
 ## Gotchas
 
-- **Slug do projeto**: usar kebab-case consistente. O slug é a chave primária de tudo — `linkme-tur`, `essent-billing`, `rede-essent-portal`. Nunca mudar após criar.
-- **FTS5 e hifens**: a busca já sanitiza hifens automaticamente. Não é necessário escapar.
-- **Banco global vs local**: para projetos com dados sensíveis (Essent, Rede Essent Jus), usar `--scope=local` — o banco fica no projeto e pode ser `.gitignore`d. O banco global guarda apenas estado e decisões não-sensíveis.
-- **set-resume é obrigatório ao encerrar**: sem um `set-resume` atualizado, a próxima sessão não sabe onde parou. Tratar como um commit git — sempre executar antes de fechar o editor.
-- **import-yaml é idempotente**: pode ser executado múltiplas vezes no mesmo projeto sem duplicar fases (usa `ON CONFLICT DO NOTHING`).
+- **Project slug**: use consistent kebab-case. The slug is the primary key for everything — `linkme-tur`, `essent-billing`, `rede-essent-portal`. Never change it after creating.
+- **FTS5 and hyphens**: the search already sanitizes hyphens automatically. No need to escape.
+- **Global vs local database**: for projects with sensitive data (Essent, Rede Essent Jus), use `--scope=local` — the database stays in the project and can be `.gitignore`d. The global database holds only non-sensitive state and decisions.
+- **set-resume is mandatory when ending**: without an updated `set-resume`, the next session won't know where you stopped. Treat it like a git commit — always run it before closing the editor.
+- **import-yaml is idempotent**: it can be run multiple times on the same project without duplicating phases (uses `ON CONFLICT DO NOTHING`).

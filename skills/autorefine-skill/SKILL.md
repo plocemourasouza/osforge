@@ -1,173 +1,173 @@
 ---
 name: autorefine-skill
-description: "Refinamento autônomo iterativo com loop autoresearch + meta-otimização + transferência cross-domínio. ACIONE quando (ex.: 'melhorar minha skill de frontend'): usuário pede 'melhorar uma skill', 'otimizar a skill X', 'a skill Y não está funcionando bem', 'iterar sobre skill', 'autorefine', 'refinar código', 'otimizar performance', 'melhorar métrica X', 'meta-otimizar', 'transferir aprendizado', 'aplicar padrão de outro projeto'. Generalizado para qualquer artefato com métrica mensurável — skills, código, prompts, configs, docs. Keywords: melhorar skill, refinar skill, otimizar, autorefine, iteração autônoma, autoresearch, loop de melhoria, self-improving, guard, verify, meta-otimização, transferência, cross-domain."
+description: "Iterative autonomous refinement with autoresearch loop + meta-optimization + cross-domain transfer. Use when (e.g. 'improve my frontend skill'): user asks to 'improve a skill', 'optimize skill X', 'skill Y is not working well', 'iterate on a skill', 'autorefine', 'refine code', 'optimize performance', 'improve metric X', 'meta-optimize', 'transfer learning', 'apply a pattern from another project'. Generalized to any artifact with a measurable metric — skills, code, prompts, configs, docs. Keywords: improve skill, refine skill, optimize, autorefine, autonomous iteration, autoresearch, improvement loop, self-improving, guard, verify, meta-optimization, transfer, cross-domain."
 model: sonnet
 allowed-tools: Read, Write, Bash, Glob, Grep
 metadata:
   author: osforge
   version: '3.0'
   inspired_by: 'karpathy/autoresearch, uditgoenka/autoresearch, alfonsograziano/auto-agent, facebookresearch/HyperAgents'
-  changelog: 'v3.0 — meta-otimização de skills (self-improvement loop) + transferência multi-domínio via osforge-db. v2.0 — verify+guard separation, osforge-db memory, domain generalization, eval packages'
+  changelog: 'v3.0 — meta-optimization of skills (self-improvement loop) + multi-domain transfer via osforge-db. v2.0 — verify+guard separation, osforge-db memory, domain generalization, eval packages'
 ---
 
-## Estado do projeto
-!`osforge-db list-projects --status=active 2>/dev/null | head -3 || echo "nenhum projeto ativo"`
-!`osforge-db search "autorefine" 2>/dev/null | head -5 || echo "sem histórico de autorefine"`
-!`osforge-db search "meta-review" 2>/dev/null | head -3 || echo "sem meta-reviews anteriores"`
-!`osforge-db search "transfer-candidate" 2>/dev/null | head -3 || echo "sem candidatos a transferência"`
+## Project state
+!`osforge-db list-projects --status=active 2>/dev/null | head -3 || echo "no active project"`
+!`osforge-db search "autorefine" 2>/dev/null | head -5 || echo "no autorefine history"`
+!`osforge-db search "meta-review" 2>/dev/null | head -3 || echo "no prior meta-reviews"`
+!`osforge-db search "transfer-candidate" 2>/dev/null | head -3 || echo "no transfer candidates"`
 
 # AutoRefine v3
 
-## Princípio
+## Principle
 
-Aplicar o loop de pesquisa autônoma do Karpathy a **qualquer artefato com métrica mensurável**: skills, código, prompts, configs, documentação. O agente formula uma hipótese → aplica uma mudança atômica → verifica com métrica mecânica → protege com guard contra regressões → mantém ou reverte → registra no banco → repete.
+Apply Karpathy's autonomous research loop to **any artifact with a measurable metric**: skills, code, prompts, configs, documentation. The agent formulates a hypothesis → applies an atomic change → verifies with a mechanical metric → protects against regressions with a guard → keeps or reverts → records in the database → repeats.
 
 **constraint + mechanical metric + autonomous iteration = compounding gains**
 
-v3 adiciona duas camadas inspiradas no HyperAgents (Meta Research):
-- **Meta-otimização**: o loop analisa seus próprios padrões de sucesso/falha e ajusta o SKILL.md do autorefine
-- **Transferência cross-domínio**: hipóteses validadas num projeto propagam para projetos similares via osforge-db
+v3 adds two layers inspired by HyperAgents (Meta Research):
+- **Meta-optimization**: the loop analyzes its own success/failure patterns and adjusts the autorefine SKILL.md
+- **Cross-domain transfer**: hypotheses validated in one project propagate to similar projects via osforge-db
 ---
 
-## Dois modos de operação
+## Two operation modes
 
-### Modo Skill (refinar SKILL.md do OSForge)
-O modo original: iterar sobre o conteúdo de uma skill para melhorar seus outputs.
-Artefato: `skills/<nome>/SKILL.md`. Métrica: aprovação em prompts de teste.
+### Skill Mode (refine an OSForge SKILL.md)
+The original mode: iterate over a skill's content to improve its outputs.
+Artifact: `skills/<name>/SKILL.md`. Metric: approval on test prompts.
 
-### Modo Genérico (qualquer artefato com métrica)
-Modo expandido inspirado no autoresearch generalizado: iterar sobre qualquer arquivo/conjunto de arquivos onde existe uma métrica mecânica.
+### Generic Mode (any artifact with a metric)
+An expanded mode inspired by generalized autoresearch: iterate over any file/set of files where a mechanical metric exists.
 
-Exemplos:
-- **Código**: `npm test -- --coverage` → melhorar cobertura de testes
-- **Performance**: `lighthouse --output=json` → melhorar Core Web Vitals
-- **Bundle**: `bun build && du -sh dist/` → reduzir tamanho
-- **Prompt**: `python eval.py` → melhorar accuracy em dataset
-- **Config**: `bun run bench` → melhorar throughput
+Examples:
+- **Code**: `npm test -- --coverage` → improve test coverage
+- **Performance**: `lighthouse --output=json` → improve Core Web Vitals
+- **Bundle**: `bun build && du -sh dist/` → reduce size
+- **Prompt**: `python eval.py` → improve accuracy on a dataset
+- **Config**: `bun run bench` → improve throughput
 
 ---
 
-## Setup inicial
+## Initial setup
 
-Antes de iniciar o loop, colete do usuário:
+Before starting the loop, collect from the user:
 
-### 1. Escopo
+### 1. Scope
 
-| Pergunta | Exemplo |
+| Question | Example |
 |---|---|
-| Qual artefato refinar? | `skills/frontend-design/SKILL.md` ou `src/lib/auth.ts` |
-| Qual o problema/objetivo? | "a skill gera código sem TypeScript" ou "latência p95 acima de 200ms" |
-| Quais arquivos podem ser modificados? | Lista explícita (scope constraint) |
-| Quais arquivos são read-only? | Guard files — nunca modificados |
-### 2. Verify + Guard (separação obrigatória)
+| Which artifact to refine? | `skills/frontend-design/SKILL.md` or `src/lib/auth.ts` |
+| What is the problem/objective? | "the skill generates code without TypeScript" or "p95 latency above 200ms" |
+| Which files may be modified? | Explicit list (scope constraint) |
+| Which files are read-only? | Guard files — never modified |
+### 2. Verify + Guard (mandatory separation)
 
 ```
-Verify: <comando que mede a métrica principal>
-Guard:  <comando que garante que nada mais quebrou>
+Verify: <command that measures the main metric>
+Guard:  <command that ensures nothing else broke>
 ```
 
-**Verify** = "A métrica melhorou?" — é o objetivo da otimização.
-**Guard** = "Alguma outra coisa quebrou?" — é a rede de segurança.
+**Verify** = "Did the metric improve?" — it is the optimization objective.
+**Guard** = "Did anything else break?" — it is the safety net.
 
-| Cenário | Verify | Guard | Decisão |
+| Scenario | Verify | Guard | Decision |
 |---|---|---|---|
-| ✅ melhora | ✅ passa | ✅ passa | **KEEP** |
-| ✅ melhora | ✅ passa | ❌ falha | **REWORK** (max 2 tentativas, depois DISCARD) |
-| ❌ piora | ❌ falha | ✅ passa | **DISCARD** |
-| ❌ piora | ❌ falha | ❌ falha | **DISCARD + rollback imediato** |
+| ✅ improves | ✅ passes | ✅ passes | **KEEP** |
+| ✅ improves | ✅ passes | ❌ fails | **REWORK** (max 2 attempts, then DISCARD) |
+| ❌ worsens | ❌ fails | ✅ passes | **DISCARD** |
+| ❌ worsens | ❌ fails | ❌ fails | **DISCARD + immediate rollback** |
 
-Exemplos de pares verify/guard:
+Examples of verify/guard pairs:
 
-| Domínio | Verify | Guard |
+| Domain | Verify | Guard |
 |---|---|---|
-| Skill OSForge | `python eval_skill.py --prompts=3` | `grep -c "allowed-tools" SKILL.md` (frontmatter intacto) |
-| Cobertura de testes | `bun test --coverage \| grep Stmts` | `bun tsc --noEmit` (tipos não quebraram) |
-| Performance API | `bun run bench:api \| grep p95` | `bun test` (funcionalidade intacta) |
+| OSForge Skill | `python eval_skill.py --prompts=3` | `grep -c "allowed-tools" SKILL.md` (frontmatter intact) |
+| Test coverage | `bun test --coverage \| grep Stmts` | `bun tsc --noEmit` (types not broken) |
+| API performance | `bun run bench:api \| grep p95` | `bun test` (functionality intact) |
 | Bundle size | `bun build && du -sh dist/` | `bun test && bun tsc --noEmit` |
 | Prompt engineering | `python eval.py --metric=accuracy` | `python eval.py --metric=safety` (safety ≥ baseline) |
 
-Se o guard não for definido pelo usuário, o default é: `exit 0` (sem guard). Mas **sempre sugerir** um guard relevante.
-### 3. Budget e prompts de teste
+If the guard is not defined by the user, the default is: `exit 0` (no guard). But **always suggest** a relevant guard.
+### 3. Budget and test prompts
 
-| Configuração | Default |
+| Configuration | Default |
 |---|---|
-| Iterações | 5 (max 10) |
-| Prompts de teste (modo skill) | 2-3 exemplos reais |
-| Direção da métrica | higher-is-better ou lower-is-better |
+| Iterations | 5 (max 10) |
+| Test prompts (skill mode) | 2-3 real examples |
+| Metric direction | higher-is-better or lower-is-better |
 
-### 4. Snapshot obrigatório
-
-```bash
-cp -r <artefato-dir> <artefato-dir>-snapshot-$(date +%Y%m%d%H%M)
-```
-
-### 5. Carregar memória de hipóteses
+### 4. Mandatory snapshot
 
 ```bash
-# Buscar iterações anteriores de autorefine neste artefato
-osforge-db search "autorefine <nome-do-artefato>" 2>/dev/null
-
-# v3: Buscar também candidatos de transferência de outros projetos
-osforge-db search "transfer-candidate <domínio>" 2>/dev/null
+cp -r <artifact-dir> <artifact-dir>-snapshot-$(date +%Y%m%d%H%M)
 ```
 
-Se existem hipóteses anteriores que falharam, **nunca repeti-las**. Listar as hipóteses falhas conhecidas antes de formular novas.
+### 5. Load hypothesis memory
 
-Se existem **candidatos de transferência** de outros projetos no mesmo domínio, listá-los como hipóteses prioritárias (já validadas em contexto similar).
+```bash
+# Search prior autorefine iterations on this artifact
+osforge-db search "autorefine <artifact-name>" 2>/dev/null
+
+# v3: Also search transfer candidates from other projects
+osforge-db search "transfer-candidate <domain>" 2>/dev/null
+```
+
+If prior hypotheses exist that failed, **never repeat them**. List the known failed hypotheses before formulating new ones.
+
+If there are **transfer candidates** from other projects in the same domain, list them as priority hypotheses (already validated in a similar context).
 
 ---
 
-## O Loop (modify → verify → guard → keep/discard → log → repeat)
-### Regras de ferro
+## The Loop (modify → verify → guard → keep/discard → log → repeat)
+### Iron rules
 
-| # | Regra | Implementação |
+| # | Rule | Implementation |
 |---|---|---|
-| 1 | Loop até acabar o budget | Bounded: N iterações, depois para |
-| 2 | Ler antes de escrever | Entender contexto completo antes de modificar |
-| 3 | Uma mudança por iteração | Atômico e rastreável — se quebra, sabe o porquê |
-| 4 | Verificação mecânica apenas | Números, não julgamento subjetivo |
-| 5 | Rollback automático | Falha → revert via git ou snapshot |
-| 6 | Simplicidade vence | Resultado igual + menos código = KEEP |
-| 7 | Git é memória | Commits prefixados `experiment:` preservam histórico |
-| 8 | Quando travado, pensar mais | Re-ler, combinar near-misses, tentar abordagem radical |
+| 1 | Loop until budget runs out | Bounded: N iterations, then stop |
+| 2 | Read before writing | Understand the full context before modifying |
+| 3 | One change per iteration | Atomic and traceable — if it breaks, you know why |
+| 4 | Mechanical verification only | Numbers, not subjective judgment |
+| 5 | Automatic rollback | Failure → revert via git or snapshot |
+| 6 | Simplicity wins | Same result + less code = KEEP |
+| 7 | Git is memory | Commits prefixed `experiment:` preserve history |
+| 8 | When stuck, think harder | Re-read, combine near-misses, try a radical approach |
 
-### Estrutura de cada iteração
+### Structure of each iteration
 
 ```
-Iteração N:
-  1. [haiku]  Lê o artefato atual + git log + memória (hipóteses que já falharam)
-  1b.[haiku]  Consulta transfer-candidates do mesmo domínio (v3)
-  2. [haiku]  Formula hipótese: "se eu modificar X, a métrica Y vai melhorar porque Z"
-  3. [haiku]  Aplica UMA modificação atômica
-  4. [haiku]  git commit -m "experiment: <hipótese resumida>"
-  5. [haiku]  Executa Verify → coleta métrica
-  6. [haiku]  Executa Guard → verifica que nada quebrou
-  7. [sonnet] Decide: KEEP / REWORK / DISCARD (ver tabela acima)
-  8. [sonnet] Se DISCARD → git revert HEAD
-     [sonnet] Se REWORK → tenta ajustar (max 2x), depois DISCARD
-  9. Registra no log + osforge-db
-  9b.Se KEEP → avalia elegibilidade para transferência (v3)
+Iteration N:
+  1. [haiku]  Read the current artifact + git log + memory (hypotheses that already failed)
+  1b.[haiku]  Query transfer-candidates from the same domain (v3)
+  2. [haiku]  Formulate hypothesis: "if I modify X, metric Y will improve because Z"
+  3. [haiku]  Apply ONE atomic modification
+  4. [haiku]  git commit -m "experiment: <summarized hypothesis>"
+  5. [haiku]  Run Verify → collect metric
+  6. [haiku]  Run Guard → verify nothing broke
+  7. [sonnet] Decide: KEEP / REWORK / DISCARD (see table above)
+  8. [sonnet] If DISCARD → git revert HEAD
+     [sonnet] If REWORK → try to adjust (max 2x), then DISCARD
+  9. Record in log + osforge-db
+  9b.If KEEP → assess eligibility for transfer (v3)
 ```
-### Modelo por etapa (smart-model-dispatch)
+### Model per step (smart-model-dispatch)
 
-| Etapa | Modelo | Razão |
+| Step | Model | Reason |
 |---|---|---|
-| Leitura + hipótese + modificação | Haiku | Mecânico, baixo custo |
-| Execução verify + guard | Haiku | Rodar comandos |
-| Avaliação + decisão | Sonnet | Requer julgamento |
-| Síntese final (relatório) | Sonnet | Análise de padrões |
-| Meta-review (v3) | Sonnet | Análise agregada cross-sessão |
-| Decisão de transferência (v3) | Sonnet | Avaliar generalização |
+| Reading + hypothesis + modification | Haiku | Mechanical, low cost |
+| Verify + guard execution | Haiku | Running commands |
+| Evaluation + decision | Sonnet | Requires judgment |
+| Final synthesis (report) | Sonnet | Pattern analysis |
+| Meta-review (v3) | Sonnet | Aggregated cross-session analysis |
+| Transfer decision (v3) | Sonnet | Assess generalization |
 
-Usar Opus apenas se o critério for ambíguo e exigir raciocínio sobre tradeoffs arquiteturais.
+Use Opus only if the criterion is ambiguous and requires reasoning about architectural tradeoffs.
 
 ---
 
-## Log de iterações (TSV + markdown)
+## Iteration log (TSV + markdown)
 
 ### TSV (machine-readable)
 
-Manter `autorefine-results.tsv` no diretório do artefato:
+Maintain `autorefine-results.tsv` in the artifact directory:
 
 ```tsv
 iteration	commit	metric	delta	guard	status	hypothesis	transfer_eligible
@@ -180,452 +180,452 @@ iteration	commit	metric	delta	guard	status	hypothesis	transfer_eligible
 ```
 ### Markdown (human-readable)
 
-Manter `autorefine-log.md` durante o processo:
+Maintain `autorefine-log.md` during the process:
 
 ```markdown
-# AutoRefine Log — <nome-do-artefato>
-Data: <data>
-Budget: <N> iterações
-Verify: <comando>
-Guard: <comando>
-Direção: higher-is-better | lower-is-better
+# AutoRefine Log — <artifact-name>
+Date: <date>
+Budget: <N> iterations
+Verify: <command>
+Guard: <command>
+Direction: higher-is-better | lower-is-better
 
-## Iteração 1
-- Hipótese: ...
-- Modificação: ...
-- Métrica: X → Y (delta: +Z)
+## Iteration 1
+- Hypothesis: ...
+- Modification: ...
+- Metric: X → Y (delta: +Z)
 - Guard: pass | fail
-- Resultado: KEEP | DISCARD | REWORK
-- Razão: ...
-- Transfer eligible: yes | no | - (razão)
+- Result: KEEP | DISCARD | REWORK
+- Reason: ...
+- Transfer eligible: yes | no | - (reason)
 
-## Resultado final
-- Melhor versão: iteração N
-- Métrica inicial: X
-- Métrica final: Y (delta: +Z, melhoria de W%)
-- Hipóteses que funcionaram: ...
-- Hipóteses que falharam: ...
-- Candidatas a transferência: N hipóteses marcadas
+## Final result
+- Best version: iteration N
+- Initial metric: X
+- Final metric: Y (delta: +Z, improvement of W%)
+- Hypotheses that worked: ...
+- Hypotheses that failed: ...
+- Transfer candidates: N hypotheses marked
 ```
 
 ---
-## Memória cross-sessão (osforge-db)
+## Cross-session memory (osforge-db)
 
-Ao final de cada sessão de autorefine, persista os aprendizados:
+At the end of each autorefine session, persist the learnings:
 
 ```bash
-# Registrar cada hipótese KEEP como decisão
+# Record each KEEP hypothesis as a decision
 osforge-db add-decision <project-slug> \
-  "autorefine(<artefato>): KEEP — <hipótese resumida> (metric +<delta>)" \
+  "autorefine(<artifact>): KEEP — <summarized hypothesis> (metric +<delta>)" \
   --category=arch
 
-# Registrar cada hipótese DISCARD como decisão
+# Record each DISCARD hypothesis as a decision
 osforge-db add-decision <project-slug> \
-  "autorefine(<artefato>): DISCARD — <hipótese resumida> (reason: <razão>)" \
+  "autorefine(<artifact>): DISCARD — <summarized hypothesis> (reason: <reason>)" \
   --category=arch
 
-# Registrar resultado final
+# Record the final result
 osforge-db add-decision <project-slug> \
-  "autorefine(<artefato>): resultado — metric <inicial> → <final> (+<delta>%) em <N> iterações" \
+  "autorefine(<artifact>): result — metric <initial> → <final> (+<delta>%) in <N> iterations" \
   --category=arch
 
-# v3: Registrar candidatos a transferência
+# v3: Record transfer candidates
 osforge-db add-decision <project-slug> \
-  "transfer-candidate(<domínio>): <hipótese resumida> — validada em <artefato> (metric +<delta>)" \
+  "transfer-candidate(<domain>): <summarized hypothesis> — validated on <artifact> (metric +<delta>)" \
   --category=transfer
 
-# v3: Registrar meta-review
+# v3: Record meta-review
 osforge-db add-decision <project-slug> \
-  "meta-review: <N> sessões analisadas — padrões: <lista de padrões encontrados>" \
+  "meta-review: <N> sessions analyzed — patterns: <list of patterns found>" \
   --category=meta
 ```
 
-Na próxima sessão, o loop consulta `osforge-db search "autorefine <artefato>"` e evita repetir hipóteses que já falharam. Isso cria **aprendizado institucional** — o agente não comete os mesmos erros entre sessões.
+In the next session, the loop queries `osforge-db search "autorefine <artifact>"` and avoids repeating hypotheses that already failed. This creates **institutional learning** — the agent does not make the same mistakes across sessions.
 ---
 
 ## Crash recovery
 
-| Falha | Resposta |
+| Failure | Response |
 |---|---|
-| Syntax error no artefato | Fix imediato, não contar iteração |
-| Runtime error no verify/guard | Tentar fix (max 3x), depois skip |
-| Timeout no comando | Revert, tentar variante menor |
-| Guard quebra após verify passar | REWORK (max 2x), depois DISCARD |
-| Processo interrompido | Snapshot preserva estado; `osforge-db resume` retoma |
+| Syntax error in the artifact | Immediate fix, do not count as an iteration |
+| Runtime error in verify/guard | Try a fix (max 3x), then skip |
+| Command timeout | Revert, try a smaller variant |
+| Guard breaks after verify passes | REWORK (max 2x), then DISCARD |
+| Process interrupted | Snapshot preserves state; `osforge-db resume` resumes |
 
 ---
 
-## Condições de parada
+## Stopping conditions
 
-Encerre o loop antes de esgotar o budget se:
+End the loop before exhausting the budget if:
 
-1. **Convergência** — 3 iterações consecutivas KEEP sem melhoria adicional mensurável
-2. **Saturação** — 100% dos critérios aprovados por 2 iterações consecutivas
-3. **Regressão persistente** — 3 iterações consecutivas DISCARD (hipótese de melhoria está errada; pare e discuta com o usuário)
-4. **Budget esgotado** — N iterações concluídas
+1. **Convergence** — 3 consecutive KEEP iterations with no further measurable improvement
+2. **Saturation** — 100% of criteria approved for 2 consecutive iterations
+3. **Persistent regression** — 3 consecutive DISCARD iterations (the improvement hypothesis is wrong; stop and discuss with the user)
+4. **Budget exhausted** — N iterations completed
 
-Progresso impresso a cada 5 iterações (se budget > 5).
+Progress printed every 5 iterations (if budget > 5).
 ---
 
-## 🧠 Meta-otimização (v3 — Ideia A: Self-Improvement Loop)
+## 🧠 Meta-optimization (v3 — Idea A: Self-Improvement Loop)
 
-> Inspirado no HyperAgents (Meta Research): o sistema que melhora artefatos
-> também deve melhorar a si mesmo. Metacognição pragmática sem Docker/GPU.
+> Inspired by HyperAgents (Meta Research): the system that improves artifacts
+> should also improve itself. Pragmatic metacognition without Docker/GPU.
 
-### Conceito
+### Concept
 
-Após **N sessões acumuladas** no osforge-db (threshold: 10 sessões ou 50+ hipóteses registradas), o AutoRefine analisa seus próprios padrões de sucesso/falha e gera ajustes concretos para este SKILL.md. Isso é auto-melhoria de segunda ordem — não otimiza o artefato, otimiza **como** otimiza artefatos.
+After **N accumulated sessions** in osforge-db (threshold: 10 sessions or 50+ recorded hypotheses), AutoRefine analyzes its own success/failure patterns and generates concrete adjustments to this SKILL.md. This is second-order self-improvement — it does not optimize the artifact, it optimizes **how** it optimizes artifacts.
 
-### Quando disparar
+### When to trigger
 
-O meta-review é acionado automaticamente quando:
+The meta-review is triggered automatically when:
 
 ```bash
-# Contar sessões acumuladas
-SESSIONS=$(osforge-db search "autorefine" 2>/dev/null | grep -c "resultado")
+# Count accumulated sessions
+SESSIONS=$(osforge-db search "autorefine" 2>/dev/null | grep -c "result")
 HYPOTHESES=$(osforge-db search "autorefine" 2>/dev/null | grep -c "KEEP\|DISCARD")
 
-# Threshold: 10+ sessões OU 50+ hipóteses
+# Threshold: 10+ sessions OR 50+ hypotheses
 if [ "$SESSIONS" -ge 10 ] || [ "$HYPOTHESES" -ge 50 ]; then
-  echo "META-REVIEW elegível"
+  echo "META-REVIEW eligible"
 fi
 ```
 
-Também pode ser acionado manualmente: `"meta-otimizar autorefine"`, `"revisar padrões do autorefine"`, `"autorefine self-improve"`.
-### Processo de meta-review (5 fases)
+It can also be triggered manually: `"meta-optimize autorefine"`, `"review autorefine patterns"`, `"autorefine self-improve"`.
+### Meta-review process (5 phases)
 
-#### Fase 1: Coleta de dados agregados
+#### Phase 1: Aggregated data collection
 
 ```bash
-# Extrair todos os registros de autorefine
+# Extract all autorefine records
 osforge-db search "autorefine" --json 2>/dev/null > /tmp/autorefine-history.json
 
-# Estrutura esperada por sessão:
-# - artefato, domínio, modo (skill/genérico)
-# - hipóteses KEEP: descrição, delta, domínio
-# - hipóteses DISCARD: descrição, razão, domínio
-# - resultado: métrica inicial → final, % melhoria
+# Expected structure per session:
+# - artifact, domain, mode (skill/generic)
+# - KEEP hypotheses: description, delta, domain
+# - DISCARD hypotheses: description, reason, domain
+# - result: initial metric → final, % improvement
 ```
 
-#### Fase 2: Análise de padrões [sonnet]
+#### Phase 2: Pattern analysis [sonnet]
 
-O agente analisa o corpus e responde:
+The agent analyzes the corpus and answers:
 
-| Pergunta | Exemplo de insight |
+| Question | Example insight |
 |---|---|
-| Quais **tipos de hipótese** têm maior taxa KEEP? | "Hipóteses de tipagem forte: 78% KEEP vs 34% média" |
-| Quais **tipos de hipótese** sempre falham? | "Reordenação de seções: 0/12 KEEP — nunca melhora métrica" |
-| Qual **domínio** responde melhor ao autorefine? | "Skills: +18% médio vs Código: +7% médio" |
-| Existe correlação entre **tamanho da mudança** e sucesso? | "Mudanças <20 linhas: 62% KEEP; >50 linhas: 11% KEEP" |
-| Quais **combinações verify+guard** funcionam melhor? | "tsc+test: 89% guard-pass vs test-only: 64%" |
-| Quantas iterações por sessão é ótimo? | "Ganho marginal cai após iteração 4 em 80% dos casos" |
-| REWORK vale a pena? | "REWORK→KEEP: 38% das vezes — vale manter" |
-#### Fase 3: Gerar propostas de ajuste
+| Which **hypothesis types** have the highest KEEP rate? | "Strong-typing hypotheses: 78% KEEP vs 34% average" |
+| Which **hypothesis types** always fail? | "Section reordering: 0/12 KEEP — never improves the metric" |
+| Which **domain** responds best to autorefine? | "Skills: +18% average vs Code: +7% average" |
+| Is there a correlation between **change size** and success? | "Changes <20 lines: 62% KEEP; >50 lines: 11% KEEP" |
+| Which **verify+guard combinations** work best? | "tsc+test: 89% guard-pass vs test-only: 64%" |
+| How many iterations per session is optimal? | "Marginal gain drops after iteration 4 in 80% of cases" |
+| Is REWORK worth it? | "REWORK→KEEP: 38% of the time — worth keeping" |
+#### Phase 3: Generate adjustment proposals
 
-Com base nos padrões, o agente gera **propostas concretas** de modificação deste SKILL.md:
+Based on the patterns, the agent generates **concrete proposals** to modify this SKILL.md:
 
 ```markdown
-## Meta-Review Proposta #1
-Padrão: "Hipóteses de reordenação nunca funcionam (0/12)"
-Ajuste: Adicionar às Regras de Ferro: "Regra 9: Não formular hipóteses de reordenação pura de seções"
-Impacto estimado: Economiza ~2 iterações/sessão (evita dead ends)
-Confiança: alta (12 amostras, 0% sucesso)
+## Meta-Review Proposal #1
+Pattern: "Reordering hypotheses never work (0/12)"
+Adjustment: Add to the Iron Rules: "Rule 9: Do not formulate pure section-reordering hypotheses"
+Estimated impact: Saves ~2 iterations/session (avoids dead ends)
+Confidence: high (12 samples, 0% success)
 
-## Meta-Review Proposta #2
-Padrão: "Ganho marginal cai após iteração 4"
-Ajuste: Reduzir budget default de 5 para 4 iterações
-Impacto estimado: Reduz custo em 20% sem perda significativa de ganho
-Confiança: média (80% dos casos, mas 20% ainda ganham na 5ª)
+## Meta-Review Proposal #2
+Pattern: "Marginal gain drops after iteration 4"
+Adjustment: Reduce default budget from 5 to 4 iterations
+Estimated impact: Reduces cost by 20% with no significant loss of gain
+Confidence: medium (80% of cases, but 20% still gain on the 5th)
 
-## Meta-Review Proposta #3
-Padrão: "Mudanças >50 linhas quase sempre falham"
-Ajuste: Adicionar ao setup: "WARN se a diff da iteração exceder 50 linhas"
-Impacto estimado: Sinaliza hipóteses over-scoped antes do verify
-Confiança: alta (89% de correlação)
+## Meta-Review Proposal #3
+Pattern: "Changes >50 lines almost always fail"
+Adjustment: Add to setup: "WARN if the iteration diff exceeds 50 lines"
+Estimated impact: Flags over-scoped hypotheses before verify
+Confidence: high (89% correlation)
 ```
 
-#### Fase 4: Aplicar ajustes (com aprovação)
+#### Phase 4: Apply adjustments (with approval)
 
-**NUNCA aplicar meta-ajustes automaticamente.** Sempre apresentar as propostas ao usuário e pedir aprovação explícita antes de modificar o SKILL.md. Cada proposta aprovada gera:
+**NEVER apply meta-adjustments automatically.** Always present the proposals to the user and ask for explicit approval before modifying the SKILL.md. Each approved proposal generates:
 
 ```bash
-# Backup antes de meta-ajuste
+# Backup before meta-adjustment
 cp skills/autorefine-skill/SKILL.md skills/autorefine-skill/SKILL.md.pre-meta-$(date +%Y%m%d)
 
-# Aplicar modificação aprovada
-# ... (edição do SKILL.md)
+# Apply the approved modification
+# ... (editing SKILL.md)
 
-# Commit com prefixo meta:
-git commit -m "meta(autorefine): <descrição do ajuste> — baseado em <N> sessões"
+# Commit with the meta: prefix
+git commit -m "meta(autorefine): <adjustment description> — based on <N> sessions"
 ```
-#### Fase 5: Registrar meta-review no osforge-db
+#### Phase 5: Record the meta-review in osforge-db
 
 ```bash
 osforge-db add-decision global \
-  "meta-review(autorefine): analisadas <N> sessões, <M> hipóteses. Padrões: <lista>. Ajustes aplicados: <lista de propostas aprovadas>" \
+  "meta-review(autorefine): analyzed <N> sessions, <M> hypotheses. Patterns: <list>. Adjustments applied: <list of approved proposals>" \
   --category=meta
 ```
 
-### Guardrails da meta-otimização
+### Meta-optimization guardrails
 
-| Regra | Razão |
+| Rule | Reason |
 |---|---|
-| Max 1 meta-review por semana | Evita over-fitting em dados insuficientes |
-| Min 10 sessões entre meta-reviews | Garante amostra estatisticamente relevante |
-| Propostas precisam de ≥5 amostras de suporte | Evita generalizar de casos isolados |
-| Backup obrigatório antes de cada meta-ajuste | Reversível se o ajuste piorar performance |
-| Meta-ajustes são sempre apresentados, nunca auto-aplicados | O humano decide o que muda no processo |
-| Manter histórico de meta-reviews no osforge-db | Rastrear a evolução do próprio skill ao longo do tempo |
+| Max 1 meta-review per week | Avoids over-fitting on insufficient data |
+| Min 10 sessions between meta-reviews | Ensures a statistically relevant sample |
+| Proposals need ≥5 supporting samples | Avoids generalizing from isolated cases |
+| Mandatory backup before each meta-adjustment | Reversible if the adjustment worsens performance |
+| Meta-adjustments are always presented, never auto-applied | The human decides what changes in the process |
+| Keep a meta-review history in osforge-db | Track the evolution of the skill itself over time |
 
-### Métricas da meta-otimização
+### Meta-optimization metrics
 
-Após 3+ meta-reviews, comparar:
+After 3+ meta-reviews, compare:
 
 ```
-Taxa KEEP antes do meta-ajuste vs depois
-Iterações médias por sessão antes vs depois
-% de budget utilizado antes vs depois
-Tempo médio por sessão antes vs depois (se disponível)
+KEEP rate before the meta-adjustment vs after
+Average iterations per session before vs after
+% of budget used before vs after
+Average time per session before vs after (if available)
 ```
 
-Se um meta-ajuste **piora** as métricas agregadas, revertê-lo e registrar como "meta-discard" no osforge-db.
+If a meta-adjustment **worsens** the aggregate metrics, revert it and record it as "meta-discard" in osforge-db.
 ---
 
-## 🔄 Transferência Cross-Domínio (v3 — Ideia B: Knowledge Propagation)
+## 🔄 Cross-Domain Transfer (v3 — Idea B: Knowledge Propagation)
 
-> Inspirado no multi-domain evaluation do HyperAgents: validar que melhorias
-> transferem entre contextos similares. Uma otimização que funciona num projeto
-> não deve morrer ali — deve propagar para projetos do mesmo domínio.
+> Inspired by HyperAgents' multi-domain evaluation: validate that improvements
+> transfer across similar contexts. An optimization that works in one project
+> should not die there — it should propagate to projects in the same domain.
 
-### Conceito
+### Concept
 
-Quando uma hipótese é KEEP com delta significativo, o AutoRefine avalia se ela é **generalizável** — se o insight subjacente se aplica a outros projetos do mesmo domínio. Se sim, marca como `transfer-candidate` no osforge-db. Na próxima sessão de autorefine num projeto similar, essas hipóteses aparecem como **sugestões prioritárias** (já validadas em outro contexto).
+When a hypothesis is KEEP with a significant delta, AutoRefine assesses whether it is **generalizable** — whether the underlying insight applies to other projects in the same domain. If so, it marks it as `transfer-candidate` in osforge-db. In the next autorefine session on a similar project, these hypotheses appear as **priority suggestions** (already validated in another context).
 
-### Taxonomia de domínios
+### Domain taxonomy
 
-| Domínio | Identificadores | Exemplos de artefatos |
+| Domain | Identifiers | Artifact examples |
 |---|---|---|
-| `nextjs-frontend` | Next.js, React, Tailwind, componentes | `src/components/`, `src/app/` |
+| `nextjs-frontend` | Next.js, React, Tailwind, components | `src/components/`, `src/app/` |
 | `api-backend` | API routes, tRPC, Prisma, endpoints | `src/server/`, `src/api/` |
 | `database` | Prisma schema, migrations, queries | `prisma/schema.prisma` |
 | `devops` | Docker, CI/CD, deploy, infra | `Dockerfile`, `.github/workflows/` |
-| `skill-osforge` | SKILL.md do OSForge | `skills/*/SKILL.md` |
+| `skill-osforge` | OSForge SKILL.md | `skills/*/SKILL.md` |
 | `prompt-eng` | Prompts, system messages, templates | `prompts/`, `*.prompt.md` |
 | `config` | Configs, env, settings | `*.config.*`, `.env*` |
-| `docs` | Documentação, READMEs, specs | `docs/`, `*.md` |
+| `docs` | Documentation, READMEs, specs | `docs/`, `*.md` |
 
-O domínio é inferido automaticamente pelo path e conteúdo do artefato. Se ambíguo, perguntar ao usuário.
-### Critérios de elegibilidade para transferência
+The domain is inferred automatically from the artifact's path and content. If ambiguous, ask the user.
+### Transfer eligibility criteria
 
-Uma hipótese KEEP é elegível para transferência se **todas** as condições forem verdadeiras:
+A KEEP hypothesis is eligible for transfer if **all** conditions are true:
 
-| Critério | Razão |
+| Criterion | Reason |
 |---|---|
-| Delta ≥ 1.5% (higher-is-better) ou ≥ 1.5% redução (lower-is-better) | Melhoria deve ser significativa, não ruído |
-| Guard passou sem REWORK | Se precisou de REWORK, a hipótese tem edge cases |
-| A hipótese é **sobre o padrão**, não sobre o artefato específico | "Adicionar tipos explícitos" transfere; "Renomear variável X para Y" não |
-| O domínio do artefato está na taxonomia | Precisa de classificação para matching |
+| Delta ≥ 1.5% (higher-is-better) or ≥ 1.5% reduction (lower-is-better) | Improvement must be significant, not noise |
+| Guard passed without REWORK | If REWORK was needed, the hypothesis has edge cases |
+| The hypothesis is **about the pattern**, not the specific artifact | "Add explicit types" transfers; "Rename variable X to Y" does not |
+| The artifact's domain is in the taxonomy | Classification is needed for matching |
 
-### Avaliação de generalização [sonnet]
+### Generalization assessment [sonnet]
 
-Para cada hipótese KEEP elegível, o agente responde:
+For each eligible KEEP hypothesis, the agent answers:
 
 ```
-Hipótese: "adicionar code blocks com exemplos para cada padrão"
-Artefato original: skills/frontend-design/SKILL.md
-Domínio: skill-osforge
+Hypothesis: "add code blocks with examples for each pattern"
+Original artifact: skills/frontend-design/SKILL.md
+Domain: skill-osforge
 
-Perguntas de generalização:
-1. Esta hipótese depende de algo específico deste artefato? → Não
-2. Outros artefatos do domínio "skill-osforge" poderiam se beneficiar? → Sim
-3. A hipótese pode ser formulada genericamente? → "Skills com exemplos de código concretos
-   têm +15-25% de aprovação em prompts de teste"
+Generalization questions:
+1. Does this hypothesis depend on something specific to this artifact? → No
+2. Could other artifacts in the "skill-osforge" domain benefit? → Yes
+3. Can the hypothesis be formulated generically? → "Skills with concrete code examples
+   have +15-25% approval on test prompts"
 
-Decisão: TRANSFER ✅
-Formulação genérica: "Adicionar ≥1 code block por seção de padrão em skills que definem padrões"
-Domínio alvo: skill-osforge
+Decision: TRANSFER ✅
+Generic formulation: "Add ≥1 code block per pattern section in skills that define patterns"
+Target domain: skill-osforge
 ```
-### Registro de transfer-candidates
+### Recording transfer-candidates
 
 ```bash
-# Registrar candidato a transferência
+# Record a transfer candidate
 osforge-db add-decision <project-slug> \
-  "transfer-candidate(<domínio>): <hipótese genérica> — validada em <artefato> (metric +<delta>%, guard pass)" \
+  "transfer-candidate(<domain>): <generic hypothesis> — validated on <artifact> (metric +<delta>%, guard pass)" \
   --category=transfer
 
-# Exemplo real:
-osforge-db add-decision meu-saas \
-  "transfer-candidate(skill-osforge): adicionar ≥1 code block por seção de padrão — validada em skills/frontend-design/SKILL.md (metric +22%, guard pass)" \
+# Real example:
+osforge-db add-decision my-saas \
+  "transfer-candidate(skill-osforge): add ≥1 code block per pattern section — validated on skills/frontend-design/SKILL.md (metric +22%, guard pass)" \
   --category=transfer
 ```
 
-### Consumo de transfer-candidates (no setup do loop)
+### Consuming transfer-candidates (in the loop setup)
 
-No passo 5 do setup ("Carregar memória"), além de buscar hipóteses falhas, buscar candidatos:
+In setup step 5 ("Load memory"), in addition to searching for failed hypotheses, search for candidates:
 
 ```bash
-# Identificar domínio do artefato atual
-DOMAIN=$(# inferir de path + conteúdo)
+# Identify the current artifact's domain
+DOMAIN=$(# infer from path + content)
 
-# Buscar candidatos de transferência para este domínio
+# Search transfer candidates for this domain
 osforge-db search "transfer-candidate($DOMAIN)" 2>/dev/null
 ```
 
-Se existem candidatos, apresentar ao usuário:
+If candidates exist, present them to the user:
 
 ```
-📦 Hipóteses transferidas de outros projetos (domínio: skill-osforge):
+📦 Hypotheses transferred from other projects (domain: skill-osforge):
 
-1. [+22%] "Adicionar ≥1 code block por seção de padrão"
-   Origem: meu-saas / skills/frontend-design/SKILL.md
+1. [+22%] "Add ≥1 code block per pattern section"
+   Origin: my-saas / skills/frontend-design/SKILL.md
    
-2. [+18%] "Incluir seção de anti-patterns com exemplos do que NÃO fazer"
-   Origem: outro-projeto / skills/api-design/SKILL.md
+2. [+18%] "Include an anti-patterns section with examples of what NOT to do"
+   Origin: other-project / skills/api-design/SKILL.md
 
-Deseja usar alguma como hipótese prioritária? (y/N)
+Would you like to use any as a priority hypothesis? (y/N)
 ```
 
-Hipóteses transferidas entram como **primeiras iterações** do loop (antes das hipóteses novas), pois já têm validação prévia.
-### Validação de transferência
+Transferred hypotheses enter as the **first iterations** of the loop (before new hypotheses), since they already have prior validation.
+### Transfer validation
 
-Uma hipótese transferida ainda precisa passar pelo loop normal (verify + guard). Possíveis resultados:
+A transferred hypothesis still needs to pass the normal loop (verify + guard). Possible results:
 
-| Resultado no novo projeto | Ação |
+| Result in the new project | Action |
 |---|---|
-| KEEP com delta similar (±30% do original) | **TRANSFER CONFIRMED** — registrar como validação cross-project |
-| KEEP com delta menor | **PARTIAL TRANSFER** — funciona mas com menos impacto |
-| DISCARD | **TRANSFER FAILED** — o padrão não generaliza para este contexto |
+| KEEP with a similar delta (±30% of the original) | **TRANSFER CONFIRMED** — record as cross-project validation |
+| KEEP with a smaller delta | **PARTIAL TRANSFER** — works but with less impact |
+| DISCARD | **TRANSFER FAILED** — the pattern does not generalize to this context |
 
 ```bash
-# Registrar resultado da transferência
-osforge-db add-decision <novo-project-slug> \
-  "transfer-result(<domínio>): <CONFIRMED|PARTIAL|FAILED> — '<hipótese>' de <projeto-origem> → delta <original> vs <atual>" \
+# Record the transfer result
+osforge-db add-decision <new-project-slug> \
+  "transfer-result(<domain>): <CONFIRMED|PARTIAL|FAILED> — '<hypothesis>' from <origin-project> → delta <original> vs <current>" \
   --category=transfer
 ```
 
-### Maturidade de transfer-candidates
+### Transfer-candidate maturity
 
-Conforme um candidato é testado em mais projetos, sua confiança cresce:
+As a candidate is tested in more projects, its confidence grows:
 
-| Validações | Status | Comportamento |
+| Validations | Status | Behavior |
 |---|---|---|
-| 1 (origem) | 🟡 candidate | Sugerido com "experimental" |
-| 2 (1 confirmação) | 🟢 validated | Sugerido como "recomendado" |
-| 3+ (múltiplas confirmações) | 🔵 proven | Auto-aplicado se `--auto-transfer` estiver ativo |
-| 1+ FAILED sem CONFIRMED | 🔴 revoked | Removido das sugestões |
+| 1 (origin) | 🟡 candidate | Suggested as "experimental" |
+| 2 (1 confirmation) | 🟢 validated | Suggested as "recommended" |
+| 3+ (multiple confirmations) | 🔵 proven | Auto-applied if `--auto-transfer` is active |
+| 1+ FAILED without CONFIRMED | 🔴 revoked | Removed from suggestions |
 
 ```bash
-# Consultar maturidade de um candidato
-osforge-db search "transfer-result" 2>/dev/null | grep "<hipótese>" | \
+# Query a candidate's maturity
+osforge-db search "transfer-result" 2>/dev/null | grep "<hypothesis>" | \
   awk '{confirmed+=/CONFIRMED/; failed+=/FAILED/} END {print confirmed, failed}'
 ```
 
-Candidatos `proven` (3+ validações) podem ser promovidos a **regras de ferro** ou **gotchas** neste SKILL.md pelo meta-review (Ideia A), fechando o ciclo A↔B.
+`proven` candidates (3+ validations) can be promoted to **iron rules** or **gotchas** in this SKILL.md by the meta-review (Idea A), closing the A↔B cycle.
 ---
 
-## Relatório final
+## Final report
 
-Ao encerrar o loop:
+When ending the loop:
 
 ```
-## AutoRefine v3 — Resultado Final
+## AutoRefine v3 — Final Result
 
-Artefato: <nome>
-Modo: Skill | Genérico
-Domínio: <domínio da taxonomia>
-Iterações: N/budget
-Métrica: <inicial> → <final> (delta: +X, melhoria: Y%)
+Artifact: <name>
+Mode: Skill | Generic
+Domain: <taxonomy domain>
+Iterations: N/budget
+Metric: <initial> → <final> (delta: +X, improvement: Y%)
 Guard: <N> passes, <M> fails, <K> reworks
 
-### Hipóteses que funcionaram (KEEP)
-| # | Hipótese | Delta | Guard | Transfer |
+### Hypotheses that worked (KEEP)
+| # | Hypothesis | Delta | Guard | Transfer |
 |---|----------|-------|-------|----------|
-| 1 | <descrição> | +1.9 | pass | ✅ eligible |
-| 3 | <descrição> | +2.2 | pass | ✅ eligible |
-| 4b | <descrição> | +1.5 | pass | ❌ specific |
+| 1 | <description> | +1.9 | pass | ✅ eligible |
+| 3 | <description> | +2.2 | pass | ✅ eligible |
+| 4b | <description> | +1.5 | pass | ❌ specific |
 
-### Hipóteses que falharam (DISCARD)
-| # | Hipótese | Razão |
+### Hypotheses that failed (DISCARD)
+| # | Hypothesis | Reason |
 |---|----------|-------|
-| 2 | <descrição> | sem melhoria mensurável |
-| 4 | <descrição> | guard failure (testes quebraram) |
+| 2 | <description> | no measurable improvement |
+| 4 | <description> | guard failure (tests broke) |
 
-### Transferências aplicadas nesta sessão
-| Hipótese | Origem | Delta original | Delta aqui | Status |
+### Transfers applied in this session
+| Hypothesis | Origin | Original delta | Delta here | Status |
 |---|---|---|---|---|
-| <descrição> | <projeto> | +22% | +19% | CONFIRMED |
+| <description> | <project> | +22% | +19% | CONFIRMED |
 
-### Candidatos a transferência gerados
-| Hipótese genérica | Domínio | Delta |
+### Transfer candidates generated
+| Generic hypothesis | Domain | Delta |
 |---|---|---|
-| <descrição> | skill-osforge | +2.2 |
-### Memória persistida
-- <N> decisões registradas em osforge-db
-- <M> candidatos a transferência marcados
-- Próxima sessão consultará hipóteses falhas + transfer-candidates automaticamente
-- Meta-review elegível? <sim/não> (sessões: X/10, hipóteses: Y/50)
+| <description> | skill-osforge | +2.2 |
+### Persisted memory
+- <N> decisions recorded in osforge-db
+- <M> transfer candidates marked
+- The next session will query failed hypotheses + transfer-candidates automatically
+- Meta-review eligible? <yes/no> (sessions: X/10, hypotheses: Y/50)
 
-### Próximos passos sugeridos
-- <sugestão baseada nos padrões observados>
-- <sugestão de transfer-candidates a testar em outros projetos>
+### Suggested next steps
+- <suggestion based on observed patterns>
+- <suggestion of transfer-candidates to test in other projects>
 ```
 
-Ofereça fazer commit com mensagem convencional:
+Offer to commit with a conventional message:
 ```
-refine(<escopo>): autorefine <artefato> — N iterações, metric +X%, <M> transfers
+refine(<scope>): autorefine <artifact> — N iterations, metric +X%, <M> transfers
 ```
 
-Aguarde aprovação explícita antes de commitar.
+Wait for explicit approval before committing.
 
 ---
 
 ## Gotchas
 
-### Modificar muita coisa por iteração
-O loop funciona com hipóteses atômicas. Reescrever o artefato inteiro em uma iteração torna impossível saber o que causou melhoria ou regressão.
+### Modifying too much per iteration
+The loop works with atomic hypotheses. Rewriting the entire artifact in a single iteration makes it impossible to know what caused improvement or regression.
 
-### Verify sem Guard
-Otimizar uma métrica sem guard é como correr sem freio — a métrica melhora mas o resto quebra. Sempre definir um guard, mesmo que simples (`bun test` ou `tsc --noEmit`).
+### Verify without Guard
+Optimizing a metric without a guard is like driving without brakes — the metric improves but everything else breaks. Always define a guard, even a simple one (`bun test` or `tsc --noEmit`).
 
-### Repetir hipóteses falhas
-Sem memória cross-sessão, o agente repete as mesmas hipóteses que já falharam. Sempre consultar `osforge-db search "autorefine <artefato>"` antes de formular hipóteses.
+### Repeating failed hypotheses
+Without cross-session memory, the agent repeats the same hypotheses that already failed. Always query `osforge-db search "autorefine <artifact>"` before formulating hypotheses.
 
-### Não fazer snapshot antes
-O snapshot é obrigatório. Sem ele, não há como reverter à versão original.
-### Critério de sucesso vago
-"Ficar melhor" não é critério. O critério precisa ser mecânico e binário — um comando que retorna um número ou pass/fail.
+### Not taking a snapshot first
+The snapshot is mandatory. Without it, there is no way to revert to the original version.
+### Vague success criterion
+"Get better" is not a criterion. The criterion must be mechanical and binary — a command that returns a number or pass/fail.
 
-### Avaliar com Haiku
-A decisão KEEP/DISCARD deve usar Sonnet. Haiku gera modificações; Sonnet julga resultados.
+### Evaluating with Haiku
+The KEEP/DISCARD decision must use Sonnet. Haiku generates modifications; Sonnet judges results.
 
-### Guard files no scope de modificação
-Arquivos usados pelo guard NUNCA podem estar no scope de modificação. Se o guard é `bun test`, os arquivos de teste são read-only.
+### Guard files in the modification scope
+Files used by the guard can NEVER be in the modification scope. If the guard is `bun test`, the test files are read-only.
 
-### (v3) Transferir hipóteses sem verificar domínio
-Uma hipótese de `nextjs-frontend` não transfere para `database`. Sempre verificar compatibilidade de domínio antes de sugerir transferência.
+### (v3) Transferring hypotheses without checking the domain
+A `nextjs-frontend` hypothesis does not transfer to `database`. Always check domain compatibility before suggesting a transfer.
 
-### (v3) Auto-aplicar meta-ajustes sem aprovação
-Meta-otimização muda o próprio processo de melhoria. **Sempre** apresentar propostas ao usuário. Nunca modificar o SKILL.md automaticamente.
+### (v3) Auto-applying meta-adjustments without approval
+Meta-optimization changes the improvement process itself. **Always** present proposals to the user. Never modify the SKILL.md automatically.
 
-### (v3) Confiar em transfer-candidates com 1 validação
-Um candidato com 1 validação é 🟡 experimental. Precisa de 2+ confirmações cross-project para ser 🟢 validated. Não tratar como regra até ter evidência suficiente.
+### (v3) Trusting transfer-candidates with 1 validation
+A candidate with 1 validation is 🟡 experimental. It needs 2+ cross-project confirmations to be 🟢 validated. Do not treat it as a rule until there is sufficient evidence.
 
 ---
 
-## Ciclo completo A ↔ B
+## Full A ↔ B cycle
 
 ```
-Sessão de autorefine
-  → Hipóteses KEEP com delta significativo
-    → Avaliação de generalização [Ideia B]
-      → transfer-candidate no osforge-db
-        → Próxima sessão em outro projeto do mesmo domínio
-          → Hipótese transferida como prioritária
-            → Validação: CONFIRMED / PARTIAL / FAILED
-              → Candidato maduro (proven) após 3+ confirmações
-                → Meta-review [Ideia A] promove a proven pattern
-                  → Nova regra de ferro ou gotcha neste SKILL.md
-                    → Todas as futuras sessões se beneficiam
+Autorefine session
+  → KEEP hypotheses with a significant delta
+    → Generalization assessment [Idea B]
+      → transfer-candidate in osforge-db
+        → Next session in another project of the same domain
+          → Transferred hypothesis as priority
+            → Validation: CONFIRMED / PARTIAL / FAILED
+              → Mature candidate (proven) after 3+ confirmations
+                → Meta-review [Idea A] promotes it to a proven pattern
+                  → New iron rule or gotcha in this SKILL.md
+                    → All future sessions benefit
 ```
 
-As duas ideias se retroalimentam: **B gera dados** (transfer results), **A analisa esses dados** (meta-review) e **cristaliza os padrões** (ajusta o SKILL.md). O OSForge fica mais inteligente a cada sessão de autorefine, em qualquer projeto.
+The two ideas feed each other: **B generates data** (transfer results), **A analyzes that data** (meta-review) and **crystallizes the patterns** (adjusts the SKILL.md). OSForge gets smarter with every autorefine session, in any project.

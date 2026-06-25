@@ -387,31 +387,31 @@ For deeper guidance on specific areas:
 
 ---
 
-## Convergência Distribucional (Meta-Awareness)
+## Distributional Convergence (Meta-Awareness)
 
-> LLMs convergem para designs genéricos porque tokens de alta probabilidade dominam o sampling.
-> Fontes "seguras", paletas "universais" e layouts "que funcionam para tudo" são overrepresented
-> nos dados de treinamento. Esta skill existe para **quebrar essa convergência**. Cada design DEVE
-> ser uma expressão única do contexto — não uma variação do centro estatístico.
+> LLMs converge toward generic designs because high-probability tokens dominate sampling.
+> "Safe" fonts, "universal" palettes, and "works-for-everything" layouts are overrepresented
+> in the training data. This skill exists to **break that convergence**. Every design MUST
+> be a unique expression of the context — not a variation of the statistical center.
 
-### Anti-Convergência de Segunda Ordem
+### Second-Order Anti-Convergence
 
-Ao escapar dos defaults óbvios (Inter, roxo, bento grid), o modelo tende a convergir para
-um NOVO set de defaults: Space Grotesk, deep cyan, glassmorphism padrão. Isso é **convergência
-de segunda ordem** — igualmente genérico, apenas menos óbvio.
+When escaping the obvious defaults (Inter, purple, bento grid), the model tends to converge on
+a NEW set of defaults: Space Grotesk, deep cyan, standard glassmorphism. This is **second-order
+convergence** — equally generic, just less obvious.
 
-**Regra:** Se você já usou uma fonte/cor/layout em uma geração anterior NESTA SESSÃO,
-não repita. Cada output deve ser esteticamente distinto do anterior.
+**Rule:** If you already used a font/color/layout in a previous generation IN THIS SESSION,
+do not repeat it. Each output must be aesthetically distinct from the previous one.
 
-### Complexity Matching (OBRIGATÓRIO)
+### Complexity Matching (MANDATORY)
 
-A complexidade do código DEVE espelhar a visão estética:
-- **Maximalist designs** → código elaborado, animações extensas, efeitos em camada
-- **Minimalist designs** → restraint extremo, precisão em spacing/tipografia, detalhes sutis
-- **NUNCA:** design minimalista com código complexo desnecessário, ou design ambicioso com código lazy
-- Elegância vem de executar a visão com precisão, não de intensidade
+Code complexity MUST mirror the aesthetic vision:
+- **Maximalist designs** → elaborate code, extensive animations, layered effects
+- **Minimalist designs** → extreme restraint, precision in spacing/typography, subtle details
+- **NEVER:** a minimalist design with unnecessary complex code, or an ambitious design with lazy code
+- Elegance comes from executing the vision with precision, not from intensity
 
-> **Inspiração teórica:** [Anthropic Blog — Improving Frontend Design Through Skills](https://claude.com/blog/improving-frontend-design-through-skills)
+> **Theoretical inspiration:** [Anthropic Blog — Improving Frontend Design Through Skills](https://claude.com/blog/improving-frontend-design-through-skills)
 
 ---
 

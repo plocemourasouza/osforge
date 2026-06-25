@@ -1,12 +1,12 @@
 # Requirements Clarify
 
-**Trigger:** clarificar requisitos, requirements clarification, ambiguous, spec vagas
+**Trigger:** clarify requirements, requirements clarification, ambiguous, vague specs
 
 ---
 
 ## Purpose
 
-Clarificação estruturada por dimensões de cobertura ANTES do plano técnico. Máximo 8-10 perguntas priorizadas por impacto.
+Structured clarification by coverage dimensions BEFORE the technical plan. Maximum 8-10 questions prioritized by impact.
 
 ---
 

@@ -1,12 +1,12 @@
 # Visual Planner (Plan → Interactive HTML)
 
-**Trigger:** Visualizar plano, breakdown visual, transformar spec em HTML, apresentar PRD visualmente, gerar HTML interativo, tornar spec mais fácil de seguir.
+**Trigger:** visualize plan, visual breakdown, turn a spec into HTML, present a PRD visually, generate interactive HTML, make a spec easier to follow.
 
 ---
 
 ## Purpose
 
-Camada de apresentação do pipeline de planejamento. Transforma qualquer documento de planejamento em um breakdown HTML single-page interativo.
+Presentation layer of the planning pipeline. Turns any planning document into an interactive single-page HTML breakdown.
 
 ---
 

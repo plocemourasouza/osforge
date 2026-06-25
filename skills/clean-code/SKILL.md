@@ -1,6 +1,6 @@
 ---
 name: clean-code
-description: "Padrões pragmáticos de código limpo: conciso, direto, sem over-engineering e sem comentários desnecessários. ACIONE quando: código over-engineered ou com abstrações prematuras, pedido para simplifica isso, revisar nomes/funções/estrutura, função gigante ou aninhamento profundo demais, remover comentários redundantes e código morto. Keywords: clean code, código limpo, refactor, simplificar, SRP, DRY, KISS, YAGNI, naming, over-engineering. Não acione para: decisões de arquitetura de sistema, otimização de performance ou estratégia de testes."
+description: "Pragmatic clean-code standards: concise, direct, no over-engineering, and no unnecessary comments. Use when: code is over-engineered or has premature abstractions, a request to 'simplify this', reviewing names/functions/structure, a giant function or excessively deep nesting, removing redundant comments and dead code. Keywords: clean code, refactor, simplify, SRP, DRY, KISS, YAGNI, naming, over-engineering. Do NOT use for: system architecture decisions, performance optimization, or testing strategy."
 metadata:
   author: antigravity-kit (adapted)
   version: "2.0"

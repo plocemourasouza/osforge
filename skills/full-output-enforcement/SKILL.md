@@ -1,6 +1,6 @@
 ---
 name: full-output-enforcement
-description: "Regra base anti-truncamento: proíbe placeholders e omissões, exige geração completa de cada deliverable e gerencia splits por limite de token com marcador PAUSED. ACIONE quando: resposta veio truncada, código saiu com // ... ou rest of code, usuário pede o arquivo completo ou me dá tudo sem resumir, gerar muitos arquivos/componentes de uma vez, output longo que ameaça cortar no meio. Keywords: truncado, placeholder, completo, full output, continuar, token limit, unabridged, sem cortar, skeleton, omitido. Não acione para: a camada OSForge que adiciona verification gate e proteção TDD sobre esta base — isso é output-enforcement, que compõe sobre esta skill upstream."
+description: "Anti-truncation base rule: forbids placeholders and omissions, requires complete generation of every deliverable, and manages token-limit splits with a PAUSED marker. Use when: a response came back truncated, code came out with // ... or rest of code, the user asks for the complete file or says give me everything without summarizing, generating many files/components at once, long output that threatens to cut off mid-stream. Keywords: truncated, placeholder, complete, full output, continue, token limit, unabridged, no cutting, skeleton, omitted. Do NOT use for: the OSForge layer that adds a verification gate and TDD protection on top of this base — that is output-enforcement, which composes over this upstream skill."
 ---
 
 # Full-Output Enforcement

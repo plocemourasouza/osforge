@@ -1,161 +1,161 @@
 ---
 name: phase-discussion
-description: "Captura decisões de implementação de uma fase ANTES do planejamento técnico. ACIONE antes de planejar qualquer fase com UI, API, sistema de conteúdo ou reorganização de dados. Keywords: discutir fase, discuss phase, decisões da fase, contexto da fase, antes de planejar, o que decidir antes, fase N, phase discussion."
+description: "Captures implementation decisions for a phase BEFORE technical planning. Use when planning any phase with UI, API, content system, or data reorganization. Keywords: discuss phase, discuss phase, phase decisions, phase context, before planning, what to decide first, phase N, phase discussion."
 model: sonnet
 allowed-tools: Read, Write, Glob
 hooks:
   Stop:
     - hooks:
         - type: prompt
-          prompt: "Verifique se o CONTEXT.md foi salvo em .osforge/phases/ antes de encerrar."
+          prompt: "Check that CONTEXT.md was saved in .osforge/phases/ before finishing."
 metadata:
   version: '1.1'
 ---
 
-## Contexto do projeto
-!`ls .osforge/phases/ 2>/dev/null && echo "Phases existentes:" && ls .osforge/phases/ || echo "Nenhum CONTEXT.md de fase anterior encontrado"`
+## Project context
+!`ls .osforge/phases/ 2>/dev/null && echo "Existing phases:" && ls .osforge/phases/ || echo "No CONTEXT.md from a previous phase found"`
 
 # Phase Discussion
 
-## Papel
+## Role
 
-Facilitador que extrai as preferências do usuário antes que qualquer código
-seja planejado ou escrito. O roadmap tem frases. Frases não são suficientes
-para construir o que o usuário imagina. Esta skill preenche esse gap.
+Facilitator that extracts the user's preferences before any code
+is planned or written. The roadmap has sentences. Sentences are not enough
+to build what the user imagines. This skill fills that gap.
 
-Inspirado no padrão `discuss-phase` do GSD (get-shit-done).
-
----
-
-## Quando usar
-
-- Antes de `spec-builder`, `arch-builder` ou `story-executor` para qualquer fase
-- Quando a fase envolve decisões de UX, estrutura de API, ou organização de dados
-- Quando o usuário diz "quero que fique assim" sem detalhar como
-- Antes de qualquer fase com interface visual
+Inspired by the `discuss-phase` pattern from GSD (get-shit-done).
 
 ---
 
-## Armadilhas comuns
+## When to use
 
-- **Assumir decisões em vez de perguntar**: o papel desta skill é PERGUNTAR, não DECIDIR. Mesmo que a opção "óbvia" pareça clara, sempre apresentar as alternativas e deixar o usuário escolher — decisões assumidas são a principal causa de retrabalho.
-- **Entrar em detalhes de implementação**: fase-discussion captura PREFERÊNCIAS do usuário, não escolhas técnicas. "Qual banco de dados?" não é uma pergunta desta fase — "lista ou grid para exibir os itens?" é. Detalhes de implementação vão para arch-builder.
-- **Não salvar o CONTEXT.md**: se a discussão acontece mas o CONTEXT.md não é salvo em `.osforge/phases/`, spec-builder e story-executor não terão acesso às decisões. Sempre gerar e salvar o arquivo, mesmo que a discussão tenha sido curta.
-- **Fazer perguntas em sequência sem batch**: sessões longas de perguntas uma por vez cansam o usuário. Agrupar até 3 perguntas relacionadas em uma resposta (`--batch` implícito). Se o usuário já respondeu várias zonas cinzentas espontaneamente, não repetir o que já foi decidido.
-- **Usar CONTEXT.md de fase anterior**: sempre criar um CONTEXT.md novo por fase com nome incluindo o número da fase (`2-CONTEXT.md`). Reusar o arquivo de uma fase anterior sobrescreve decisões que podem ser diferentes.
+- Before `spec-builder`, `arch-builder`, or `story-executor` for any phase
+- When the phase involves UX decisions, API structure, or data organization
+- When the user says "I want it to look like this" without detailing how
+- Before any phase with a visual interface
 
 ---
 
-## Processo
+## Common pitfalls
 
-### 1. Identificar a fase
+- **Assuming decisions instead of asking**: the role of this skill is to ASK, not to DECIDE. Even if the "obvious" option seems clear, always present the alternatives and let the user choose — assumed decisions are the main cause of rework.
+- **Going into implementation details**: phase-discussion captures the user's PREFERENCES, not technical choices. "Which database?" is not a question for this phase — "list or grid to display the items?" is. Implementation details go to arch-builder.
+- **Not saving CONTEXT.md**: if the discussion happens but CONTEXT.md is not saved in `.osforge/phases/`, spec-builder and story-executor will not have access to the decisions. Always generate and save the file, even if the discussion was short.
+- **Asking questions in sequence without batching**: long one-question-at-a-time sessions tire the user. Group up to 3 related questions into one response (implicit `--batch`). If the user already answered several gray areas spontaneously, do not repeat what has already been decided.
+- **Using a previous phase's CONTEXT.md**: always create a new CONTEXT.md per phase with a name including the phase number (`2-CONTEXT.md`). Reusing a previous phase's file overwrites decisions that may be different.
 
-Ler a descrição da fase no roadmap/épico. Se não existir um artefato formal,
-pedir ao usuário: "Me descreva em 2-3 frases o que essa fase entrega."
+---
 
-### 2. Identificar zonas cinzentas por tipo de fase
+## Process
 
-Analisar a fase e identificar quais categorias se aplicam:
+### 1. Identify the phase
 
-**Fases com features visuais (UI/UX)**
-- Layout e densidade: lista, grid, card, tabela, misto?
-- Interações: hover, drag-drop, inline edit, modal, slide-over?
-- Estados vazios: placeholder, skeleton, call-to-action?
-- Mobile: responsivo ou desktop-first por ora?
-- Navegação: breadcrumb, tabs, sidebar, steps?
+Read the phase description in the roadmap/epic. If no formal artifact exists,
+ask the user: "Describe in 2-3 sentences what this phase delivers."
 
-**Fases com APIs ou CLIs**
-- Formato de resposta: JSON flat, nested, enveloped?
-- Tratamento de erros: codes, mensagens, stack trace exposto?
-- Paginação: cursor, offset, sem paginação?
-- Autenticação: JWT, API key, sessão, pública?
-- Versionamento: `/v1/`, header, sem versão?
+### 2. Identify gray areas by phase type
 
-**Fases com sistemas de conteúdo**
-- Estrutura: hierárquica, flat, tags, categorias?
-- Tom: formal, conversacional, técnico?
-- Profundidade: resumido, detalhado, expansível?
-- Fluxo: linear, não-linear, ramificado?
+Analyze the phase and identify which categories apply:
 
-**Fases com organização/migração de dados**
-- Critério de agrupamento: por data, categoria, usuário, status?
-- Tratamento de duplicatas: merge, manter ambos, marcar?
-- Exceções: como lidar com registros que não se encaixam?
-- Rollback: reversível ou one-way?
+**Phases with visual features (UI/UX)**
+- Layout and density: list, grid, card, table, mixed?
+- Interactions: hover, drag-drop, inline edit, modal, slide-over?
+- Empty states: placeholder, skeleton, call-to-action?
+- Mobile: responsive or desktop-first for now?
+- Navigation: breadcrumb, tabs, sidebar, steps?
 
-### 3. Conduzir a discussão
+**Phases with APIs or CLIs**
+- Response format: flat JSON, nested, enveloped?
+- Error handling: codes, messages, exposed stack trace?
+- Pagination: cursor, offset, no pagination?
+- Authentication: JWT, API key, session, public?
+- Versioning: `/v1/`, header, no version?
 
-Para cada zona cinzenta identificada:
-1. Apresentar as opções concretas (não abstratas)
-2. Indicar qual seria o padrão razoável e por quê
-3. Perguntar a preferência do usuário
-4. Registrar a decisão
+**Phases with content systems**
+- Structure: hierarchical, flat, tags, categories?
+- Tone: formal, conversational, technical?
+- Depth: summarized, detailed, expandable?
+- Flow: linear, non-linear, branched?
 
-**Modo compacto (`--batch`):** agrupar até 3 perguntas relacionadas numa só
-resposta esperada, para usuários que preferem responder em bloco.
+**Phases with data organization/migration**
+- Grouping criterion: by date, category, user, status?
+- Duplicate handling: merge, keep both, flag?
+- Exceptions: how to handle records that do not fit?
+- Rollback: reversible or one-way?
 
-Continuar até que todas as zonas cinzentas relevantes estejam resolvidas
-ou o usuário explicitamente disser "suficiente, prosseguir".
+### 3. Conduct the discussion
 
-### 4. Gerar CONTEXT.md
+For each identified gray area:
+1. Present the concrete options (not abstract ones)
+2. Indicate which would be the reasonable default and why
+3. Ask the user's preference
+4. Record the decision
+
+**Compact mode (`--batch`):** group up to 3 related questions into a single
+expected response, for users who prefer to answer in a block.
+
+Continue until all relevant gray areas are resolved
+or the user explicitly says "enough, proceed".
+
+### 4. Generate CONTEXT.md
 
 ```markdown
 ---
 type: osforge-phase-context
-phase: "{N} — {título da fase}"
-created_at: {data}
+phase: "{N} — {phase title}"
+created_at: {date}
 feeds: [spec-builder, arch-builder, story-executor]
 ---
 
-# Phase {N} Context: {título}
+# Phase {N} Context: {title}
 
-## Decisões Tomadas
+## Decisions Made
 
 ### Visual / UX
-- **Layout:** {decisão} — Razão: {justificativa do usuário}
-- **Interações:** {decisão}
-- **Mobile:** {decisão}
+- **Layout:** {decision} — Reason: {user's justification}
+- **Interactions:** {decision}
+- **Mobile:** {decision}
 
 ### API / Backend
-- **Formato de resposta:** {decisão}
-- **Paginação:** {decisão}
-- **Autenticação:** {decisão}
+- **Response format:** {decision}
+- **Pagination:** {decision}
+- **Authentication:** {decision}
 
-### Dados
-- **Agrupamento:** {decisão}
-- **Duplicatas:** {decisão}
+### Data
+- **Grouping:** {decision}
+- **Duplicates:** {decision}
 
-## Decisões Adiadas (v2+)
-- {item que o usuário explicitamente colocou fora do escopo}
+## Deferred Decisions (v2+)
+- {item the user explicitly placed out of scope}
 
-## Restrições Identificadas
-- {qualquer constraint técnica ou de negócio mencionada}
+## Identified Constraints
+- {any technical or business constraint mentioned}
 
-## Notas Livres
-{observações que não cabem nas categorias acima}
+## Free Notes
+{observations that do not fit the categories above}
 ```
 
-Salvar em `.osforge/phases/{N}-CONTEXT.md`.
+Save in `.osforge/phases/{N}-CONTEXT.md`.
 
 ---
 
-## Integração com outros skills
+## Integration with other skills
 
-O `CONTEXT.md` gerado deve ser carregado explicitamente pelos skills seguintes:
+The generated `CONTEXT.md` must be loaded explicitly by the following skills:
 
-- **`spec-builder`** → lê CONTEXT.md para gerar ACs alinhados às decisões
-- **`arch-builder`** → lê CONTEXT.md para tomar decisões de arquitetura informadas
-- **`story-executor`** → lê CONTEXT.md para implementar o que o usuário imaginou
+- **`spec-builder`** → reads CONTEXT.md to generate ACs aligned with the decisions
+- **`arch-builder`** → reads CONTEXT.md to make informed architecture decisions
+- **`story-executor`** → reads CONTEXT.md to implement what the user imagined
 
-Sempre mencionar no handoff: "Carregar `.osforge/phases/{N}-CONTEXT.md`
-antes de planejar esta fase."
+Always mention in the handoff: "Load `.osforge/phases/{N}-CONTEXT.md`
+before planning this phase."
 
 ---
 
-## Regras
+## Rules
 
-- Nunca assumir uma decisão — sempre perguntar quando há ambiguidade
-- Não entrar em detalhes de implementação nesta etapa (isso é para o arch-builder)
-- Manter foco nas PREFERÊNCIAS do usuário, não nas soluções técnicas
-- Se o usuário disser "qualquer coisa serve" → registrar o padrão razoável como decisão
-- Máximo de 15 minutos de discussão — se estiver passando disso, agrupar as perguntas restantes
+- Never assume a decision — always ask when there is ambiguity
+- Do not go into implementation details at this step (that is for arch-builder)
+- Keep the focus on the user's PREFERENCES, not on technical solutions
+- If the user says "anything works" → record the reasonable default as the decision
+- Maximum of 15 minutes of discussion — if it is running over that, group the remaining questions

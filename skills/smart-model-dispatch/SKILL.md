@@ -1,6 +1,6 @@
 ---
 name: smart-model-dispatch
-description: "Roteador de modelos Claude. ACIONE quando: spawning de subagents via Agent tool, implementando feature com múltiplas subtasks de complexidade mista, otimizando custo de API, planejando sprint com tarefas paralelas. Keywords: model routing, opus sonnet haiku, cost optimization, smart dispatch, parallel agents, which model, model selection. Trigger on any mention of 'which model', 'use opus', 'use haiku', 'cost', 'dispatch agents'."
+description: "Claude model router. Use when: spawning subagents via Agent tool, implementing a feature with multiple mixed-complexity subtasks, optimizing API cost, planning a sprint with parallel tasks. Keywords: model routing, opus sonnet haiku, cost optimization, smart dispatch, parallel agents, which model, model selection. Trigger on any mention of 'which model', 'use opus', 'use haiku', 'cost', 'dispatch agents'."
 model: sonnet
 allowed-tools: Read, Bash, Glob
 metadata:
@@ -14,7 +14,7 @@ metadata:
 ## Principle
 Use the most powerful model only where reasoning depth matters. Route mechanical tasks to cheaper/faster models. The Agent tool's `model` parameter enables per-subagent model selection.
 
-**Requisito:** esta skill depende do **Agent tool** (spawning de subagents) para funcionar — é ele que aceita o parâmetro `model` e permite rotear cada subtask para o tier certo. Se o Agent tool não estiver disponível no ambiente, não há como despachar para modelos diferentes; nesse caso, apenas recomende o tier adequado para o usuário executar manualmente.
+**Requirement:** this skill depends on the **Agent tool** (subagent spawning) to work — it is what accepts the `model` parameter and lets you route each subtask to the right tier. If the Agent tool is not available in the environment, there is no way to dispatch to different models; in that case, just recommend the appropriate tier for the user to run manually.
 
 ## Model Tiers
 
@@ -70,41 +70,41 @@ Use the most powerful model only where reasoning depth matters. Route mechanical
 
 ### Feature Implementation (Full Stack)
 ```
-"Implementa a feature de Billing para Red Caveat Jus"
+"Implement the Billing feature for Red Caveat Jus"
 
-1. [opus]   planner → decompõe em stories, define arquitetura
-2. [opus]   validator → critica o plano, identifica gaps
-3. [sonnet] backend-engineer → implementa Prisma schema + Server Actions
+1. [opus]   planner → decompose into stories, define architecture
+2. [opus]   validator → critique the plan, identify gaps
+3. [sonnet] backend-engineer → implement Prisma schema + Server Actions
 4. [sonnet] stripe-integration → webhook handler + checkout
 5. [sonnet] frontend-engineer → pricing page + billing portal UI
-6. [haiku]  → gera i18n keys, test stubs, seed data
-7. [sonnet] tdd-workflow → escreve testes de integração
-8. [sonnet] code-reviewer → review final
+6. [haiku]  → generate i18n keys, test stubs, seed data
+7. [sonnet] tdd-workflow → write integration tests
+8. [sonnet] code-reviewer → final review
 ```
 
 ### Bug Fix
 ```
-"Corrige o bug de refresh token no auth"
+"Fix the refresh token bug in auth"
 
-1. [sonnet] debugger → reproduz, analisa, encontra root cause
-2. [sonnet] backend-engineer → implementa fix
-3. [haiku]  → atualiza testes, docs
-4. [sonnet] code-reviewer → review do fix
+1. [sonnet] debugger → reproduce, analyze, find root cause
+2. [sonnet] backend-engineer → implement fix
+3. [haiku]  → update tests, docs
+4. [sonnet] code-reviewer → review the fix
 ```
 
 ### Security Audit
 ```
-"Faz audit de segurança no módulo de pagamentos"
+"Run a security audit on the payments module"
 
 1. [opus]   security-auditor → threat model + attack surface
-2. [opus]   insecure-defaults → scan de fail-open patterns
-3. [sonnet] differential-review → review dos PRs recentes
-4. [haiku]  → gera relatório formatado
+2. [opus]   insecure-defaults → scan for fail-open patterns
+3. [sonnet] differential-review → review recent PRs
+4. [haiku]  → generate formatted report
 ```
 
 ### Parallel Dispatch (with dispatching-parallel-agents)
 ```
-"Implementa 3 endpoints independentes"
+"Implement 3 independent endpoints"
 
 Parallel [sonnet]:
   - Task A: /api/projects endpoint
@@ -153,41 +153,41 @@ The Agent tool accepts a `model` parameter that routes to the specified tier.
 
 ## Local Models Track (via llmfit-advisor)
 
-O OSForge suporta um **track local** via Ollama como alternativa ao track API, especialmente para tarefas Haiku-eligible, dados sensíveis ou clientes sem budget de API.
+OSForge supports a **local track** via Ollama as an alternative to the API track, especially for Haiku-eligible tasks, sensitive data, or clients without an API budget.
 
-Para identificar quais modelos rodam no hardware disponível, use a skill `llmfit-advisor`:
+To identify which models run on the available hardware, use the `llmfit-advisor` skill:
 ```
-Leia skills/llmfit-advisor/SKILL.md
+Read skills/llmfit-advisor/SKILL.md
 ```
 
-### Quando usar local vs API
+### When to use local vs API
 
-| Critério | Local (Ollama) | API (Claude) |
+| Criterion | Local (Ollama) | API (Claude) |
 |---|---|---|
-| Dados sensíveis (LGPD, contábil, jurídico) | ✅ preferir | ⚠️ evitar |
-| Tarefas Haiku-eligible em alto volume | ✅ econômico | 💰 acumula custo |
-| Raciocínio profundo / arquitetura | ❌ sem equivalente | ✅ Opus |
-| Ambiente offline / cliente sem API | ✅ único caminho | ❌ indisponível |
-| Contexto >32K tokens | ⚠️ limitado | ✅ 200K |
-| Latência crítica em produção | ⚠️ depende do HW | ✅ consistente |
+| Sensitive data (LGPD, accounting, legal) | ✅ prefer | ⚠️ avoid |
+| High-volume Haiku-eligible tasks | ✅ economical | 💰 cost accumulates |
+| Deep reasoning / architecture | ❌ no equivalent | ✅ Opus |
+| Offline environment / client without API | ✅ only path | ❌ unavailable |
+| Context >32K tokens | ⚠️ limited | ✅ 200K |
+| Latency-critical in production | ⚠️ depends on HW | ✅ consistent |
 
-### Modelos locais equivalentes por tier
+### Local model equivalents per tier
 
-| Claude API | Equivalente local (use-case: coding) | Equivalente local (use-case: chat) |
+| Claude API | Local equivalent (use-case: coding) | Local equivalent (use-case: chat) |
 |---|---|---|
-| Haiku (mecânico) | `qwen2.5-coder:7b` / `phi4-mini` | `gemma2:9b` / `mistral:7b` |
-| Sonnet (implementação) | `qwen2.5-coder:14b` / `llama3.1:8b` | `llama3.3:70b` (se HW suportar) |
-| Opus (raciocínio) | `deepseek-r1:32b` (parcial) | Sem equivalente completo |
+| Haiku (mechanical) | `qwen2.5-coder:7b` / `phi4-mini` | `gemma2:9b` / `mistral:7b` |
+| Sonnet (implementation) | `qwen2.5-coder:14b` / `llama3.1:8b` | `llama3.3:70b` (if HW supports it) |
+| Opus (reasoning) | `deepseek-r1:32b` (partial) | No full equivalent |
 
-> Para saber qual modelo cabe no hardware real: `llmfit recommend --json --use-case coding --limit 3`
+> To find out which model fits the actual hardware: `llmfit recommend --json --use-case coding --limit 3`
 
 ---
 
 ## Gotchas
 
-- **Haiku com ambiguidade**: nunca use Haiku em tasks com requisitos vagos ou ambíguos — Haiku não lida bem com ambiguidade. Se os requisitos não estiverem 100% claros, use Sonnet ou clarifique antes de despachar.
-- **Não agrupe tarefas Haiku**: chame Haiku uma vez com todas as tarefas mecânicas em batch em vez de múltiplas chamadas individuais. Múltiplas chamadas isoladas acumulam overhead de context loading.
-- **Opus para review é desperdício**: Code review e debugging têm boa qualidade com Sonnet. Reservar Opus só para planejamento arquitetural, threat modeling e decisões com alta ambiguidade. Usar Opus para review = 3x o custo sem ganho proporcional.
-- **Não escalar cedo demais**: se Sonnet produziu resultado insatisfatório, verifique se o problema é de clareza do prompt antes de escalar para Opus. Prompts vagos geram resultados ruins em qualquer tier.
-- **Não downgrade em security**: security-auditor e threat modeling SEMPRE usam Opus, sem exceção — erros de segurança têm custo muito maior que o custo de API.
-- **Batch Haiku tasks**: agrupar todas as tarefas mecânicas (i18n + test stubs + docs + boilerplate) em um único subagent Haiku em vez de N subagents separados.
+- **Haiku with ambiguity**: never use Haiku on tasks with vague or ambiguous requirements — Haiku does not handle ambiguity well. If the requirements are not 100% clear, use Sonnet or clarify before dispatching.
+- **Do not split up Haiku tasks**: call Haiku once with all mechanical tasks batched instead of multiple individual calls. Multiple isolated calls accumulate context-loading overhead.
+- **Opus for review is wasteful**: code review and debugging are good quality with Sonnet. Reserve Opus only for architectural planning, threat modeling, and high-ambiguity decisions. Using Opus for review = 3x the cost with no proportional gain.
+- **Do not escalate too early**: if Sonnet produced an unsatisfactory result, check whether the problem is prompt clarity before escalating to Opus. Vague prompts produce poor results at any tier.
+- **Do not downgrade on security**: security-auditor and threat modeling ALWAYS use Opus, no exception — security mistakes cost far more than the API cost.
+- **Batch Haiku tasks**: group all mechanical tasks (i18n + test stubs + docs + boilerplate) into a single Haiku subagent instead of N separate subagents.

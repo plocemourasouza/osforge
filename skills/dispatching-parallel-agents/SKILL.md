@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: "Orquestra tasks paralelas em subagents independentes. ACIONE quando: 2+ tasks sem estado compartilhado, refatoração em múltiplos arquivos não relacionados, decomposição revela trabalho paralelizável, ou tasks com dependências parciais. Keywords: parallel, wave, dispatch, parallel agents, multiple tasks, independent, subagents."
+description: "Orchestrates parallel tasks across independent subagents. Use when: 2+ tasks with no shared state, refactoring across multiple unrelated files, decomposition reveals parallelizable work, or tasks with partial dependencies. Keywords: parallel, wave, dispatch, parallel agents, multiple tasks, independent, subagents."
 model: sonnet
 allowed-tools: Read, Bash, Glob, Grep
 metadata:
@@ -155,17 +155,17 @@ WAVE 1 (parallel)           WAVE 2 (parallel)        WAVE 3
 
 ### YAML-driven wave assembly (machine-readable plans)
 
-Quando o plano de tasks contém blocos YAML com os campos `id`, `depends_on`, `wave` e `parallel_ok`, as waves DEVEM ser montadas a partir desses dados — não inferidas da prosa.
+When the task plan contains YAML blocks with the fields `id`, `depends_on`, `wave`, and `parallel_ok`, the waves MUST be assembled from that data — not inferred from prose.
 
-**Algoritmo de leitura:**
+**Reading algorithm:**
 
-1. Coletar todos os blocos YAML do `tasks.md`.
-2. Agrupar por `wave` (número inteiro).
-3. Dentro de cada wave, separar tasks com `parallel_ok: true` (paralelizáveis) das com `parallel_ok: false` (sequenciais dentro da wave).
-4. Verificar que `depends_on` de cada task aponta para tasks em waves anteriores (consistência).
-5. Despachar cada wave completa antes de iniciar a próxima.
+1. Collect all YAML blocks from `tasks.md`.
+2. Group by `wave` (integer number).
+3. Within each wave, separate tasks with `parallel_ok: true` (parallelizable) from those with `parallel_ok: false` (sequential within the wave).
+4. Verify that each task's `depends_on` points to tasks in earlier waves (consistency).
+5. Dispatch each complete wave before starting the next.
 
-**Exemplo — leitura de YAML para Wave Execution Plan:**
+**Example — reading YAML for a Wave Execution Plan:**
 
 ```yaml
 # tasks.md (excerto de blocos YAML)
@@ -190,15 +190,15 @@ Quando o plano de tasks contém blocos YAML com os campos `id`, `depends_on`, `w
   parallel_ok: true
 ```
 
-Resultado do dispatch:
+Dispatch result:
 
 ```
-Wave 1 → despachar T1 (sozinho)
-Wave 2 → despachar T2 + T3 em paralelo (ambos parallel_ok: true)
-Wave 3 → despachar T4 após T2 e T3 concluírem
+Wave 1 → dispatch T1 (alone)
+Wave 2 → dispatch T2 + T3 in parallel (both parallel_ok: true)
+Wave 3 → dispatch T4 after T2 and T3 complete
 ```
 
-**Fallback (planos sem YAML):** se nenhum bloco YAML for encontrado, inferir waves a partir da prosa e dos campos `Depends on:` de cada task (comportamento anterior). Documentar que o plano não é machine-readable e sugerir adição do YAML.
+**Fallback (plans without YAML):** if no YAML block is found, infer waves from the prose and the `Depends on:` fields of each task (previous behavior). Document that the plan is not machine-readable and suggest adding the YAML.
 
 ### When to use waves vs flat parallel
 
@@ -223,9 +223,9 @@ This keeps each agent fast and focused — no accumulated context degradation.
 
 ## Gotchas
 
-- **Tasks que modificam o mesmo arquivo em paralelo**: se duas tasks precisam editar `prisma/schema.prisma` ou o mesmo componente, NÃO as paralelize — coloque-as sequenciais ou coordene via sections não sobrepostas. Conflito de merge é garantido.
-- **Não fornecer tipos/interfaces compartilhadas**: cada agente paralelo recebe contexto mínimo. Se Tasks B e C dependem de um tipo criado por Task A, passe esse tipo explicitamente no prompt de B e C — eles não compartilham contexto entre si.
-- **Mais de 5 tasks paralelas**: overhead de coordenação supera o benefício acima de 5 tasks simultâneas. Se precisar de mais, agrupe em waves de no máximo 5.
-- **Dependência implícita**: "tarefa de seed data" parece independente mas depende de migrations completas. Mapeie dependências antes de paralelizar — cada wave deve documentar dependências explicitamente.
-- **Não verificar integração pós-merge**: agents paralelos podem produzir interfaces incompatíveis entre si. Sempre rodar `bun tsc --noEmit` e integration tests após merge das tasks paralelas.
-- **Wave 1 com schema**: se Wave 1 tem tasks em `prisma/schema.prisma`, cada agent deve trabalhar apenas no seu bloco de models sem tocar os blocos alheios — ou fazer o schema sempre sequencial.
+- **Tasks that modify the same file in parallel**: if two tasks need to edit `prisma/schema.prisma` or the same component, do NOT parallelize them — make them sequential or coordinate via non-overlapping sections. A merge conflict is guaranteed.
+- **Not providing shared types/interfaces**: each parallel agent receives minimal context. If Tasks B and C depend on a type created by Task A, pass that type explicitly in the prompts for B and C — they do not share context with each other.
+- **More than 5 parallel tasks**: coordination overhead exceeds the benefit above 5 simultaneous tasks. If you need more, group them into waves of at most 5.
+- **Implicit dependency**: a "seed data task" looks independent but depends on completed migrations. Map dependencies before parallelizing — each wave must document dependencies explicitly.
+- **Not verifying integration after merge**: parallel agents can produce interfaces incompatible with one another. Always run `bun tsc --noEmit` and integration tests after merging the parallel tasks.
+- **Wave 1 with schema**: if Wave 1 has tasks in `prisma/schema.prisma`, each agent must work only on its own block of models without touching the others' blocks — or keep the schema always sequential.

@@ -1,14 +1,14 @@
 # PRD Builder (Collaborative)
 
-**Trigger:** prd, requisitos, requirements, product requirements
+**Trigger:** prd, requirements, product requirements
 
 ---
 
 ## Purpose
 
-Facilitação colaborativa de Product Requirements Document. Para projetos com ambiguidade significativa (nível COMPLEX).
+Collaborative facilitation of a Product Requirements Document. For projects with significant ambiguity (COMPLEX level).
 
-**Princípio:** Guia o usuário seção por seção com checkpoints.
+**Principle:** Guides the user section by section with checkpoints.
 
 ---
 

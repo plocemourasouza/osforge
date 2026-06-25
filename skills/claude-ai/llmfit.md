@@ -1,6 +1,6 @@
 # llmfit Advisor (Local LLM Hardware Fit)
 
-**Trigger:** Detecta hardware e recomenda LLMs locais. TRIGGER quando: usuário pergunta quais modelos rodam localmente, quer configurar Ollama/LM Studio, menciona rodar modelos offline, precisa de alternativa local por custo ou privacidade LGPD, dados sensíveis que não podem ir para API externa.
+**Trigger:** Detects hardware and recommends local LLMs. Trigger when: the user asks which models run locally, wants to set up Ollama/LM Studio, mentions running models offline, needs a local alternative for cost or LGPD privacy, sensitive data that cannot go to an external API.
 
 ---
 
@@ -110,10 +110,10 @@ if (taskComplexity === 'haiku' && dataSensitivity === 'high') {
 
 ## OSForge Use Cases
 
-1. **Privacidade obrigatória** — Dados de cliente que não podem sair do sistema
-2. **Hardware limitado** — Clientes PME sem GPU potente
-3. **Tasks repetitivas** — Economia de API em tarefas de alto volume
-4. **Desenvolvimento offline** — Sem dependência de internet
+1. **Mandatory privacy** — Customer data that cannot leave the system
+2. **Limited hardware** — SMB clients without a powerful GPU
+3. **Repetitive tasks** — API savings on high-volume work
+4. **Offline development** — No internet dependency
 
 ---
 

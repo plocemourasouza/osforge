@@ -1,12 +1,12 @@
 # Epic Decomposer
 
-**Trigger:** épicos, stories, decompor, breakdown
+**Trigger:** epics, stories, decompose, breakdown
 
 ---
 
 ## Purpose
 
-Decompõe specs, PRDs ou requisitos em épicos e stories implementáveis. Cada story com ACs testáveis, tasks com file paths, dependências mapeadas.
+Decomposes specs, PRDs, or requirements into implementable epics and stories. Each story has testable ACs, tasks with file paths, and mapped dependencies.
 
 ---
 

@@ -1,101 +1,101 @@
-# Schema do `DESIGN.md` — contrato completo
+# `DESIGN.md` schema — complete contract
 
-Schema canônico do contrato de design por projeto, derivado de **open-design** (nexu-io,
-Apache-2.0). Um `DESIGN.md` é o **contrato de marca de um projeto**: um documento Markdown
-que um agente lê para gerar UI consistente com a identidade daquele projeto — cores reais,
-tipografia, espaçamento, componentes, movimento, voz e anti-padrões.
+Canonical schema of the per-project design contract, derived from **open-design** (nexu-io,
+Apache-2.0). A `DESIGN.md` is a **project's brand contract**: a Markdown document
+that an agent reads to generate UI consistent with that project's identity — real colors,
+typography, spacing, components, motion, voice, and anti-patterns.
 
-Duas perguntas governam tudo aqui:
+Two questions govern everything here:
 
-1. **Quem decide o valor?** — o autor da marca (camada A) ou o schema (camada B-slot, quando
-   a marca não tem opinião).
-2. **O que acontece se a marca omitir?** — obrigatório, fallback, ou alias.
+1. **Who decides the value?** — the brand author (layer A) or the schema (B-slot layer, when
+   the brand has no opinion).
+2. **What happens if the brand omits it?** — required, fallback, or alias.
 
 ---
 
-## 1. O contrato de parsing
+## 1. The parsing contract
 
-O parser extrai os headings via `## [0-9].*` — ele casa o **prefixo numérico**, não o texto
-completo. Você pode anexar contexto depois do número (`## 4. Spacing & Grid`,
-`## 4. Spacing and layout`). Só o prefixo `## [digit].` é obrigatório. Corpos de seção vazios
-são aceitos (para tokens raramente usados, ex.: motion), mas os **nove headings numerados
-precisam existir, na ordem**.
+The parser extracts headings via `## [0-9].*` — it matches the **numeric prefix**, not the full
+text. You can append context after the number (`## 4. Spacing & Grid`,
+`## 4. Spacing and layout`). Only the `## [digit].` prefix is required. Empty section bodies
+are accepted (for rarely used tokens, e.g. motion), but the **nine numbered headings
+must exist, in order**.
 
-### Header do arquivo
+### File header
 
 ```markdown
 # Design System Inspired by YourBrand
 
 > Category: Developer Tools
-> Resumo de uma linha para o preview do picker.
+> One-line summary for the picker preview.
 ```
 
-- A primeira H1 vira o label exibido. O `> Category:` logo após a H1 determina o agrupamento.
-- Categorias válidas: AI & LLM, Developer Tools, Productivity & SaaS, Backend & Data,
+- The first H1 becomes the displayed label. The `> Category:` right after the H1 determines the grouping.
+- Valid categories: AI & LLM, Developer Tools, Productivity & SaaS, Backend & Data,
   Design & Creative, Fintech & Crypto, E-Commerce & Retail, Media & Consumer, Automotive,
   Editorial & Print, Retro & Nostalgic, Bold & Expressive, Modern & Minimal,
   Professional & Corporate.
 
 ---
 
-## 2. As 9 seções (spec canônico)
+## 2. The 9 sections (canonical spec)
 
-| # | Heading canônico | O que documenta |
+| # | Canonical heading | What it documents |
 | --- | --- | --- |
-| 1 | `Visual Theme & Atmosphere` | A "atmosfera": metáfora central, sensação, casos de uso, prior art (produtos reais). |
-| 2 | `Color` | Paleta com hex reais + **roles** (CTA, surface, texto 1/2/3, border, semânticos). Bloco `:root` + dark via `[data-theme="dark"]`. |
-| 3 | `Typography` | Famílias (display/body/mono), escala (≥4 tiers), pesos, line-height, tracking. Bloco "Font labels for catalog extraction". |
-| 4 | `Spacing` | Unidade base, escala de espaçamento, padding de componente, ritmo vertical de seção. |
-| 5 | `Layout & Composition` | Grid, container max-width, filosofia de whitespace, escala de border-radius. |
-| 6 | `Components` | CSS real de 3-6 componentes (botões, cards, inputs, nav), todo via tokens semânticos. |
-| 7 | `Motion & Interaction` | Timings, easing por propósito, `:focus-visible`, `prefers-reduced-motion` segmentado. |
-| 8 | `Voice & Brand` | Tom de voz, princípios de copy, prior art nomeado. |
-| 9 | `Anti-patterns` | O que a marca **não é** — específico e limitado (um por erro-chave). |
+| 1 | `Visual Theme & Atmosphere` | The "atmosphere": central metaphor, feel, use cases, prior art (real products). |
+| 2 | `Color` | Palette with real hex + **roles** (CTA, surface, text 1/2/3, border, semantics). `:root` block + dark via `[data-theme="dark"]`. |
+| 3 | `Typography` | Families (display/body/mono), scale (≥4 tiers), weights, line-height, tracking. "Font labels for catalog extraction" block. |
+| 4 | `Spacing` | Base unit, spacing scale, component padding, vertical section rhythm. |
+| 5 | `Layout & Composition` | Grid, container max-width, whitespace philosophy, border-radius scale. |
+| 6 | `Components` | Real CSS for 3-6 components (buttons, cards, inputs, nav), all via semantic tokens. |
+| 7 | `Motion & Interaction` | Timings, easing by purpose, `:focus-visible`, targeted `prefers-reduced-motion`. |
+| 8 | `Voice & Brand` | Tone of voice, copy principles, named prior art. |
+| 9 | `Anti-patterns` | What the brand **is not** — specific and limited (one per key mistake). |
 
-### Variante brand-grade (Variante A) — a que você mais vê
+### Brand-grade variant (Variant A) — the one you see most
 
-Os exemplares ricos em `systems/` usam um dialeto diferente, todos válidos pelo mesmo
-contrato de parsing. Cross-map canônico → Variante A:
+The rich exemplars in `systems/` use a different dialect, all valid under the same
+parsing contract. Canonical → Variant A cross-map:
 
-| Spec canônico (Variante B) | Variante A (brand-grade) |
+| Canonical spec (Variant B) | Variant A (brand-grade) |
 | --- | --- |
 | 1. Visual Theme & Atmosphere | 1. Visual Theme & Atmosphere |
 | 2. Color | 2. Color Palette & Roles |
 | 3. Typography | 3. Typography Rules |
-| 4. Spacing | *(absorvido em 5. Layout Principles)* |
+| 4. Spacing | *(absorbed into 5. Layout Principles)* |
 | 5. Layout & Composition | 5. Layout Principles |
 | 6. Components | 4. Component Stylings |
 | 7. Motion & Interaction | 6. Depth & Elevation |
-| 8. Voice & Brand | 7. Do's and Don'ts (ou 8. Accessibility & States) |
-| 9. Anti-patterns | 7. Do's and Don'ts (lado "Don't") |
+| 8. Voice & Brand | 7. Do's and Don'ts (or 8. Accessibility & States) |
+| 9. Anti-patterns | 7. Do's and Don'ts ("Don't" side) |
 | — | 8. Responsive Behavior |
-| — | **9. Agent Prompt Guide** (sempre a última) |
+| — | **9. Agent Prompt Guide** (always last) |
 
-A diferença chave da Variante A: **section 9 é sempre o Agent Prompt Guide** (ver §6 abaixo),
-e ela dobra "Spacing" dentro de "Layout Principles" + adiciona "Responsive Behavior" e
-"Depth & Elevation" como seções de primeira classe. Para um projeto novo, escolha **uma**
-variante e mantenha-a; o `template.md` usa o spec canônico (Variante B).
+The key difference of Variant A: **section 9 is always the Agent Prompt Guide** (see §6 below),
+and it folds "Spacing" into "Layout Principles" + adds "Responsive Behavior" and
+"Depth & Elevation" as first-class sections. For a new project, pick **one**
+variant and stick with it; `template.md` uses the canonical spec (Variant B).
 
 ---
 
-## 3. As 4 camadas de tokens
+## 3. The 4 token layers
 
-Todo token compartilhado se encaixa numa camada. Isso é o que separa "uma lista de cores" de
-um **sistema de tokens**.
+Every shared token fits into a layer. This is what separates "a list of colors" from
+a **token system**.
 
-| Camada | Quem decide | Se omitido | Exemplos |
+| Layer | Who decides | If omitted | Examples |
 | --- | --- | --- | --- |
-| **A1-identity** | marca | guard falha | `--bg`, `--fg`, `--accent`, `--font-display` |
-| **A1-structure** | marca | guard falha | escala de tipo, `--container-max`, `--section-y-*` |
-| **A2-fallback** | marca (com fallback) | guard falha hoje; script de derive preenche amanhã | `--motion-fast`, `--success`, `--space-4`, `--font-mono` |
-| **B-slot** | marca ou alias sugerido pelo schema | guard falha — marca precisa declarar (como `var(--sibling)` colapsado, ou valor independente mais rico) | `--fg-2 → var(--fg)`, `--surface-warm → var(--surface)` |
+| **A1-identity** | brand | guard fails | `--bg`, `--fg`, `--accent`, `--font-display` |
+| **A1-structure** | brand | guard fails | type scale, `--container-max`, `--section-y-*` |
+| **A2-fallback** | brand (with fallback) | guard fails today; derive script fills in tomorrow | `--motion-fast`, `--success`, `--space-4`, `--font-mono` |
+| **B-slot** | brand or schema-suggested alias | guard fails — brand must declare (as collapsed `var(--sibling)`, or richer independent value) | `--fg-2 → var(--fg)`, `--surface-warm → var(--surface)` |
 
-Tokens fora do schema compartilhado são **C-extensions** (allowlist por marca, ex.:
-`BRAND_EXTENSIONS[brand]`, ou prefixos como `--tag-bg-*`).
+Tokens outside the shared schema are **C-extensions** (per-brand allowlist, e.g.
+`BRAND_EXTENSIONS[brand]`, or prefixes like `--tag-bg-*`).
 
-### A1 — identidade e estrutura (obrigatório)
+### A1 — identity and structure (required)
 
-Os valores que *são* a marca. Sem eles não há contrato.
+The values that *are* the brand. Without them there is no contract.
 
 ```css
 :root {
@@ -113,11 +113,11 @@ Os valores que *são* a marca. Sem eles não há contrato.
 }
 ```
 
-### A2 — opcional com fallback
+### A2 — optional with fallback
 
-Conceitualmente "opcional com default", mas como artefatos são gerados colando o `:root` de
-uma marca num único `<style>` (sem stylesheet global), **toda marca deve declarar todo token
-A2** hoje. Um `transition: var(--motion-fast)` quebra em silêncio se `--motion-fast` faltar.
+Conceptually "optional with default", but since artifacts are generated by pasting a brand's
+`:root` into a single `<style>` (no global stylesheet), **every brand must declare every A2
+token** today. A `transition: var(--motion-fast)` breaks silently if `--motion-fast` is missing.
 
 ```css
 :root {
@@ -129,20 +129,20 @@ A2** hoje. Um `transition: var(--motion-fast)` quebra em silêncio se `--motion-
 }
 ```
 
-### B-slot — tier mais rico, com alias sugerido
+### B-slot — richer tier, with suggested alias
 
-Componentes compartilhados referenciam tiers mais ricos via `var(--fg-2)`, `var(--meta)`,
-`var(--surface-warm)`, `var(--border-soft)`. O campo `aliasTo` é o **default sugerido pelo
-schema** — não um fallback de runtime. Uma marca sem opinião copia o alias verbatim:
+Shared components reference richer tiers via `var(--fg-2)`, `var(--meta)`,
+`var(--surface-warm)`, `var(--border-soft)`. The `aliasTo` field is the **schema-suggested
+default** — not a runtime fallback. A brand with no opinion copies the alias verbatim:
 
 ```css
 :root {
-  --fg-2: var(--fg);              /* default: 2-level fg colapsado */
+  --fg-2: var(--fg);              /* default: collapsed 2-level fg */
   --surface-warm: var(--surface); /* default */
 }
 ```
 
-Uma marca com o tier mais rico vincula valor independente:
+A brand with the richer tier binds an independent value:
 
 ```css
 :root {
@@ -151,34 +151,34 @@ Uma marca com o tier mais rico vincula valor independente:
 }
 ```
 
-### C-extensions e o caminho de promoção
+### C-extensions and the promotion path
 
 ```
 C-extension                    B-slot                       A2
-(1 marca declara)              (≥2 marcas declaram,         (toda marca declara
-                                algumas alias p/ sibling)    com default sensato)
+(1 brand declares)             (≥2 brands declare,          (every brand declares
+                                some alias to sibling)       with a sensible default)
 ```
 
-Regras de promoção: **C→B-slot** quando ≥2 marcas declaram o mesmo nome E existe sibling para
-alias. **C→A2** quando ≥2 marcas declaram E existe fallback cross-brand defensável. **B-slot→
-A2** quando ≥2 marcas vinculam independentemente. **A2→A1** é raro (o valor antes
-defaultável vira determinante da marca).
+Promotion rules: **C→B-slot** when ≥2 brands declare the same name AND a sibling exists for
+the alias. **C→A2** when ≥2 brands declare it AND a defensible cross-brand fallback exists. **B-slot→
+A2** when ≥2 brands bind independently. **A2→A1** is rare (the formerly
+defaultable value becomes a brand determinant).
 
-### Quando *não* adicionar token
+### When *not* to add a token
 
-Resista a tokens que são: **component-internal** (offset de `.btn-primary` que ninguém mais
-lê — inline o valor), **one-off** (crop ratio de um hero), **especulativo** ("talvez a gente
-queira `--motion-slow`"), ou **já expressável** (`color-mix(...)` inline até ≥2 componentes
-precisarem do mesmo tint).
+Resist tokens that are: **component-internal** (a `.btn-primary` offset that nobody else
+reads — inline the value), **one-off** (a hero's crop ratio), **speculative** ("maybe we'll
+want `--motion-slow`"), or **already expressible** (`color-mix(...)` inline until ≥2 components
+need the same tint).
 
 ---
 
-## 4. Estrutura de CSS variables
+## 4. CSS variables structure
 
-### `:root` obrigatório
+### `:root` required
 
-Toda variável CSS dentro de `:root {}`. Declarações soltas no topo de uma seção são
-inválidas. Exceção: overrides escopados a componente (`.card { --card-padding: 16px; }`) sob
+Every CSS variable inside `:root {}`. Loose declarations at the top of a section are
+invalid. Exception: component-scoped overrides (`.card { --card-padding: 16px; }`) under
 Components.
 
 ### Dark mode via `[data-theme="dark"]`
@@ -195,12 +195,12 @@ Components.
 }
 ```
 
-Nunca crie blocos light/dark separados sem o seletor `[data-theme="dark"]` — quebra o sistema
-de tokens semânticos. Dark mode é **override genuíno** (valores diferentes), não cópia.
+Never create separate light/dark blocks without the `[data-theme="dark"]` selector — it breaks the
+semantic token system. Dark mode is a **genuine override** (different values), not a copy.
 
-### Font labels para extração de catálogo
+### Font labels for catalog extraction
 
-Inclua na seção de Typography, exatamente com os prefixos `Display:` / `Body:` / `Mono:`:
+Include it in the Typography section, exactly with the `Display:` / `Body:` / `Mono:` prefixes:
 
 ```
 Font labels for catalog extraction:
@@ -212,20 +212,20 @@ Mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas
 
 ---
 
-## 5. Acessibilidade (Lens A — blocking)
+## 5. Accessibility (Lens A — blocking)
 
-### Contraste WCAG AA
+### WCAG AA contrast
 
-Todo texto/dado precisa passar **4.5:1 mínimo** contra o seu fundo (4.5:1 texto normal,
-3:1 texto grande 18px+ ou 14px+ bold). Teste cada foreground contra o **fundo pareado** — não
-contra branco por default.
+Every text/data point must pass **4.5:1 minimum** against its background (4.5:1 normal text,
+3:1 large text 18px+ or 14px+ bold). Test each foreground against the **paired background** — not
+against white by default.
 
-Erro comum: texto terciário em surface escura. `#4A6080` sobre `#0A0A0A` = 2.1:1 (FALHA). Use
-`#808086` sobre `#0A0A0A` = 4.54:1.
+Common mistake: tertiary text on a dark surface. `#4A6080` over `#0A0A0A` = 2.1:1 (FAILS). Use
+`#808086` over `#0A0A0A` = 4.54:1.
 
 ### Focus states
 
-Todo componente interativo (botões, links, inputs, cards clicáveis) precisa de
+Every interactive component (buttons, links, inputs, clickable cards) needs
 `:focus-visible`:
 
 ```css
@@ -235,18 +235,18 @@ Todo componente interativo (botões, links, inputs, cards clicáveis) precisa de
 }
 ```
 
-### `prefers-reduced-motion` segmentado
+### Targeted `prefers-reduced-motion`
 
-Mire propriedades/elementos específicos, nunca o seletor global `*`:
+Target specific properties/elements, never the global `*` selector:
 
 ```css
-/* Correto */
+/* Correct */
 @media (prefers-reduced-motion: reduce) {
   .alert-banner { animation-duration: 0.01ms !important; }
   .countdown { animation: none; }
 }
 
-/* Errado — mata transições do site inteiro */
+/* Wrong — kills transitions across the entire site */
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; }
 }
@@ -254,33 +254,33 @@ Mire propriedades/elementos específicos, nunca o seletor global `*`:
 
 ---
 
-## 6. A seção "Agent Prompt Guide" (o payload)
+## 6. The "Agent Prompt Guide" section (the payload)
 
-Nos exemplares brand-grade, a **seção 9 é feita PARA o agente consumir** ao gerar UI. Tem três
-partes:
+In the brand-grade exemplars, **section 9 is made FOR the agent to consume** when generating UI. It has three
+parts:
 
-1. **Quick Color Reference** — mapeia cada role ao seu nome + hex, no formato que o agente
-   cita: `Brand CTA: "Terracotta Brand (#c96442)"`.
-2. **Example Component Prompts** — prompts prontos para colar, cada um citando hex + fonte +
-   raio exatos: *"Create a hero on Parchment (#f5f4ed) with a 64px Anthropic Serif weight 500
+1. **Quick Color Reference** — maps each role to its name + hex, in the format the agent
+   cites: `Brand CTA: "Terracotta Brand (#c96442)"`.
+2. **Example Component Prompts** — ready-to-paste prompts, each citing exact hex + font +
+   radius: *"Create a hero on Parchment (#f5f4ed) with a 64px Anthropic Serif weight 500
    headline, line-height 1.10..."*.
-3. **Iteration Guide** — receita: um componente por vez, citar nomes de cor específicos,
-   sempre especificar a variante (warm/cool), descrever serif vs sans explicitamente.
+3. **Iteration Guide** — recipe: one component at a time, cite specific color names,
+   always specify the variant (warm/cool), describe serif vs sans explicitly.
 
-Por que importa: a diferença entre um `DESIGN.md` que *descreve* uma marca e um que um agente
-*consegue construir* é essa seção. Sem ela, o agente improvisa valores. Um `DESIGN.md` de
-projeto novo deve terminar com um Agent Prompt Guide próprio.
+Why it matters: the difference between a `DESIGN.md` that *describes* a brand and one an agent
+*can build from* is this section. Without it, the agent improvises values. A new project's
+`DESIGN.md` should end with its own Agent Prompt Guide.
 
 ---
 
-## 7. Tamanho e qualidade
+## 7. Size and quality
 
-Um `DESIGN.md` bem documentado tem tipicamente **300-600 linhas**. Abaixo de ~100 linhas
-dispara revisão de substância (Lens B). Verbosidade genérica não ajuda.
+A well-documented `DESIGN.md` typically has **300-600 lines**. Below ~100 lines
+triggers a substance review (Lens B). Generic verbosity does not help.
 
-| Área | Linhas-alvo |
+| Area | Target lines |
 | --- | --- |
-| Color | 30-50 (tabelas de paleta + blocos CSS) |
-| Components | 100-200 (3-6 componentes, totalmente especificados) |
-| Visual Theme | 30-40 (atmosfera + casos de uso + prior art) |
-| Anti-patterns | 8-15 (um por erro-chave) |
+| Color | 30-50 (palette tables + CSS blocks) |
+| Components | 100-200 (3-6 components, fully specified) |
+| Visual Theme | 30-40 (atmosphere + use cases + prior art) |
+| Anti-patterns | 8-15 (one per key mistake) |

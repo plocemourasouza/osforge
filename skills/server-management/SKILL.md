@@ -1,6 +1,6 @@
 ---
 name: server-management
-description: "Princípios de operação de servidores: gerenciamento de processos (PM2, systemd, Docker), monitoramento, logs, scaling, health checks e troubleshooting. ACIONE quando: app cai e não reinicia sozinho, CPU ou memória alta no servidor, disco cheio por logs sem rotação, resposta lenta e dúvida entre scaling vertical e horizontal, configurar health check para load balancer, investigar serviço fora do ar (processo, logs, recursos, rede). Keywords: servidor, server, PM2, systemd, monitoring, logs, scaling, health check, uptime, Grafana. Não acione para: deploy de novas versões (use deployment-procedures) ou provisionamento de infraestrutura cloud."
+description: "Server operations principles: process management (PM2, systemd, Docker), monitoring, logs, scaling, health checks, and troubleshooting. Use when: app crashes and doesn't restart on its own, high CPU or memory on the server, disk full from logs without rotation, slow response and unsure between vertical and horizontal scaling, configuring a health check for a load balancer, investigating a service that is down (process, logs, resources, network). Keywords: server, PM2, systemd, monitoring, logs, scaling, health check, uptime, Grafana. Do NOT use for: deploying new versions (use deployment-procedures) or provisioning cloud infrastructure."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

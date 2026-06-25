@@ -1,6 +1,6 @@
 ---
 name: openui-genui-layout
-description: "Planejamento e geração de UI em Next.js. ACIONE quando: criando qualquer página, tela, dashboard, formulário, tabela, componente com layout, scaffold de rota. Produce um plano OpenUI Lang ANTES de qualquer código. Keywords: create page, scaffold, layout, screen, dashboard, form, table, component, UI, tela, página, criar interface, gerar UI, planejar UI."
+description: "UI planning and generation in Next.js. Use when: creating any page, screen, dashboard, form, table, layout component, route scaffold. Produces an OpenUI Lang plan BEFORE any code. Keywords: create page, scaffold, layout, screen, dashboard, form, table, component, UI, create interface, generate UI, plan UI."
 model: sonnet
 context: fork
 agent: general-purpose
@@ -9,9 +9,9 @@ version: 1.1.0
 stack: Next.js, TypeScript, shadcn/ui, Tailwind CSS, Zod, @openuidev/react-lang
 ---
 
-## Contexto do projeto
-!`[ -f components.json ] && echo "shadcn/ui configurado: $(cat components.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'estilo={d.get(\"style\",\"?\")} rsc={d.get(\"rsc\",\"?\")} tailwind={d.get(\"tailwind\",{}).get(\"config\",\"?\")}') 2>/dev/null || cat components.json | head -5)" || echo "components.json não encontrado — shadcn/ui pode não estar configurado"`
-!`ls src/app 2>/dev/null | head -8 || ls app 2>/dev/null | head -8 || echo "Diretório app não encontrado"`
+## Project context
+!`[ -f components.json ] && echo "shadcn/ui configured: $(cat components.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'style={d.get(\"style\",\"?\")} rsc={d.get(\"rsc\",\"?\")} tailwind={d.get(\"tailwind\",{}).get(\"config\",\"?\")}') 2>/dev/null || cat components.json | head -5)" || echo "components.json not found — shadcn/ui may not be configured"`
+!`ls src/app 2>/dev/null | head -8 || ls app 2>/dev/null | head -8 || echo "app directory not found"`
 
 # OpenUI GenUI Layout Skill
 
@@ -34,9 +34,9 @@ Load and follow this skill when any of these triggers appear:
 **Do NOT load** for: purely styling changes (colors, spacing), logic-only tasks (API routes, hooks), or database schema work.
 
 Concrete examples of when NOT to load:
-- "Deixa esse botão com um novo estilo / muda a cor do botão" — styling only, no layout planning needed
-- "Cria um hook `useDebounce` / `useAuth`" — logic-only, no UI tree involved
-- "Adiciona uma tabela `orders` no schema do banco / cria a migration" — database schema work, not UI
+- "Give this button a new style / change the button color" — styling only, no layout planning needed
+- "Create a `useDebounce` / `useAuth` hook" — logic-only, no UI tree involved
+- "Add an `orders` table to the database schema / create the migration" — database schema work, not UI
 
 ---
 
@@ -292,10 +292,10 @@ Before finalizing any generated UI:
 
 ## Gotchas
 
-- **Esquecer o plano OpenUI antes do código**: a skill tem um contrato claro — plano OpenUI Lang PRIMEIRO, código DEPOIS. Gerar código diretamente sem o plano viola o protocolo e produz componentes não revisáveis.
-- **Usar bibliotecas fora do shadcn/ui**: a regra é usar apenas primitivos nativos do shadcn/ui (sem instalar novas bibliotecas). Se o componente não existe no shadcn, compor com os primitivos disponíveis — não instalar `react-beautiful-dnd`, `react-select`, etc. sem aprovação explícita.
-- **`"use client"` em Server Components**: componentes que usam `useState`, `useEffect`, `onClick` precisam de `"use client"`. Esquecer isso causa erro em runtime. Regra: Server Component por padrão, `"use client"` apenas quando necessário.
-- **Formulários sem `react-hook-form` + Zod**: nunca usar `useState` manual para gerenciar form state. O padrão é sempre `react-hook-form` + `zodResolver` + schema Zod — sem exceções.
-- **Padrão de layout errado para o contexto**: selecionar sempre o padrão canônico correto (`dashboard`, `crud-list`, `form-wizard`, `detail-view`, `settings-page`, `auth-page`, `empty-state`, `onboarding`) antes de gerar o plano. Usar `dashboard` para uma tela de settings é um erro de categoria.
-- **Loading states não planejados**: sempre incluir `Suspense` boundaries e skeleton loaders no plano OpenUI Lang antes de implementar. Adicionar depois é muito mais trabalhoso.
-- **Mobile não considerado no plano**: o plano OpenUI deve incluir breakpoints (`grid-cols-1 md:grid-cols-3`) desde o início — responsividade adicionada depois frequentemente quebra o layout.
+- **Forgetting the OpenUI plan before the code**: the skill has a clear contract — OpenUI Lang plan FIRST, code AFTER. Generating code directly without the plan violates the protocol and produces non-reviewable components.
+- **Using libraries outside shadcn/ui**: the rule is to use only shadcn/ui native primitives (without installing new libraries). If the component doesn't exist in shadcn, compose it with the available primitives — don't install `react-beautiful-dnd`, `react-select`, etc. without explicit approval.
+- **`"use client"` in Server Components**: components that use `useState`, `useEffect`, `onClick` need `"use client"`. Forgetting this causes a runtime error. Rule: Server Component by default, `"use client"` only when necessary.
+- **Forms without `react-hook-form` + Zod**: never use manual `useState` to manage form state. The pattern is always `react-hook-form` + `zodResolver` + Zod schema — no exceptions.
+- **Wrong layout pattern for the context**: always select the correct canonical pattern (`dashboard`, `crud-list`, `form-wizard`, `detail-view`, `settings-page`, `auth-page`, `empty-state`, `onboarding`) before generating the plan. Using `dashboard` for a settings screen is a category error.
+- **Loading states not planned**: always include `Suspense` boundaries and skeleton loaders in the OpenUI Lang plan before implementing. Adding them later is much more work.
+- **Mobile not considered in the plan**: the OpenUI plan must include breakpoints (`grid-cols-1 md:grid-cols-3`) from the start — responsiveness added later frequently breaks the layout.

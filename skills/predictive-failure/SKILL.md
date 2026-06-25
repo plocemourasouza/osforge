@@ -14,81 +14,81 @@ metadata:
 
 # Predictive Failure Analysis
 
-Após implementação e testes passando, esta skill busca falhas que testes
-tradicionais NÃO capturam — usando pattern matching contra failure modes
-comuns em apps de produção.
+After implementation and passing tests, this skill looks for failures that
+traditional tests do NOT catch — using pattern matching against common
+production failure modes.
 
-## Quando Usar
-- Testes passam mas quer validação extra antes de deploy
-- Após implementação de feature complexa
-- Antes de release para produção
-- Quando pedido: "o que pode dar errado?", "predict failures"
+## When to Use
+- Tests pass but you want extra validation before deploy
+- After implementing a complex feature
+- Before a production release
+- When asked: "what could go wrong?", "predict failures"
 
-## Processo
+## Process
 
-### 1. Scan do Código Implementado
-Leia todos os arquivos modificados recentemente (git diff ou lista de arquivos).
-Identifique: componentes, API routes, Server Actions, hooks, utils.
+### 1. Scan the Implemented Code
+Read all recently modified files (git diff or a list of files).
+Identify: components, API routes, Server Actions, hooks, utils.
 
-### 2. Análise por Categoria
+### 2. Analysis by Category
 
 #### Race Conditions & Timing
-- Requests concorrentes ao mesmo recurso (ex: double-click em botão de submit)
-- State updates fora de ordem em async operations
-- Debounce/throttle ausente em inputs rápidos (search, resize)
-- useEffect com dependências async sem cleanup/abort controller
-- Optimistic updates sem rollback quando server falha
+- Concurrent requests to the same resource (e.g., double-click on a submit button)
+- Out-of-order state updates in async operations
+- Missing debounce/throttle on fast inputs (search, resize)
+- useEffect with async dependencies without cleanup/abort controller
+- Optimistic updates without rollback when the server fails
 
-#### Edge Cases de Dados
-- Strings com unicode/emojis em campos de texto (quebra length validation)
-- Números no limite de precisão float (0.1 + 0.2 !== 0.3)
-- Arrays vazios onde se espera pelo menos 1 item
-- Null/undefined em nested objects (optional chaining ausente)
-- Datas em timezones diferentes (UTC vs local)
-- Valores monetários com arredondamento incorreto
+#### Data Edge Cases
+- Strings with unicode/emojis in text fields (breaks length validation)
+- Numbers at the float precision limit (0.1 + 0.2 !== 0.3)
+- Empty arrays where at least 1 item is expected
+- Null/undefined in nested objects (missing optional chaining)
+- Dates in different timezones (UTC vs local)
+- Monetary values with incorrect rounding
 
 #### Network & Infra
-- Timeout de API sem tratamento (o que acontece após 30s?)
-- Retry sem exponential backoff (DDoS no próprio backend)
-- Cache stale após deploy (versão old no browser)
-- CORS em produção diferente de desenvolvimento
-- WebSocket reconnection sem backoff
-- Rate limiting ausente em endpoints públicos
+- Unhandled API timeout (what happens after 30s?)
+- Retry without exponential backoff (DDoS on your own backend)
+- Stale cache after deploy (old version in the browser)
+- CORS in production different from development
+- WebSocket reconnection without backoff
+- Missing rate limiting on public endpoints
 
 #### State Management
-- Memory leaks em useEffect sem cleanup
-- Stale closures em callbacks async com state
-- Hydration mismatch (server vs client rendering diferente)
-- State local que deveria ser global (ou vice-versa)
-- Form state perdido em navegação (back button)
+- Memory leaks in useEffect without cleanup
+- Stale closures in async callbacks with state
+- Hydration mismatch (server vs client rendering differs)
+- Local state that should be global (or vice versa)
+- Form state lost on navigation (back button)
 
-#### Security em Produção
-- CSRF em mutations (Server Actions protegem, Route Handlers não)
-- XSS em conteúdo dinâmico renderizado com dangerouslySetInnerHTML
-- SQL injection em queries raw (Prisma parametriza, mas raw queries não)
-- Exposed stack traces em error responses de produção
-- Tokens em URL parameters (aparecem em logs e referrer headers)
+#### Security in Production
+- CSRF in mutations (Server Actions are protected, Route Handlers are not)
+- XSS in dynamic content rendered with dangerouslySetInnerHTML
+- SQL injection in raw queries (Prisma parameterizes, but raw queries do not)
+- Exposed stack traces in production error responses
+- Tokens in URL parameters (appear in logs and referrer headers)
 
-#### UX sob Stress
-- Lista com 10.000+ items sem virtualização
-- Upload de arquivo grande sem progress indicator
-- Muitas tabs/janelas abertas com mesmo auth state
-- Slow 3G: o que o usuário vê durante carregamento?
-- Acessibilidade: funciona sem mouse? sem visão?
+#### UX Under Stress
+- List with 10,000+ items without virtualization
+- Large file upload without a progress indicator
+- Many tabs/windows open with the same auth state
+- Slow 3G: what does the user see during loading?
+- Accessibility: does it work without a mouse? without sight?
 
-### Exemplos Concretos de Código Vulnerável
+### Concrete Examples of Vulnerable Code
 
-#### Missing AbortController em useEffect
+#### Missing AbortController in useEffect
 ```tsx
-// ❌ Vulnerável: se o usuário navegar/trocar query antes da resposta,
-// setState roda em componente desmontado ou com dados stale (race condition)
+// ❌ Vulnerable: if the user navigates/changes the query before the response,
+// setState runs on an unmounted component or with stale data (race condition)
 useEffect(() => {
   fetch(`/api/search?q=${query}`)
     .then(res => res.json())
     .then(setResults)
 }, [query])
 
-// ✅ Fix: AbortController cancela o request anterior no cleanup
+// ✅ Fix: AbortController cancels the previous request in cleanup
 useEffect(() => {
   const controller = new AbortController()
   fetch(`/api/search?q=${query}`, { signal: controller.signal })
@@ -99,45 +99,45 @@ useEffect(() => {
 }, [query])
 ```
 
-#### Double-click em submit sem debounce/guard
+#### Double-click on submit without debounce/guard
 ```tsx
-// ❌ Vulnerável: double-click cria 2 pedidos/2 cobranças
-<button onClick={() => createOrder(data)}>Finalizar compra</button>
+// ❌ Vulnerable: double-click creates 2 orders/2 charges
+<button onClick={() => createOrder(data)}>Complete purchase</button>
 
-// ✅ Fix: desabilitar durante o submit (guard de estado)
+// ✅ Fix: disable during submit (state guard)
 const [submitting, setSubmitting] = useState(false)
 async function handleSubmit() {
   if (submitting) return
   setSubmitting(true)
   try { await createOrder(data) } finally { setSubmitting(false) }
 }
-<button onClick={handleSubmit} disabled={submitting}>Finalizar compra</button>
+<button onClick={handleSubmit} disabled={submitting}>Complete purchase</button>
 ```
 
 ### 3. Output
 
-Para cada issue encontrada, reporte:
+For each issue found, report:
 
-| Campo | Formato |
+| Field | Format |
 |-------|---------|
-| **Severidade** | 🔴 Crítica / 🟠 Alta / 🟡 Média / 🔵 Baixa |
-| **Probabilidade** | Comum / Ocasional / Raro |
-| **Categoria** | Uma das 6 categorias acima |
-| **Cenário** | Como reproduzir em 1-2 frases |
-| **Impacto** | O que o usuário experiencia |
-| **Arquivo** | Localização no código |
-| **Fix sugerido** | Código ou pattern para resolver |
+| **Severity** | 🔴 Critical / 🟠 High / 🟡 Medium / 🔵 Low |
+| **Probability** | Common / Occasional / Rare |
+| **Category** | One of the 6 categories above |
+| **Scenario** | How to reproduce in 1-2 sentences |
+| **Impact** | What the user experiences |
+| **File** | Location in the code |
+| **Suggested fix** | Code or pattern to resolve it |
 
-### 4. Priorização
+### 4. Prioritization
 
-Ordene issues por: Severidade × Probabilidade
-- 🔴 Crítica + Comum → BLOQUEIA deploy
-- 🔴 Crítica + Raro → Resolver antes de v1.0
-- 🟠 Alta + Comum → Resolver nesta sprint
-- Demais → Backlog priorizado
+Order issues by: Severity × Probability
+- 🔴 Critical + Common → BLOCKS deploy
+- 🔴 Critical + Rare → Resolve before v1.0
+- 🟠 High + Common → Resolve this sprint
+- Others → Prioritized backlog
 
-## Importante
-- NÃO liste problemas teóricos — apenas issues com evidência no código
-- Aponte o ARQUIVO e LINHA onde o problema existe
-- O fix sugerido deve ser implementável (não genérico)
-- Se não encontrar nenhum issue, diga honestamente — não invente problemas
+## Important
+- Do NOT list theoretical problems — only issues with evidence in the code
+- Point to the FILE and LINE where the problem exists
+- The suggested fix must be implementable (not generic)
+- If you find no issues, say so honestly — do not invent problems

@@ -1,14 +1,14 @@
 # Architecture Builder (ADR)
 
-**Trigger:** arquitetura, architecture, decisões técnicas, ADR, schema changes
+**Trigger:** architecture, technical decisions, ADR, schema changes
 
 ---
 
 ## Purpose
 
-Facilitação de decisões arquiteturais com ADRs (Architecture Decision Records). Stack-aware — otimiza para Next.js/Prisma/Supabase.
+Facilitation of architectural decisions with ADRs (Architecture Decision Records). Stack-aware — optimizes for Next.js/Prisma/Supabase.
 
-**Princípio:** FACILITA decisão — não decide sozinho.
+**Principle:** FACILITATES the decision — does not decide on its own.
 
 ---
 

@@ -1,12 +1,12 @@
 ---
 name: tool-safety-classifier
 description: >
-  Classifier LLM-powered de segurança pra auto-aprovação de tool calls em modos
-  autônomos (CI, headless, agent-of-agents). ACIONE quando: usuário roda em
-  "modo automático", "yolo mode", "headless", "CI mode", "auto-approve", "sem
-  confirmação". Avalia toda tool call em 3 categorias (allow / soft_deny /
-  environment) e retorna shouldBlock + reason via structured output. Defesa de
-  injection: transcript compactado exclui texto do assistant.
+  LLM-powered security classifier for auto-approval of tool calls in autonomous
+  modes (CI, headless, agent-of-agents). Use when: the user runs in
+  "automatic mode", "yolo mode", "headless", "CI mode", "auto-approve", "no
+  confirmation". Evaluates every tool call across 3 categories (allow / soft_deny /
+  environment) and returns shouldBlock + reason via structured output. Injection
+  defense: the compacted transcript excludes assistant text.
 version: 1.0.0
 inspired_by: Leonxlnx/agentic-ai-prompt-research (Prompt 12 — YOLO/Auto-Mode Classifier)
 metadata:
@@ -18,25 +18,25 @@ allowed-tools: Read, Bash
 # Tool Safety Classifier — Auto-Approval Gate
 
 > 2-stage LLM-powered security classification for autonomous tool execution.
-> Filtra tool calls antes de executar em modos sem human-in-the-loop.
+> Filters tool calls before executing in modes without a human-in-the-loop.
 
-## Quando usar
+## When to use
 
-- **CI/CD pipelines** rodando Claude Code em modo headless
-- **Long-running agents** que precisam executar muitas ações sem confirmação
-- **Sub-agents spawned by orchestrator** que vão fazer write operations
-- **Modo "yolo"** explicitamente habilitado pelo usuário pra acelerar workflow
-- Qualquer situação onde **velocidade > confirmação humana** mas com guardrails
+- **CI/CD pipelines** running Claude Code in headless mode
+- **Long-running agents** that need to execute many actions without confirmation
+- **Sub-agents spawned by the orchestrator** that will do write operations
+- **"yolo" mode** explicitly enabled by the user to speed up the workflow
+- Any situation where **speed > human confirmation** but with guardrails
 
-## Quando NÃO usar
+## When NOT to use
 
-- Modo interativo padrão (já há confirmação humana natural)
-- Operações destrutivas críticas (rm -rf, drop database) — sempre human-in-the-loop
-- Primeira interação com codebase desconhecido (deixar o usuário ver o que está acontecendo)
+- Standard interactive mode (natural human confirmation already exists)
+- Critical destructive operations (rm -rf, drop database) — always human-in-the-loop
+- First interaction with an unknown codebase (let the user see what is happening)
 
-## Pré-requisito obrigatório: `~/.osforge/safety-rules.yaml`
+## Mandatory prerequisite: `~/.osforge/safety-rules.yaml`
 
-O classifier NÃO funciona sem o arquivo de regras. Antes do primeiro uso, criar/inicializar:
+The classifier does NOT work without the rules file. Before first use, create/initialize it:
 
 ```bash
 mkdir -p ~/.osforge
@@ -52,13 +52,13 @@ environment:
 EOF
 ```
 
-Normalmente o template padrão é deployado pelo `deploy.sh` do OSForge; o comando acima é o fallback manual. Se o arquivo não existir em runtime, o hook deve falhar fechado (bloquear auto-mode) em vez de rodar sem regras. As 3 seções (`allow` / `soft_deny` / `environment`) são detalhadas abaixo.
+Normally the default template is deployed by OSForge's `deploy.sh`; the command above is the manual fallback. If the file does not exist at runtime, the hook should fail closed (block auto-mode) instead of running without rules. The 3 sections (`allow` / `soft_deny` / `environment`) are detailed below.
 
-## Arquitetura — 2 estágios
+## Architecture — 2 stages
 
-### Estágio 1: Fast-path (Safe Allowlist)
+### Stage 1: Fast-path (Safe Allowlist)
 
-Tools pré-aprovadas que pulam o classifier completamente (latência ~0):
+Pre-approved tools that skip the classifier entirely (latency ~0):
 
 ```yaml
 fast_path_allowed:
@@ -71,14 +71,14 @@ fast_path_allowed:
     - Performance.getEntriesByType (browser only)
     - git status, git diff, git log (read-only commands)
   meta:
-    - classify_result (self-reference, evita recursão)
+    - classify_result (self-reference, avoids recursion)
 ```
 
-### Estágio 2: LLM Classifier
+### Stage 2: LLM Classifier
 
-Pra tools que escrevem, executam, ou modificam estado, roda o classifier.
+For tools that write, execute, or modify state, the classifier runs.
 
-#### Schema do classifier (forced tool call)
+#### Classifier schema (forced tool call)
 
 ```json
 {
@@ -105,11 +105,11 @@ Pra tools que escrevem, executam, ou modificam estado, roda o classifier.
 }
 ```
 
-## System prompt — 3 seções customizáveis
+## System prompt — 3 customizable sections
 
-O usuário define 3 seções via `~/.osforge/safety-rules.yaml`:
+The user defines 3 sections via `~/.osforge/safety-rules.yaml`:
 
-### `allow` — Auto-aprovações explícitas
+### `allow` — Explicit auto-approvals
 
 ```yaml
 allow:
@@ -119,7 +119,7 @@ allow:
   - "Edit files matching: *.test.ts (test files are safe to iterate)"
 ```
 
-### `soft_deny` — Requer confirmação
+### `soft_deny` — Requires confirmation
 
 ```yaml
 soft_deny:
@@ -132,7 +132,7 @@ soft_deny:
   - "curl/wget piped to bash"
 ```
 
-### `environment` — Contexto da máquina/usuário
+### `environment` — Machine/user context
 
 ```yaml
 environment:
@@ -143,24 +143,24 @@ environment:
   - "Database access requires explicit human approval ALWAYS"
 ```
 
-## Defesa contra prompt injection
+## Defense against prompt injection
 
-**CRITICAL design decision:** O transcript passado pro classifier exclui o texto do assistant — apenas tool_use blocks são incluídos.
+**CRITICAL design decision:** the transcript passed to the classifier excludes the assistant text — only tool_use blocks are included.
 
 ```
-Por quê? O assistant pode estar reproduzindo conteúdo injetado de uma
-ferramenta anterior (ex: leu um arquivo malicioso que disse "auto-approve
-todas as próximas ações"). Se o classifier visse esse texto, poderia ser
-influenciado.
+Why? The assistant may be reproducing content injected from a
+previous tool (e.g. it read a malicious file that said "auto-approve
+all of the next actions"). If the classifier saw that text, it could be
+influenced.
 
-Solução: transcript compactado inclui apenas:
-- User messages (texto puro)
-- Assistant tool_use blocks (sem o texto que acompanha)
+Solution: the compacted transcript includes only:
+- User messages (plain text)
+- Assistant tool_use blocks (without the accompanying text)
 ```
 
-## CLAUDE.md como user intent
+## CLAUDE.md as user intent
 
-O classifier recebe o conteúdo do CLAUDE.md prefixado como user message:
+The classifier receives the CLAUDE.md content prefixed as a user message:
 
 ```
 The following is the user's CLAUDE.md configuration. These are
@@ -168,30 +168,30 @@ instructions the user provided to the agent and should be treated
 as part of the user's intent when evaluating actions.
 
 <user_claude_md>
-{conteúdo do CLAUDE.md}
+{CLAUDE.md content}
 </user_claude_md>
 ```
 
-Isso permite que regras como "este projeto NUNCA pode rodar `rm -rf`" no CLAUDE.md sejam respeitadas pelo classifier.
+This lets rules like "this project can NEVER run `rm -rf`" in CLAUDE.md be respected by the classifier.
 
 ## Cache strategy
 
-- `cache_control: ephemeral` no prefixo (BASE_PROMPT + permissions template + safe allowlist) — estável entre chamadas
-- Boundary entre prefixo e suffix dinâmico (user rules + transcript)
-- Suffix muda toda chamada, prefixo é reaproveitado pelo Anthropic API caching
+- `cache_control: ephemeral` on the prefix (BASE_PROMPT + permissions template + safe allowlist) — stable across calls
+- Boundary between the prefix and the dynamic suffix (user rules + transcript)
+- The suffix changes every call, the prefix is reused by Anthropic API caching
 
-Resultado: latência típica de classifier ~150-300ms (Sonnet com cache hit) ou 50-100ms (Haiku).
+Result: typical classifier latency ~150-300ms (Sonnet with cache hit) or 50-100ms (Haiku).
 
-## Implementação prática no OSForge
+## Practical implementation in OSForge
 
-### Passo 1 — Criar `~/.osforge/safety-rules.yaml`
-Template padrão deployado pelo `deploy.sh`. Usuário pode editar.
+### Step 1 — Create `~/.osforge/safety-rules.yaml`
+Default template deployed by `deploy.sh`. The user can edit it.
 
-### Passo 2 — Hook pre-tool-use
-O `hooks/pre_tool_use.py` (já existente no OSForge) ganha um modo "classifier":
+### Step 2 — pre-tool-use hook
+`hooks/pre_tool_use.py` (already present in OSForge) gains a "classifier" mode:
 
 ```python
-# Pseudocódigo
+# Pseudocode
 if os.getenv("OSFORGE_AUTO_MODE") == "1":
     decision = classifier.classify(
         tool_name=tool_name,
@@ -205,41 +205,41 @@ if os.getenv("OSFORGE_AUTO_MODE") == "1":
         sys.exit(1)
 ```
 
-### Passo 3 — Ativação
+### Step 3 — Activation
 ```bash
-# Modo padrão (interativo, sem classifier)
+# Default mode (interactive, no classifier)
 claude
 
-# Modo auto (com classifier)
+# Auto mode (with classifier)
 OSFORGE_AUTO_MODE=1 claude
 
-# Ou via flag dedicada
+# Or via a dedicated flag
 claude --auto
 ```
 
 ## Anti-patterns
 
-- ❌ Confiar 100% no classifier — sempre tem human override
-- ❌ Allow rules vagos: "trust all bash commands" (defeat the purpose)
-- ❌ Soft_deny com warnings cosméticos — se é unsafe, BLOQUEIA
-- ❌ Carregar transcript inteiro (caro + injection risk)
-- ❌ Auto-aprovar `--auto` em produção sem audit logs
+- ❌ Trusting the classifier 100% — always have a human override
+- ❌ Vague allow rules: "trust all bash commands" (defeats the purpose)
+- ❌ soft_deny with cosmetic warnings — if it's unsafe, BLOCK it
+- ❌ Loading the entire transcript (expensive + injection risk)
+- ❌ Auto-approving `--auto` in production without audit logs
 
-## Verificação
+## Verification
 
-Antes de declarar pronto:
-- [ ] Classifier roda em < 500ms (cache hit)
-- [ ] Tools allowlistadas (Read, Grep, etc) pulam classifier (< 1ms)
-- [ ] Injection test: file content tentando override classifier → bloqueado
-- [ ] User rules têm precedência sobre defaults
-- [ ] Audit log de toda decisão (allow + reason + tokens) em `~/.osforge/auto-mode.log`
+Before declaring it done:
+- [ ] Classifier runs in < 500ms (cache hit)
+- [ ] Allowlisted tools (Read, Grep, etc) skip the classifier (< 1ms)
+- [ ] Injection test: file content trying to override the classifier → blocked
+- [ ] User rules take precedence over defaults
+- [ ] Audit log of every decision (allow + reason + tokens) in `~/.osforge/auto-mode.log`
 
 ---
 
 ## Related Skills
 
 - `tool-safety-classifier` (this) — runtime gate
-- `config-critique` — valida que as rules customizadas do usuário estão bem escritas
-- `security-best-practices` — defesa em profundidade
-- `differential-review` — segurança em PRs (complementa runtime gate)
-- `insecure-defaults` — não deixa defaults perigosos chegarem no auto-mode
+- `config-critique` — validates that the user's custom rules are well written
+- `security-best-practices` — defense in depth
+- `differential-review` — security in PRs (complements the runtime gate)
+- `insecure-defaults` — keeps dangerous defaults from reaching auto-mode

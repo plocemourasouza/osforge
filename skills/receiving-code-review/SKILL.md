@@ -1,6 +1,6 @@
 ---
 name: receiving-code-review
-description: "Como responder ao feedback de um code review. ACIONE quando: recebeu feedback de review, PR tem comments, revisor pediu mudanças, CHANGES_REQUESTED. Keywords: responder review, feedback de review, changes requested, responder PR, tratar comments, resolver feedback, revisor pediu mudanças."
+description: "How to respond to code review feedback. Use when: received review feedback, PR has comments, reviewer requested changes, CHANGES_REQUESTED. Keywords: respond to review, review feedback, changes requested, respond to PR, handle comments, resolve feedback, reviewer requested changes."
 model: sonnet
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 metadata:
@@ -10,113 +10,113 @@ metadata:
   adapted_by: osforge
 ---
 
-## Estado do PR
-!`git log --oneline -3 2>/dev/null || echo "Git não disponível"`
-!`git diff --stat HEAD~1 2>/dev/null | tail -5 || echo "Diff não disponível"`
+## PR State
+!`git log --oneline -3 2>/dev/null || echo "Git not available"`
+!`git diff --stat HEAD~1 2>/dev/null | tail -5 || echo "Diff not available"`
 
 # Receiving Code Review
 
-## Papel
+## Role
 
-Agente de resposta a review. Processa feedback de forma sistemática,
-distingue entre mudanças obrigatórias e sugestões opcionais, e implementa
-as correções necessárias sem perder rastreabilidade.
+Review-response agent. Processes feedback systematically,
+distinguishes between required changes and optional suggestions, and implements
+the necessary fixes without losing traceability.
 
-Inspirado no padrão `receiving-code-review` do obra/superpowers.
+Inspired by the `receiving-code-review` pattern from obra/superpowers.
 
 ---
 
-## Processo
+## Process
 
-### 1. Catalogar o feedback
+### 1. Catalog the feedback
 
-Estruturar todos os comments recebidos:
-
-```markdown
-## Feedback Catalogado
-
-### Bloqueantes (MUST fix antes do merge)
-1. **{arquivo}:{linha}** — {problema} → {ação necessária}
-2. **{arquivo}:{linha}** — {problema} → {ação necessária}
-
-### Importantes (SHOULD fix — melhora qualidade)
-3. **{arquivo}:{linha}** — {sugestão} → {ação sugerida}
-
-### Opcionais (NICE to have — considerar)
-4. **{arquivo}:{linha}** — {observação} → {ação opcional}
-
-### Questões (revisor perguntou, precisa responder)
-5. **{pergunta}** → {resposta}
-```
-
-### 2. Classificar cada item
-
-Para cada feedback, classificar:
-- **Concordo → implementar**: o revisor está certo, fazer a mudança
-- **Concordo parcialmente → discutir**: entendo o ponto mas há nuance, responder no PR explicando
-- **Discordo → justificar**: tenho boa razão para manter o código como está, explicar por quê
-- **Dúvida → perguntar**: não entendi o comment, pedir esclarecimento
-
-### 3. Implementar correções
-
-Para cada item "implementar":
+Structure all received comments:
 
 ```markdown
-## Implementando: {descrição do item}
+## Cataloged Feedback
 
-Arquivo: {path}
-Problema: {o que o revisor identificou}
-Solução: {o que vou fazer}
+### Blocking (MUST fix before merge)
+1. **{file}:{line}** — {problem} → {action needed}
+2. **{file}:{line}** — {problem} → {action needed}
+
+### Important (SHOULD fix — improves quality)
+3. **{file}:{line}** — {suggestion} → {suggested action}
+
+### Optional (NICE to have — consider)
+4. **{file}:{line}** — {observation} → {optional action}
+
+### Questions (reviewer asked, needs an answer)
+5. **{question}** → {answer}
 ```
 
-Após implementar, verificar:
-- `bun tsc --noEmit` — TypeScript ainda limpo?
-- `bun test` — testes ainda passando?
-- A correção resolve o problema apontado?
+### 2. Classify each item
 
-### 4. Responder no PR
+For each piece of feedback, classify:
+- **Agree → implement**: the reviewer is right, make the change
+- **Partially agree → discuss**: I get the point but there's nuance, respond on the PR explaining
+- **Disagree → justify**: I have a good reason to keep the code as is, explain why
+- **Unsure → ask**: I didn't understand the comment, request clarification
 
-Para cada item tratado, formular resposta:
+### 3. Implement fixes
+
+For each "implement" item:
 
 ```markdown
-**Bloqueantes resolvidos:**
-- ✅ {item 1}: {o que fiz}
-- ✅ {item 2}: {o que fiz}
+## Implementing: {item description}
 
-**Importantes resolvidos:**
-- ✅ {item 3}: {o que fiz}
-
-**Discordâncias justificadas:**
-- 💬 {item N}: Mantive como estava porque {razão técnica específica}.
-  Se você ainda vê problema, me ajude a entender o caso de uso que isso quebraria.
-
-**Opcionais — deixei para depois:**
-- 📋 {item N}: Concordo que seria melhor. Criei issue #{N} para endereçar em outra branch.
+File: {path}
+Problem: {what the reviewer identified}
+Solution: {what I'm going to do}
 ```
 
-### 5. Solicitar re-review
+After implementing, verify:
+- `bun tsc --noEmit` — TypeScript still clean?
+- `bun test` — tests still passing?
+- Does the fix resolve the reported problem?
 
-Após commit das correções:
+### 4. Respond on the PR
+
+For each handled item, formulate a response:
+
+```markdown
+**Blocking resolved:**
+- ✅ {item 1}: {what I did}
+- ✅ {item 2}: {what I did}
+
+**Important resolved:**
+- ✅ {item 3}: {what I did}
+
+**Justified disagreements:**
+- 💬 {item N}: Kept it as is because {specific technical reason}.
+  If you still see a problem, help me understand the use case it would break.
+
+**Optional — deferred:**
+- 📋 {item N}: I agree it would be better. Created issue #{N} to address in another branch.
+```
+
+### 5. Request re-review
+
+After committing the fixes:
 ```bash
 git add -A
 git commit -m "fix(review): address code review feedback
 
-- {resumo do que foi corrigido}
-- {outro item}
+- {summary of what was fixed}
+- {another item}
 
-Co-reviewed-by: {nome do revisor}"
+Co-reviewed-by: {reviewer name}"
 git push origin {branch}
 ```
 
-Notificar o revisor que as mudanças foram aplicadas.
+Notify the reviewer that the changes were applied.
 
 ---
 
 ## Gotchas
 
-- **Implementar todos os "opcionais" por ansiedade de agradar**: opcionais são opcionais. Implementar tudo aumenta o diff, prolonga o review e pode introduzir mudanças que o revisor não pediu. Priorizar bloqueantes e importantes.
-- **Não justificar discordâncias**: se discorda de um comment, silêncio não é uma estratégia. Explicar o raciocínio técnico de forma respeitosa — o revisor pode não ter visto o contexto completo.
-- **Commit "address review" monolítico**: commits de review devem ser atômicos por item, não um grande commit de tudo. Facilita re-review e bisect se algo quebrar.
-- **Não verificar testes após cada correção**: cada correção pode quebrar testes que passavam antes. Rodar `bun test` após cada mudança significativa, não só no final.
-- **Responder defensivamente**: reviews são para melhorar o código, não para atacar o autor. Tom respeitoso e factual — mesmo para discordâncias.
-- **Resolver todos os comments mas não re-solicitar review**: após aplicar todas as correções, sempre solicitar explicitamente o re-review. O revisor não monitora o PR automaticamente.
+- **Implementing all "optional" items out of eagerness to please**: optional is optional. Implementing everything grows the diff, prolongs the review, and may introduce changes the reviewer didn't ask for. Prioritize blocking and important items.
+- **Not justifying disagreements**: if you disagree with a comment, silence is not a strategy. Explain the technical reasoning respectfully — the reviewer may not have seen the full context.
+- **Monolithic "address review" commit**: review commits should be atomic per item, not one big commit of everything. It makes re-review and bisect easier if something breaks.
+- **Not verifying tests after each fix**: each fix can break tests that passed before. Run `bun test` after each significant change, not just at the end.
+- **Responding defensively**: reviews are to improve the code, not to attack the author. Keep a respectful, factual tone — even for disagreements.
+- **Resolving all comments but not re-requesting review**: after applying all fixes, always explicitly request the re-review. The reviewer does not monitor the PR automatically.

@@ -1,6 +1,6 @@
 ---
 name: 3d-games
-description: "Princípios de jogos 3D: pipeline de rendering, shaders, física e colisão 3D, câmeras, iluminação e LOD. ACIONE quando: meu jogo 3D está com draw calls demais e preciso de culling/batching/LOD; quando vale escrever um shader customizado (água, toon, efeitos); qual collider usar para personagens e terreno 3D no Unity, Unreal ou Godot; como fazer câmera third-person ou first-person com boa sensação; iluminação está pesada e preciso decidir entre sombras real-time e baked. Keywords: 3D, rendering, shader, mesh, LOD, frustum culling, lighting, câmera 3D, colisão, raycast. Não acione para: jogos 2D (use 2d-games), conforto e tracking em VR/AR (use vr-ar) ou pipeline de assets artísticos (use game-art)."
+description: "3D game principles: rendering pipeline, shaders, 3D physics and collision, cameras, lighting, and LOD. Use when: my 3D game has too many draw calls and I need culling/batching/LOD; when it's worth writing a custom shader (water, toon, effects); which collider to use for 3D characters and terrain in Unity, Unreal, or Godot; how to build a third-person or first-person camera that feels good; lighting is expensive and I need to decide between real-time and baked shadows. Keywords: 3D, rendering, shader, mesh, LOD, frustum culling, lighting, 3D camera, collision, raycast. Do NOT use for: 2D games (use 2d-games), VR/AR comfort and tracking (use vr-ar), or art asset pipeline (use game-art)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

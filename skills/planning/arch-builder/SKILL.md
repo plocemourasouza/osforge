@@ -1,100 +1,100 @@
 ---
 name: arch-builder
-description: "Facilitação de decisões arquiteturais com ADRs. Stack-aware — respeita project-context.md e otimiza para Next.js/Prisma/Supabase. ACIONE com frases como: 'definir schema Prisma', 'decidir Server Actions vs API Routes', 'desenhar fluxo de auth', 'escolher estratégia de caching', 'arquitetura', 'decisões técnicas', 'ADR'."
-trigger: arquitetura|architecture|decisões técnicas|ADR|schema design|schema prisma|server actions|fluxo de auth
+description: "Facilitation of architectural decisions with ADRs. Stack-aware — respects project-context.md and optimizes for Next.js/Prisma/Supabase. Use with phrases like: 'define Prisma schema', 'decide Server Actions vs API Routes', 'design the auth flow', 'choose a caching strategy', 'architecture', 'technical decisions', 'ADR'."
+trigger: architecture|technical decisions|ADR|schema design|prisma schema|server actions|auth flow
 model-tier: sonnet
 ---
 
 # Architecture Builder
 
-## Papel
-Facilitador de arquitetura pragmático. Balanceia "o que poderia ser" com
-"o que deveria ser". Fundamenta recomendações em trade-offs reais e
-constraints práticos. Respeita o stack já definido no project-context.
+## Role
+Pragmatic architecture facilitator. Balances "what could be" with
+"what should be". Grounds recommendations in real trade-offs and
+practical constraints. Respects the stack already defined in project-context.
 
 ## Inputs
-- **PRD ou spec** — Requisitos a serem atendidos
-- **project-context.md** — Stack e padrões do projeto (obrigatório se existir)
-- **Codebase existente** — Patterns já em uso
+- **PRD or spec** — Requirements to be met
+- **project-context.md** — Project stack and patterns (mandatory if it exists)
+- **Existing codebase** — Patterns already in use
 
-## Processo
+## Process
 
-### 1. Carregar Contexto
-- PRD/spec como fonte de requisitos
-- project-context.md como restrição de stack
-- Amostrar codebase para patterns existentes
+### 1. Load Context
+- PRD/spec as the source of requirements
+- project-context.md as the stack constraint
+- Sample the codebase for existing patterns
 
-### 2. Facilitar Decisões — Uma por Vez
+### 2. Facilitate Decisions — One at a Time
 
-Para cada decisão arquitetural relevante:
+For each relevant architectural decision:
 
-**a) Apresentar a decisão necessária:**
-"Precisamos decidir como {aspecto}. As opções que vejo são..."
+**a) Present the needed decision:**
+"We need to decide how to {aspect}. The options I see are..."
 
-**b) Listar opções com trade-offs:**
-- Opção A: {descrição} — Prós: {x,y}. Contras: {z}.
-- Opção B: {descrição} — Prós: {x,y}. Contras: {z}.
+**b) List options with trade-offs:**
+- Option A: {description} — Pros: {x,y}. Cons: {z}.
+- Option B: {description} — Pros: {x,y}. Cons: {z}.
 
-**c) Recomendar com justificativa:**
-"Recomendo {opção} porque {rationale alinhado com project-context}."
+**c) Recommend with justification:**
+"I recommend {option} because {rationale aligned with project-context}."
 
-**d) Documentar como ADR:**
+**d) Document as an ADR:**
 
 ```markdown
-### ADR-{N}: {título}
-**Status:** Proposta
-**Contexto:** {por que essa decisão é necessária}
-**Decisão:** {o que foi decidido}
-**Alternativas rejeitadas:**
-- {alternativa}: rejeitada porque {razão}
-**Consequências:** {o que muda com essa decisão}
+### ADR-{N}: {title}
+**Status:** Proposed
+**Context:** {why this decision is needed}
+**Decision:** {what was decided}
+**Rejected alternatives:**
+- {alternative}: rejected because {reason}
+**Consequences:** {what changes with this decision}
 ```
 
-### 3. Áreas de Decisão (adaptar ao projeto)
+### 3. Decision Areas (adapt to the project)
 
 - **Data Model:** Prisma schema — entities, relations, enums
-- **API Design:** Server Actions vs API Routes — quando usar cada
+- **API Design:** Server Actions vs API Routes — when to use each
 - **Auth:** Supabase Auth patterns, roles, RLS policies
 - **State Management:** Server state vs client state
-- **Integrações:** Como conectar serviços externos
+- **Integrations:** How to connect external services
 - **File/Storage:** Supabase Storage patterns
-- **Caching:** Quando e como (ISR, SWR, edge cache)
-- **Error Handling:** Patterns de erro e recovery
-- **Observability:** Logging, monitoring se aplicável
+- **Caching:** When and how (ISR, SWR, edge cache)
+- **Error Handling:** Error and recovery patterns
+- **Observability:** Logging, monitoring if applicable
 
-### 4. Formato do Artefato
+### 4. Artifact Format
 
 ```markdown
 ---
 type: osforge-architecture
-project: "{nome}"
+project: "{name}"
 status: draft
-created: "{data}"
+created: "{date}"
 depends_on: ["{prd-path}"]
 ---
 
-# Architecture: {título}
+# Architecture: {title}
 
-## Stack Confirmado
-{stack do project-context ou definido neste documento}
+## Confirmed Stack
+{stack from project-context or defined in this document}
 
 ## Data Model
-{Prisma schema design — entities e relations principais}
+{Prisma schema design — main entities and relations}
 
 ## ADRs
-### ADR-1: {título}
+### ADR-1: {title}
 ...
-### ADR-2: {título}
+### ADR-2: {title}
 ...
 
-## Integrações
-{serviços externos e como se conectam}
+## Integrations
+{external services and how they connect}
 
-## Diagrama de Contexto
-{descrição textual do fluxo principal}
+## Context Diagram
+{textual description of the main flow}
 ```
 
 ### 5. CHECKPOINT
-- **[A] Aprovar** — status `ready`
-- **[E] Editar** ADR específico
-- **[G] Gerar project-context** — invocar `project-context-generator` a partir desta arquitetura
+- **[A] Approve** — status `ready`
+- **[E] Edit** a specific ADR
+- **[G] Generate project-context** — invoke `project-context-generator` from this architecture

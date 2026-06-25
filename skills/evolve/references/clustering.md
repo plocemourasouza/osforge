@@ -1,13 +1,13 @@
-# Heurística de Clusterização de Triggers
+# Trigger Clustering Heuristic
 
-Este módulo explica o algoritmo de normalização e agrupamento usado pelo
-`osforge-db evolve`. Sem NLP, sem embeddings — só Python stdlib.
+This module explains the normalization and grouping algorithm used by
+`osforge-db evolve`. No NLP, no embeddings — just Python stdlib.
 
 ---
 
-## Problema
+## Problem
 
-Observações sobre o mesmo tema chegam com fraseamentos diferentes:
+Observations about the same topic arrive with different phrasings:
 
 ```
 "when writing tests prefer TDD"
@@ -15,13 +15,13 @@ Observações sobre o mesmo tema chegam com fraseamentos diferentes:
 "when tests fail check production code first"
 ```
 
-Objetivo: reconhecer que todas giram em torno de "tests" e agrupá-las.
+Goal: recognize that they all revolve around "tests" and group them.
 
 ---
 
-## Algoritmo em 3 Passos
+## 3-Step Algorithm
 
-### Passo 1 — Normalização
+### Step 1 — Normalization
 
 ```python
 _STRIP_VERBS = frozenset([
@@ -36,56 +36,56 @@ def _normalize_trigger(text):
     return " ".join(filtered).strip() or text.lower().strip()
 ```
 
-Remove articuladores verbais de alta frequência, mantendo o substantivo-sujeito.
+Removes high-frequency verbal connectors, keeping the subject noun.
 
-Exemplos:
+Examples:
 ```
 "when writing tests prefer TDD"     → "tests prefer tdd"
 "when adding components run shadcn" → "components run shadcn"
 "when deploying check lint passes"  → "deploying check lint passes"
 ```
 
-### Passo 2 — Extração da Chave de Cluster
+### Step 2 — Cluster Key Extraction
 
 ```python
 normalized = _normalize_trigger(row["trigger_text"])
 words = normalized.split()
-key = words[0] if words else normalized  # substantivo-sujeito = 1ª palavra restante
+key = words[0] if words else normalized  # subject noun = 1st remaining word
 ```
 
-Apenas a **primeira palavra** do resultado normalizado vira a chave de cluster.
+Only the **first word** of the normalized result becomes the cluster key.
 
-Isso garante que frases sobre o mesmo sujeito se agrupem apesar de predicados diferentes:
+This ensures phrases about the same subject group together despite different predicates:
 
 ```
 "tests prefer tdd"      → key: "tests"
-"tests use red-green"   → key: "tests"   ✓ mesmo cluster
+"tests use red-green"   → key: "tests"   ✓ same cluster
 "components run shadcn" → key: "components"
-"components check registry" → key: "components"  ✓ mesmo cluster
+"components check registry" → key: "components"  ✓ same cluster
 ```
 
-### Passo 3 — Filtragem e Classificação
+### Step 3 — Filtering and Classification
 
 ```python
 candidates = {k: v for k, v in clusters.items() if len(v) >= min_count}
 ```
 
-Só clusters com `len ≥ min_count` (default 2) viram candidatos.
+Only clusters with `len ≥ min_count` (default 2) become candidates.
 
-Confiança estimada pela quantidade de observações:
+Confidence estimated from the number of observations:
 ```python
 confidence = 0.5 + min(0.3, len(obs) * 0.05)
 ```
 
-| Observações | Confiança |
+| Observations | Confidence |
 |-------------|-----------|
 | 1 | 0.55 |
 | 2 | 0.60 |
 | 4 | 0.70 |
 | 6 | 0.80 |
-| 8+ | 0.80 (teto) |
+| 8+ | 0.80 (cap) |
 
-Classificação do candidato:
+Candidate classification:
 ```python
 def _classify_candidate(cluster_size, avg_conf):
     if cluster_size >= 3 and avg_conf >= 0.75:
@@ -97,54 +97,54 @@ def _classify_candidate(cluster_size, avg_conf):
 
 ---
 
-## Limitações Conhecidas
+## Known Limitations
 
-**Falsos positivos por substantivo genérico:**
-- "tests", "files", "data" são muito comuns → podem agregar padrões não relacionados
-- Mitigação: filtre por `--project=<slug>` para manter contexto coeso
+**False positives from generic nouns:**
+- "tests", "files", "data" are very common → may aggregate unrelated patterns
+- Mitigation: filter by `--project=<slug>` to keep context cohesive
 
-**Triggers curtos colidem:**
-- "run tests" e "run lint" → key "run" (ambíguo)
-- Mitigação: escreva triggers com sujeito específico ("when tests fail..." não "run tests")
+**Short triggers collide:**
+- "run tests" and "run lint" → key "run" (ambiguous)
+- Mitigation: write triggers with a specific subject ("when tests fail..." not "run tests")
 
-**Sem semântica:**
-- "when writing tests" e "when running benchmarks" ficam em clusters diferentes
-- Isso é intencional: a heurística prioriza precisão sobre recall
+**No semantics:**
+- "when writing tests" and "when running benchmarks" end up in different clusters
+- This is intentional: the heuristic prioritizes precision over recall
 
 ---
 
-## Estratégias de Escrita de Triggers
+## Trigger-Writing Strategies
 
-Para maximizar qualidade dos clusters:
+To maximize cluster quality:
 
-| ✅ Bom | ❌ Evitar |
+| ✅ Good | ❌ Avoid |
 |--------|----------|
 | "when writing tests prefer TDD" | "TDD" |
 | "when adding components use shadcn" | "shadcn install" |
 | "when schema changes run migration" | "migrate" |
 | "when auth fails check RLS policies" | "RLS bug" |
 
-Padrão recomendado: **"when [contexto] [ação-específica]"**
+Recommended pattern: **"when [context] [specific-action]"**
 
 ---
 
-## Exemplo Completo
+## Complete Example
 
 ```bash
-# Capturar observações ao longo da sessão
-osforge-db add-observation meu-proj "when writing tests prefer TDD"
-osforge-db add-observation meu-proj "when writing tests check edge cases first"
-osforge-db add-observation meu-proj "when adding shadcn components run npx shadcn add"
-osforge-db add-observation meu-proj "when adding shadcn components check registry"
-osforge-db add-observation meu-proj "when auth fails verify RLS policies in Supabase"
+# Capture observations throughout the session
+osforge-db add-observation my-proj "when writing tests prefer TDD"
+osforge-db add-observation my-proj "when writing tests check edge cases first"
+osforge-db add-observation my-proj "when adding shadcn components run npx shadcn add"
+osforge-db add-observation my-proj "when adding shadcn components check registry"
+osforge-db add-observation my-proj "when auth fails verify RLS policies in Supabase"
 
-# Analisar
-osforge-db evolve --project=meu-proj
+# Analyze
+osforge-db evolve --project=my-proj
 ```
 
-Saída esperada:
+Expected output:
 ```
-EVOLVE ANALYSIS — 5 observation(s), projeto=meu-proj
+EVOLVE ANALYSIS — 5 observation(s), project=my-proj
 Clusters ≥ 2: 2
 
 ## SKILL CANDIDATES (2)
@@ -152,4 +152,4 @@ Clusters ≥ 2: 2
 2. Cluster: "shadcn"     | 2 obs | conf 60%
 ```
 
-"auth" fica fora (cluster_size = 1 < min_count).
+"auth" is left out (cluster_size = 1 < min_count).

@@ -1,12 +1,12 @@
 # AutoRefine v3 (Autonomous Iteration Loop)
 
-**Trigger:** Melhorar skill, refinar skill, otimizar, autorefine, iterar sobre skill, autoresearch, loop de melhoria, self-improving, refinar código, otimizar performance, melhorar métrica.
+**Trigger:** Improve skill, refine skill, optimize, autorefine, iterate on skill, autoresearch, improvement loop, self-improving, refine code, optimize performance, improve metric.
 
 ---
 
 ## Purpose
 
-Loop autônomo de refinamento iterativo inspirado no Karpathy autoresearch. Generalizado para qualquer artefato com métrica mensurável — skills, código, prompts, configs, docs.
+Autonomous iterative refinement loop inspired by Karpathy autoresearch. Generalized to any artifact with a measurable metric — skills, code, prompts, configs, docs.
 
 ---
 
@@ -14,27 +14,27 @@ Loop autônomo de refinamento iterativo inspirado no Karpathy autoresearch. Gene
 
 ### v2 Core Features
 1. **Separation: verify + guard**
-   - `verify` — mede a métrica principal
-   - `guard` — protege contra regressões
+   - `verify` — measures the primary metric
+   - `guard` — protects against regressions
 
 2. **Cross-session memory**
-   - Persiste hipóteses KEEP/DISCARD via osforge-db
-   - Consulta antes de formular novas
-   - Nunca repete falhas
+   - Persists KEEP/DISCARD hypotheses via osforge-db
+   - Queries before formulating new ones
+   - Never repeats failures
 
 3. **Generic mode**
-   - Qualquer arquivo com métrica mecânica
+   - Any file with a mechanical metric
 
 ### v3 Additions
 4. **Meta-optimization**
-   - Após 10+ sessões acumuladas
-   - Analisa padrões agregados de sucesso/falha
-   - Propõe ajustes ao próprio SKILL.md
+   - After 10+ accumulated sessions
+   - Analyzes aggregate success/failure patterns
+   - Proposes adjustments to its own SKILL.md
 
 5. **Cross-domain transfer**
-   - Hipóteses KEEP com delta ≥1.5%
-   - Marcadas como transfer-candidate
-   - Sugeridas em projetos do mesmo domínio
+   - KEEP hypotheses with delta ≥1.5%
+   - Marked as transfer-candidate
+   - Suggested in projects of the same domain
 
 ---
 
@@ -115,8 +115,8 @@ autorefine meta-analyze
 
 ## Metrics Examples
 
-| Artefato | Métrica |
-|----------|---------|
+| Artifact | Metric |
+|----------|--------|
 | Skill | Accuracy on test cases |
 | Code | Test coverage %, bundle size |
 | API | Response time p95, error rate |

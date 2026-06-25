@@ -1,6 +1,6 @@
 ---
 name: python-patterns
-description: "Princípios de desenvolvimento Python: escolha de framework, async vs sync, type hints, Pydantic, estrutura de projeto e background tasks. ACIONE quando: escolher entre FastAPI, Django e Flask, async def bloqueando ou misturando lib sync em código async, N+1 no Django ORM (select_related, prefetch_related), validar request/response com Pydantic, escolher entre Celery, ARQ e BackgroundTasks, estruturar projeto Python que cresceu além de um script. Keywords: Python, FastAPI, Django, Flask, async, Pydantic, type hints, Celery, pytest, SQLAlchemy. Não acione para: ciência de dados/notebooks ou código Node.js/TypeScript."
+description: "Python development principles: framework selection, async vs sync, type hints, Pydantic, project structure, and background tasks. Use when: choosing between FastAPI, Django, and Flask, async def blocking or mixing a sync lib into async code, N+1 in the Django ORM (select_related, prefetch_related), validating request/response with Pydantic, choosing between Celery, ARQ, and BackgroundTasks, structuring a Python project that has grown beyond a single script. Keywords: Python, FastAPI, Django, Flask, async, Pydantic, type hints, Celery, pytest, SQLAlchemy. Do NOT use for: data science/notebooks or Node.js/TypeScript code."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

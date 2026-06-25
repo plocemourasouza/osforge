@@ -1,6 +1,6 @@
 ---
 name: performance-profiling
-description: "Princípios de profiling de performance: medir, analisar e otimizar usando Core Web Vitals, Lighthouse e ferramentas de profiling. ACIONE quando: página lenta ou LCP/INP/CLS ruins, suspeita de memory leak, jank no scroll ou animações travando, bundle JavaScript muito grande, API ou operação demorada precisando de baseline e medição antes de otimizar. Keywords: performance, profiling, lento, slow, Lighthouse, Core Web Vitals, memory leak, bundle size, otimização, benchmark. Não acione para: otimização de queries SQL específicas ou bugs funcionais sem relação com velocidade."
+description: "Performance profiling principles: measure, analyze, and optimize using Core Web Vitals, Lighthouse, and profiling tools. Use when: slow page or poor LCP/INP/CLS, suspected memory leak, scroll jank or stuttering animations, oversized JavaScript bundle, slow API or operation needing a baseline and measurement before optimizing. Keywords: performance, profiling, slow, Lighthouse, Core Web Vitals, memory leak, bundle size, optimization, benchmark. Do NOT use for: optimizing specific SQL queries or functional bugs unrelated to speed."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

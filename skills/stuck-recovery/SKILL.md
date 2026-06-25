@@ -1,13 +1,13 @@
 ---
 name: stuck-recovery
 description: >
-  Detecta agent stuck patterns (loops, repetições, drift do escopo, ferramenta
-  falhando 3x+) e executa recovery cirúrgico: salva estado em osforge-db, identifica
-  causa raiz, propõe reset com contexto mínimo preservado. ACIONE quando: usuário
-  diz "stuck", "travado", "loop", "não está funcionando", "tenta de novo", "isso
-  não está progredindo", "esquece o que estava fazendo", ou quando o agente
-  detecta sinais internos de saturação (mesma ferramenta 3x com falha, sem
-  progresso em N turnos).
+  Detects agent stuck patterns (loops, repetitions, scope drift, a tool
+  failing 3x+) and runs surgical recovery: saves state to osforge-db, identifies
+  root cause, proposes a reset with minimal context preserved. Use when: the user
+  says "stuck", "loop", "it's not working", "try again", "this
+  isn't making progress", "forget what you were doing", or when the agent
+  detects internal signs of saturation (same tool failing 3x, no
+  progress over N turns).
 version: 1.0.0
 inspired_by: Leonxlnx/agentic-ai-prompt-research (Prompt 26 — Stuck Skill, reframed)
 metadata:
@@ -18,136 +18,136 @@ allowed-tools: Read, Bash, Glob, Grep
 
 # Stuck Recovery — Agent Loop Detection + State Save + Reset
 
-> O Stuck Skill original do Claude Code é diagnóstico de processo (CPU, zombies, FDs).
-> Este skill é diagnóstico de **agente** — detecta loops semânticos e propõe recovery
-> sem perder o trabalho feito.
+> The original Claude Code Stuck Skill is process diagnosis (CPU, zombies, FDs).
+> This skill is **agent** diagnosis — it detects semantic loops and proposes recovery
+> without losing the work done.
 
-## Pré-requisitos
+## Prerequisites
 
-Esta skill depende de duas peças externas (via Bash, listado em `allowed-tools`):
+This skill depends on two external pieces (via Bash, listed in `allowed-tools`):
 
-- **`osforge-db`** (CLI) — persistência de estado/blockers/resume nas Fases 2 e 4. Verificar com `osforge-db --version`. Sem ele, o SAVE degrada para WIP commit + arquivo de notas local.
-- **`context-compact`** (skill OSForge) — usada na Opção B (compact reset). Sem ela, pular direto para Opção A ou C.
+- **`osforge-db`** (CLI) — state/blocker/resume persistence in Phases 2 and 4. Verify with `osforge-db --version`. Without it, SAVE degrades to a WIP commit + a local notes file.
+- **`context-compact`** (OSForge skill) — used in Option B (compact reset). Without it, skip straight to Option A or C.
 
 ## Signs of being stuck (detection)
 
-### Sinais externos (usuário fala)
-- "Não está funcionando"
-- "Você está travado"
-- "Tenta de novo de outro jeito"
-- "Você está em loop"
-- "Esquece, vamos voltar"
-- "Isso não está progredindo"
+### External signs (the user speaks)
+- "It's not working"
+- "You're stuck"
+- "Try again a different way"
+- "You're in a loop"
+- "Forget it, let's go back"
+- "This isn't making progress"
 
-### Sinais internos (auto-detecção)
-| Sinal | Threshold |
+### Internal signs (self-detection)
+| Sign | Threshold |
 |---|---|
-| Mesma ferramenta falhando consecutivamente | ≥ 3 vezes |
-| Mesmo arquivo sendo lido sem ação | ≥ 5 vezes em 10 turnos |
-| Sem progresso mensurável | 10+ turnos sem completar tarefa atômica |
-| Context > 85% sem fechamento de fase | saturação iminente |
-| Loop de "verify → fail → retry" sem mudança de approach | ≥ 2 ciclos |
-| Drift do escopo original | tópico diverge sem aprovação do usuário |
-| Tool errors crescendo (não diminuindo) | erro rate > 30% nos últimos 10 calls |
+| Same tool failing consecutively | ≥ 3 times |
+| Same file being read with no action | ≥ 5 times in 10 turns |
+| No measurable progress | 10+ turns without completing an atomic task |
+| Context > 85% without closing a phase | imminent saturation |
+| "verify → fail → retry" loop with no change of approach | ≥ 2 cycles |
+| Drift from the original scope | topic diverges without user approval |
+| Tool errors growing (not shrinking) | error rate > 30% in the last 10 calls |
 
-## Protocolo de recovery (4 fases)
+## Recovery protocol (4 phases)
 
-### Fase 1: STOP — Pare antes de piorar
+### Phase 1: STOP — Stop before it gets worse
 
-Quando detecta stuck:
+When stuck is detected:
 
 ```
 🛑 STUCK DETECTED
 
-Sinal: <qual sinal disparou>
-Contexto: <X% / 200k>
-Última tarefa atômica completa: <há quantos turnos>
-Padrão observado: <descrição em 1 linha>
+Sign: <which sign fired>
+Context: <X% / 200k>
+Last completed atomic task: <how many turns ago>
+Observed pattern: <1-line description>
 
-Vou pausar e propor recovery antes de gastar mais contexto.
+I'll pause and propose recovery before spending more context.
 ```
 
-**NÃO**:
-- Tentar mais uma vez "só pra ver"
-- Pular pra próxima sub-tarefa
-- Pretender que está progredindo
+**DO NOT**:
+- Try one more time "just to see"
+- Jump to the next sub-task
+- Pretend you're making progress
 
-### Fase 2: SAVE — Preserve o trabalho
+### Phase 2: SAVE — Preserve the work
 
-Salvar estado COMPLETO em `osforge-db` antes do reset:
+Save the COMPLETE state to `osforge-db` before the reset:
 
 ```bash
 osforge-db set-phase <project-slug> "<current-phase>" in_progress \
-  --resume "<descrição precisa do ponto de parada>" \
-  --artifacts "<arquivos modificados, paths>"
+  --resume "<precise description of the stopping point>" \
+  --artifacts "<modified files, paths>"
 
-osforge-db add-blocker <project-slug> "<descrição do que está bloqueando>"
+osforge-db add-blocker <project-slug> "<description of what is blocking>"
 
-# Persistir o summary atual via context-compact se aplicável
+# Persist the current summary via context-compact if applicable
 ```
 
-Garantir que TODOS os arquivos modificados estão commitados (mesmo em WIP commit):
+Ensure ALL modified files are committed (even in a WIP commit):
 ```bash
 git add -A && git commit -m "wip: stuck recovery checkpoint at <task>"
 ```
 
-### Fase 3: DIAGNOSE — Identifique a causa raiz
+### Phase 3: DIAGNOSE — Identify the root cause
 
-Aplicar systematic-debugging skill (4 fases) **na própria sessão**:
+Apply the systematic-debugging skill (4 phases) **within the session itself**:
 
 #### Phase 1: Reproduce
-Liste exatamente o que estava acontecendo nos últimos 5-10 turnos:
-- Quais ferramentas foram chamadas
-- Quais erros retornaram
-- O que o agente tentou fazer
-- O que o agente DEVERIA ter feito
+List exactly what was happening in the last 5-10 turns:
+- Which tools were called
+- Which errors they returned
+- What the agent tried to do
+- What the agent SHOULD have done
 
 #### Phase 2: Isolate
-Identifique o turn EXATO onde o agente começou a descarrilar:
-- Foi uma decisão errada em qual ponto?
-- Foi uma assumption falsa sobre quê?
-- Foi falta de contexto sobre quê?
+Identify the EXACT turn where the agent started to derail:
+- Was it a wrong decision at which point?
+- Was it a false assumption about what?
+- Was it missing context about what?
 
 #### Phase 3: Understand
-Categorize a causa raiz:
+Categorize the root cause:
 
-| Causa | Sintoma | Fix |
+| Cause | Symptom | Fix |
 |---|---|---|
-| **Context saturation** | Loops + esquecimento | `context-compact` → resume |
-| **Wrong approach** | Mesmo erro insiste mesmo após retry | Mudar approach completamente, não tentar variações |
-| **Missing context** | Decisões erradas por falta de info | Spawn `explorer-agent` para mapear |
-| **Tool misuse** | Ferramenta certa, parâmetros errados | Re-read tool description |
-| **Spec drift** | Agente saiu do escopo original | Voltar ao spec, descartar trabalho off-scope |
-| **External blocker** | Server down, API quebrada, dep ausente | Avisar usuário, parar até resolver |
+| **Context saturation** | Loops + forgetting | `context-compact` → resume |
+| **Wrong approach** | Same error persists even after retry | Change the approach completely, don't try variations |
+| **Missing context** | Wrong decisions due to lack of info | Spawn `explorer-agent` to map |
+| **Tool misuse** | Right tool, wrong parameters | Re-read tool description |
+| **Spec drift** | Agent left the original scope | Return to the spec, discard off-scope work |
+| **External blocker** | Server down, broken API, missing dep | Notify the user, stop until resolved |
 
 #### Phase 4: Fix
-Definir explicitamente o que vai ser DIFERENTE na próxima tentativa:
-- Approach: <X em vez de Y>
-- Context: <vou carregar Z primeiro>
-- Verification: <vou checar W antes de declarar pronto>
+Explicitly define what will be DIFFERENT on the next attempt:
+- Approach: <X instead of Y>
+- Context: <I'll load Z first>
+- Verification: <I'll check W before declaring it done>
 
-### Fase 4: RECOVER — Reset cirúrgico com contexto mínimo
+### Phase 4: RECOVER — Surgical reset with minimal context
 
-3 opções, escolha baseada em diagnóstico:
+3 options, choose based on the diagnosis:
 
-#### Opção A: Soft reset (mesma sessão)
-Se context não está saturado e a causa é diagnosticável:
-- Anuncie o reset ao usuário
-- Limpe assumptions ruins do contexto mental
-- Reformule o approach
+#### Option A: Soft reset (same session)
+If context is not saturated and the cause is diagnosable:
+- Announce the reset to the user
+- Clear bad assumptions from the mental context
+- Reformulate the approach
 - Continue
 
-#### Opção B: Compact reset (mesma sessão, contexto compactado)
-Se context > 70% mas você quer continuar:
-1. Acione `context-compact` skill
-2. Compacte tudo até o ponto do stuck
-3. Reinicie com summary + new approach
+#### Option B: Compact reset (same session, compacted context)
+If context > 70% but you want to continue:
+1. Invoke the `context-compact` skill
+2. Compact everything up to the stuck point
+3. Restart with summary + new approach
 
-#### Opção C: Hard reset (nova sessão)
-Se context > 90% ou approach é fundamentalmente errado:
-1. `osforge-db set-resume <slug> "<próximo passo específico>"`
-2. Avise o usuário: "vou pedir pra você abrir nova sessão"
-3. Nova sessão começa com `osforge-db resume <slug>` → 50 tokens
+#### Option C: Hard reset (new session)
+If context > 90% or the approach is fundamentally wrong:
+1. `osforge-db set-resume <slug> "<specific next step>"`
+2. Tell the user: "I'll ask you to open a new session"
+3. The new session starts with `osforge-db resume <slug>` → 50 tokens
 
 ## Decision tree
 
@@ -155,73 +155,73 @@ Se context > 90% ou approach é fundamentalmente errado:
 Detected stuck
     │
     ├─ Context < 70%?
-    │   ├─ YES → Opção A (soft reset)
+    │   ├─ YES → Option A (soft reset)
     │   └─ NO  ↓
     │
     ├─ Context 70-90%?
-    │   ├─ YES → Opção B (compact reset)
+    │   ├─ YES → Option B (compact reset)
     │   └─ NO  ↓
     │
-    └─ Context > 90% OR approach fundamentalmente errado?
-        └─ Opção C (hard reset via osforge-db)
+    └─ Context > 90% OR approach fundamentally wrong?
+        └─ Option C (hard reset via osforge-db)
 ```
 
-## Comunicação ao usuário
+## Communication to the user
 
-**SEMPRE** seja transparente:
+**ALWAYS** be transparent:
 ```
-🛑 Detectei que estamos em loop nas últimas 6 mensagens (tentando rodar `tsc` que falha por causa de import que não existe).
+🛑 I detected we've been in a loop for the last 6 messages (trying to run `tsc`, which fails because of an import that doesn't exist).
 
-Diagnóstico: missing context — não verifiquei o `package.json` antes de assumir que a dep estava instalada.
+Diagnosis: missing context — I didn't check `package.json` before assuming the dep was installed.
 
-Recovery proposto:
-1. Salvar estado atual (in progress: fix do TS error em validate.ts:42)
-2. Acionar `explorer-agent` pra mapear deps reais
-3. Continuar com approach corrigido (instalar dep OR ajustar import)
+Proposed recovery:
+1. Save the current state (in progress: fix for the TS error in validate.ts:42)
+2. Invoke `explorer-agent` to map the real deps
+3. Continue with the corrected approach (install dep OR adjust import)
 
-Pode aprovar? Senão, você prefere: (a) eu tento com outro approach agora, ou (b) salvamos e você abre nova sessão fresh?
+Can you approve? If not, do you prefer: (a) I try another approach now, or (b) we save and you open a fresh new session?
 ```
 
 ## Anti-patterns
 
-- ❌ Continuar tentando depois de 3 falhas consecutivas
-- ❌ Reset silencioso (usuário fica perdido)
-- ❌ Reset sem salvar estado (perde trabalho)
-- ❌ Diagnosticar errado e re-aplicar mesma solução
-- ❌ Esconder que está stuck pra "parecer competente"
-- ❌ Tentar mais ferramentas como solução pra falta de approach
+- ❌ Keep trying after 3 consecutive failures
+- ❌ Silent reset (the user gets lost)
+- ❌ Reset without saving state (loses work)
+- ❌ Misdiagnose and re-apply the same solution
+- ❌ Hide that you're stuck to "look competent"
+- ❌ Try more tools as a solution for a lack of approach
 
-## Verificação pós-recovery
+## Post-recovery verification
 
-Após o reset, o próximo turno deve produzir:
-- [ ] Outcome diferente do loop original
-- [ ] Approach mudou (não só os parâmetros)
-- [ ] Estado pré-recovery está acessível via `osforge-db resume`
-- [ ] Usuário sabe o que mudou e por quê
+After the reset, the next turn should produce:
+- [ ] An outcome different from the original loop
+- [ ] The approach changed (not just the parameters)
+- [ ] The pre-recovery state is accessible via `osforge-db resume`
+- [ ] The user knows what changed and why
 
-## Integration com OSForge
+## Integration with OSForge
 
-O `stuck-recovery` complementa skills existentes:
-- `systematic-debugging` (4 fases) — usado dentro da Fase 3 (Diagnose)
-- `context-compact` — usado na Opção B (compact reset)
-- `osforge-db` — persistência de estado em todas as opções
-- `verification-before-completion` — gate antes de declarar recovery successful
+`stuck-recovery` complements existing skills:
+- `systematic-debugging` (4 phases) — used inside Phase 3 (Diagnose)
+- `context-compact` — used in Option B (compact reset)
+- `osforge-db` — state persistence in all options
+- `verification-before-completion` — gate before declaring recovery successful
 
-## Frequência esperada
+## Expected frequency
 
-Em sessão saudável: **0-1 invocação por 2-3 horas de trabalho intenso**.
+In a healthy session: **0-1 invocations per 2-3 hours of intense work**.
 
-Mais que isso indica:
-- Spec mal definido (precisa `spec-clarify`)
-- Codebase mal mapeada (precisa `explorer-agent`)
-- Approach fundamentalmente errado (precisa `brainstorming`)
+More than that indicates:
+- A poorly defined spec (needs `spec-clarify`)
+- A poorly mapped codebase (needs `explorer-agent`)
+- A fundamentally wrong approach (needs `brainstorming`)
 
 ---
 
 ## Related Skills
 
-- `systematic-debugging` — usada internamente na Fase Diagnose
-- `context-compact` — opção B do recovery
-- `osforge-db` — persistência cross-session
-- `verification-before-completion` — gate pós-recovery
-- `predictive-failure` — antecipa stuck antes de acontecer
+- `systematic-debugging` — used internally in the Diagnose phase
+- `context-compact` — recovery option B
+- `osforge-db` — cross-session persistence
+- `verification-before-completion` — post-recovery gate
+- `predictive-failure` — anticipates getting stuck before it happens

@@ -1,6 +1,6 @@
 ---
 name: output-enforcement
-description: "Camada de enhancement OSForge sobre full-output-enforcement: além do output completo, exige verification gate antes de declarar done e proteção TDD (nunca enfraquecer testes). ACIONE quando: pedirem completo, todo o arquivo, exaustivo, sem placeholders ou não corte, refactor multi-arquivo, gerar vários componentes ou documentação longa, suíte de testes que precisa de todos os casos escritos, migração que não pode pular itens. Keywords: completo, exaustivo, sem placeholder, não corte, verification, TDD, multi-file, scope, deliverables, output completo. Não acione para: a regra base genérica anti-truncamento isolada — essa é full-output-enforcement, o upstream que esta camada estende com verificação e disciplina de testes."
+description: "OSForge enhancement layer over full-output-enforcement: beyond complete output, requires a verification gate before declaring done and TDD protection (never weaken tests). Use when: asked for complete, the whole file, exhaustive, no placeholders, or don't truncate, multi-file refactor, generating several components or long documentation, test suite that needs all cases written, migration that can't skip items. Keywords: complete, exhaustive, no placeholder, don't truncate, verification, TDD, multi-file, scope, deliverables, full output. Do NOT use for: the generic anti-truncation base rule in isolation — that is full-output-enforcement, the upstream this layer extends with verification and test discipline."
 version: 1.1.0
 compose_with:
   upstream:
@@ -110,8 +110,8 @@ Auto-activate for:
 - Multi-component generation (e.g., "create 5 components")
 - Full-page implementations
 - Migration tasks (rename, restructure, type-tighten)
-- Any task where the user uses words like "completo", "todo", "inteiro", "exaustivo",
-  "sem cortar", "sem placeholder", "no shortcuts"
+- Any task where the user uses words like "complete", "all", "entire", "exhaustive",
+  "don't truncate", "no placeholder", "no shortcuts"
 
 ## Interaction with Other Skills
 

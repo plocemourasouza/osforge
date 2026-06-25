@@ -1,6 +1,6 @@
 ---
 name: database-design
-description: "Princípios de design de banco de dados: escolha de banco e ORM, schema, índices, otimização e migrations. ACIONE quando: query lenta ou N+1 em produção, escolher entre PostgreSQL, Neon, Turso e SQLite, escolher entre Drizzle, Prisma e Kysely, modelar schema e relacionamentos de nova feature, criar índice composto ou interpretar EXPLAIN ANALYZE, planejar migration segura em banco serverless. Keywords: database, banco de dados, schema, index, ORM, Prisma, Drizzle, migration, N+1, PostgreSQL. Não acione para: queries triviais de leitura, backup/restore operacional ou administração de servidor de banco."
+description: "Database design principles: database and ORM choice, schema, indexes, optimization, and migrations. Use when: a slow query or N+1 in production, choosing between PostgreSQL, Neon, Turso, and SQLite, choosing between Drizzle, Prisma, and Kysely, modeling the schema and relationships of a new feature, creating a composite index or interpreting EXPLAIN ANALYZE, planning a safe migration on a serverless database. Keywords: database, schema, index, ORM, Prisma, Drizzle, migration, N+1, PostgreSQL. Do NOT use for: trivial read queries, operational backup/restore, or database server administration."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

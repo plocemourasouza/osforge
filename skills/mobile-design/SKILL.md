@@ -1,6 +1,6 @@
 ---
 name: mobile-design
-description: "Princípios de design mobile-first para apps iOS e Android: interação touch, thumb zone, performance 60fps, convenções de plataforma (HIG, Material 3), offline-first e navegação nativa. ACIONE quando: 'cria um app em React Native ou Flutter', 'design de tela mobile nativa', 'esse botão é pequeno demais para touch', 'o app precisa funcionar offline', 'tab bar, drawer ou stack para navegação do app', 'dark mode OLED no app'. Keywords: mobile, app, iOS, Android, React Native, Flutter, touch, gesture, HIG, Material Design. Não acione para: sites e web responsivo (high-end-visual-design, minimalist-ui), padrões técnicos Tailwind (tailwind-patterns), gerar mockups de imagem de apps (imagegen-frontend-mobile)."
+description: "Mobile-first design principles for iOS and Android apps: touch interaction, thumb zone, 60fps performance, platform conventions (HIG, Material 3), offline-first, and native navigation. Use when: 'create an app in React Native or Flutter', 'native mobile screen design', 'this button is too small for touch', 'the app needs to work offline', 'tab bar, drawer, or stack for app navigation', 'OLED dark mode in the app'. Keywords: mobile, app, iOS, Android, React Native, Flutter, touch, gesture, HIG, Material Design. Do NOT use for: websites and responsive web (high-end-visual-design, minimalist-ui), Tailwind technical patterns (tailwind-patterns), generating app image mockups (imagegen-frontend-mobile)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

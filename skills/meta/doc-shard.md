@@ -1,12 +1,12 @@
 # Doc Shard
 
-**Trigger:** "shard doc", "dividir documento", "split markdown", ou quando documento excede context window.
+**Trigger:** "shard doc", "split document", "split markdown", or when a document exceeds the context window.
 
 ---
 
 ## Purpose
 
-Divide documentos markdown grandes em arquivos menores organizados com index. Preserva referências cruzadas, gera table of contents no index, e mantém frontmatter consistente.
+Splits large markdown documents into smaller files organized with an index. Preserves cross-references, generates a table of contents in the index, and keeps frontmatter consistent.
 
 ---
 

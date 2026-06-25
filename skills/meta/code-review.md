@@ -1,6 +1,6 @@
 # Code Review
 
-**Trigger:** code review, revisar código, review PR
+**Trigger:** code review, review code, review PR
 
 ---
 

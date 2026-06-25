@@ -1,13 +1,13 @@
 ---
 name: aesthetic-modes
 description: >
-  Três modos visuais distintos para projetos com identidade forte:
+  Three distinct visual modes for projects with a strong identity:
   EDITORIAL_MINIMALIST (Notion/Linear, warm monochrome), INDUSTRIAL_BRUTALIST
   (Swiss + CRT terminal), SOFT_PREMIUM (Apple-tier, glassmorphism nested cards).
-  ACIONE quando: usuário pede "estilo minimalista editorial", "brutalist",
+  Use when: the user asks for "editorial minimalist style", "brutalist",
   "industrial", "soft UI", "Apple-tier", "Linear style", "Notion style",
-  "warm monochrome", "blueprint UI", "terminal UI", ou descreve um mood
-  visual específico que se encaixa em um destes 3 paradigmas.
+  "warm monochrome", "blueprint UI", "terminal UI", or describes a specific
+  visual mood that fits one of these 3 paradigms.
 version: 1.0.0
 inspired_by: >
   Leonxlnx/taste-skill (minimalist-skill + brutalist-skill + soft-skill) — MIT, 10k+ stars

@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "Refinamento socrático de ideia ANTES de qualquer código ou spec técnica. ACIONE quando: usuário descreve uma ideia vaga, quer explorar alternativas antes de comprometer, diz 'quero construir X' sem detalhes claros, ou quando a demanda tem alta ambiguidade de produto. Keywords: brainstorm, explorar ideia, antes de começar, o que construir, alternativas, explorar opções, ideia inicial, vaga ideia, como fazer."
+description: "Socratic refinement of an idea BEFORE any code or technical spec. Use when: the user describes a vague idea, wants to explore alternatives before committing, says 'I want to build X' without clear details, or when the request has high product ambiguity. Keywords: brainstorm, explore idea, before starting, what to build, alternatives, explore options, initial idea, vague idea, how to do it."
 model: opus
 context: fork
 agent: general-purpose
@@ -12,168 +12,168 @@ metadata:
   adapted_by: osforge
 ---
 
-## Contexto do projeto
-!`[ -f project-context.md ] && head -20 project-context.md || echo "project-context.md não encontrado — brainstorming sem contexto de stack"`
-!`[ -f .osforge/memory/constitution.md ] && echo "Constitution encontrada" && head -10 .osforge/memory/constitution.md || echo "constitution.md não encontrada"`
+## Project context
+!`[ -f project-context.md ] && head -20 project-context.md || echo "project-context.md not found — brainstorming without stack context"`
+!`[ -f .osforge/memory/constitution.md ] && echo "Constitution found" && head -10 .osforge/memory/constitution.md || echo "constitution.md not found"`
 
 # Brainstorming
 
-## Papel
+## Role
 
-Facilitador socrático. Você NÃO propõe soluções imediatamente — você PERGUNTA
-para entender o problema real antes de qualquer comprometimento técnico.
-O objetivo é transformar uma ideia vaga em um design validado pelo usuário,
-apresentado em seções curtas o suficiente para ser digerido e aprovado.
+Socratic facilitator. You do NOT propose solutions immediately — you ASK
+to understand the real problem before any technical commitment.
+The goal is to turn a vague idea into a design validated by the user,
+presented in sections short enough to be digested and approved.
 
-Inspirado no padrão `brainstorming` do obra/superpowers.
-
----
-
-## Quando usar
-
-- Usuário descreve uma ideia sem contexto suficiente ("quero um dashboard de métricas")
-- A demanda pode ser feita de várias formas diferentes com tradeoffs significativos
-- Existe risco de construir a coisa errada antes de clarificar o problema real
-- ANTES de chamar `spec-builder` ou `phase-discussion` para demandas novas
-
-**Não usar** para: bugs com causa clara, tasks mecânicas, extensões triviais de features existentes.
+Inspired by the `brainstorming` pattern from obra/superpowers.
 
 ---
 
-## Processo
+## When to use
 
-### Fase 1 — Entender o problema real
+- The user describes an idea without enough context ("I want a metrics dashboard")
+- The request can be done in several different ways with significant tradeoffs
+- There is a risk of building the wrong thing before clarifying the real problem
+- BEFORE calling `spec-builder` or `phase-discussion` for new requests
 
-Antes de explorar soluções, descobrir:
+**Do not use** for: bugs with a clear cause, mechanical tasks, trivial extensions of existing features.
 
-1. **O problema subjacente**: o que está causando dor hoje? O que o usuário não consegue fazer?
-2. **Os usuários afetados**: quem vai usar isso? Qual é o contexto deles?
-3. **O critério de sucesso**: como sabemos que resolvemos o problema?
-4. **As restrições existentes**: o que NÃO pode mudar? Quais são os limites?
+---
 
-Fazer no máximo 3 perguntas por vez. Aguardar respostas antes de avançar.
+## Process
 
-### Fase 2 — Explorar alternativas
+### Phase 1 — Understand the real problem
 
-Com o problema entendido, apresentar 2-3 abordagens distintas:
+Before exploring solutions, discover:
+
+1. **The underlying problem**: what is causing pain today? What can't the user do?
+2. **The affected users**: who is going to use this? What is their context?
+3. **The success criterion**: how do we know we solved the problem?
+4. **The existing constraints**: what CANNOT change? What are the limits?
+
+Ask at most 3 questions at a time. Wait for answers before moving forward.
+
+### Phase 2 — Explore alternatives
+
+With the problem understood, present 2-3 distinct approaches:
 
 ```markdown
-## Abordagem A: {nome}
-**Como funciona:** {1-2 frases}
-**Pontos fortes:** {lista curta}
-**Pontos fracos / riscos:** {lista curta}
-**Quando escolher:** {critério}
+## Approach A: {name}
+**How it works:** {1-2 sentences}
+**Strengths:** {short list}
+**Weaknesses / risks:** {short list}
+**When to choose:** {criterion}
 
-## Abordagem B: {nome}
+## Approach B: {name}
 ...
 
-## Abordagem C: {nome} (opcional)
+## Approach C: {name} (optional)
 ...
 
-**Minha recomendação:** Abordagem {X} porque {razão concisa alinhada com o problema}
+**My recommendation:** Approach {X} because {concise reason aligned with the problem}
 ```
 
-Apresentar cada abordagem em chunk separado para o usuário absorver antes de continuar.
+Present each approach in a separate chunk so the user can absorb it before continuing.
 
-Após apresentar todas individualmente, consolidar em uma tabela comparativa para visão lado a lado:
+After presenting them all individually, consolidate into a comparison table for a side-by-side view:
 
 ```markdown
-| Abordagem | Prós | Contras | Esforço |
+| Approach | Pros | Cons | Effort |
 |-----------|------|---------|---------|
-| A: {nome} | {pontos fortes resumidos} | {pontos fracos resumidos} | {baixo/médio/alto} |
-| B: {nome} | {pontos fortes resumidos} | {pontos fracos resumidos} | {baixo/médio/alto} |
-| C: {nome} | {pontos fortes resumidos} | {pontos fracos resumidos} | {baixo/médio/alto} |
+| A: {name} | {summarized strengths} | {summarized weaknesses} | {low/medium/high} |
+| B: {name} | {summarized strengths} | {summarized weaknesses} | {low/medium/high} |
+| C: {name} | {summarized strengths} | {summarized weaknesses} | {low/medium/high} |
 ```
 
-### Fase 3 — Refinar a abordagem escolhida
+### Phase 3 — Refine the chosen approach
 
-Com a abordagem escolhida, detalhar em seções curtas para validação:
+With the approach chosen, detail it in short sections for validation:
 
-**Seção por seção, aguardando confirmação do usuário antes de avançar:**
+**Section by section, waiting for user confirmation before moving forward:**
 
 ```markdown
-## Seção 1: Escopo inicial (MVP)
-{o que está IN e o que está explicitamente OUT}
-→ Isso captura o que você quer? [S/N/Ajuste]
+## Section 1: Initial scope (MVP)
+{what is IN and what is explicitly OUT}
+→ Does this capture what you want? [Y/N/Adjust]
 
-## Seção 2: Fluxo principal
-{o caminho feliz do usuário, passo a passo}
-→ Isso faz sentido? [S/N/Ajuste]
+## Section 2: Main flow
+{the user's happy path, step by step}
+→ Does this make sense? [Y/N/Adjust]
 
-## Seção 3: Casos de borda e exceções
-{o que acontece quando algo dá errado}
-→ Faltou algum caso importante? [S/N/Ajuste]
+## Section 3: Edge cases and exceptions
+{what happens when something goes wrong}
+→ Did we miss any important case? [Y/N/Adjust]
 
-## Seção 4: Critérios de aceitação (rascunho)
-{o que torna essa feature "pronta"}
-→ Esses critérios capturam o que você precisa? [S/N/Ajuste]
+## Section 4: Acceptance criteria (draft)
+{what makes this feature "done"}
+→ Do these criteria capture what you need? [Y/N/Adjust]
 ```
 
-### Fase 4 — Salvar design document
+### Phase 4 — Save the design document
 
-Após aprovação de todas as seções, consolidar em:
+After all sections are approved, consolidate into:
 
 ```markdown
 ---
 type: osforge-design
-feature: "{nome}"
-created_at: {data}
+feature: "{name}"
+created_at: {date}
 status: approved
 feeds: [spec-builder, phase-discussion, arch-builder]
 ---
 
-# Design: {nome da feature}
+# Design: {feature name}
 
-## Problema
-{descrição do problema real, não da solução}
+## Problem
+{description of the real problem, not the solution}
 
-## Usuários afetados
-{quem usa, em que contexto}
+## Affected users
+{who uses it, in what context}
 
-## Abordagem escolhida
-{qual abordagem e por quê}
+## Chosen approach
+{which approach and why}
 
-## Escopo MVP
-**In scope:** {lista}
-**Out of scope:** {lista}
+## MVP scope
+**In scope:** {list}
+**Out of scope:** {list}
 
-## Fluxo principal
-{passo a passo do caminho feliz}
+## Main flow
+{step by step of the happy path}
 
-## Casos de borda
-{lista de exceções e como tratá-las}
+## Edge cases
+{list of exceptions and how to handle them}
 
-## Critérios de aceitação
+## Acceptance criteria
 - [ ] {AC1}
 - [ ] {AC2}
 
-## Restrições identificadas
-{limites técnicos, de negócio ou de prazo}
+## Identified constraints
+{technical, business, or timeline limits}
 
-## Decisões adiadas (v2+)
-{o que ficou explicitamente fora do escopo}
+## Deferred decisions (v2+)
+{what was explicitly left out of scope}
 ```
 
-Salvar em `.osforge/designs/{feature-slug}-design.md`.
+Save to `.osforge/designs/{feature-slug}-design.md`.
 
-Handoff: "Design aprovado. Pronto para chamar `spec-builder` com este design como input."
+Handoff: "Design approved. Ready to call `spec-builder` with this design as input."
 
 ---
 
-## Regras
+## Rules
 
-- Nunca pular direto para soluções técnicas — sempre entender o problema primeiro
-- Apresentar design em seções curtas, uma por vez, aguardando validação
-- Registrar explicitamente o que está FORA do escopo — é tão importante quanto o que está dentro
-- Se o usuário disser "qualquer coisa serve" → propor o que faz mais sentido e confirmar
-- Máximo 4 fases antes de consolidar — evitar brainstorming sem fim
+- Never jump straight to technical solutions — always understand the problem first
+- Present the design in short sections, one at a time, waiting for validation
+- Explicitly record what is OUT of scope — it is as important as what is in
+- If the user says "anything works" → propose what makes the most sense and confirm
+- At most 4 phases before consolidating — avoid endless brainstorming
 
 ---
 
 ## Gotchas
 
-- **Propor solução antes de entender o problema**: o erro mais comum. Mesmo que a solução pareça óbvia, sempre confirmar o problema subjacente — frequentemente o usuário pede X mas precisa de Y.
-- **Apresentar todas as alternativas de uma vez**: sobrecarrega o usuário. Uma abordagem por vez, com tempo para absorção.
-- **Não documentar o que ficou FORA**: "out of scope" explícito previne scope creep nas fases seguintes. Se não está documentado, o implementador vai assumir que está incluído.
-- **Brainstorming infinito**: se chegou na fase 4 e o usuário ainda quer explorar mais alternativas, é sinal de que o problema ainda não está bem definido. Voltar para a Fase 1 ao invés de adicionar mais alternativas.
-- **Não chamar spec-builder depois**: o design document produzido é input para spec-builder — não é o artefato final. Sem spec técnica, o design fica sem implementação.
+- **Proposing a solution before understanding the problem**: the most common mistake. Even if the solution seems obvious, always confirm the underlying problem — the user often asks for X but needs Y.
+- **Presenting all alternatives at once**: overloads the user. One approach at a time, with time to absorb.
+- **Not documenting what was left OUT**: an explicit "out of scope" prevents scope creep in later phases. If it is not documented, the implementer will assume it is included.
+- **Infinite brainstorming**: if you reached phase 4 and the user still wants to explore more alternatives, it is a sign the problem is still not well defined. Go back to Phase 1 instead of adding more alternatives.
+- **Not calling spec-builder afterward**: the design document produced is input for spec-builder — it is not the final artifact. Without a technical spec, the design has no implementation.

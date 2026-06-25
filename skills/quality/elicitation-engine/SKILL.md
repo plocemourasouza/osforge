@@ -1,71 +1,71 @@
 ---
 name: elicitation-engine
-description: "Refinamento iterativo de outputs (specs, PRDs, decisões arquiteturais, qualquer artefato) via menu interativo de técnicas de elicitação estruturadas. ACIONE quando: pedirem refine isso, melhorar ou aprofundar uma spec/PRD, dig deeper numa decisão de design, que perguntas estou ignorando, fortalecer seção fraca de um documento antes de finalizar. Keywords: elicitar, refine, refinamento, aprofundar, melhorar output, spec, PRD, elicitation, dig deeper, iterar. Não acione para: caça de edge cases em código (use edge-case-hunter) nem review de código (use code-review-checklist)."
+description: "Iterative refinement of outputs (specs, PRDs, architectural decisions, any artifact) via an interactive menu of structured elicitation techniques. Use when: asked to refine this, improve or deepen a spec/PRD, dig deeper into a design decision, what questions am I missing, strengthen a weak section of a document before finalizing. Keywords: elicit, refine, refinement, deepen, improve output, spec, PRD, elicitation, dig deeper, iterate. Do NOT use for: edge-case hunting in code (use edge-case-hunter) nor code review (use code-review-checklist)."
 trigger: elicit|refine output|dig deeper|melhorar spec|aprofundar
 model-tier: sonnet
 ---
 
 # Elicitation Engine
 
-## Objetivo
-Forçar reconsideração, refinamento e melhoria de output recente
-usando técnicas estruturadas de elicitação. Cada técnica ataca o
-conteúdo de um ângulo diferente para revelar gaps, melhorar decisões,
-e fortalecer a qualidade do artefato.
+## Objective
+Force reconsideration, refinement and improvement of a recent output
+using structured elicitation techniques. Each technique attacks the
+content from a different angle to reveal gaps, improve decisions,
+and strengthen the quality of the artifact.
 
 ## Inputs
-- **content** — Conteúdo/seção a ser refinado (do contexto da conversa)
-- **focus_area** (opcional) — Área específica para focar a elicitação
+- **content** — Content/section to be refined (from the conversation context)
+- **focus_area** (optional) — Specific area to focus the elicitation on
 
-## Processo
+## Process
 
-### 1. Carregar Métodos
-Ler `./methods.csv` (campos: num, category, method_name, description, output_pattern)
+### 1. Load Methods
+Read `./methods.csv` (fields: num, category, method_name, description, output_pattern)
 
-### 2. Análise de Contexto
-- Analisar conteúdo atual: tipo, complexidade, riscos, potencial criativo
-- Identificar áreas mais fracas do conteúdo que se beneficiariam de elicitação
+### 2. Context Analysis
+- Analyze current content: type, complexity, risks, creative potential
+- Identify the weakest areas of the content that would benefit from elicitation
 
-### 3. Seleção Inteligente
-1. Selecionar 3 métodos que melhor se aplicam ao contexto e tipo de conteúdo
-2. Balancear entre foundational e especializados
-3. Priorizar métodos que atacam as áreas mais fracas identificadas
+### 3. Intelligent Selection
+1. Select 3 methods that best apply to the context and content type
+2. Balance between foundational and specialized
+3. Prioritize methods that attack the weakest identified areas
 
-### 4. Apresentar e Executar
+### 4. Present and Execute
 
 ```
 **Elicitation Engine**
-Escolha (1-3), [r] Reshuffle, [x] Prosseguir:
+Choose (1-3), [r] Reshuffle, [x] Proceed:
 
-1. {Método} — {descrição curta}
-2. {Método} — {descrição curta}
-3. {Método} — {descrição curta}
-r. Novos 3 métodos
-a. Listar todos os métodos disponíveis
-x. Finalizar com conteúdo atual
+1. {Method} — {short description}
+2. {Method} — {short description}
+3. {Method} — {short description}
+r. New 3 methods
+a. List all available methods
+x. Finish with current content
 ```
 
-**Se 1-3:** Executar método selecionado sobre o conteúdo.
-  - Aplicar criativamente ao conteúdo/seção sendo refinado
-  - Mostrar versão melhorada com o que o método revelou
-  - Perguntar: "Aplicar mudanças? [S] Sim / [N] Não / {instrução livre}"
-  - Se sim → aplicar ao artefato. Se não → descartar.
-  - Re-apresentar menu para mais elicitações
+**If 1-3:** Execute the selected method on the content.
+  - Apply it creatively to the content/section being refined
+  - Show the improved version with what the method revealed
+  - Ask: "Apply changes? [Y] Yes / [N] No / {free-form instruction}"
+  - If yes → apply to the artifact. If no → discard.
+  - Re-present the menu for more elicitations
 
-**Se r:** Selecionar 3 novos métodos diversos, apresentar.
+**If r:** Select 3 new diverse methods, present them.
 
-**Se a:** Listar todos os métodos com descrições em tabela compacta.
-  Permitir seleção por número ou nome.
+**If a:** List all methods with descriptions in a compact table.
+  Allow selection by number or name.
 
-**Se x:** Retornar conteúdo refinado final ao skill chamador.
+**If x:** Return the final refined content to the calling skill.
 
-### 5. Acumulação
-Cada método se acumula sobre melhorias anteriores.
-Manter tracking do que foi aplicado para não repetir.
+### 5. Accumulation
+Each method accumulates on top of previous improvements.
+Keep tracking what has been applied to avoid repetition.
 
-## Integração
-Quando invocado de dentro de outro skill (spec-builder, prd-builder, etc.):
-1. Receber conteúdo da seção sendo trabalhada
-2. Executar loop de elicitação
-3. Retornar conteúdo refinado quando usuário selecionar 'x'
-4. Skill chamador continua com o conteúdo melhorado
+## Integration
+When invoked from within another skill (spec-builder, prd-builder, etc.):
+1. Receive the content of the section being worked on
+2. Run the elicitation loop
+3. Return the refined content when the user selects 'x'
+4. The calling skill continues with the improved content

@@ -1,6 +1,6 @@
 ---
 name: webapp-testing
-description: "Testes E2E de aplicações web com Playwright, auditoria profunda de rotas/endpoints e testes visuais, com script runner de browser incluso. ACIONE quando: testar fluxo com Playwright, escrever E2E de login/checkout/fluxo crítico, auditar todas as rotas e APIs de um webapp, configurar Playwright no CI com traces e screenshots, rodar visual regression ou checagem de acessibilidade. Keywords: E2E, Playwright, browser test, teste de fluxo, visual testing, screenshot, rota, endpoint, a11y, CI. Não acione para: testes unitários/integração e estratégias de mocking (use testing-patterns)."
+description: "E2E testing of web applications with Playwright, deep route/endpoint auditing, and visual testing, with a browser runner script included. Use when: testing a flow with Playwright, writing E2E for login/checkout/a critical flow, auditing all of a webapp's routes and APIs, configuring Playwright in CI with traces and screenshots, running visual regression or an accessibility check. Keywords: E2E, Playwright, browser test, flow test, visual testing, screenshot, route, endpoint, a11y, CI. Do NOT use for: unit/integration tests and mocking strategies (use testing-patterns)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

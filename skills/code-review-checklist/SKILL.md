@@ -1,6 +1,6 @@
 ---
 name: code-review-checklist
-description: "Checklist de code review cobrindo correção, segurança, performance, qualidade, testes e padrões específicos de código gerado por IA. ACIONE quando: pedirem revisar este PR, antes de aprovar um merge, checar injeção SQL/XSS/secrets hardcoded, avaliar código gerado por LLM (prompt injection, hallucination), apontar anti-patterns como magic numbers e deep nesting. Keywords: code review, revisar PR, checklist, segurança, N+1, SOLID, anti-pattern, merge, prompt injection, review comment. Não acione para: rodar linters e type-check automáticos (use lint-and-validate) nem enumeração exaustiva de edge cases (use edge-case-hunter)."
+description: "Code review checklist covering correctness, security, performance, quality, testing, and patterns specific to AI-generated code. Use when: asked to review this PR, before approving a merge, checking for SQL injection/XSS/hardcoded secrets, evaluating LLM-generated code (prompt injection, hallucination), flagging anti-patterns like magic numbers and deep nesting. Keywords: code review, review PR, checklist, security, N+1, SOLID, anti-pattern, merge, prompt injection, review comment. Do NOT use for: running automatic linters and type-checks (use lint-and-validate) or exhaustive edge-case enumeration (use edge-case-hunter)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

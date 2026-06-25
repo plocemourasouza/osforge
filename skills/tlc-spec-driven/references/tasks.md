@@ -67,10 +67,10 @@ Group tasks into phases. Identify what can run in parallel.
 
 ## Template: `.specs/[feature]/tasks.md`
 
-> **Paralelismo machine-readable:** cada task DEVE incluir um bloco YAML de metadados logo após o cabeçalho (`### TN:`). O bloco declara `id`, `depends_on`, `wave` e `parallel_ok`.
-> - **`wave`** é derivada do grafo de `depends_on`: tasks sem predecessoras = wave 1; tasks que dependem de wave N = wave N+1.
-> - Tasks na **mesma wave** com `parallel_ok: true` são despachadas em paralelo pelo orchestrator.
-> - Se duas tasks da mesma wave tocam o mesmo arquivo, coloque-as em waves diferentes ou na mesma task — e marque `parallel_ok: false`.
+> **Machine-readable parallelism:** every task MUST include a YAML metadata block right after the header (`### TN:`). The block declares `id`, `depends_on`, `wave`, and `parallel_ok`.
+> - **`wave`** is derived from the `depends_on` graph: tasks with no predecessors = wave 1; tasks that depend on wave N = wave N+1.
+> - Tasks in the **same wave** with `parallel_ok: true` are dispatched in parallel by the orchestrator.
+> - If two tasks in the same wave touch the same file, put them in different waves or in the same task — and mark `parallel_ok: false`.
 
 ```markdown
 # [Feature] Tasks
@@ -84,14 +84,14 @@ Group tasks into phases. Identify what can run in parallel.
 
 ### Phase 1: Foundation (Sequential)
 
-Tasks que devem ser feitas primeiro, em ordem.
+Tasks that must be done first, in order.
 
 ```
 T1 → T2 → T3
 ```
 
 ### Phase 2: Core Implementation (Parallel OK)
-Após a fundação, estas podem rodar em paralelo.
+After the foundation, these can run in parallel.
 
 ```
      ┌→ T4 ─┐
@@ -101,7 +101,7 @@ T7 ──────→
 ```
 
 ### Phase 3: Integration (Sequential)
-Integrando tudo.
+Integrating everything.
 
 ```
 T8 → T9

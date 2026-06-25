@@ -1,6 +1,6 @@
 ---
 name: mcp-builder
-description: "Constrói servidores MCP (Model Context Protocol) customizados em TypeScript ou Python. ACIONE quando: criar servidor MCP do zero, expor API interna como tool MCP, transformar banco de dados ou serviço em resource para Claude Code/Cursor, definir tools/resources/prompts com transporte stdio ou SSE, debugar integração de servidor MCP. Keywords: MCP, Model Context Protocol, servidor MCP, MCP server, tool, resource, stdio, SSE, integração, SDK. Não acione para: uso de servidores MCP já existentes, criação de skills ou plugins que não envolvem MCP."
+description: "Builds custom MCP (Model Context Protocol) servers in TypeScript or Python. Use when: creating an MCP server from scratch, exposing an internal API as an MCP tool, turning a database or service into a resource for Claude Code/Cursor, defining tools/resources/prompts with stdio or SSE transport, debugging an MCP server integration. Keywords: MCP, Model Context Protocol, MCP server, tool, resource, stdio, SSE, integration, SDK. Do NOT use for: using existing MCP servers, creating skills or plugins that don't involve MCP."
 metadata:
   author: osforge
   version: '1.0'

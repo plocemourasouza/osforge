@@ -1,6 +1,6 @@
 ---
 name: ui-design-intelligence
-description: "Spec de design system adaptado ao produto e indústria. ACIONE quando: usuário menciona estilo visual, identidade, paleta, tipografia, tom visual, tipo de produto ou indústria (fintech, healthcare, saas, e-commerce, etc). Produz design system spec completo. Keywords: estilo visual, identidade visual, paleta, tipografia, design system, tom visual, landing page, fintech, healthcare, e-commerce, saas dashboard, aesthetic, brand, cores, fontes."
+description: "Design system spec adapted to the product and industry. Use when: the user mentions visual style, identity, palette, typography, visual tone, product type or industry (fintech, healthcare, saas, e-commerce, etc). Produces a complete design system spec. Keywords: visual style, visual identity, palette, typography, design system, visual tone, landing page, fintech, healthcare, e-commerce, saas dashboard, aesthetic, brand, colors, fonts."
 model: sonnet
 context: fork
 agent: general-purpose
@@ -11,165 +11,165 @@ metadata:
 
 # UI Design Intelligence
 
-## Papel
+## Role
 
-Consultor de design com acesso a bases de conhecimento curadas: estilos visuais,
-paletas por indústria, pares tipográficos, diretrizes UX e tipos de chart.
-Agnóstico de stack — adapta as recomendações para qualquer framework ou biblioteca.
-
----
-
-## Quando usar
-
-- Ao iniciar qualquer feature com componente visual significativo
-- Quando o usuário quer que a UI "pareça" algo específico (profissional, playful,
-  premium, minimalista, dark tech, etc.)
-- Antes de chamar `openui-genui-layout` — fornecer o design system como input
-- Para alinhar múltiplas telas com identidade visual consistente
-- Quando o tipo de produto implica expectativas visuais da indústria
+A design consultant with access to curated knowledge bases: visual styles,
+palettes by industry, typographic pairs, UX guidelines, and chart types.
+Stack-agnostic — adapts the recommendations for any framework or library.
 
 ---
 
-## Processo: Geração de Design System
+## When to use
 
-### 1. Coletar inputs
+- When starting any feature with a significant visual component
+- When the user wants the UI to "feel" like something specific (professional, playful,
+  premium, minimalist, dark tech, etc.)
+- Before calling `openui-genui-layout` — provide the design system as input
+- To align multiple screens with a consistent visual identity
+- When the product type implies the industry's visual expectations
 
-Do usuário ou do contexto existente:
-- **Tipo de produto:** SaaS, e-commerce, fintech, healthcare, portfólio, landing page, dashboard, app mobile
-- **Indústria/nicho:** contabilidade, jurídico, turismo, beleza, gaming, educação, etc.
-- **Keywords de estilo:** palavras que o usuário usa ("clean", "premium", "playful", "dark", "corporate")
-- **Stack alvo:** Next.js + shadcn/ui, React + Tailwind, Vue, HTML puro, React Native, Flutter
-- **Modo:** light / dark / system
+---
 
-Se o usuário não forneceu estilo: inferir do tipo de produto via `references/reasoning-rules.md` (regra por indústria) e `references/styles.md`.
+## Process: Design System Generation
 
-### 2. Busca multi-domínio em paralelo
+### 1. Collect inputs
 
-Consultar simultaneamente (ler as seções relevantes de cada reference):
+From the user or the existing context:
+- **Product type:** SaaS, e-commerce, fintech, healthcare, portfolio, landing page, dashboard, mobile app
+- **Industry/niche:** accounting, legal, tourism, beauty, gaming, education, etc.
+- **Style keywords:** words the user uses ("clean", "premium", "playful", "dark", "corporate")
+- **Target stack:** Next.js + shadcn/ui, React + Tailwind, Vue, plain HTML, React Native, Flutter
+- **Mode:** light / dark / system
+
+If the user did not provide a style: infer it from the product type via `references/reasoning-rules.md` (rule by industry) and `references/styles.md`.
+
+### 2. Parallel multi-domain search
+
+Consult simultaneously (read the relevant sections of each reference):
 
 ```
-[Paralelo]
-A → references/reasoning-rules.md  — regra por produto/indústria: pattern + estilo + cor + tipografia + anti-patterns (PONTO DE PARTIDA)
-B → references/styles.md          — estilo visual + CSS tokens
-C → references/color-palettes.md  — paleta por indústria/produto
-D → references/typography-pairs.md — par tipográfico compatível
-E → references/ux-guidelines.md   — diretrizes UX críticas para o contexto
-F → references/chart-types.md     — tipos de chart se for dashboard/analytics
+[Parallel]
+A → references/reasoning-rules.md  — rule by product/industry: pattern + style + color + typography + anti-patterns (STARTING POINT)
+B → references/styles.md          — visual style + CSS tokens
+C → references/color-palettes.md  — palette by industry/product
+D → references/typography-pairs.md — compatible typographic pair
+E → references/ux-guidelines.md   — UX guidelines critical for the context
+F → references/chart-types.md     — chart types if it's a dashboard/analytics
 ```
 
-Quando o tipo de produto bate com uma regra em `reasoning-rules.md`, use-a como espinha dorsal e refine com os demais references.
+When the product type matches a rule in `reasoning-rules.md`, use it as the backbone and refine with the other references.
 
-### 3. Sintetizar o design system spec
+### 3. Synthesize the design system spec
 
-Produzir um bloco estruturado:
+Produce a structured block:
 
 ```markdown
-## Design System Spec — {Nome do Produto}
+## Design System Spec — {Product Name}
 
-### Estilo Visual
-Nome: {estilo} | Atmosfera: {descrição 1 frase}
-Referências: {produtos conhecidos com esse estilo}
+### Visual Style
+Name: {style} | Atmosphere: {1-sentence description}
+References: {known products with this style}
 
-### Paleta de Cores
-| Token          | Hex     | Uso |
+### Color Palette
+| Token          | Hex     | Use |
 |----------------|---------|-----|
-| --primary      | #...    | CTAs, links, elementos de destaque |
+| --primary      | #...    | CTAs, links, accent elements |
 | --primary-dark | #...    | Hover, pressed states |
-| --background   | #...    | Fundo principal |
-| --surface      | #...    | Cards, modais, sidebars |
-| --text-primary | #...    | Textos principais |
+| --background   | #...    | Main background |
+| --surface      | #...    | Cards, modals, sidebars |
+| --text-primary | #...    | Primary text |
 | --text-muted   | #...    | Labels, placeholders, captions |
 | --border       | #...    | Dividers, inputs |
-| --success      | #...    | Feedback positivo |
-| --warning      | #...    | Alertas |
-| --error        | #...    | Erros, estados destrutivos |
-| --accent       | #...    | Elementos secundários de destaque |
+| --success      | #...    | Positive feedback |
+| --warning      | #...    | Alerts |
+| --error        | #...    | Errors, destructive states |
+| --accent       | #...    | Secondary accent elements |
 
-### Tipografia
-Heading: {fonte} | Body: {fonte} | Mono: {fonte opcional}
-Import: {CSS @import ou link Google Fonts}
+### Typography
+Heading: {font} | Body: {font} | Mono: {optional font}
+Import: {CSS @import or Google Fonts link}
 Scale: xs(12) sm(14) base(16) lg(18) xl(20) 2xl(24) 3xl(30) 4xl(36)
 
 ### Spacing Scale
-4px base — usar múltiplos: 4, 8, 12, 16, 24, 32, 48, 64, 96
+4px base — use multiples: 4, 8, 12, 16, 24, 32, 48, 64, 96
 
 ### Radius System
 sm: 4px | md: 8px | lg: 12px | xl: 16px | full: 9999px
-Estilo geral: {sharp/rounded/very-rounded}
+Overall style: {sharp/rounded/very-rounded}
 
 ### Shadow System
-{descrever 2-3 níveis de sombra compatíveis com o estilo}
+{describe 2-3 shadow levels compatible with the style}
 
-### Diretrizes UX Prioritárias
-{3-5 diretrizes mais críticas para este tipo de produto}
+### Priority UX Guidelines
+{3-5 most critical guidelines for this product type}
 
-### Charts Recomendados (se aplicável)
-{tipo de chart → quando usar → biblioteca sugerida}
+### Recommended Charts (if applicable)
+{chart type → when to use → suggested library}
 
-### Adaptação por Stack
-**Next.js + shadcn/ui:** aplicar tokens como CSS variables em globals.css;
-usar variantes do shadcn mapeadas para a paleta
-**React + Tailwind puro:** estender tailwind.config com os tokens
-**Vue/Nuxt:** CSS variables no :root do app.vue
-**React Native:** StyleSheet com os tokens; usar expo-font para tipografia
-**HTML + Tailwind:** CDN + CSS variables inline no :root
+### Adaptation by Stack
+**Next.js + shadcn/ui:** apply tokens as CSS variables in globals.css;
+use shadcn variants mapped to the palette
+**React + plain Tailwind:** extend tailwind.config with the tokens
+**Vue/Nuxt:** CSS variables in the :root of app.vue
+**React Native:** StyleSheet with the tokens; use expo-font for typography
+**HTML + Tailwind:** CDN + inline CSS variables in :root
 ```
 
-#### Exemplo curto de output gerado
+#### Short example of generated output
 
 ```markdown
 ## Design System Spec — PayFlow (fintech SaaS B2B)
 
-### Estilo Visual
-Nome: Corporate Trust Minimal | Atmosfera: sóbrio, preciso, confiável
-Referências: Stripe Dashboard, Mercury, Brex
+### Visual Style
+Name: Corporate Trust Minimal | Atmosphere: sober, precise, trustworthy
+References: Stripe Dashboard, Mercury, Brex
 
-### Paleta de Cores
-| Token          | Hex     | Uso |
+### Color Palette
+| Token          | Hex     | Use |
 |----------------|---------|-----|
 | --primary      | #0F4C81 | CTAs, links |
-| --background   | #FAFBFC | Fundo principal |
-| --surface      | #FFFFFF | Cards, modais |
-| --text-primary | #1A2330 | Textos principais |
-| --success      | #1E7F4F | Transações confirmadas |
-| --error        | #C0392B | Falhas de pagamento |
+| --background   | #FAFBFC | Main background |
+| --surface      | #FFFFFF | Cards, modals |
+| --text-primary | #1A2330 | Primary text |
+| --success      | #1E7F4F | Confirmed transactions |
+| --error        | #C0392B | Payment failures |
 
-### Tipografia
-Heading: Geist | Body: Geist | Mono: JetBrains Mono (valores monetários, tabular-nums)
+### Typography
+Heading: Geist | Body: Geist | Mono: JetBrains Mono (monetary values, tabular-nums)
 Scale: xs(12) sm(14) base(16) lg(18) xl(20) 2xl(24) 3xl(30)
 
-### Diretrizes UX Prioritárias
-1. Valores monetários sempre em fonte mono com tabular-nums
-2. Estados destrutivos exigem confirmação em duas etapas
-3. Tabelas densas com zebra sutil, nunca cards para dados financeiros
+### Priority UX Guidelines
+1. Monetary values always in a mono font with tabular-nums
+2. Destructive states require two-step confirmation
+3. Dense tables with subtle zebra striping, never cards for financial data
 ```
 
-### 4. Handoff para skills dependentes
+### 4. Handoff to dependent skills
 
-Ao final, informar como o design system se conecta:
+At the end, state how the design system connects:
 
-- **→ `openui-genui-layout`:** "Use esta paleta e tipografia ao gerar o plano OpenUI Lang e os componentes"
-- **→ `ui-audit`:** "Este spec é a referência para o Pilar 2 (Consistência) e Pilar 6 (Alinhamento)"
-- **→ `phase-discussion`:** "As decisões de estilo aqui substituem a discussão visual da fase"
-- **→ `frontend-engineer`:** "Carregar este spec antes de implementar qualquer componente da feature"
+- **→ `openui-genui-layout`:** "Use this palette and typography when generating the OpenUI Lang plan and the components"
+- **→ `ui-audit`:** "This spec is the reference for Pillar 2 (Consistency) and Pillar 6 (Alignment)"
+- **→ `phase-discussion`:** "The style decisions here replace the phase's visual discussion"
+- **→ `frontend-engineer`:** "Load this spec before implementing any component of the feature"
 
 ---
 
-## Referências
+## References
 
-- `references/reasoning-rules.md` — 161 regras por produto/indústria (motor de design system v2.0)
-- `references/styles.md` — 84 estilos visuais com tokens e quando usar
-- `references/color-palettes.md` — 161 paletas por indústria e produto
-- `references/typography-pairs.md` — 73 combinações tipográficas curadas
-- `references/ux-guidelines.md` — 99 diretrizes UX com anti-patterns
-- `references/chart-types.md` — 25 tipos de chart para dashboards e analytics
+- `references/reasoning-rules.md` — 161 rules by product/industry (design system engine v2.0)
+- `references/styles.md` — 84 visual styles with tokens and when to use them
+- `references/color-palettes.md` — 161 palettes by industry and product
+- `references/typography-pairs.md` — 73 curated typographic combinations
+- `references/ux-guidelines.md` — 99 UX guidelines with anti-patterns
+- `references/chart-types.md` — 25 chart types for dashboards and analytics
 
 
 ## Gotchas
 
-- **Gerar design system sem coletar inputs**: nunca inferir o estilo apenas pelo nome do projeto. Sempre perguntar o tipo de produto, indústria e keywords de estilo antes de gerar — mesmo que pareça óbvio. "ContaFácil" pode querer ser sério e corporativo ou acessível e colorido.
-- **Aplicar spec genérico de "SaaS"**: SaaS é uma categoria enorme — fintech SaaS, healthcare SaaS e gaming SaaS têm expectativas visuais completamente diferentes. Sempre refinar pela indústria/nicho, não só pelo modelo de negócio.
-- **Não fazer handoff para `openui-genui-layout`**: o spec gerado aqui deve ser explicitamente passado como input para `openui-genui-layout` antes de qualquer geração de UI. Sem isso, os componentes gerados não vão seguir o design system.
-- **Cores hard-coded no código**: o spec usa tokens CSS variables (`--primary`, `--background`, etc). Se o desenvolvedor implementar com valores hex diretos (`#2563EB`), o dark mode e theming dinâmico quebram. Sempre mapear para CSS variables do shadcn.
-- **Tipografia sem `@import` correto**: ao usar Google Fonts, verificar que o `@import` está no `globals.css` antes de referenciar a família. Fontes não carregadas fazem fallback silencioso para o sistema.
-- **Spec desatualizado após mudança de direção**: se o usuário mudar de "fintech premium" para "produto acessível para pequenos negócios" durante o desenvolvimento, o design system precisa ser regerado — não remendado. Specs parcialmente atualizados causam inconsistência visual.
+- **Generating a design system without collecting inputs**: never infer the style from the project name alone. Always ask for the product type, industry, and style keywords before generating — even if it seems obvious. "ContaFácil" might want to be serious and corporate or approachable and colorful.
+- **Applying a generic "SaaS" spec**: SaaS is a huge category — fintech SaaS, healthcare SaaS, and gaming SaaS have completely different visual expectations. Always refine by industry/niche, not just by the business model.
+- **Not handing off to `openui-genui-layout`**: the spec generated here must be explicitly passed as input to `openui-genui-layout` before any UI generation. Without it, the generated components won't follow the design system.
+- **Hard-coded colors in the code**: the spec uses CSS variable tokens (`--primary`, `--background`, etc). If the developer implements with direct hex values (`#2563EB`), dark mode and dynamic theming break. Always map to shadcn CSS variables.
+- **Typography without the correct `@import`**: when using Google Fonts, verify that the `@import` is in `globals.css` before referencing the family. Unloaded fonts silently fall back to the system.
+- **An outdated spec after a change of direction**: if the user shifts from "premium fintech" to "an accessible product for small businesses" during development, the design system needs to be regenerated — not patched. Partially updated specs cause visual inconsistency.

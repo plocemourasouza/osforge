@@ -1,11 +1,11 @@
 ---
 name: context-compact
 description: >
-  Compactação estruturada de conversação quando atinge ~70% da janela de contexto.
-  ACIONE quando: usuário diz "comprimir contexto", "compactar", "summary", "perto
-  do limite", "context full", "save state", "/compact", "/clear", ou quando o
-  contador de tokens passar de 140k. Produz summary em 9 seções com analysis
-  scratchpad. Substitui /clear destrutivo por preservation inteligente.
+  Structured conversation compaction when reaching ~70% of the context window.
+  Use when: user says "compress context", "compact", "summary", "near the
+  limit", "context full", "save state", "/compact", "/clear", or when the
+  token counter passes 140k. Produces a 9-section summary with an analysis
+  scratchpad. Replaces destructive /clear with intelligent preservation.
 version: 1.0.0
 inspired_by: Leonxlnx/agentic-ai-prompt-research (Prompt 21 — Compact Service)
 metadata:
@@ -16,49 +16,49 @@ allowed-tools: Read
 
 # Context Compact — Conversation Summarization
 
-> Quando context > 70%, NÃO use `/clear` (destrutivo). Use este protocolo
-> estruturado de 9 seções que preserva o essencial em ~5k tokens.
+> When context > 70%, do NOT use `/clear` (destructive). Use this structured
+> 9-section protocol that preserves the essentials in ~5k tokens.
 
 ## Quick Start
 
-**Exemplo 1 — pedido explícito:**
-> Usuário: *"compactar contexto, estamos perto do limite"*
-> A skill gera um summary estruturado de 9 seções (~5k tokens) que substitui a conversa inteira, preservando pedidos, decisões, arquivos tocados e o trabalho em andamento — sem perder o fio da execução.
+**Example 1 — explicit request:**
+> User: *"compact context, we're near the limit"*
+> The skill generates a structured 9-section summary (~5k tokens) that replaces the entire conversation, preserving requests, decisions, files touched, and the work in progress — without losing the thread of execution.
 
-**Exemplo 2 — proativo:**
-> Contador de tokens passa de 140k no meio de uma refatoração.
-> A skill sugere um **Partial Compact (Modo 3)**: resume as mensagens antigas e mantém as recentes intactas, liberando espaço sem tocar no "now".
+**Example 2 — proactive:**
+> The token counter passes 140k in the middle of a refactor.
+> The skill suggests a **Partial Compact (Mode 3)**: it summarizes the older messages and keeps the recent ones intact, freeing up space without touching the "now".
 
-**Mini-fluxo (3 passos):**
-1. **Escolha o modo** — Full (tudo vira summary), Partial Recent (preserva o início) ou Partial Up-To (preserva o final). Veja "3 modos de operação".
-2. **Execute o protocolo** — emita o NO_TOOLS_PREAMBLE, faça o scratchpad `<analysis>`, depois preencha o template de 9 seções (Passos 1–3 em "Protocolo de execução").
-3. **Verifique e persista** — confira o checklist de "Verificação" e salve via `osforge-db set-resume` para recuperação cross-session.
+**Mini-flow (3 steps):**
+1. **Choose the mode** — Full (everything becomes a summary), Partial Recent (preserves the beginning) or Partial Up-To (preserves the end). See "3 modes of operation".
+2. **Run the protocol** — emit the NO_TOOLS_PREAMBLE, do the `<analysis>` scratchpad, then fill in the 9-section template (Steps 1–3 in "Execution protocol").
+3. **Verify and persist** — check the "Verification" checklist and save via `osforge-db set-resume` for cross-session recovery.
 
-## Quando ativar
+## When to activate
 
-| Trigger | Ação |
+| Trigger | Action |
 |---|---|
-| Context > 70% (140k de 200k tokens) | Sugerir compact ao usuário ANTES de saturar |
-| Context > 85% (170k) | Compact obrigatório — informar o usuário |
-| Usuário diz "comprimir", "compactar", "perto do limite" | Compact imediato |
-| Mudança grande de tópico no meio da sessão | Oferecer "compactar contexto antigo, manter recente" |
+| Context > 70% (140k of 200k tokens) | Suggest compact to the user BEFORE it saturates |
+| Context > 85% (170k) | Compact mandatory — inform the user |
+| User says "compress", "compact", "near the limit" | Immediate compact |
+| Big topic change mid-session | Offer "compact old context, keep recent" |
 
-## 3 modos de operação
+## 3 modes of operation
 
-### Modo 1: Full Compact
-Toda a conversa vira summary. Use quando vai começar uma fase totalmente nova.
+### Mode 1: Full Compact
+The entire conversation becomes a summary. Use when you are about to start a completely new phase.
 
-### Modo 2: Partial Compact (Recent)
-Mensagens recentes viram summary, mas contexto antigo é mantido intacto. Use quando o início da sessão tem informação crítica que NÃO pode virar resumo.
+### Mode 2: Partial Compact (Recent)
+Recent messages become a summary, but old context is kept intact. Use when the beginning of the session has critical information that must NOT be summarized.
 
-### Modo 3: Partial Compact (Up-To / Older)
-Mensagens antigas viram summary, mensagens recentes ficam intactas. Use quando você está no meio de uma execução e precisa fazer espaço — preserva o "now".
+### Mode 3: Partial Compact (Up-To / Older)
+Old messages become a summary, recent messages stay intact. Use when you are in the middle of an execution and need to make space — it preserves the "now".
 
-## Protocolo de execução
+## Execution protocol
 
-### Passo 1: NO_TOOLS_PREAMBLE (CRÍTICO)
+### Step 1: NO_TOOLS_PREAMBLE (CRITICAL)
 
-Inicie SEMPRE com este preamble pra evitar que o modelo chame ferramentas durante o summary:
+ALWAYS start with this preamble to prevent the model from calling tools during the summary:
 
 ```
 CRITICAL: Respond with TEXT ONLY. Do NOT call any tools.
@@ -69,40 +69,40 @@ CRITICAL: Respond with TEXT ONLY. Do NOT call any tools.
 - Your entire response must be plain text: an <analysis> block followed by a <summary> block.
 ```
 
-### Passo 2: Analysis Scratchpad
+### Step 2: Analysis Scratchpad
 
-Antes do summary final, faça uma análise cronológica em `<analysis>` tags:
+Before the final summary, do a chronological analysis in `<analysis>` tags:
 
 ```xml
 <analysis>
-1. Cronologicamente, analise cada mensagem e seção:
-   - Pedidos explícitos do usuário e intenções
-   - Sua abordagem para atender cada pedido
-   - Decisões-chave, conceitos técnicos, padrões de código
-   - Detalhes específicos: nomes de arquivos, code snippets completos,
+1. Chronologically, analyze each message and section:
+   - Explicit user requests and intents
+   - Your approach to addressing each request
+   - Key decisions, technical concepts, code patterns
+   - Specific details: file names, complete code snippets,
      function signatures, file edits
-   - Erros encontrados e como foram corrigidos
-   - Feedback específico do usuário (atenção redobrada)
-2. Double-check pra accuracy técnica e completude
+   - Errors encountered and how they were fixed
+   - Specific user feedback (extra attention)
+2. Double-check for technical accuracy and completeness
 </analysis>
 ```
 
-O `<analysis>` é scratchpad — será descartado antes do summary chegar ao próximo contexto.
+The `<analysis>` is a scratchpad — it will be discarded before the summary reaches the next context.
 
-### Passo 3: Summary em 9 seções (template)
+### Step 3: 9-section summary (template)
 
 ```markdown
 <summary>
 
 ## 1. Primary Request and Intent
-Todos os pedidos explícitos do usuário, com intent capturado integralmente.
-Inclua TODOS, não só o último. Ex:
-- "Integrar taste-skill ao OSForge" (turno 5)
-- "Auditar OBSIDIAN para performance e a11y" (turno 23)
-- "Aplicar fixes via prompt" (turno 31)
+All explicit user requests, with intent captured in full.
+Include ALL of them, not just the last. E.g.:
+- "Integrate taste-skill into OSForge" (turn 5)
+- "Audit OBSIDIAN for performance and a11y" (turn 23)
+- "Apply fixes via prompt" (turn 31)
 
 ## 2. Key Technical Concepts
-Tecnologias, frameworks, patterns discutidos:
+Technologies, frameworks, patterns discussed:
 - OSForge framework (122 skills, 26 agents, 12 rules)
 - Anti-AI-slop directives (Inter ban, pure #000 ban, etc)
 - Taste design dials (DESIGN_VARIANCE / MOTION_INTENSITY / VISUAL_DENSITY)
@@ -110,7 +110,7 @@ Tecnologias, frameworks, patterns discutidos:
 - Chrome MCP for browser automation
 
 ## 3. Files and Code Sections
-Arquivos examinados/modificados/criados, COM code snippets completos:
+Files examined/modified/created, WITH complete code snippets:
 
 **Modified:**
 - `claude-code/SKILLS.md` (added 8 design skills to Design & UX table)
@@ -119,69 +119,69 @@ Arquivos examinados/modificados/criados, COM code snippets completos:
 **Created:**
 - `skills/taste-design-dials/SKILL.md` (261 lines)
 - `skills/aesthetic-modes/SKILL.md` (254 lines)
-[etc — listar TODOS]
+[etc — list ALL]
 
 ```typescript
-// Snippets relevantes que vão ser necessários pra continuar
+// Relevant snippets that will be needed to continue
 const decision = classifier.classify({...})
 ```
 
 ## 4. Errors and Fixes
-Erros encontrados e resolução:
-- `index.lock` no .git → resolvido com `rm -f .git/index.lock`
-- Server localhost:4567 caiu → user reiniciou em :8000
-- web_fetch URLs fora de provenance → solucionado clonando via bash
+Errors encountered and resolution:
+- `index.lock` in .git → resolved with `rm -f .git/index.lock`
+- Server localhost:4567 went down → user restarted it on :8000
+- web_fetch URLs outside provenance → solved by cloning via bash
 
 ## 5. Problem Solving
-Problemas resolvidos e troubleshooting em andamento:
-- ✅ Integração taste-skill (5 skills + routing rules)
-- ✅ Deploy em ~/.claude/ e ~/.cursor/
-- ✅ Audit OBSIDIAN (gargalo FCP 6.5s identificado)
-- 🔄 Em andamento: integração agentic-ai-prompt-research patterns
+Problems solved and troubleshooting in progress:
+- ✅ taste-skill integration (5 skills + routing rules)
+- ✅ Deploy to ~/.claude/ and ~/.cursor/
+- ✅ Audit OBSIDIAN (FCP 6.5s bottleneck identified)
+- 🔄 In progress: agentic-ai-prompt-research patterns integration
 
 ## 6. All User Messages
-TODA mensagem não-tool-result do usuário (crítico pra tracking de intent drift):
-- "Lembra do nosso projeto OSForge?"
-- "temos no github..."
-- "Quero adicionar esse conhecimento ao projeto..."
-- "faça isso"
-- "o comando /mcp não funcionou"
-- "Quero que você rode os comandos..."
-- "Aqui está o link do resultado gerado..."
-- "Você não me convenceu por que o Auto Mode Critique (17) não..."
-- "Perfeito, vamos avançar"
-[continue listando TODAS — mesmo curtinhas]
+EVERY non-tool-result user message (critical for intent drift tracking):
+- "Remember our OSForge project?"
+- "we have it on github..."
+- "I want to add this knowledge to the project..."
+- "do it"
+- "the /mcp command didn't work"
+- "I want you to run the commands..."
+- "Here's the link to the generated result..."
+- "You didn't convince me why Auto Mode Critique (17) doesn't..."
+- "Perfect, let's move forward"
+[continue listing ALL — even short ones]
 
 ## 7. Pending Tasks
-Trabalho pendente:
-- [ ] Implementar tool-safety-classifier skill
-- [ ] Implementar config-critique skill
-- [ ] Implementar context-compact skill (em progresso AGORA)
-- [ ] Implementar stuck-recovery skill
-- [ ] Criar memory-hierarchy.mdc rule
-- [ ] Enrich orchestrator/AGENT.md com Coordinator patterns
+Pending work:
+- [ ] Implement tool-safety-classifier skill
+- [ ] Implement config-critique skill
+- [ ] Implement context-compact skill (in progress NOW)
+- [ ] Implement stuck-recovery skill
+- [ ] Create memory-hierarchy.mdc rule
+- [ ] Enrich orchestrator/AGENT.md with Coordinator patterns
 - [ ] Update SKILLS.md router + README
 
 ## 8. Current Work
-Descrição PRECISA do trabalho em progresso ANTES da compactação:
-Estou criando 4 novas SKILL.md files no OSForge baseadas nos prompts do
-agentic-ai-prompt-research (Leon Lin). Acabei de finalizar
-`tool-safety-classifier` (Prompt 12), agora estou escrevendo
-`context-compact` (este arquivo — Prompt 21). Próximos:
-config-critique (P17), stuck-recovery (P26). Depois enrichments
-no orchestrator e CLAUDE.md, depois commit + push.
+PRECISE description of the work in progress BEFORE the compaction:
+I am creating 4 new SKILL.md files in OSForge based on the prompts from
+agentic-ai-prompt-research (Leon Lin). I just finished
+`tool-safety-classifier` (Prompt 12), now I am writing
+`context-compact` (this file — Prompt 21). Next:
+config-critique (P17), stuck-recovery (P26). Then enrichments
+in the orchestrator and CLAUDE.md, then commit + push.
 
 ## 9. Optional Next Step
-Próximo passo IMEDIATO se alinhado com pedidos recentes:
-Terminar de escrever context-compact/SKILL.md (este arquivo),
-salvar com Write tool, depois partir para skills/config-critique/SKILL.md.
+IMMEDIATE next step if aligned with recent requests:
+Finish writing context-compact/SKILL.md (this file),
+save it with the Write tool, then move on to skills/config-critique/SKILL.md.
 
 </summary>
 ```
 
-## Modo 2 (Partial Recent) — adaptação
+## Mode 2 (Partial Recent) — adaptation
 
-Trocar instrução inicial por:
+Replace the initial instruction with:
 ```
 Your task is to create a detailed summary of the RECENT portion of the conversation —
 the messages that follow earlier retained context. The earlier messages are being kept
@@ -189,9 +189,9 @@ intact and do NOT need to be summarized. Focus your summary on what was discusse
 learned, and accomplished in the recent messages only.
 ```
 
-## Modo 3 (Partial Up-To / Older) — adaptação
+## Mode 3 (Partial Up-To / Older) — adaptation
 
-Trocar instrução inicial por:
+Replace the initial instruction with:
 ```
 Your task is to create a detailed summary of this conversation. This summary will be
 placed at the start of a continuing session; newer messages that build on this context
@@ -200,57 +200,57 @@ that someone reading only your summary and then the newer messages can fully und
 what happened and continue the work.
 ```
 
-E nas seções:
-- Seção 8 vira "Work Completed" (não "Current Work")
-- Seção 9 vira "Context for Continuing Work"
+And in the sections:
+- Section 8 becomes "Work Completed" (not "Current Work")
+- Section 9 becomes "Context for Continuing Work"
 
-## Integração com osforge-db
+## Integration with osforge-db
 
-O OSForge tem SQLite local (`~/.osforge/osforge.db`). Use-o para PERSISTIR o summary:
+OSForge has local SQLite (`~/.osforge/osforge.db`). Use it to PERSIST the summary:
 
 ```bash
-# Após gerar o summary, salvar persistente:
+# After generating the summary, save it persistently:
 osforge-db set-resume <project-slug> "$(cat summary.md)"
 
-# Sessão futura recupera em 50 tokens via:
+# A future session recovers it in 50 tokens via:
 osforge-db resume <project-slug>
 ```
 
-Isso significa que **compactação não destrói** o contexto — ele continua disponível pra sessões futuras via osforge-db, mesmo quando saiu do context window atual.
+This means that **compaction does not destroy** the context — it remains available for future sessions via osforge-db, even after it has left the current context window.
 
 ## Custom instructions support
 
-Se o projeto tem `compact-instructions.md` em `.osforge/`, incluir no prompt:
+If the project has `compact-instructions.md` in `.osforge/`, include it in the prompt:
 
 ```
 There may be additional summarization instructions provided in the included context.
 If so, remember to follow these instructions when creating the above summary.
 ```
 
-Útil pra projetos com terminologia específica que deve ser preservada literalmente.
+Useful for projects with specific terminology that must be preserved literally.
 
 ## Anti-patterns
 
-- ❌ Pular o `<analysis>` block — você vai esquecer algo
-- ❌ Resumir só as últimas N mensagens "porque é mais fácil" — quebra intent tracking
-- ❌ Omitir seção 6 (All User Messages) — é a defesa contra intent drift
-- ❌ Usar Tool durante summarization — vai falhar com maxTurns: 1
-- ❌ `<analysis>` no output final (deve ser stripped — só usuário precisa ver `<summary>`)
+- ❌ Skipping the `<analysis>` block — you will forget something
+- ❌ Summarizing only the last N messages "because it's easier" — it breaks intent tracking
+- ❌ Omitting section 6 (All User Messages) — it is the defense against intent drift
+- ❌ Using a Tool during summarization — it will fail with maxTurns: 1
+- ❌ `<analysis>` in the final output (it must be stripped — only the user needs to see `<summary>`)
 
-## Verificação
+## Verification
 
-- [ ] 9 seções todas preenchidas (mesmo que algumas com "N/A")
-- [ ] Section 3 inclui code snippets COMPLETOS (não placeholders)
-- [ ] Section 6 lista TODA mensagem do usuário
-- [ ] Sem chamada de ferramentas no output
-- [ ] Total: 3-7k tokens (não < 1k, não > 10k)
-- [ ] Resume restaurável: outra sessão consegue continuar lendo só o summary
+- [ ] All 9 sections filled in (even if some with "N/A")
+- [ ] Section 3 includes COMPLETE code snippets (not placeholders)
+- [ ] Section 6 lists EVERY user message
+- [ ] No tool calls in the output
+- [ ] Total: 3-7k tokens (not < 1k, not > 10k)
+- [ ] Resume restorable: another session can continue by reading only the summary
 
 ---
 
 ## Related Skills
 
-- `context-distillator` — sibling skill para destilação radical (~500 tokens)
-- `osforge-db` — persistência cross-session (recovery via `osforge-db resume`)
-- `project-context` — geração inicial de contexto de projeto
-- `editorial-review` — limpeza pós-summary se necessário
+- `context-distillator` — sibling skill for radical distillation (~500 tokens)
+- `osforge-db` — cross-session persistence (recovery via `osforge-db resume`)
+- `project-context` — initial project context generation
+- `editorial-review` — post-summary cleanup if needed

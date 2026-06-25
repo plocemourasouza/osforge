@@ -1,6 +1,6 @@
 ---
 name: redesign-existing-projects
-description: "Eleva sites e apps existentes a qualidade premium: audita o design atual, identifica padrões genéricos de IA e aplica upgrades de tipografia, cor e layout sem quebrar funcionalidade. ACIONE quando: herdei código com design genérico, moderniza o visual deste projeto, página parece feita por IA (gradiente roxo, três cards iguais, Inter em tudo), melhorar tipografia/cores/espaçamento de UI existente, polir landing page antes do lançamento. Keywords: redesign, visual, UI, design genérico, premium, tipografia, polish, restyle, facelift, CSS. Não acione para: criar designs do zero, mudanças de backend/funcionalidade ou trabalho dentro do Figma."
+description: "Elevates existing sites and apps to premium quality: audits the current design, identifies generic AI patterns, and applies typography, color, and layout upgrades without breaking functionality. Use when: I inherited code with generic design, modernize the look of this project, page looks AI-made (purple gradient, three identical cards, Inter everywhere), improve typography/colors/spacing of existing UI, polish a landing page before launch. Keywords: redesign, visual, UI, generic design, premium, typography, polish, restyle, facelift, CSS. Do NOT use for: creating designs from scratch, backend/functionality changes, or work inside Figma."
 ---
 
 # Redesign Skill

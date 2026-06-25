@@ -1,6 +1,6 @@
 ---
 name: rust-pro
-description: "Especialista em Rust 1.75+ para sistemas de alta performance: async com Tokio, ownership, lifetimes, traits avançados, unsafe/FFI e web services com axum. ACIONE quando: erro de borrow checker ou lifetime em código genérico, desenhar serviço web async com Tokio, axum ou tonic, otimizar performance e uso de memória mantendo memory safety, criar wrapper seguro sobre biblioteca C via FFI, implementar estrutura concorrente lock-free com atomics, modelar erros com thiserror e anyhow. Keywords: Rust, Tokio, axum, ownership, lifetime, borrow checker, async, FFI, serde, cargo. Não acione para: scripts rápidos em linguagens dinâmicas, dúvidas básicas de sintaxe Rust ou stacks que não podem adotar Rust."
+description: "Rust 1.75+ expert for high-performance systems: async with Tokio, ownership, lifetimes, advanced traits, unsafe/FFI, and web services with axum. Use when: borrow checker or lifetime error in generic code, designing an async web service with Tokio, axum or tonic, optimizing performance and memory usage while keeping memory safety, creating a safe wrapper over a C library via FFI, implementing a lock-free concurrent structure with atomics, modeling errors with thiserror and anyhow. Keywords: Rust, Tokio, axum, ownership, lifetime, borrow checker, async, FFI, serde, cargo. Do NOT use for: quick scripts in dynamic languages, basic Rust syntax questions, or stacks that cannot adopt Rust."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

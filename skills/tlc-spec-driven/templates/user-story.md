@@ -1,58 +1,58 @@
-# User Story: [STORY-ID] [Nome da Feature]
+# User Story: [STORY-ID] [Feature Name]
 
-## Contexto de Produto (obrigatório)
-- **Problema observado:** [o que o usuário enfrenta hoje — com evidência concreta]
-- **Hipótese:** [acreditamos que X resolve porque Y]
-- **Alternativas descartadas:** [o que consideramos e por que não seguimos]
-- **Risco se não fizermos:** [o que acontece se não implementarmos]
+## Product Context (mandatory)
+- **Observed problem:** [what the user faces today — with concrete evidence]
+- **Hypothesis:** [we believe X solves it because Y]
+- **Discarded alternatives:** [what we considered and why we didn't go with it]
+- **Risk if we don't:** [what happens if we don't implement it]
 
 ## Story
-Como [persona específica, não "o usuário"],
-quero [ação concreta]
-para que [benefício mensurável].
+As a [specific persona, not "the user"],
+I want [concrete action]
+so that [measurable benefit].
 
-## Prioridade de Produto
-- Impacto no usuário: [Alto / Médio / Baixo]
-- Confiança na hipótese: [Alta / Média / Baixa] — base: [dados / feedback / intuição]
-- Esforço técnico: [Alto / Médio / Baixo]
-- **Score:** (Impacto × Confiança) / Esforço = [valor]
+## Product Priority
+- User impact: [High / Medium / Low]
+- Hypothesis confidence: [High / Medium / Low] — basis: [data / feedback / intuition]
+- Technical effort: [High / Medium / Low]
+- **Score:** (Impact × Confidence) / Effort = [value]
 
-## Métricas de Sucesso
-| Métrica | Baseline (atual) | Target | Como medir | Prazo |
+## Success Metrics
+| Metric | Baseline (current) | Target | How to measure | Deadline |
 |---------|------------------|--------|------------|-------|
-| [primária] | [valor] | [meta] | [evento/query] | [semanas] |
-| [secundária] | [valor] | [meta] | [evento/query] | [semanas] |
+| [primary] | [value] | [goal] | [event/query] | [weeks] |
+| [secondary] | [value] | [goal] | [event/query] | [weeks] |
 
-- **Critério de sucesso:** [métrica primária atinge target]
-- **Critério de falha:** [se < X% em Y semanas, pivotar]
+- **Success criterion:** [primary metric hits target]
+- **Failure criterion:** [if < X% in Y weeks, pivot]
 
-## Acceptance Criteria (técnicos)
-- [ ] AC-1: [Critério verificável]
-- [ ] AC-2: [Critério verificável]
-- [ ] AC-3: [Critério verificável]
+## Acceptance Criteria (technical)
+- [ ] AC-1: [Verifiable criterion]
+- [ ] AC-2: [Verifiable criterion]
+- [ ] AC-3: [Verifiable criterion]
 
 ## Optimal Path (Happy Path)
-1. Usuário [ação inicial]
-2. Sistema [resposta esperada]
-3. Usuário [próxima ação]
-4. Resultado: [estado final esperado]
+1. User [initial action]
+2. System [expected response]
+3. User [next action]
+4. Result: [expected final state]
 
 ## Edge Cases
-| ID | Cenário | Input | Expected Output | Severidade |
+| ID | Scenario | Input | Expected Output | Severity |
 |----|---------|-------|-----------------|------------|
-| EC-1 | Campo vazio | "" | Mensagem de erro de validação | Alta |
-| EC-2 | Timeout de rede | >5s sem resposta | Retry com feedback visual | Média |
-| EC-3 | Dados inválidos | Formato inesperado | Fallback gracioso | Alta |
+| EC-1 | Empty field | "" | Validation error message | High |
+| EC-2 | Network timeout | >5s with no response | Retry with visual feedback | Medium |
+| EC-3 | Invalid data | Unexpected format | Graceful fallback | High |
 
-## Dependências
-- [Feature ou serviço necessário]
+## Dependencies
+- [Required feature or service]
 
-## Critério de Completude
-Esta story está **DONE** quando:
-- TODOS os acceptance criteria técnicos passam
-- Todos os edge cases de severidade Alta estão cobertos
-- Testes automatizados existem para o happy path
-- Código passou em review (ou validator agent)
-- **Métricas de sucesso estão configuradas e baseline registrada**
-- **Eventos de analytics implementados**
-- **Data de revisão de métricas agendada**
+## Completion Criterion
+This story is **DONE** when:
+- ALL technical acceptance criteria pass
+- All High-severity edge cases are covered
+- Automated tests exist for the happy path
+- Code passed review (or the validator agent)
+- **Success metrics are configured and a baseline recorded**
+- **Analytics events implemented**
+- **Metrics review date scheduled**

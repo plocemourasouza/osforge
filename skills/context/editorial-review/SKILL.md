@@ -1,72 +1,72 @@
 ---
 name: editorial-review
 description: >
-  Revisão editorial de documentos técnicos em 2 modos: prose (copy-editing
-  clínico) e structure (reorganização e simplificação).
-  Use com "editorial review", "review prose", "review structure", "revisar redação",
-  "documento confuso", "redação flácida", "texto prolixo", "esse doc está mal organizado".
-trigger: editorial|review prose|review structure|revisar redação
+  Editorial review of technical documents in 2 modes: prose (clinical
+  copy-editing) and structure (reorganization and simplification).
+  Use with "editorial review", "review prose", "review structure", "review writing",
+  "confusing document", "flabby writing", "verbose text", "this doc is poorly organized".
+trigger: editorial|review prose|review structure|review writing
 model-tier: sonnet
 ---
 
 # Editorial Review
 
-## Modos de Operação
+## Operating Modes
 
-Detectar modo pelo trigger ou perguntar se ambíguo.
+Detect the mode from the trigger or ask if ambiguous.
 
-### Modo Prose (default)
-Copy-editor clínico. Revisar texto para problemas de comunicação.
+### Prose Mode (default)
+Clinical copy-editor. Review the text for communication problems.
 
 **Checklist:**
-- **Clareza:** Frases ambíguas, modificadores pendentes, referências vagas
-- **Concisão:** Palavras desnecessárias, redundâncias, circunlóquios
-- **Consistência:** Terminologia variando, formatos inconsistentes, tom mudando
-- **Precisão:** Afirmações vagas que deveriam ser específicas, números sem fonte
-- **Tom:** Shifts de registro, voz passiva excessiva, jargão desnecessário
-- **Gramática:** Erros técnicos de linguagem, concordância, regência
+- **Clarity:** Ambiguous sentences, dangling modifiers, vague references
+- **Conciseness:** Unnecessary words, redundancies, circumlocutions
+- **Consistency:** Varying terminology, inconsistent formats, shifting tone
+- **Precision:** Vague claims that should be specific, numbers without a source
+- **Tone:** Register shifts, excessive passive voice, unnecessary jargon
+- **Grammar:** Technical language errors, agreement, government
 
 **Output:**
 ```markdown
 ## Editorial Review — Prose
 
-### Issues Encontrados: {N}
+### Issues Found: {N}
 
-1. **[Linha ~{N}]** {tipo}: "{trecho problemático}"
-   → Sugestão: "{correção proposta}"
+1. **[Line ~{N}]** {type}: "{problematic excerpt}"
+   → Suggestion: "{proposed correction}"
 
-2. **[Seção {nome}]** {tipo}: {descrição}
-   → Sugestão: {correção}
+2. **[Section {name}]** {type}: {description}
+   → Suggestion: {correction}
 ...
 ```
 
-### Modo Structure
-Editor estrutural. Propor reorganização sem reescrever.
+### Structure Mode
+Structural editor. Propose reorganization without rewriting.
 
-**Análise:**
-- **Cortes:** Seções que podem ser removidas sem perda de compreensão
-- **Reorganização:** Seções fora de ordem lógica (dependência de leitura)
-- **Merge:** Seções que cobrem o mesmo tema e devem ser combinadas
-- **Split:** Seções que tentam cobrir assuntos demais
-- **Simplificação:** Hierarquias de heading desnecessariamente profundas
-- **Gaps:** Informação esperada mas ausente dado o tipo de documento
+**Analysis:**
+- **Cuts:** Sections that can be removed without loss of comprehension
+- **Reorganization:** Sections out of logical order (reading dependency)
+- **Merge:** Sections that cover the same topic and should be combined
+- **Split:** Sections that try to cover too many subjects
+- **Simplification:** Unnecessarily deep heading hierarchies
+- **Gaps:** Information expected but absent given the document type
 
 **Output:**
 ```markdown
 ## Editorial Review — Structure
 
-### Plano de Reestruturação
+### Restructuring Plan
 
-1. **CORTAR** seção "{nome}" — Razão: {justificativa}
-2. **MOVER** seção "{nome}" para depois de "{outra}" — Razão: {justificativa}
-3. **MERGE** seções "{A}" e "{B}" — Razão: {justificativa}
-4. **SPLIT** seção "{nome}" em "{sub-A}" e "{sub-B}" — Razão: {justificativa}
-5. **GAP** falta seção sobre "{tópico}" — Razão: {justificativa}
+1. **CUT** section "{name}" — Reason: {justification}
+2. **MOVE** section "{name}" after "{other}" — Reason: {justification}
+3. **MERGE** sections "{A}" and "{B}" — Reason: {justification}
+4. **SPLIT** section "{name}" into "{sub-A}" and "{sub-B}" — Reason: {justification}
+5. **GAP** missing section about "{topic}" — Reason: {justification}
 
-### Estrutura Proposta
-{outline da nova estrutura com headings}
+### Proposed Structure
+{outline of the new structure with headings}
 ```
 
-## Regra Fundamental
-NÃO reescrever o documento — apenas listar findings e sugestões.
-O usuário decide o que aplicar.
+## Fundamental Rule
+Do NOT rewrite the document — only list findings and suggestions.
+The user decides what to apply.

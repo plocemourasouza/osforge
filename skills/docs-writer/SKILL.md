@@ -1,6 +1,6 @@
 ---
 name: docs-writer
-description: "Escreve, revisa e edita documentação técnica verificando o código-fonte e seguindo style guide do projeto. ACIONE quando: documentar uma feature/comando/API a partir do código, reescrever ou melhorar uma seção existente de docs, revisar clareza/tom/consistência de arquivos .md, atualizar docs desatualizados em relação ao código, corrigir links e sidebar da documentação. Keywords: documentação, docs, escrever docs, editar docs, technical writing, revisão de texto, markdown, style guide, documentar API, atualizar README. Não acione para: obter templates prontos de README/API docs/comentários (use documentation-templates) nem para escrita não técnica."
+description: "Writes, reviews, and edits technical documentation by checking the source code and following the project's style guide. Use when: documenting a feature/command/API from the code, rewriting or improving an existing docs section, reviewing the clarity/tone/consistency of .md files, updating docs that are out of date relative to the code, fixing links and the documentation sidebar. Keywords: documentation, docs, write docs, edit docs, technical writing, copyediting, markdown, style guide, document API, update README. Do NOT use for: getting ready-made README/API docs/comment templates (use documentation-templates) or for non-technical writing."
 ---
 
 # `docs-writer` skill instructions

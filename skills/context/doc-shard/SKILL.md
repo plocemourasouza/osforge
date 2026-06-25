@@ -1,75 +1,75 @@
 ---
 name: doc-shard
 description: >
-  Divide documentos markdown grandes em arquivos menores organizados
-  com index. Use quando documento exceder context window ou para
-  organizar docs extensos — ex. um guia de 10k tokens, uma spec com
-  múltiplas seções, um PRD extenso. Use com "shard doc", "dividir documento".
-trigger: shard|split doc|dividir doc|quebrar documento
+  Split large markdown documents into smaller organized files
+  with an index. Use when a document exceeds the context window or to
+  organize extensive docs — e.g. a 10k-token guide, a spec with
+  multiple sections, an extensive PRD. Use with "shard doc", "split document".
+trigger: shard|split doc|split document|break up document
 model-tier: haiku
 ---
 
 # Document Sharder
 
-## Objetivo
-Dividir documentos markdown grandes em arquivos menores, organizados
-e com index, para consumo eficiente por LLMs e outros skills.
+## Objective
+Split large markdown documents into smaller, organized files
+with an index, for efficient consumption by LLMs and other skills.
 
 ## Inputs
-- **source_path** — Caminho do documento markdown a dividir
-- **split_level** (default: 2) — Nível de heading para split (## = level 2)
-- **output_dir** (opcional) — Diretório de saída. Default: `{source_name}-sharded/`
+- **source_path** — Path of the markdown document to split
+- **split_level** (default: 2) — Heading level for the split (## = level 2)
+- **output_dir** (optional) — Output directory. Default: `{source_name}-sharded/`
 
-## Processo
+## Process
 
-### 1. Analisar Documento
-- Ler documento fonte completamente
-- Identificar todos os headings do nível especificado
-- Mapear seções e tamanhos aproximados em tokens
-- Preservar frontmatter original
+### 1. Analyze Document
+- Read the source document completely
+- Identify all headings at the specified level
+- Map sections and approximate sizes in tokens
+- Preserve the original frontmatter
 
-### 2. Gerar Shards
-Para cada seção no nível especificado:
-- Criar arquivo: `{NN}-{slug-do-heading}.md`
-- Incluir header de contexto: `<!-- Parte N de M — {heading original} -->`
-- Incluir conteúdo da seção com sub-headings preservados
-- Se seção individual > ~3000 tokens, subdividir no próximo nível de heading
+### 2. Generate Shards
+For each section at the specified level:
+- Create file: `{NN}-{slug-do-heading}.md`
+- Include a context header: `<!-- Part N of M — {original heading} -->`
+- Include the section content with sub-headings preserved
+- If an individual section > ~3000 tokens, subdivide at the next heading level
 
-### 3. Gerar Index
-Criar `_index.md`:
+### 3. Generate Index
+Create `_index.md`:
 
 ```markdown
 ---
 type: osforge-shard-index
-source: "{path do documento original}"
+source: "{path of the original document}"
 shards: {N}
-created: "{data}"
+created: "{date}"
 total_tokens_estimate: {N}
 ---
 
-# Index: {título do documento original}
+# Index: {title of the original document}
 
-## Sobre
-- {1-2 bullets descrevendo o documento original}
+## About
+- {1-2 bullets describing the original document}
 
-## Seções
-| # | Arquivo | Tópico | ~Tokens |
-|---|---------|--------|---------|
-| 1 | `01-{slug}.md` | {descrição 1 linha} | ~{N} |
-| 2 | `02-{slug}.md` | {descrição 1 linha} | ~{N} |
+## Sections
+| # | File | Topic | ~Tokens |
+|---|------|-------|---------|
+| 1 | `01-{slug}.md` | {1-line description} | ~{N} |
+| 2 | `02-{slug}.md` | {1-line description} | ~{N} |
 ...
 
 ## Cross-Cutting
-- {itens que apareceram em múltiplas seções}
+- {items that appeared in multiple sections}
 ```
 
 ### 4. Report
-"Documento dividido em {N} shards + index.
-Carregar _index.md (~{X} tokens) vs documento completo (~{Y} tokens)
-= {ratio}x mais eficiente para discovery inicial."
+"Document split into {N} shards + index.
+Loading _index.md (~{X} tokens) vs the full document (~{Y} tokens)
+= {ratio}x more efficient for initial discovery."
 
-## Regras
-- Nunca perder conteúdo no split — todo texto do original deve aparecer em algum shard
-- Manter referências internas entre seções quando existirem
-- Frontmatter do original vai para o _index.md, não para os shards
-- Shards devem ser autocontidos — compreensíveis sem ler os outros
+## Rules
+- Never lose content in the split — all text from the original must appear in some shard
+- Keep internal references between sections when they exist
+- The original's frontmatter goes to _index.md, not to the shards
+- Shards must be self-contained — understandable without reading the others

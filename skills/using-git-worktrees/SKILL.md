@@ -1,6 +1,6 @@
 ---
 name: using-git-worktrees
-description: "Setup e uso de git worktrees para desenvolvimento paralelo. ACIONE quando: trabalhar em múltiplas features simultaneamente, precisar de branches isoladas para cada agente paralelo, testar hotfix sem interromper desenvolvimento de feature. Keywords: git worktree, worktrees, parallel development, multiple branches, isolated workspace, branch paralela."
+description: "Setup and use of git worktrees for parallel development. Use when: working on multiple features simultaneously, needing isolated branches for each parallel agent, testing a hotfix without interrupting feature development. Keywords: git worktree, worktrees, parallel development, multiple branches, isolated workspace, parallel branch."
 model: sonnet
 allowed-tools: Read, Bash, Glob
 metadata:
@@ -10,130 +10,130 @@ metadata:
   adapted_by: osforge
 ---
 
-## Estado atual de worktrees
-!`git worktree list 2>/dev/null || echo "Git worktrees não disponível ou repositório não inicializado"`
-!`git branch -a 2>/dev/null | head -10 || echo "Branches não disponível"`
+## Current worktree state
+!`git worktree list 2>/dev/null || echo "Git worktrees unavailable or repository not initialized"`
+!`git branch -a 2>/dev/null | head -10 || echo "Branches unavailable"`
 
 # Using Git Worktrees
 
-## O que são worktrees?
+## What are worktrees?
 
-Git worktrees permitem ter múltiplos checkouts do mesmo repositório em
-diretórios diferentes, cada um em uma branch diferente. Ideal para:
+Git worktrees let you have multiple checkouts of the same repository in
+different directories, each on a different branch. Ideal for:
 
-- Agents paralelos trabalhando em features independentes ao mesmo tempo
-- Testar um hotfix sem commitar/stash o trabalho em progresso
-- Code review de uma branch enquanto implementa outra
+- Parallel agents working on independent features at the same time
+- Testing a hotfix without committing/stashing work in progress
+- Code review of one branch while implementing another
 
 ---
 
-## Setup inicial
+## Initial setup
 
-### Criar worktree para nova feature
+### Create a worktree for a new feature
 
 ```bash
-# Criar branch + worktree em um passo
-git worktree add ../meu-projeto-feature-A feature/feature-A
+# Create branch + worktree in one step
+git worktree add ../my-project-feature-A feature/feature-A
 
-# Ou criar a partir de branch existente
-git worktree add ../meu-projeto-hotfix hotfix/bug-123
+# Or create from an existing branch
+git worktree add ../my-project-hotfix hotfix/bug-123
 
-# Verificar worktrees ativos
+# Check active worktrees
 git worktree list
 ```
 
-O diretório `../meu-projeto-feature-A` fica completamente isolado — mudanças lá não afetam o diretório principal.
+The `../my-project-feature-A` directory is completely isolated — changes there do not affect the main directory.
 
-> ⚠️ **WARNING: uma branch checked-out em um worktree NÃO pode ser usada em outro.** O git bloqueia `git checkout`/`git worktree add` de uma branch que já está ativa em qualquer outro worktree (erro: `fatal: '<branch>' is already checked out at '<path>'`). Planeje uma branch exclusiva por worktree; se precisar da branch em outro lugar, remova o worktree que a está usando primeiro.
+> ⚠️ **WARNING: a branch checked out in one worktree CANNOT be used in another.** Git blocks `git checkout`/`git worktree add` of a branch that is already active in any other worktree (error: `fatal: '<branch>' is already checked out at '<path>'`). Plan an exclusive branch per worktree; if you need the branch elsewhere, remove the worktree using it first.
 
-### Estrutura recomendada para OSForge + agents paralelos
+### Recommended structure for OSForge + parallel agents
 
 ```
 /Users/paulosouza/Development/
-├── meu-projeto/               ← main (worktree principal)
-├── meu-projeto-feature-A/     ← worktree para Agent 1
-├── meu-projeto-feature-B/     ← worktree para Agent 2
-└── meu-projeto-hotfix/        ← worktree para hotfix urgente
+├── my-project/                ← main (primary worktree)
+├── my-project-feature-A/      ← worktree for Agent 1
+├── my-project-feature-B/      ← worktree for Agent 2
+└── my-project-hotfix/         ← worktree for an urgent hotfix
 ```
 
 ---
 
-## Fluxo com dispatching-parallel-agents
+## Flow with dispatching-parallel-agents
 
-Quando `dispatching-parallel-agents` identifica tasks paralelas:
+When `dispatching-parallel-agents` identifies parallel tasks:
 
 ```bash
-# 1. Criar um worktree por task paralela
-git worktree add ../projeto-task-api feature/task-api
-git worktree add ../projeto-task-ui feature/task-ui
-git worktree add ../projeto-task-tests feature/task-tests
+# 1. Create one worktree per parallel task
+git worktree add ../project-task-api feature/task-api
+git worktree add ../project-task-ui feature/task-ui
+git worktree add ../project-task-tests feature/task-tests
 
-# 2. Cada agent trabalha no seu diretório isolado
-# Agent 1: cd ../projeto-task-api && implementar
-# Agent 2: cd ../projeto-task-ui && implementar
-# Agent 3: cd ../projeto-task-tests && implementar
+# 2. Each agent works in its isolated directory
+# Agent 1: cd ../project-task-api && implement
+# Agent 2: cd ../project-task-ui && implement
+# Agent 3: cd ../project-task-tests && implement
 
-# 3. Após conclusão, fazer merge de cada branch
+# 3. After completion, merge each branch
 git checkout main
 git merge feature/task-api --no-ff
 git merge feature/task-ui --no-ff
 git merge feature/task-tests --no-ff
 
-# 4. Limpar worktrees
-git worktree remove ../projeto-task-api
-git worktree remove ../projeto-task-ui
-git worktree remove ../projeto-task-tests
+# 4. Clean up worktrees
+git worktree remove ../project-task-api
+git worktree remove ../project-task-ui
+git worktree remove ../project-task-tests
 ```
 
 ---
 
-## Comandos essenciais
+## Essential commands
 
 ```bash
-# Listar todos os worktrees
+# List all worktrees
 git worktree list
 
-# Criar worktree + nova branch
-git worktree add <path> <nova-branch>
+# Create worktree + new branch
+git worktree add <path> <new-branch>
 
-# Criar worktree em branch existente
-git worktree add <path> <branch-existente>
+# Create worktree on an existing branch
+git worktree add <path> <existing-branch>
 
-# Remover worktree (após merge)
+# Remove worktree (after merge)
 git worktree remove <path>
 
-# Forçar remoção (se path já não existe)
+# Force removal (if path no longer exists)
 git worktree prune
 
-# Mover worktree para outro diretório
-git worktree move <path-atual> <novo-path>
+# Move worktree to another directory
+git worktree move <current-path> <new-path>
 ```
 
 ---
 
-## Setup em cada worktree
+## Setup in each worktree
 
-Cada worktree é um diretório de projeto completo mas compartilha o `.git` com o principal. O que NÃO é compartilhado:
+Each worktree is a complete project directory but shares the `.git` with the main one. What is NOT shared:
 
-- `node_modules/` — rodar `bun install` em cada worktree
-- `.env` — copiar ou criar `.env.local` em cada worktree
-- Processos rodando (dev server, etc.)
+- `node_modules/` — run `bun install` in each worktree
+- `.env` — copy or create `.env.local` in each worktree
+- Running processes (dev server, etc.)
 
 ```bash
-# Em cada novo worktree:
-cd ../meu-projeto-feature-A
-bun install                    # instalar dependências
-cp ..meu-projeto/.env.local .  # copiar variáveis de ambiente
-bun dev --port 3001            # porta diferente para não conflitar
+# In each new worktree:
+cd ../my-project-feature-A
+bun install                    # install dependencies
+cp ../my-project/.env.local .  # copy environment variables
+bun dev --port 3001            # different port to avoid conflicts
 ```
 
 ---
 
 ## Gotchas
 
-- **Usar o mesmo porto em múltiplos worktrees**: cada `bun dev` precisa de uma porta diferente (`--port 3001`, `--port 3002`, etc). Portas conflitantes causam erro ao iniciar.
-- **Esquecer de rodar `bun install` no worktree novo**: `node_modules` não é compartilhado. Sem instalar, imports falham com erros confusos.
-- **Deixar worktrees órfãos**: worktrees não removidos acumulam espaço e confundem `git worktree list`. Sempre remover após merge com `git worktree remove`.
-- **Checkout de branch em uso por outro worktree**: git não permite. Se Agent 1 está usando `feature/A`, não é possível fazer `git checkout feature/A` no worktree principal. Solução: criar novo worktree ou remover o existente.
-- **Modificar `.git/config` em worktree**: worktrees compartilham configuração git. Mudanças no `.git/config` em um worktree afetam todos. Usar `.git/config.worktree` para configurações locais ao worktree.
-- **Não fazer `git worktree prune` após deletar diretório manualmente**: se o diretório do worktree foi deletado sem `git worktree remove`, o git mantém a referência morta. Rodar `git worktree prune` para limpar.
+- **Using the same port in multiple worktrees**: each `bun dev` needs a different port (`--port 3001`, `--port 3002`, etc). Conflicting ports cause a startup error.
+- **Forgetting to run `bun install` in the new worktree**: `node_modules` is not shared. Without installing, imports fail with confusing errors.
+- **Leaving orphaned worktrees**: unremoved worktrees accumulate space and clutter `git worktree list`. Always remove after merge with `git worktree remove`.
+- **Checking out a branch in use by another worktree**: git does not allow it. If Agent 1 is using `feature/A`, you cannot run `git checkout feature/A` in the main worktree. Solution: create a new worktree or remove the existing one.
+- **Modifying `.git/config` in a worktree**: worktrees share the git configuration. Changes to `.git/config` in one worktree affect all of them. Use `.git/config.worktree` for worktree-local configuration.
+- **Not running `git worktree prune` after deleting a directory manually**: if the worktree directory was deleted without `git worktree remove`, git keeps the dead reference. Run `git worktree prune` to clean it up.

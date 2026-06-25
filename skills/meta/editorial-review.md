@@ -1,14 +1,14 @@
 # Editorial Review
 
-**Trigger:** "editorial review", "review prose", "review structure", "revisar documento", ou na fase final de qualquer documento.
+**Trigger:** "editorial review", "review prose", "review structure", "review document", or in the final phase of any document.
 
 ---
 
 ## Purpose
 
-Revisão editorial de documentos técnicos em 2 modos:
-- **Prose mode**: Copy-editing clínico
-- **Structure mode**: Reorganização lógica
+Editorial review of technical documents in 2 modes:
+- **Prose mode**: Clinical copy-editing
+- **Structure mode**: Logical reorganization
 
 ---
 

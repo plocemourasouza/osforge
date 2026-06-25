@@ -1,27 +1,27 @@
 # Design System Inspired by <YOUR PROJECT>
 
 > Category: <Developer Tools | Productivity & SaaS | Fintech & Crypto | Media & Consumer | Editorial & Print | Modern & Minimal | ...>
-> <Resumo de uma linha para o preview — atmosfera + accent + caso de uso.>
+> <One-line summary for the preview — atmosphere + accent + use case.>
 
 <!--
-  TEMPLATE — DESIGN.md em branco (spec canônico, 9 seções).
-  Preencha cada seção. Apague os comentários <!-- ... --> ao terminar.
-  Regras-chave (Lens A, blocking):
-    - As 9 seções numeradas PRECISAM existir, nesta ordem.
-    - Hex reais (#RRGGBB) — nada de #REPLACE_ME, currentColor ou nome de var.
-    - Toda var CSS dentro de :root {}. Dark mode via [data-theme="dark"] (override, não cópia).
-    - :focus-visible em todo interativo. prefers-reduced-motion segmentado (nunca *).
-    - Texto/dado ≥ 4.5:1 de contraste contra o fundo PAREADO.
-  Termine SEMPRE com a seção 9 (Agent Prompt Guide) — é o payload que o agente consome.
-  Estudar 2-3 exemplares em references/systems/ antes de preencher. Não copie; extraia padrões.
+  TEMPLATE — blank DESIGN.md (canonical spec, 9 sections).
+  Fill in each section. Delete the <!-- ... --> comments when done.
+  Key rules (Lens A, blocking):
+    - The 9 numbered sections MUST exist, in this order.
+    - Real hex (#RRGGBB) — no #REPLACE_ME, currentColor, or var name.
+    - Every CSS var inside :root {}. Dark mode via [data-theme="dark"] (override, not copy).
+    - :focus-visible on every interactive element. prefers-reduced-motion targeted (never *).
+    - Text/data ≥ 4.5:1 contrast against the PAIRED background.
+  ALWAYS end with section 9 (Agent Prompt Guide) — it is the payload the agent consumes.
+  Study 2-3 exemplars in references/systems/ before filling in. Don't copy; extract patterns.
 -->
 
 ## 1. Visual Theme & Atmosphere
 
 <!--
-  A metáfora central e a sensação. O que esse produto "é" emocionalmente?
-  Casos de uso. Prior art — produtos REAIS que compartilham esse DNA (não "good design").
-  30-40 linhas. Termine com "Key Characteristics:" (bullets).
+  The central metaphor and the feeling. What is this product "like" emotionally?
+  Use cases. Prior art — REAL products that share this DNA (not "good design").
+  30-40 lines. End with "Key Characteristics:" (bullets).
 -->
 
 **Key Characteristics:**
@@ -31,19 +31,19 @@
 ## 2. Color
 
 <!--
-  Paleta com hex REAIS + role de cada cor (não só "primary/secondary").
-  Roles mínimos: CTA/brand, background, surface, texto 1/2/3, border, semânticos (success/warn/error).
-  Verifique 4.5:1 de cada texto contra o fundo pareado.
+  Palette with REAL hex + role of each color (not just "primary/secondary").
+  Minimum roles: CTA/brand, background, surface, text 1/2/3, border, semantics (success/warn/error).
+  Verify 4.5:1 of each text against the paired background.
 -->
 
 ### Roles
-- **<Nome> (`#______`)**: <papel — ex.: CTA primário>
-- **<Nome> (`#______`)**: <background da página>
-- **<Nome> (`#______`)**: <surface elevada / card>
-- **<Nome> (`#______`)**: <texto primário>
-- **<Nome> (`#______`)**: <texto secundário>
-- **<Nome> (`#______`)**: <texto terciário / metadata>
-- **<Nome> (`#______`)**: <border padrão>
+- **<Name> (`#______`)**: <role — e.g.: primary CTA>
+- **<Name> (`#______`)**: <page background>
+- **<Name> (`#______`)**: <elevated surface / card>
+- **<Name> (`#______`)**: <primary text>
+- **<Name> (`#______`)**: <secondary text>
+- **<Name> (`#______`)**: <tertiary text / metadata>
+- **<Name> (`#______`)**: <default border>
 - **Success (`#______`)** · **Warning (`#______`)** · **Error (`#______`)**
 
 ```css
@@ -54,11 +54,11 @@
   --accent: #______;
   --surface: #______;
 
-  /* roles de texto */
-  --fg-2: #______;   /* secundário (ou var(--fg) se não houver tier) */
-  --fg-3: #______;   /* terciário/meta */
+  /* text roles */
+  --fg-2: #______;   /* secondary (or var(--fg) if there is no tier) */
+  --fg-3: #______;   /* tertiary/meta */
 
-  /* border + semânticos (A2) */
+  /* border + semantics (A2) */
   --border: #______;
   --success: #______;
   --warning: #______;
@@ -78,7 +78,7 @@
 
 ## 3. Typography
 
-<!-- Famílias (display/body/mono). Escala com ≥4 tiers. Pesos, line-height, tracking. -->
+<!-- Families (display/body/mono). Scale with ≥4 tiers. Weights, line-height, tracking. -->
 
 ### Font Family
 - **Display / Headings**: `<Font>`, fallback `<serif|sans>`
@@ -104,7 +104,7 @@ Mono: "<Font>", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monosp
 
 ## 4. Spacing
 
-<!-- Unidade base, escala, padding de componente, ritmo vertical de seção. -->
+<!-- Base unit, scale, component padding, section vertical rhythm. -->
 
 ```css
 :root {
@@ -121,7 +121,7 @@ Mono: "<Font>", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monosp
 
 ## 5. Layout & Composition
 
-<!-- Grid, container max-width, filosofia de whitespace, escala de border-radius. -->
+<!-- Grid, container max-width, whitespace philosophy, border-radius scale. -->
 
 ```css
 :root {
@@ -135,8 +135,8 @@ Mono: "<Font>", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monosp
 ## 6. Components
 
 <!--
-  CSS REAL de 3-6 componentes (botões, cards, inputs, nav). Tudo via tokens semânticos —
-  ZERO hex hardcoded no CSS de componente. Inclua :focus-visible.
+  REAL CSS for 3-6 components (buttons, cards, inputs, nav). Everything via semantic tokens —
+  ZERO hardcoded hex in component CSS. Include :focus-visible.
 -->
 
 ```css
@@ -161,7 +161,7 @@ Mono: "<Font>", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monosp
 
 ## 7. Motion & Interaction
 
-<!-- Timings, easing por propósito, prefers-reduced-motion segmentado. -->
+<!-- Timings, easing by purpose, prefers-reduced-motion targeted. -->
 
 ```css
 :root {
@@ -171,41 +171,41 @@ Mono: "<Font>", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monosp
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .<elemento-que-anima> { animation: none; transition-duration: 0.01ms !important; }
+  .<animating-element> { animation: none; transition-duration: 0.01ms !important; }
 }
 ```
 
 ## 8. Voice & Brand
 
-<!-- Tom de voz, princípios de copy, prior art nomeado. -->
+<!-- Tone of voice, copy principles, named prior art. -->
 
-- **Tom**: <...>
-- **Princípios de copy**: <...>
-- **Prior art**: <produtos/sistemas reais — nomeie>
+- **Tone**: <...>
+- **Copy principles**: <...>
+- **Prior art**: <real products/systems — name them>
 
 ## 9. Anti-patterns
 
-<!-- O que o produto NÃO é. Específico e limitado (um por erro-chave). -->
+<!-- What the product is NOT. Specific and bounded (one per key mistake). -->
 
-- Don't <regra específica e limitada — ex.: "use cool blue-grays; toda neutra é warm">
+- Don't <specific and bounded rule — e.g.: "use cool blue-grays; every neutral is warm">
 - Don't <...>
 - Don't <...>
 
 ## 10. Agent Prompt Guide
 
 <!--
-  O PAYLOAD. Section escrita PARA o agente consumir ao gerar UI.
-  (Numerada 10 só porque o spec canônico já gastou 1-9; nos exemplares brand-grade
-   esta é a seção 9. O importante é que ela exista e seja a última.)
+  THE PAYLOAD. Section written FOR the agent to consume when generating UI.
+  (Numbered 10 only because the canonical spec already used 1-9; in brand-grade exemplars
+   this is section 9. What matters is that it exists and is the last one.)
 -->
 
 ### Quick Color Reference
-- Brand CTA: "<Nome> (#______)"
-- Page Background: "<Nome> (#______)"
-- Card Surface: "<Nome> (#______)"
-- Primary Text: "<Nome> (#______)"
-- Secondary Text: "<Nome> (#______)"
-- Borders: "<Nome> (#______)"
+- Brand CTA: "<Name> (#______)"
+- Page Background: "<Name> (#______)"
+- Card Surface: "<Name> (#______)"
+- Primary Text: "<Name> (#______)"
+- Secondary Text: "<Name> (#______)"
+- Borders: "<Name> (#______)"
 
 ### Example Component Prompts
 - "Create a hero on <Background (#______)> with a __px <Display Font> weight ___ headline,
@@ -215,8 +215,8 @@ Mono: "<Font>", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monosp
   Title in <Display Font> at __px, description in <Secondary (#______)> at __px."
 
 ### Iteration Guide
-1. Um componente por vez.
-2. Cite nomes de cor específicos — "use <Secondary> (#______)", não "deixe cinza".
-3. Especifique a variante sempre (warm vs cool, serif vs sans).
-4. Para sombras, nomeie o tipo do sistema (ring shadow, whisper shadow) — não "drop shadow" genérico.
-5. Especifique o fundo — "on <Background (#______)>".
+1. One component at a time.
+2. Cite specific color names — "use <Secondary> (#______)", not "make it gray".
+3. Always specify the variant (warm vs cool, serif vs sans).
+4. For shadows, name the system type (ring shadow, whisper shadow) — not a generic "drop shadow".
+5. Specify the background — "on <Background (#______)>".

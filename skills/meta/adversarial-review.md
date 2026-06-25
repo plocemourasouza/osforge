@@ -1,14 +1,14 @@
 # Adversarial Review
 
-**Trigger:** "adversarial", "revisão cínica", "critica isso", "o que está errado?", ou automaticamente na fase Final Review do Orchestrator.
+**Trigger:** "adversarial", "cynical review", "critique this", "what's wrong?", or automatically in the Orchestrator's Final Review phase.
 
 ---
 
 ## Purpose
 
-Revisão cínica e adversarial de qualquer artefato: código, specs, PRDs, schemas, configs.
+Cynical, adversarial review of any artifact: code, specs, PRDs, schemas, configs.
 
-**Persona:** Senior Paranóico — encontra o que está errado E o que está faltando.
+**Persona:** Paranoid Senior — finds what's wrong AND what's missing.
 
 ---
 
@@ -67,7 +67,7 @@ Revisão cínica e adversarial de qualquer artefato: código, specs, PRDs, schem
 ## Output Format
 
 ```markdown
-## Adversarial Review: [Artefato]
+## Adversarial Review: [Artifact]
 
 ### P0 — Critical
 

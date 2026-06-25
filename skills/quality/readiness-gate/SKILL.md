@@ -1,85 +1,85 @@
 ---
 name: readiness-gate
-description: "Quality gate pré-implementação. Valida que PRD, Architecture e Épicos estão alinhados e completos antes de iniciar o sprint loop. Use com: 'readiness check', 'pronto para implementar?', 'quality gate', 'o PRD está alinhado com a arquitetura?', 'validar cobertura de requisitos', 'todos os requisitos têm story?', 'checar rastreabilidade antes do sprint'."
-trigger: readiness|pronto para implementar|quality gate|gate check|alinhamento PRD|cobertura de requisitos|rastreabilidade
+description: "Pre-implementation quality gate. Validates that the PRD, Architecture and Epics are aligned and complete before starting the sprint loop. Use with: 'readiness check', 'ready to implement?', 'quality gate', 'is the PRD aligned with the architecture?', 'validate requirements coverage', 'do all requirements have a story?', 'check traceability before the sprint'."
+trigger: readiness|ready to implement|quality gate|gate check|PRD alignment|requirements coverage|traceability
 model-tier: sonnet
 ---
 
 # Readiness Gate
 
-## Papel
-Product Manager + Scrum Master especialista em rastreabilidade de requisitos.
-Sucesso é medido por encontrar falhas no planejamento ANTES de implementar.
+## Role
+A Product Manager + Scrum Master specialized in requirements traceability.
+Success is measured by finding planning flaws BEFORE implementing.
 
 ## Inputs
-- **PRD** — Requisitos do produto
-- **Architecture** — Decisões técnicas (se existir)
-- **Épicos/Stories** — Work items a serem implementados
-- **project-context.md** — Stack e regras do projeto
+- **PRD** — Product requirements
+- **Architecture** — Technical decisions (if it exists)
+- **Epics/Stories** — Work items to be implemented
+- **project-context.md** — Project stack and rules
 
-## Execução
+## Execution
 
-### 1. Carregar Todos os Artefatos de Planning
-- Buscar PRD, Architecture, Épicos nos diretórios de output do projeto
-- Se algum obrigatório faltar → FAIL imediato com indicação do que falta
+### 1. Load All Planning Artifacts
+- Find the PRD, Architecture, Epics in the project's output directories
+- If any mandatory one is missing → immediate FAIL with an indication of what's missing
 
-### 2. Cross-Check de Rastreabilidade
+### 2. Traceability Cross-Check
 
-**Requisitos → Stories:**
-- [ ] Cada requisito funcional do PRD tem pelo menos 1 story?
-- [ ] Requisitos not covered sinalizados
-- [ ] Prioridades do PRD (must/should/nice) refletidas na ordem dos épicos?
+**Requirements → Stories:**
+- [ ] Does each functional requirement of the PRD have at least 1 story?
+- [ ] Are uncovered requirements flagged?
+- [ ] Are the PRD's priorities (must/should/nice) reflected in the order of the epics?
 
 **Stories → Architecture:**
-- [ ] Cada story que toca data model referencia ADR de schema?
-- [ ] Cada story que toca API referencia ADR de API design?
-- [ ] Stack nas stories bate com architecture doc?
+- [ ] Does each story that touches the data model reference a schema ADR?
+- [ ] Does each story that touches the API reference an API design ADR?
+- [ ] Does the stack in the stories match the architecture doc?
 
-**Stories → Implementabilidade:**
-- [ ] Todas stories têm ACs com Given/When/Then?
-- [ ] Todas tasks têm file paths explícitos?
-- [ ] Sem placeholders ou TBDs?
-- [ ] Dependências entre stories são consistentes (sem ciclos)?
-- [ ] Complexidade L não deveria ser split?
+**Stories → Implementability:**
+- [ ] Do all stories have ACs with Given/When/Then?
+- [ ] Do all tasks have explicit file paths?
+- [ ] No placeholders or TBDs?
+- [ ] Are dependencies between stories consistent (no cycles)?
+- [ ] Shouldn't an L-complexity story be split?
 
 **Architecture → project-context:**
-- [ ] Stack definido na architecture bate com project-context.md?
-- [ ] Padrões de architecture não conflitam com rules existentes?
+- [ ] Does the stack defined in the architecture match project-context.md?
+- [ ] Do the architecture patterns not conflict with existing rules?
 
-**Segurança e Compliance:**
-- [ ] RLS policies planejadas para novos data models?
-- [ ] LGPD considerado para dados pessoais?
-- [ ] Auth flows cobrem todos os roles?
+**Security and Compliance:**
+- [ ] RLS policies planned for new data models?
+- [ ] LGPD considered for personal data?
+- [ ] Do auth flows cover all roles?
 
-### 3. Produzir Relatório
+### 3. Produce Report
 
 ```markdown
-## Readiness Gate: {projeto}
+## Readiness Gate: {project}
 
-**Resultado:** PASS | CONCERNS | FAIL
+**Result:** PASS | CONCERNS | FAIL
 
-### Sumário
-- Requisitos cobertos: {N}/{total} ({%})
-- Stories com ACs completos: {N}/{total}
-- ADRs referenciados: {N}
-- Gaps encontrados: {N}
+### Summary
+- Requirements covered: {N}/{total} ({%})
+- Stories with complete ACs: {N}/{total}
+- ADRs referenced: {N}
+- Gaps found: {N}
 
 ### PASS Items
-- {item que passou}
+- {item that passed}
 
-### CONCERNS (deve resolver, mas não bloqueia)
-- {concern com sugestão de resolução}
+### CONCERNS (should resolve, but does not block)
+- {concern with resolution suggestion}
 
-### FAIL Items (bloqueia implementação)
-- {fail item com indicação de como resolver}
+### FAIL Items (blocks implementation)
+- {fail item with an indication of how to resolve}
 
-### Recomendação
-{PASS: avançar para sprint planning}
-{CONCERNS: resolver concerns e re-check}
-{FAIL: voltar para {fase} e resolver {items}}
+### Recommendation
+{PASS: advance to sprint planning}
+{CONCERNS: resolve concerns and re-check}
+{FAIL: go back to {phase} and resolve {items}}
 ```
 
-### 4. Decisão
-- **PASS** → Orchestrator pode avançar para implementação
-- **CONCERNS** → Listar concerns, perguntar se quer resolver agora ou aceitar risco
-- **FAIL** → Bloqueia avanço, indicar exatamente o que falta e qual skill usar
+### 4. Decision
+- **PASS** → Orchestrator can advance to implementation
+- **CONCERNS** → List concerns, ask whether to resolve now or accept the risk
+- **FAIL** → Blocks advancement, indicate exactly what's missing and which skill to use

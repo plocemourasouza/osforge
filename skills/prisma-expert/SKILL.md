@@ -1,6 +1,6 @@
 ---
 name: prisma-expert
-description: "Padrões avançados de Prisma ORM. ACIONE quando: mudanças de schema com >3 models, estratégias de migration, queries lentas ou N+1, relações many-to-many ou polimórficas, isolamento multi-tenant, debugging de Prisma. Keywords: prisma, schema, migration, query, relation, database, orm, model, seed, index, RLS."
+description: "Advanced Prisma ORM patterns. Use when: schema changes with >3 models, migration strategies, slow queries or N+1, many-to-many or polymorphic relations, multi-tenant isolation, Prisma debugging. Keywords: prisma, schema, migration, query, relation, database, orm, model, seed, index, RLS."
 model: sonnet
 allowed-tools: Read, Bash, Glob, Grep
 hooks:
@@ -8,15 +8,15 @@ hooks:
     - matcher: Bash
       hooks:
         - type: prompt
-          prompt: "Se o comando contiver 'prisma migrate deploy' em ambiente que não seja dev local, confirme com o usuário antes de executar."
+          prompt: "If the command contains 'prisma migrate deploy' in an environment other than local dev, confirm with the user before executing."
 metadata:
   author: osforge
   version: '1.1'
 ---
 
-## Contexto do projeto
-!`[ -f prisma/schema.prisma ] && echo "Schema encontrado: $(wc -l < prisma/schema.prisma) linhas, $(grep -c '^model' prisma/schema.prisma) models" || echo "prisma/schema.prisma não encontrado"`
-!`[ -f .env ] && grep -c 'DATABASE_URL' .env > /dev/null 2>&1 && echo "DATABASE_URL configurada" || echo "DATABASE_URL não encontrada no .env"`
+## Project context
+!`[ -f prisma/schema.prisma ] && echo "Schema found: $(wc -l < prisma/schema.prisma) lines, $(grep -c '^model' prisma/schema.prisma) models" || echo "prisma/schema.prisma not found"`
+!`[ -f .env ] && grep -c 'DATABASE_URL' .env > /dev/null 2>&1 && echo "DATABASE_URL configured" || echo "DATABASE_URL not found in .env"`
 
 # Prisma Expert
 
@@ -155,19 +155,19 @@ const result = await prisma.$transaction(async (tx) => {
 }, { timeout: 5000, isolationLevel: 'Serializable' })
 ```
 
-## Debugging com Logs do Prisma
+## Debugging with Prisma Logs
 
-### Habilitar log de queries
+### Enable query logging
 ```typescript
-// Ver todas as queries SQL geradas (essencial para detectar N+1)
+// See all generated SQL queries (essential for detecting N+1)
 const prisma = new PrismaClient({
   log: ['query', 'warn', 'error'],
 })
 ```
 
-### Profiling com event listeners
+### Profiling with event listeners
 ```typescript
-// Capturar duração de cada query para identificar as lentas
+// Capture the duration of each query to identify slow ones
 const prisma = new PrismaClient({
   log: [{ emit: 'event', level: 'query' }],
 })
@@ -179,11 +179,11 @@ prisma.$on('query', (e) => {
 })
 ```
 
-### Dicas de diagnóstico
-- **N+1**: se o log mostra a mesma query repetida em loop, falta `include`/`select` com relation
-- **`DEBUG="prisma:*"`**: variável de ambiente para logs internos detalhados (engine, pool de conexões)
-- **EXPLAIN ANALYZE**: copie a query do log e rode `prisma.$queryRaw` com `EXPLAIN ANALYZE` para ver o plano de execução
-- Desabilite `log: ['query']` em produção — gera overhead e pode vazar dados sensíveis nos params
+### Diagnostic tips
+- **N+1**: if the log shows the same query repeated in a loop, an `include`/`select` with the relation is missing
+- **`DEBUG="prisma:*"`**: environment variable for detailed internal logs (engine, connection pool)
+- **EXPLAIN ANALYZE**: copy the query from the log and run `prisma.$queryRaw` with `EXPLAIN ANALYZE` to see the execution plan
+- Disable `log: ['query']` in production — it adds overhead and can leak sensitive data in the params
 
 ## Prisma + Supabase Integration
 - Use `directUrl` for migrations, `url` (pooled) for queries
@@ -197,10 +197,10 @@ prisma.$on('query', (e) => {
 
 ## Gotchas
 
-- **`migrate dev` vs `migrate deploy`**: `migrate dev` gera migration + aplica. `migrate deploy` só aplica (para CI/prod). Nunca rodar `migrate dev` em produção — ele pode resetar dados.
-- **Renomear coluna causa DROP + ADD**: Prisma não detecta rename — gera `DROP COLUMN` + `ADD COLUMN`, zerando os dados. Para renomear: (1) adicionar nova coluna, (2) migrar dados via script, (3) remover antiga em release separada.
-- **`include` vs `select` na mesma query**: não misturar `include` e `select` no mesmo nível — Prisma não permite. Escolha um: `select` para controle granular, `include` para relations completas.
-- **RLS não aplica via service role**: quando usando Supabase com `service_role`, o Prisma bypassa RLS completamente. Sempre validar `organizationId` no nível da Server Action antes de qualquer query Prisma.
-- **Offset pagination em tabelas grandes**: `skip: page * 20` vai ficando progressivamente mais lento conforme a tabela cresce. Para tabelas >10K registros, sempre usar cursor-based pagination com `cursor: { id: lastId }`.
-- **`$queryRaw` precisa de template literal**: `prisma.$queryRaw(sql)` é vulnerável a SQL injection. Sempre usar template literal tagged: `` prisma.$queryRaw`SELECT * FROM "User" WHERE id = ${id}` ``.
-- **Migrations sem `--create-only` em prod**: sempre gerar a migration com `--create-only`, revisar o SQL gerado, e só então aplicar. Nunca deixar o Prisma aplicar migration automaticamente em produção.
+- **`migrate dev` vs `migrate deploy`**: `migrate dev` generates a migration + applies it. `migrate deploy` only applies (for CI/prod). Never run `migrate dev` in production — it can reset data.
+- **Renaming a column causes DROP + ADD**: Prisma does not detect renames — it generates `DROP COLUMN` + `ADD COLUMN`, wiping the data. To rename: (1) add a new column, (2) migrate data via a script, (3) drop the old one in a separate release.
+- **`include` vs `select` in the same query**: do not mix `include` and `select` at the same level — Prisma does not allow it. Choose one: `select` for granular control, `include` for complete relations.
+- **RLS does not apply via service role**: when using Supabase with `service_role`, Prisma bypasses RLS completely. Always validate `organizationId` at the Server Action level before any Prisma query.
+- **Offset pagination on large tables**: `skip: page * 20` becomes progressively slower as the table grows. For tables with >10K records, always use cursor-based pagination with `cursor: { id: lastId }`.
+- **`$queryRaw` requires a template literal**: `prisma.$queryRaw(sql)` is vulnerable to SQL injection. Always use a tagged template literal: `` prisma.$queryRaw`SELECT * FROM "User" WHERE id = ${id}` ``.
+- **Migrations without `--create-only` in prod**: always generate the migration with `--create-only`, review the generated SQL, and only then apply it. Never let Prisma apply a migration automatically in production.

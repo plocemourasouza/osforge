@@ -1,6 +1,6 @@
 ---
 name: taste-design-dials
-description: "Camada de enhancement OSForge sobre a taste-skill com 3 dials ajustáveis (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY) mais regras Next.js App Router e constraints estruturais OSForge. ACIONE quando: 'sobe o motion para 8' ou 'quero mais minimal/mais ousado' (ajustar dials), 'aplica os dials de taste neste projeto OSForge', 'compõe a taste skill com as regras do OSForge', 'design premium com variance, motion e density configuráveis'. Keywords: dials, variance, motion intensity, density, OSForge, taste, enhancement layer, Next.js, design premium, anti-slop. Não acione para: uso standalone da taste skill fora de projetos OSForge (design-taste-frontend), geração de DESIGN.md para Stitch (stitch-design-taste), motion GSAP puro (gpt-taste), padrões técnicos Tailwind v4 (tailwind-patterns)."
+description: "OSForge enhancement layer on top of the taste-skill with 3 adjustable dials (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY) plus Next.js App Router rules and OSForge structural constraints. Use when: 'raise motion to 8' or 'I want more minimal/more bold' (adjust dials), 'apply the taste dials to this OSForge project', 'compose the taste skill with the OSForge rules', 'premium design with configurable variance, motion, and density'. Keywords: dials, variance, motion intensity, density, OSForge, taste, enhancement layer, Next.js, premium design, anti-slop. Do NOT use for: standalone use of the taste skill outside OSForge projects (design-taste-frontend), DESIGN.md generation for Stitch (stitch-design-taste), pure GSAP motion (gpt-taste), technical Tailwind v4 patterns (tailwind-patterns)."
 version: 1.1.0
 compose_with:
   upstream:
@@ -36,8 +36,8 @@ VISUAL_DENSITY   = 4   (1=Art Gallery/Airy → 10=Cockpit/Packed Data)
 ```
 
 Adapt these dynamically based on user prompt. Never ask the user to "edit the file" — listen
-to the chat: "mais minimal" → lower density; "quero animações fortes" → raise motion; "mais
-ousado" → raise variance.
+to the chat: "more minimal" → lower density; "I want strong animations" → raise motion; "more
+bold" → raise variance.
 
 ## 2. Default Architecture (assume unless user specifies)
 
@@ -94,10 +94,10 @@ LLMs default to "static successful states". You MUST implement full cycles per *
 - **Loading:** `loading.tsx` / `<Suspense>` + `<Skeleton>` mirroring layout (no generic spinners alone).
 - **Empty:** `<EmptyState>` with icon + title + optional CTA.
 - **Error:** `error.tsx` + `<Alert variant="destructive">` + retry; forms use `toast.error()`.
-- **Success:** render content — no "Carregado com sucesso" toast.
+- **Success:** render content — no "Loaded successfully" toast.
 - **Tactile Feedback:** On `:active`, use `-translate-y-[1px]` or `scale-[0.98]`.
 - **Dialog/Sheet actions:** primary + cancel in `<DialogFooter>` / `<SheetFooter>` — never inside body.
-- **i18n:** all user-facing strings via `t()` — no hardcoded PT/EN temporário.
+- **i18n:** all user-facing strings via `t()` — no temporary hardcoded PT/EN.
 
 ### Rule 6 — Forms
 Label ABOVE input. Helper text below input. Error text below input. Use `gap-2`.

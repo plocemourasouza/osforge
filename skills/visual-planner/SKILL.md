@@ -1,6 +1,6 @@
 ---
 name: visual-planner
-description: "Transforma documentos de planejamento em breakdowns HTML visuais e interativos. ACIONE quando: visualizar um plano, transformar spec em HTML, criar breakdown visual, apresentar PRD visualmente, gerar HTML interativo de arquitetura, tornar spec mais fácil de seguir. Keywords: visualizar plano, breakdown visual, HTML interativo, visualizar spec, visualizar PRD, apresentar arquitetura, visual breakdown, plan breakdown, turn spec into HTML, make plan visual, make this easier to follow."
+description: "Transforms planning documents into visual, interactive HTML breakdowns. Use when: visualizing a plan, turning a spec into HTML, creating a visual breakdown, presenting a PRD visually, generating interactive architecture HTML, making a spec easier to follow. Keywords: visualize plan, visual breakdown, interactive HTML, visualize spec, visualize PRD, present architecture, visual breakdown, plan breakdown, turn spec into HTML, make plan visual, make this easier to follow."
 model: sonnet
 allowed-tools: Read, Write, Glob, Grep, Bash
 metadata:
@@ -10,260 +10,260 @@ metadata:
   position: presentation-layer
 ---
 
-## Contexto do projeto
-!`[ -f project-context.md ] && head -30 project-context.md || echo "project-context.md não encontrado"`
-!`ls docs/specs/ 2>/dev/null | head -5 && echo "Specs encontradas" || echo "Nenhuma spec em docs/specs/"`
-!`ls .osforge/phases/ 2>/dev/null | head -5 && echo "Phases encontrados" || echo "Nenhum phase context"`
+## Project context
+!`[ -f project-context.md ] && head -30 project-context.md || echo "project-context.md not found"`
+!`ls docs/specs/ 2>/dev/null | head -5 && echo "Specs found" || echo "No specs in docs/specs/"`
+!`ls .osforge/phases/ 2>/dev/null | head -5 && echo "Phases found" || echo "No phase context"`
 
 # Visual Planner
 
-Transforma qualquer documento de planejamento em um breakdown HTML single-page, interativo e visualmente rico. O output é um arquivo HTML autocontido com navegação scroll-based, animações reveal, flow diagrams, seções expansíveis, e design system warm. Zero dependências além de Google Fonts.
+Transforms any planning document into a single-page, interactive, visually rich HTML breakdown. The output is a self-contained HTML file with scroll-based navigation, reveal animations, flow diagrams, expandable sections, and a warm design system. Zero dependencies beyond Google Fonts.
 
-**Invocação mínima:**
+**Minimal invocation:**
 ```
 visual-planner docs/specs/auth-spec.md
 ```
-ou em linguagem natural: "visualizar ./docs/specs/auth-spec.md".
+or in natural language: "visualize ./docs/specs/auth-spec.md".
 
-## Integração com Pipeline OSForge
+## Integration with the OSForge Pipeline
 
-Esta skill é a **camada de apresentação** do pipeline de planejamento. Reconhece automaticamente os formatos de output das planning skills:
+This skill is the **presentation layer** of the planning pipeline. It automatically recognizes the output formats of the planning skills:
 
-| Formato OSForge | Tipo de documento | Estrutura visual sugerida |
+| OSForge Format | Document type | Suggested visual structure |
 |---|---|---|
-| `osforge-prd` | Product Requirements Document | Feature walkthrough com pattern cards |
-| `osforge-spec` | Tech Spec com ACs | Phase-based com step cards e callout boxes |
-| `osforge-architecture` | ADR / Architecture Doc | Architecture-first com arch diagrams |
-| `osforge-epic` | Épicos decompostos | Flow diagram de stories + dependency map |
-| `osforge-phase-context` | Decisões de fase | Cards por dimensão (Visual, API, Data, Security) |
-| `osforge-clarifications` | Clarificações resolvidas | Comparison tables + callout boxes |
-| Markdown genérico | Qualquer doc de planejamento | Auto-detect pelo conteúdo |
+| `osforge-prd` | Product Requirements Document | Feature walkthrough with pattern cards |
+| `osforge-spec` | Tech Spec with ACs | Phase-based with step cards and callout boxes |
+| `osforge-architecture` | ADR / Architecture Doc | Architecture-first with arch diagrams |
+| `osforge-epic` | Decomposed epics | Flow diagram of stories + dependency map |
+| `osforge-phase-context` | Phase decisions | Cards per dimension (Visual, API, Data, Security) |
+| `osforge-clarifications` | Resolved clarifications | Comparison tables + callout boxes |
+| Generic Markdown | Any planning doc | Auto-detect by content |
 
-## Boas-vindas (primeira invocação)
+## Welcome (first invocation)
 
-Quando a skill é acionada sem documento especificado:
+When the skill is triggered without a specified document:
 
-> **Posso transformar qualquer documento de planejamento em um breakdown visual interativo.**
+> **I can turn any planning document into an interactive visual breakdown.**
 >
-> Me aponte um arquivo:
-> - **Arquivo local** — ex: "visualizar ./docs/specs/auth-spec.md"
-> - **Doc atual** — se já está olhando uma spec, diga "visualizar este plano"
-> - **Output de planning skill** — specs, PRDs, épicos gerados pelo OSForge
+> Point me to a file:
+> - **Local file** — e.g. "visualize ./docs/specs/auth-spec.md"
+> - **Current doc** — if you're already looking at a spec, say "visualize this plan"
+> - **Planning skill output** — specs, PRDs, epics generated by OSForge
 >
-> Vou ler o documento, escolher a melhor estrutura visual, e gerar um HTML que você pode abrir no browser, compartilhar, ou gravar a tela. Funciona em qualquer browser — sem setup.
+> I'll read the document, choose the best visual structure, and generate an HTML you can open in the browser, share, or screen-record. Works in any browser — no setup.
 
-## O Processo
+## The Process
 
-### Fase 1: Analisar o Documento
+### Phase 1: Analyze the Document
 
-Leia o documento inteiro. Extraia:
+Read the entire document. Extract:
 
-1. **Nome do projeto e descrição de uma linha** — para a hero section
-2. **Tipo de documento** — determine a melhor estrutura visual:
-   - **Phase-based** — fases de implementação sequenciais → seções numeradas
-   - **Architecture-first** — design de sistema com componentes → diagrama de arquitetura primeiro, depois detalhes
-   - **Feature walkthrough** — organizado por features voltadas ao usuário → seções feature por feature
-   - **Narrative** — traça jornada do usuário ou fluxo de dados → seções em arco narrativo
-   - **Mixed** — combinação → escolha o padrão dominante, entrelace os outros
-3. **Seções principais** — viram as seções scrolláveis (mire em 4-8)
-4. **Relacionamentos** — como as partes se conectam (viram flow diagrams)
-5. **Detalhes técnicos** — snippets de código, estruturas de arquivo, specs de API (vão em expandable cards e code blocks)
-6. **Decisões e restrições chave** — (viram callout boxes)
-7. **Números e métricas** — contagens de arquivos, endpoints, itens de stack (viram stat badges)
-8. **Tech stack** — linguagens, frameworks, serviços mencionados
+1. **Project name and a one-line description** — for the hero section
+2. **Document type** — determine the best visual structure:
+   - **Phase-based** — sequential implementation phases → numbered sections
+   - **Architecture-first** — system design with components → architecture diagram first, then details
+   - **Feature walkthrough** — organized by user-facing features → feature-by-feature sections
+   - **Narrative** — traces the user journey or data flow → sections in a narrative arc
+   - **Mixed** — a combination → choose the dominant pattern, interweave the others
+3. **Main sections** — become the scrollable sections (aim for 4-8)
+4. **Relationships** — how the parts connect (become flow diagrams)
+5. **Technical details** — code snippets, file structures, API specs (go in expandable cards and code blocks)
+6. **Key decisions and constraints** — (become callout boxes)
+7. **Numbers and metrics** — file counts, endpoints, stack items (become stat badges)
+8. **Tech stack** — languages, frameworks, services mentioned
 
-### Fase 2: Construir o HTML
+### Phase 2: Build the HTML
 
-Gere um único arquivo HTML. Leia `references/design-system.md` para os tokens CSS completos. Leia `references/interactive-elements.md` para os padrões de implementação.
+Generate a single HTML file. Read `references/design-system.md` for the complete CSS tokens. Read `references/interactive-elements.md` for the implementation patterns.
 
-**Ordem de build:**
+**Build order:**
 
-1. **Foundation primeiro** — Shell HTML com todas as seções (vazias), CSS design system completo dos references, navigation bar com progress tracking, keyboard navigation, e animações scroll-triggered. Após este passo: um skeleton funcional navegável.
+1. **Foundation first** — HTML shell with all sections (empty), the full design system CSS from the references, a navigation bar with progress tracking, keyboard navigation, and scroll-triggered animations. After this step: a functional, navigable skeleton.
 
-2. **Hero section** — Nome do projeto, descrição de uma linha, stats chave (como badges), e overview visual do que o plano cobre.
+2. **Hero section** — Project name, one-line description, key stats (as badges), and a visual overview of what the plan covers.
 
-3. **Uma seção por vez** — Preencha conteúdo e elementos visuais de cada seção. Não tente escrever todas de uma vez. Construa Seção 1, depois Seção 2, etc.
+3. **One section at a time** — Fill in the content and visual elements of each section. Don't try to write them all at once. Build Section 1, then Section 2, etc.
 
-4. **Polish pass** — Após todas as seções, passe final de consistência visual.
+4. **Polish pass** — After all sections, a final pass for visual consistency.
 
-**Nome do arquivo de output:** `{project-name}-breakdown.html` (slugificado do título do documento)
+**Output file name:** `{project-name}-breakdown.html` (slugified from the document title)
 
-### Fase 3: Abrir e Apresentar
+### Phase 3: Open and Present
 
-Após gerar o HTML, abra no browser para o usuário revisar.
-
----
-
-## Filosofia de Conteúdo
-
-### Visual First — Agressivamente
-
-O ponto é que isso é mais fácil de seguir que o documento bruto. Siga estas regras:
-
-**Limites de texto:**
-- Max **2-3 frases** por bloco de texto. Se está escrevendo a quarta frase, pare e converta em elemento visual.
-- Cada seção deve ser **pelo menos 50% visual** — flow diagrams, cards, code blocks, badges, step cards.
-
-**Converter texto em visuais:**
-- Lista de 3+ itens → **pattern cards** com ícones
-- Sequência de passos → **step cards** ou **flow diagram com setas**
-- "Componente A conecta ao Componente B" → **flow diagram**
-- Descrições de arquitetura → **layouts box-and-arrow** com zonas color-coded
-- Estruturas de arquivo/diretório → **visual file tree**
-- Detalhes técnicos que sobrecarregam → **expandable detail cards** (resumo visível, detalhes no clique)
-- Números chave → **stat badges**
-- Comparações → **colunas side-by-side**
-
-### Fiel ao Fonte
-
-- Use a linguagem e termos do documento original — não reescreva ou reinterprete
-- Preserve precisão técnica — simplifique a **apresentação**, não o **conteúdo**
-- Não adicione informação que não está no documento fonte
-- Não pule seções porque são técnicas — use expandable cards para detalhes densos
-
-### "O Quê" Antes do "Como"
-
-Cada seção deve abrir com o que essa parte do plano faz ou alcança, depois ir nos detalhes. O leitor deve poder scrollar rápido e pegar a essência, ou desacelerar e expandir cards para profundidade.
-
-### Resumos em Linguagem Simples
-
-Para cada seção principal, escreva um resumo de 1-2 frases que capture a essência. Isso aparece como subtítulo da seção. O conteúdo técnico original vai no corpo e expandable cards abaixo.
+After generating the HTML, open it in the browser for the user to review.
 
 ---
 
-## Estrutura de Seção
+## Content Philosophy
 
-Cada bloco principal do documento de planejamento vira uma seção:
+### Visual First — Aggressively
+
+The point is that this is easier to follow than the raw document. Follow these rules:
+
+**Text limits:**
+- Max **2-3 sentences** per text block. If you're writing the fourth sentence, stop and convert it into a visual element.
+- Each section should be **at least 50% visual** — flow diagrams, cards, code blocks, badges, step cards.
+
+**Convert text into visuals:**
+- A list of 3+ items → **pattern cards** with icons
+- A sequence of steps → **step cards** or a **flow diagram with arrows**
+- "Component A connects to Component B" → **flow diagram**
+- Architecture descriptions → **box-and-arrow layouts** with color-coded zones
+- File/directory structures → **visual file tree**
+- Technical details that overwhelm → **expandable detail cards** (visible summary, details on click)
+- Key numbers → **stat badges**
+- Comparisons → **side-by-side columns**
+
+### Faithful to the Source
+
+- Use the original document's language and terms — don't rewrite or reinterpret
+- Preserve technical accuracy — simplify the **presentation**, not the **content**
+- Don't add information that isn't in the source document
+- Don't skip sections because they're technical — use expandable cards for dense details
+
+### "What" Before "How"
+
+Each section should open with what that part of the plan does or achieves, then go into the details. The reader should be able to scroll fast and get the gist, or slow down and expand cards for depth.
+
+### Plain-Language Summaries
+
+For each main section, write a 1-2 sentence summary that captures the essence. This appears as the section subtitle. The original technical content goes in the body and expandable cards below.
+
+---
+
+## Section Structure
+
+Each main block of the planning document becomes a section:
 
 ```
-Seção N
-├── Número da seção (grande, cor accent)
-├── Título da seção (heading bold)
-├── Subtítulo da seção (resumo de 1 linha)
-├── Corpo
-│   ├── Elemento visual (flow diagram, cards, file tree, etc.)
-│   ├── Texto breve (2-3 frases max por bloco)
-│   ├── Expandable detail cards (para conteúdo mais profundo)
-│   ├── Code blocks (se existem snippets técnicos)
-│   └── Callout boxes (para decisões/restrições chave)
-└── Review toolbar (thumbs up, thumbs down, botão de comentário)
+Section N
+├── Section number (large, accent color)
+├── Section title (bold heading)
+├── Section subtitle (1-line summary)
+├── Body
+│   ├── Visual element (flow diagram, cards, file tree, etc.)
+│   ├── Brief text (2-3 sentences max per block)
+│   ├── Expandable detail cards (for deeper content)
+│   ├── Code blocks (if technical snippets exist)
+│   └── Callout boxes (for key decisions/constraints)
+└── Review toolbar (thumbs up, thumbs down, comment button)
 ```
 
-**Mire em 4-8 seções totais.** Se o documento tem mais headings, agrupe os relacionados. Se tem menos, divida seções grandes em subpartes lógicas.
+**Aim for 4-8 sections total.** If the document has more headings, group the related ones. If it has fewer, split large sections into logical subparts.
 
 ---
 
-## Elementos Obrigatórios
+## Mandatory Elements
 
-Todo breakdown deve incluir:
+Every breakdown must include:
 
-1. **Hero section** — Nome do projeto, descrição, stat badges chave
-2. **Pelo menos um flow diagram** — mostrando como partes principais se conectam
-3. **Pelo menos um set de pattern/feature cards** — para listar componentes, features, ou tech stack
-4. **Expandable detail cards** — para qualquer seção com conteúdo técnico denso
-5. **Callout boxes** — para decisões chave, restrições, ou trade-offs do plano
-6. **Progress bar e dot navigation** — sempre presentes
-7. **Review system em cada seção** — thumbs up/down + comentário + botão Copy Review
+1. **Hero section** — Project name, description, key stat badges
+2. **At least one flow diagram** — showing how the main parts connect
+3. **At least one set of pattern/feature cards** — to list components, features, or tech stack
+4. **Expandable detail cards** — for any section with dense technical content
+5. **Callout boxes** — for key decisions, constraints, or trade-offs of the plan
+6. **Progress bar and dot navigation** — always present
+7. **Review system on each section** — thumbs up/down + comment + Copy Review button
 
 ---
 
-## Sistema de Review
+## Review System
 
-Cada seção inclui uma toolbar de review para feedback sobre o plano. Isto é OBRIGATÓRIO — inclua em todo HTML gerado.
+Each section includes a review toolbar for feedback on the plan. This is MANDATORY — include it in every generated HTML.
 
-**Toolbar por seção:**
-- Botão thumbs up (verde quando ativo)
-- Botão thumbs down (vermelho quando ativo)
-- Botão de comentário (abre textarea inline, fica azul quando tem comentário)
-- Clicar na mesma reação novamente deseleciona (toggle)
+**Per-section toolbar:**
+- Thumbs up button (green when active)
+- Thumbs down button (red when active)
+- Comment button (opens an inline textarea, turns blue when it has a comment)
+- Clicking the same reaction again deselects it (toggle)
 
-**Botão flutuante "Copy Review":**
-- Fixo no canto inferior direito, formato pill escuro
-- Só visível após o usuário deixar pelo menos uma reação ou comentário
-- Mostra badge com contagem de seções com feedback
-- No clique: coleta todas reações + comentários, formata como markdown, copia para clipboard
-- Mostra toast: "Review copiada — cole no Claude"
+**Floating "Copy Review" button:**
+- Fixed in the bottom-right corner, dark pill shape
+- Only visible after the user leaves at least one reaction or comment
+- Shows a badge with the count of sections with feedback
+- On click: collects all reactions + comments, formats as markdown, copies to the clipboard
+- Shows a toast: "Review copied — paste it into Claude"
 
-**Persistência localStorage:**
-- Todo estado de review salva em localStorage com chave baseada no título da página
-- Usuário pode fechar e reabrir a página e o feedback persiste
-- Reações e comentários restauram no carregamento
+**localStorage persistence:**
+- All review state is saved to localStorage with a key based on the page title
+- The user can close and reopen the page and the feedback persists
+- Reactions and comments are restored on load
 
-**Formato de output do clipboard:**
+**Clipboard output format:**
 ```
-# Plan Review: {Nome do Projeto}
+# Plan Review: {Project Name}
 
-## {Título da Seção}
-- **Reação:** 👍 ou 👎
-- **Comentário:** "nota do usuário aqui"
+## {Section Title}
+- **Reaction:** 👍 or 👎
+- **Comment:** "user note here"
 
-## {Título da Seção}
-- **Reação:** 👎
-- **Comentário:** "nota do usuário aqui"
+## {Section Title}
+- **Reaction:** 👎
+- **Comment:** "user note here"
 ```
 
-Este formato é projetado para o usuário colar direto no Claude, que lê o feedback seção por seção e itera no plano.
+This format is designed for the user to paste directly into Claude, which reads the feedback section by section and iterates on the plan.
 
-Veja `references/interactive-elements.md` → seção Review System para implementação completa de HTML, CSS e JS.
-
----
-
-## Regras de Implementação
-
-- O arquivo deve ser completamente autocontido (única dependência externa: Google Fonts CDN)
-- NÃO use scroll-snap — seções podem ser longas e snap dificulta alcançar review toolbars
-- Use `min-height: 100dvh` com fallback `100vh` para seções
-- Apenas anime `transform` e `opacity` para performance GPU
-- Envolva todo JS em IIFE, use `passive: true` em scroll listeners, throttle com `requestAnimationFrame`
-- Inclua keyboard navigation (arrow keys para mover entre seções)
-- Inclua atributos ARIA para acessibilidade
-- Backgrounds alternantes (`--color-bg` e `--color-bg-warm`) para ritmo visual
-- Todos code blocks usam `white-space: pre-wrap` — sem scrollbars horizontais
+See `references/interactive-elements.md` → Review System section for the complete HTML, CSS, and JS implementation.
 
 ---
 
-## Seleção de Accent Color
+## Implementation Rules
 
-Escolha uma accent color que combine com a personalidade do projeto:
-- **Vermillion** (`#D94F30`) — default, funciona para maioria dos projetos
-- **Teal** (`#2A7B9B`) — para planos heavy em data/infraestrutura/backend
-- **Coral** (`#E06B56`) — para projetos consumer/social/criativos
-- **Forest** (`#2D8B55`) — para developer tools, CLIs, open source
-- **Amber** (`#D4A843`) — para fintech, analytics, dashboards
+- The file must be completely self-contained (single external dependency: Google Fonts CDN)
+- Do NOT use scroll-snap — sections can be long and snap makes it hard to reach the review toolbars
+- Use `min-height: 100dvh` with a `100vh` fallback for sections
+- Only animate `transform` and `opacity` for GPU performance
+- Wrap all JS in an IIFE, use `passive: true` on scroll listeners, throttle with `requestAnimationFrame`
+- Include keyboard navigation (arrow keys to move between sections)
+- Include ARIA attributes for accessibility
+- Alternating backgrounds (`--color-bg` and `--color-bg-warm`) for visual rhythm
+- All code blocks use `white-space: pre-wrap` — no horizontal scrollbars
 
-Evite gradientes roxos — parecem qualquer outro produto de AI.
+---
+
+## Accent Color Selection
+
+Choose an accent color that matches the project's personality:
+- **Vermillion** (`#D94F30`) — default, works for most projects
+- **Teal** (`#2A7B9B`) — for data/infrastructure/backend-heavy plans
+- **Coral** (`#E06B56`) — for consumer/social/creative projects
+- **Forest** (`#2D8B55`) — for developer tools, CLIs, open source
+- **Amber** (`#D4A843`) — for fintech, analytics, dashboards
+
+Avoid purple gradients — they look like every other AI product.
 
 ---
 
 ## Gotchas
 
-### Muros de Texto
-Modo de falha #1. Se vir mais de 3 frases seguidas sem break visual, pare e converta algo em card, diagrama, ou seção expansível.
+### Walls of Text
+Failure mode #1. If you see more than 3 sentences in a row with no visual break, stop and convert something into a card, diagram, or expandable section.
 
-### Poucas Seções
-Se tudo está comprimido em 2-3 seções enormes, a navegação scroll-based perde sentido. Quebre o plano em 4-8 pedaços digestíveis.
+### Too Few Sections
+If everything is compressed into 2-3 huge sections, scroll-based navigation loses its point. Break the plan into 4-8 digestible pieces.
 
-### Expandable Cards Não Usados
-Conteúdo técnico denso (specs de API, estruturas de arquivo, requisitos detalhados) deve estar em expandable cards, não despejado no fluxo principal. O fluxo principal fica escaneável; detalhes estão a um clique.
+### Unused Expandable Cards
+Dense technical content (API specs, file structures, detailed requirements) should be in expandable cards, not dumped into the main flow. The main flow stays scannable; details are one click away.
 
 ### Scroll-Snap
-Não use scroll-snap — seções podem ser longas e snap dificulta alcançar review toolbars.
+Don't use scroll-snap — sections can be long and snap makes it hard to reach the review toolbars.
 
-### Flow Diagrams Faltando
-Todo plano tem relações entre partes. Se não incluiu pelo menos um flow diagram, está faltando o elemento visual mais valioso.
+### Missing Flow Diagrams
+Every plan has relationships between parts. If you didn't include at least one flow diagram, you're missing the most valuable visual element.
 
 ---
 
-## Quando usar visual-planner vs osforge-canvas
+## When to use visual-planner vs osforge-canvas
 
-Para loops de revisão e aprovação interativos (feedback estruturado, formulários,
-decisões por seção, round-trip Claude ↔ browser), prefira a skill `osforge-canvas`.
-O visual-planner permanece a escolha certa para documentos HTML one-shot apresentáveis
-sem coleta de feedback.
+For interactive review-and-approval loops (structured feedback, forms,
+per-section decisions, Claude ↔ browser round-trip), prefer the `osforge-canvas` skill.
+visual-planner remains the right choice for one-shot, presentable HTML documents
+without feedback collection.
 
-## Arquivos de Referência
+## Reference Files
 
-Leia estes ANTES de escrever qualquer HTML:
+Read these BEFORE writing any HTML:
 
-- **`references/design-system.md`** — CSS custom properties completas, paleta de cores, escala tipográfica, spacing, shadows, animações, navegação, estrutura de módulos, breakpoints responsivos.
-- **`references/interactive-elements.md`** — Padrões HTML/CSS/JS para: expandable cards, flow diagrams, step cards, callout boxes, code blocks, stat badges, pattern cards, file trees, icon rows, architecture diagrams, comparison tables, review system.
+- **`references/design-system.md`** — Complete CSS custom properties, color palette, type scale, spacing, shadows, animations, navigation, module structure, responsive breakpoints.
+- **`references/interactive-elements.md`** — HTML/CSS/JS patterns for: expandable cards, flow diagrams, step cards, callout boxes, code blocks, stat badges, pattern cards, file trees, icon rows, architecture diagrams, comparison tables, review system.

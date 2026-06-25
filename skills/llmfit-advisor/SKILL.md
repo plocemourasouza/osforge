@@ -1,6 +1,6 @@
 ---
 name: llmfit-advisor
-description: "Detecta o hardware da máquina (RAM, CPU, GPU/VRAM) e recomenda os melhores LLMs locais com quantização ideal, estimativa de velocidade e scoring de fit. TRIGGER quando: usuário pergunta quais modelos rodam localmente, quer configurar Ollama/LM Studio, menciona rodar modelos offline, precisa de alternativa local por custo ou privacidade (LGPD), ou quando smart-model-dispatch identifica tarefa adequada para modelo local."
+description: "Detects the machine's hardware (RAM, CPU, GPU/VRAM) and recommends the best local LLMs with optimal quantization, speed estimate, and fit scoring. Use when: the user asks which models run locally, wants to set up Ollama/LM Studio, mentions running models offline, needs a local alternative for cost or privacy (LGPD), or when smart-model-dispatch identifies a task suitable for a local model."
 metadata:
   author: osforge
   version: '1.0'
@@ -10,68 +10,68 @@ metadata:
 
 # llmfit Advisor
 
-Hardware-aware local LLM advisor. Detecta specs reais do sistema e recomenda modelos que de fato rodam bem, com quantização ótima e estimativa de tokens/s.
+Hardware-aware local LLM advisor. Detects real system specs and recommends models that actually run well, with optimal quantization and a tokens/s estimate.
 
-## Pré-requisito
+## Prerequisite
 
 ```bash
 # macOS
 brew tap AlexsJones/llmfit && brew install llmfit
 
-# Qualquer plataforma (requer Rust)
+# Any platform (requires Rust)
 cargo install llmfit
 
-# Verificar instalação
+# Verify installation
 llmfit --version
 ```
 
-## Quando usar
+## When to use
 
-Os gatilhos de ativação estão na description do frontmatter. Além deles, usar quando
-`smart-model-dispatch` identificar tarefa elegível para modelo local
-(boilerplate, tradução, test stubs, CRUD simples) e custo/privacidade forem relevantes.
+The activation triggers are in the frontmatter description. Beyond those, use when
+`smart-model-dispatch` identifies a task eligible for a local model
+(boilerplate, translation, test stubs, simple CRUD) and cost/privacy are relevant.
 
 ---
 
-## Comandos essenciais
+## Essential commands
 
-### Detectar hardware
+### Detect hardware
 ```bash
 llmfit --json system
 ```
-Retorna CPU, RAM total/disponível, GPU, VRAM, backend (Metal/CUDA/ROCm/CPU) e se é memória unificada (Apple Silicon).
+Returns CPU, total/available RAM, GPU, VRAM, backend (Metal/CUDA/ROCm/CPU), and whether it is unified memory (Apple Silicon).
 
-### Top recomendações gerais
+### Top general recommendations
 ```bash
 llmfit recommend --json --limit 5
 ```
 
-### Filtrar por caso de uso
+### Filter by use case
 ```bash
 llmfit recommend --json --use-case coding    --limit 3
 llmfit recommend --json --use-case reasoning --limit 3
 llmfit recommend --json --use-case chat      --limit 3
 llmfit recommend --json --use-case general   --limit 5
 ```
-Casos válidos: `general` · `coding` · `reasoning` · `chat` · `multimodal` · `embedding`
+Valid cases: `general` · `coding` · `reasoning` · `chat` · `multimodal` · `embedding`
 
-### Filtrar por nível mínimo de fit
+### Filter by minimum fit level
 ```bash
 llmfit recommend --json --min-fit perfect --limit 5
 llmfit recommend --json --min-fit good    --limit 10
 ```
-Níveis: `perfect` › `good` › `marginal` (nunca recomendar `TooTight`)
+Levels: `perfect` › `good` › `marginal` (never recommend `TooTight`)
 
-### Override de VRAM (quando autodetect falhar)
+### VRAM override (when autodetect fails)
 ```bash
 llmfit --memory=24G recommend --json --limit 5
 ```
 
 ---
 
-## Interpretando o output JSON
+## Interpreting the JSON output
 
-### Sistema
+### System
 ```json
 {
   "system": {
@@ -85,71 +85,71 @@ llmfit --memory=24G recommend --json --limit 5
 }
 ```
 
-### Campos de recomendação — os mais importantes
+### Recommendation fields — the most important ones
 
-| Campo | Significado |
+| Field | Meaning |
 |---|---|
-| `name` | ID HuggingFace (ex: `Qwen/Qwen2.5-Coder-7B-Instruct`) |
-| `score` | Score composto 0–100 (qualidade + velocidade + fit + contexto) |
+| `name` | HuggingFace ID (e.g. `Qwen/Qwen2.5-Coder-7B-Instruct`) |
+| `score` | Composite score 0–100 (quality + speed + fit + context) |
 | `fit_level` | `Perfect` / `Good` / `Marginal` / `TooTight` |
 | `run_mode` | `GPU` / `CPU+GPU Offload` / `CPU` |
-| `best_quant` | Melhor quantização para o hardware (ex: `Q5_K_M`) |
-| `estimated_tps` | Tokens/s estimados |
-| `memory_required_gb` | VRAM/RAM necessária nessa quantização |
+| `best_quant` | Best quantization for the hardware (e.g. `Q5_K_M`) |
+| `estimated_tps` | Estimated tokens/s |
+| `memory_required_gb` | VRAM/RAM required at that quantization |
 | `category` | `Coding` / `Reasoning` / `Chat` / `Embedding` etc. |
-| `is_moe` | Se usa Mixture-of-Experts (menor VRAM real que parâmetros sugerem) |
+| `is_moe` | Whether it uses Mixture-of-Experts (lower real VRAM than parameters suggest) |
 
-**Regra de ouro:** `fit_level: "TooTight"` → nunca recomendar. `Perfect` com `run_mode: GPU` → escolha ideal.
+**Golden rule:** `fit_level: "TooTight"` → never recommend. `Perfect` with `run_mode: GPU` → ideal choice.
 
 ---
 
-## Integração com smart-model-dispatch
+## Integration with smart-model-dispatch
 
-O llmfit complementa o `smart-model-dispatch` adicionando o **track local** à decisão de modelo:
+llmfit complements `smart-model-dispatch` by adding the **local track** to the model decision:
 
 ```
 API Track (smart-model-dispatch)     Local Track (llmfit-advisor)
 ──────────────────────────────       ───────────────────────────
-🔴 Opus    — raciocínio profundo     🟢 Qwen2.5-Coder — boilerplate, CRUD
-🟡 Sonnet  — implementação sólida    🟢 CodeLlama     — tradução, stubs
-🟢 Haiku   — mecânico/repetitivo     🟢 Phi-4-mini    — docs, comentários
+🔴 Opus    — deep reasoning           🟢 Qwen2.5-Coder — boilerplate, CRUD
+🟡 Sonnet  — solid implementation     🟢 CodeLlama     — translation, stubs
+🟢 Haiku   — mechanical/repetitive    🟢 Phi-4-mini    — docs, comments
 ```
 
-**Quando preferir local:**
-- Tarefa é Haiku-eligible E dados são sensíveis (LGPD, contábil, jurídico)
-- Volume alto de tarefas repetitivas onde custo acumula
-- Ambiente offline ou cliente sem budget para API
-- Dados de clientes OSystems que não podem sair do ambiente local
+**When to prefer local:**
+- Task is Haiku-eligible AND data is sensitive (LGPD, accounting, legal)
+- High volume of repetitive tasks where cost accumulates
+- Offline environment or client with no API budget
+- OSystems client data that cannot leave the local environment
 
-**Quando manter API:**
-- Tarefa requer Opus (arquitetura, raciocínio complexo) — sem equivalente local viável
-- Qualidade é crítica e latência importa
-- Contexto muito longo (>32K tokens)
+**When to keep the API:**
+- Task requires Opus (architecture, complex reasoning) — no viable local equivalent
+- Quality is critical and latency matters
+- Very long context (>32K tokens)
 
 ---
 
-## Workflow padrão
+## Standard workflow
 
-**"Quais modelos posso rodar localmente?"**
-1. `llmfit --json system` → mostrar resumo do hardware
-2. `llmfit recommend --json --limit 5` → top 5 recomendações
-3. Apresentar com scores e fit levels em linguagem clara
-4. Se usuário quiser instalar: mapear nome HuggingFace → tag Ollama e oferecer `ollama pull`
+**"Which models can I run locally?"**
+1. `llmfit --json system` → show hardware summary
+2. `llmfit recommend --json --limit 5` → top 5 recommendations
+3. Present with scores and fit levels in clear language
+4. If the user wants to install: map the HuggingFace name → Ollama tag and offer `ollama pull`
 
-**"Recomenda modelo para coding sem custo de API"**
+**"Recommend a model for coding without API cost"**
 1. `llmfit recommend --json --use-case coding --limit 3`
-2. Apresentar as opções específicas para código
-3. Oferecer pull via Ollama e configuração
+2. Present the code-specific options
+3. Offer pull via Ollama and configuration
 
-**Dados sensíveis (LGPD/contábil/jurídico)**
-1. Confirmar que Ollama está rodando (`ollama list`)
+**Sensitive data (LGPD/accounting/legal)**
+1. Confirm Ollama is running (`ollama list`)
 2. `llmfit recommend --json --use-case general --min-fit good --limit 5`
-3. Explicar: modelo local = zero exposição de dados externos
-4. Configurar modelo escolhido
+3. Explain: local model = zero exposure of external data
+4. Configure the chosen model
 
 ---
 
-## Mapeamento HuggingFace → Ollama (referência rápida)
+## HuggingFace → Ollama mapping (quick reference)
 
 | llmfit name | Ollama tag |
 |---|---|
@@ -165,21 +165,21 @@ API Track (smart-model-dispatch)     Local Track (llmfit-advisor)
 
 ---
 
-## Casos de uso OSForge / OSystems
+## OSForge / OSystems use cases
 
-| Contexto | Uso recomendado |
+| Context | Recommended use |
 |---|---|
-| **Tressen (contábil)** | Dados fiscais/OFX locais — modelo local obrigatório por privacidade |
-| **Red Caveat (jurídico)** | Documentos contratuais — nunca para API externa |
-| **OSystems (clientes PME)** | Hardware limitado do cliente — llmfit identifica o melhor modelo viável |
-| **Desenvolvimento diário** | Haiku-eligible tasks → Qwen2.5-Coder local = zero custo |
-| **LinkMeTur / Mira** | Volume alto de CRUD/boilerplate → economia significativa |
+| **Tressen (accounting)** | Local fiscal/OFX data — local model mandatory for privacy |
+| **Red Caveat (legal)** | Contract documents — never to external API |
+| **OSystems (SMB clients)** | Limited client hardware — llmfit identifies the best viable model |
+| **Daily development** | Haiku-eligible tasks → local Qwen2.5-Coder = zero cost |
+| **LinkMeTur / Mira** | High volume of CRUD/boilerplate → significant savings |
 
 ---
 
-## Notas técnicas
+## Technical notes
 
-- Modelos MoE (Mixtral, DeepSeek-V3) têm VRAM real muito menor que o total de parâmetros — llmfit calcula o custo real de expert offloading
-- `best_quant` balanceia qualidade vs memória: Q8_0 é melhor qualidade, Q2_K é mais comprimido
-- `estimated_tps` é estimativa baseada em benchmarks por backend — resultado real varia
-- Apple Silicon: `unified_memory: true` significa que VRAM = RAM do sistema
+- MoE models (Mixtral, DeepSeek-V3) have much lower real VRAM than the total parameter count — llmfit computes the real cost of expert offloading
+- `best_quant` balances quality vs memory: Q8_0 is best quality, Q2_K is most compressed
+- `estimated_tps` is an estimate based on per-backend benchmarks — actual result varies
+- Apple Silicon: `unified_memory: true` means VRAM = system RAM

@@ -1,6 +1,6 @@
 ---
 name: 2d-games
-description: "Princípios de jogos 2D: sprites, atlases, tilemaps, física 2D, câmeras e padrões de gênero (platformer, top-down). ACIONE quando: estou fazendo um platformer 2D e o pulo parece travado (coyote time, jump buffering); como organizar sprites e animações no Godot, Unity 2D ou Phaser; preciso montar tilemaps com auto-tiling e camadas; qual collision shape usar para o personagem 2D; minha câmera 2D está tremendo ou quero câmera que segue o player. Keywords: 2D, sprite, tilemap, pixel art, platformer, top-down, física 2D, screen shake, parallax, atlas. Não acione para: jogos 3D (use 3d-games), escolha de framework web (use web-games) ou criação de arte/assets em si (use game-art)."
+description: "2D game principles: sprites, atlases, tilemaps, 2D physics, cameras, and genre patterns (platformer, top-down). Use when: I'm making a 2D platformer and the jump feels stiff (coyote time, jump buffering); how to organize sprites and animations in Godot, Unity 2D, or Phaser; I need to build tilemaps with auto-tiling and layers; which collision shape to use for the 2D character; my 2D camera is shaking or I want a camera that follows the player. Keywords: 2D, sprite, tilemap, pixel art, platformer, top-down, 2D physics, screen shake, parallax, atlas. Do NOT use for: 3D games (use 3d-games), web framework selection (use web-games), or creating art/assets themselves (use game-art)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

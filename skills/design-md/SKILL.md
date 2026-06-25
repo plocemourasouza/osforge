@@ -1,18 +1,18 @@
 ---
 name: design-md
 description: >
-  Contrato de identidade de marca POR PROJETO em um arquivo DESIGN.md — o
-  documento de 9 seções (Visual Theme, Color, Typography, Spacing, Layout,
-  Components, Motion, Voice & Brand, Anti-patterns) com tokens hex reais que um
-  agente lê para gerar UI consistente com a identidade daquele projeto.
-  ACIONE quando: usuário pede "criar identidade de marca por projeto", "DESIGN.md",
-  "design tokens de projeto", "contrato de design", "design system do projeto",
-  "tokens de marca", "padronizar o visual deste projeto", "como esse produto deve
-  parecer", ou está iniciando um projeto novo que precisa de identidade própria.
-  Produz/revisa um DESIGN.md versionável no repo do projeto. Difere de
-  aesthetic-modes (3 moods prontos), ui-design-intelligence (spec por indústria) e
-  stitch-design-export (export p/ Google Stitch): aqui o entregável é o CONTRATO
-  DESIGN.md em si, com schema validável (Lens A/B) e Agent Prompt Guide.
+  PER-PROJECT brand identity contract in a DESIGN.md file — the 9-section
+  document (Visual Theme, Color, Typography, Spacing, Layout,
+  Components, Motion, Voice & Brand, Anti-patterns) with real hex tokens that an
+  agent reads to generate UI consistent with that project's identity.
+  Use when: user asks to "create per-project brand identity", "DESIGN.md",
+  "project design tokens", "design contract", "project design system",
+  "brand tokens", "standardize this project's look", "how this product should
+  look", or is starting a new project that needs its own identity.
+  Produces/reviews a versionable DESIGN.md in the project repo. Differs from
+  aesthetic-modes (3 ready-made moods), ui-design-intelligence (per-industry spec) and
+  stitch-design-export (export to Google Stitch): here the deliverable is the
+  DESIGN.md CONTRACT itself, with a validatable schema (Lens A/B) and Agent Prompt Guide.
 version: 1.0.0
 metadata:
   source: "open-design (github.com/nexu-io/open-design), Apache-2.0"
@@ -20,130 +20,130 @@ metadata:
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
-# design-md — Contrato de marca por projeto
+# design-md — Per-project brand contract
 
-Um `DESIGN.md` é o **contrato de identidade de um projeto**: um único arquivo Markdown,
-versionado no repo, que descreve cores reais, tipografia, espaçamento, componentes, movimento,
-voz e anti-padrões — e termina com um **Agent Prompt Guide** que um agente de geração de UI
-consome diretamente. É o artefato que falta entre "tenho um mood visual" e "todo componente
-gerado sai consistente com a marca".
+A `DESIGN.md` is the **identity contract of a project**: a single Markdown file,
+versioned in the repo, that describes real colors, typography, spacing, components, motion,
+voice and anti-patterns — and ends with an **Agent Prompt Guide** that a UI generation agent
+consumes directly. It is the missing artifact between "I have a visual mood" and "every
+generated component comes out consistent with the brand".
 
-## Quando usar (e quando não)
+## When to use (and when not)
 
-**Use quando** o projeto precisa de identidade própria, durável, citável por hex — um produto
-real começando do zero, ou um existente sem contrato de marca. O entregável é o
-`DESIGN.md` no repo do projeto.
+**Use when** the project needs its own durable identity, citable by hex — a real product
+starting from scratch, or an existing one without a brand contract. The deliverable is the
+`DESIGN.md` in the project repo.
 
-**Não use para:**
-- Um mood pronto entre 3 paradigmas (minimalist/brutalist/soft) → `aesthetic-modes`.
-- Spec de design adaptado a uma indústria (fintech/healthcare/saas) → `ui-design-intelligence`.
-- Exportar um design system para Google Stitch → `stitch-design-export` / `stitch-design-taste`.
-- Decisões de design pontuais (escolher uma paleta, um font) → `frontend-design`.
-- Estilos de aesthetic genérico (glassmorphism, bento, neobrutalism) já cobertos em
-  `aesthetic-modes` — **não** crie um DESIGN.md só para reproduzir um estilo de catálogo.
+**Do NOT use for:**
+- A ready-made mood among 3 paradigms (minimalist/brutalist/soft) → `aesthetic-modes`.
+- A design spec adapted to an industry (fintech/healthcare/saas) → `ui-design-intelligence`.
+- Exporting a design system to Google Stitch → `stitch-design-export` / `stitch-design-taste`.
+- One-off design decisions (picking a palette, a font) → `frontend-design`.
+- Generic aesthetic styles (glassmorphism, bento, neobrutalism) already covered in
+  `aesthetic-modes` — do **not** create a DESIGN.md just to reproduce a catalog style.
 
-`design-md` é o nível acima: produz o **contrato**, não um one-off. Os outros skills informam
-o *conteúdo* das seções; este define a *forma* e a valida.
+`design-md` is the level above: it produces the **contract**, not a one-off. The other skills inform
+the *content* of the sections; this one defines the *form* and validates it.
 
-## As 9 seções (o schema)
+## The 9 sections (the schema)
 
-Todo `DESIGN.md` tem estes nove headings, nesta ordem. O parser casa só o prefixo `## [digit].`
-— texto após o número é livre (`## 4. Spacing & Grid` é válido).
+Every `DESIGN.md` has these nine headings, in this order. The parser matches only the prefix `## [digit].`
+— text after the number is free (`## 4. Spacing & Grid` is valid).
 
-| # | Seção | O que documenta |
+| # | Section | What it documents |
 | --- | --- | --- |
-| 1 | **Visual Theme & Atmosphere** | Metáfora central, sensação, casos de uso, prior art (produtos reais). |
-| 2 | **Color** | Hex reais + **role** de cada cor (CTA, surface, texto 1/2/3, border, semânticos). |
-| 3 | **Typography** | Famílias display/body/mono, escala ≥4 tiers, pesos, line-height, tracking + bloco "Font labels". |
-| 4 | **Spacing** | Unidade base, escala, padding de componente, ritmo vertical de seção. |
-| 5 | **Layout & Composition** | Grid, container max-width, whitespace, escala de border-radius. |
-| 6 | **Components** | CSS real de 3-6 componentes, 100% via tokens semânticos. |
-| 7 | **Motion & Interaction** | Timings, easing por propósito, `:focus-visible`, `prefers-reduced-motion`. |
-| 8 | **Voice & Brand** | Tom de voz, princípios de copy, prior art nomeado. |
-| 9 | **Anti-patterns** | O que a marca **não** é — específico e limitado. |
+| 1 | **Visual Theme & Atmosphere** | Central metaphor, feeling, use cases, prior art (real products). |
+| 2 | **Color** | Real hex + **role** of each color (CTA, surface, text 1/2/3, border, semantics). |
+| 3 | **Typography** | Display/body/mono families, scale ≥4 tiers, weights, line-height, tracking + "Font labels" block. |
+| 4 | **Spacing** | Base unit, scale, component padding, vertical section rhythm. |
+| 5 | **Layout & Composition** | Grid, container max-width, whitespace, border-radius scale. |
+| 6 | **Components** | Real CSS for 3-6 components, 100% via semantic tokens. |
+| 7 | **Motion & Interaction** | Timings, easing by purpose, `:focus-visible`, `prefers-reduced-motion`. |
+| 8 | **Voice & Brand** | Tone of voice, copy principles, named prior art. |
+| 9 | **Anti-patterns** | What the brand is **not** — specific and bounded. |
 
-Detalhe completo seção a seção + as 4 camadas de tokens (A1-identity, A1-structure,
-A2-fallback, B-slot, C-extensions) em **`references/schema.md`**.
+Full section-by-section detail + the 4 token layers (A1-identity, A1-structure,
+A2-fallback, B-slot, C-extensions) in **`references/schema.md`**.
 
-### Duas variantes reais de heading
+### Two real heading variants
 
-Os exemplares brand-grade em `references/systems/` usam um dialeto diferente, igualmente
-válido pelo contrato de parsing:
+The brand-grade exemplars in `references/systems/` use a different dialect, equally
+valid under the parsing contract:
 
-- **Variante A (a maioria):** Visual Theme · Color Palette & Roles · Typography Rules ·
+- **Variant A (the majority):** Visual Theme · Color Palette & Roles · Typography Rules ·
   Component Stylings · Layout Principles · Depth & Elevation · Do's and Don'ts · Responsive
   Behavior · **Agent Prompt Guide**.
-- **Variante B (spec canônico — `atelier-zero`):** as 9 da tabela acima.
+- **Variant B (canonical spec — `atelier-zero`):** the 9 from the table above.
 
-Escolha **uma** por projeto e mantenha. O `references/template.md` usa a Variante B (mapeia
-1:1 nas camadas de tokens). Cross-map A↔B em `references/schema.md §2`.
+Pick **one** per project and keep it. The `references/template.md` uses Variant B (maps
+1:1 onto the token layers). Cross-map A↔B in `references/schema.md §2`.
 
-## O padrão "Agent Prompt Guide" (a seção feita PARA o agente)
+## The "Agent Prompt Guide" pattern (the section made FOR the agent)
 
-A última seção dos exemplares é escrita **para um agente consumir** na geração de UI — não é
-documentação para humano. Três partes:
+The last section of the exemplars is written **for an agent to consume** in UI generation — it is not
+documentation for a human. Three parts:
 
-1. **Quick Color Reference** — cada role → nome + hex, no formato que o agente cita:
+1. **Quick Color Reference** — each role → name + hex, in the format the agent cites:
    `Brand CTA: "Terracotta Brand (#c96442)"`.
-2. **Example Component Prompts** — prompts prontos para colar, citando hex/fonte/raio exatos.
-3. **Iteration Guide** — receita (um componente por vez, citar nomes de cor específicos,
-   nomear o tipo de sombra do sistema, especificar o fundo).
+2. **Example Component Prompts** — ready-to-paste prompts, citing exact hex/font/radius.
+3. **Iteration Guide** — recipe (one component at a time, cite specific color names,
+   name the system's shadow type, specify the background).
 
-**Esta seção é o que diferencia** um DESIGN.md que *descreve* uma marca de um que um agente
-*consegue construir*. Sem ela o agente improvisa valores. Todo DESIGN.md novo termina com um
-Agent Prompt Guide próprio.
+**This section is what distinguishes** a DESIGN.md that *describes* a brand from one an agent
+*can build*. Without it the agent improvises values. Every new DESIGN.md ends with its own
+Agent Prompt Guide.
 
-## Checklist de review
+## Review checklist
 
-### Lens A — correção de código (BLOQUEANTE)
+### Lens A — code correctness (BLOCKING)
 
-Falhar qualquer item invalida o arquivo:
+Failing any item invalidates the file:
 
-- [ ] As **9 seções numeradas presentes, na ordem**.
-- [ ] Cores são **hex reais** (`#RRGGBB`/`#RGB`) — nada de `#REPLACE_ME`, `currentColor`,
-      ou nome de CSS var no lugar do valor.
-- [ ] Toda var CSS dentro de **`:root {}`** (exceto override escopado a componente).
-- [ ] **Dark mode via `[data-theme="dark"]`** como override (valores diferentes), não bloco
-      duplicado.
-- [ ] **`:focus-visible`** em todo interativo (botão, link, input, card clicável).
-- [ ] **`prefers-reduced-motion`** mira elementos específicos, nunca o seletor global `*`.
-- [ ] Bloco **"Font labels for catalog extraction"** presente (prefixos `Display:`/`Body:`/`Mono:`).
-- [ ] **Contraste WCAG AA 4.5:1** de cada texto/dado contra o fundo **pareado** (não contra
-      branco por default; 3:1 só para texto grande 18px+/14px+ bold).
-- [ ] Componentes usam **tokens semânticos**, zero hex hardcoded no CSS de componente.
+- [ ] The **9 numbered sections present, in order**.
+- [ ] Colors are **real hex** (`#RRGGBB`/`#RGB`) — no `#REPLACE_ME`, `currentColor`,
+      or CSS var name in place of the value.
+- [ ] Every CSS var inside **`:root {}`** (except component-scoped override).
+- [ ] **Dark mode via `[data-theme="dark"]`** as an override (different values), not a
+      duplicated block.
+- [ ] **`:focus-visible`** on every interactive element (button, link, input, clickable card).
+- [ ] **`prefers-reduced-motion`** targets specific elements, never the global `*` selector.
+- [ ] **"Font labels for catalog extraction"** block present (prefixes `Display:`/`Body:`/`Mono:`).
+- [ ] **WCAG AA 4.5:1 contrast** of each text/data against the **paired** background (not against
+      white by default; 3:1 only for large text 18px+/14px+ bold).
+- [ ] Components use **semantic tokens**, zero hardcoded hex in component CSS.
 
-### Lens B — substância (P3, não bloqueante mas exigido para "brand-grade")
+### Lens B — substance (P3, not blocking but required for "brand-grade")
 
-- [ ] Paleta lista **todos os roles** usados, não só primary/secondary.
-- [ ] Escala de tipo tem **≥4 tiers** (Display, H1, Body, Caption).
-- [ ] Components tem **CSS real**, sem Lorem Ipsum ou `/* TODO */`.
-- [ ] Anti-patterns **específicos e limitados** ("no rounded corners > 4px"), não "avoid bad
+- [ ] Palette lists **all roles** used, not just primary/secondary.
+- [ ] Type scale has **≥4 tiers** (Display, H1, Body, Caption).
+- [ ] Components have **real CSS**, no Lorem Ipsum or `/* TODO */`.
+- [ ] Anti-patterns **specific and bounded** ("no rounded corners > 4px"), not "avoid bad
       design".
-- [ ] Dark mode é **override genuíno**, não cópia do bloco light.
-- [ ] Prior art nomeia **produtos/sistemas reais**, não "inspired by good design".
-- [ ] Tamanho razoável: **300-600 linhas** (abaixo de ~100 dispara revisão de substância).
+- [ ] Dark mode is a **genuine override**, not a copy of the light block.
+- [ ] Prior art names **real products/systems**, not "inspired by good design".
+- [ ] Reasonable size: **300-600 lines** (below ~100 triggers a substance review).
 
 ## Workflow
 
-1. **Estude exemplares.** Abra 2-3 em `references/systems/` por proximidade de categoria/mood
-   (ex.: produto editorial → `claude`, `kami`, `notion`; dev tool → `vercel`, `linear-app`,
-   `raycast`; consumer → `apple`, `airbnb`, `tesla`). Extraia **padrões** (disciplina de
-   neutras warm, depth por ring-shadow, serif de peso único), não valores.
-2. **Decida a identidade** do projeto: metáfora central, accent, atmosfera, prior art.
-3. **Preencha o `references/template.md`** → `DESIGN.md` no repo do projeto. Hex reais desde o
-   início. Uma variante de heading, consistente.
-4. **Termine com o Agent Prompt Guide** próprio do projeto.
-5. **Rode o review** Lens A (bloqueante) → Lens B (substância).
-6. **Versione** o `DESIGN.md` no repo. É o contrato; daqui pra frente toda geração de UI cita
-   os roles/hex dele.
+1. **Study exemplars.** Open 2-3 in `references/systems/` by category/mood proximity
+   (e.g.: editorial product → `claude`, `kami`, `notion`; dev tool → `vercel`, `linear-app`,
+   `raycast`; consumer → `apple`, `airbnb`, `tesla`). Extract **patterns** (warm neutrals
+   discipline, depth via ring-shadow, single-weight serif), not values.
+2. **Decide the identity** of the project: central metaphor, accent, atmosphere, prior art.
+3. **Fill in the `references/template.md`** → `DESIGN.md` in the project repo. Real hex from the
+   start. One heading variant, consistent.
+4. **End with the project's own Agent Prompt Guide.**
+5. **Run the review** Lens A (blocking) → Lens B (substance).
+6. **Version** the `DESIGN.md` in the repo. It is the contract; from here on every UI generation cites
+   its roles/hex.
 
-## Arquivos de referência
+## Reference files
 
-- **`references/schema.md`** — schema completo seção a seção + as 4 camadas de tokens
-  (A1/A2/B-slot/C) + caminho de promoção C→B→A2→A1 + regras de acessibilidade.
-- **`references/template.md`** — `DESIGN.md` em branco, 9 seções comentadas, pronto para
-  preencher.
-- **`references/systems/`** — 15 exemplares brand-grade curados (claude, linear-app, stripe,
+- **`references/schema.md`** — full section-by-section schema + the 4 token layers
+  (A1/A2/B-slot/C) + promotion path C→B→A2→A1 + accessibility rules.
+- **`references/template.md`** — blank `DESIGN.md`, 9 commented sections, ready to
+  fill in.
+- **`references/systems/`** — 15 curated brand-grade exemplars (claude, linear-app, stripe,
   apple, vercel, notion, figma, raycast, supabase, airbnb, tesla, theverge, wired,
-  atelier-zero, kami). Fonte: open-design (nexu-io, Apache-2.0). Ver
-  `references/systems/README.md` para índice + licença.
+  atelier-zero, kami). Source: open-design (nexu-io, Apache-2.0). See
+  `references/systems/README.md` for index + license.

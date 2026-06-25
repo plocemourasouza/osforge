@@ -1,20 +1,20 @@
 # Context Distillator
 
-**Trigger:** "distill", "comprimir contexto", "compress", ou quando documento excede tamanho ideal para LLM.
+**Trigger:** "distill", "compress context", "compress", or when a document exceeds the ideal size for an LLM.
 
 ---
 
 ## Purpose
 
-Compressão lossless de documentos para consumo otimizado por LLMs. Preserva 100% da informação factual eliminando overhead textual.
+Lossless compression of documents for optimized LLM consumption. Preserves 100% of the factual information while eliminating textual overhead.
 
-**Não é sumarização (lossy) — é compressão lossless.**
+**It is not summarization (lossy) — it is lossless compression.**
 
 ---
 
 ## Target
 
-40-60% do tamanho original mantendo 100% da informação.
+40-60% of the original size while retaining 100% of the information.
 
 ---
 

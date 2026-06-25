@@ -1,51 +1,51 @@
 # Layout Patterns
 
-Templates canônicos em OpenUI Lang para os padrões de tela mais comuns.
-Selecione o padrão mais próximo e adapte — não invente estrutura do zero.
+Canonical OpenUI Lang templates for the most common screen patterns.
+Select the closest pattern and adapt it — don't invent structure from scratch.
 
 ---
 
 ## 1. dashboard
 
-**Quando usar:** Visão geral com KPIs, gráficos e atividade recente.
+**When to use:** Overview with KPIs, charts, and recent activity.
 
 ```openui
 root = Stack([header, kpi_row, charts_row, recent_section])
-header = PageHeader("Dashboard", "Visão geral do sistema")
+header = PageHeader("Dashboard", "System overview")
 
 kpi_row = Grid([kpi1, kpi2, kpi3, kpi4])
-kpi1 = StatCard("Total Receita", "$0", "flat")
-kpi2 = StatCard("Usuários Ativos", "0", "flat")
-kpi3 = StatCard("Conversão", "0%", "flat")
-kpi4 = StatCard("Pendências", "0", "flat")
+kpi1 = StatCard("Total Revenue", "$0", "flat")
+kpi2 = StatCard("Active Users", "0", "flat")
+kpi3 = StatCard("Conversion", "0%", "flat")
+kpi4 = StatCard("Pending", "0", "flat")
 
 charts_row = Grid([revenue_chart, dist_chart])
-revenue_chart = Card("Receita Mensal", [line_chart])
-line_chart = LineChart(["Jan","Fev","Mar","Abr","Mai","Jun"], [series1])
-series1 = Series("Receita", [0,0,0,0,0,0])
-dist_chart = Card("Distribuição", [pie])
+revenue_chart = Card("Monthly Revenue", [line_chart])
+line_chart = LineChart(["Jan","Feb","Mar","Apr","May","Jun"], [series1])
+series1 = Series("Revenue", [0,0,0,0,0,0])
+dist_chart = Card("Distribution", [pie])
 pie = PieChart([])
 
-recent_section = Card("Atividade Recente", [recent_table])
-recent_table = DataTable(["Data","Descrição","Valor","Status"], [])
+recent_section = Card("Recent Activity", [recent_table])
+recent_table = DataTable(["Date","Description","Amount","Status"], [])
 ```
 
 ---
 
 ## 2. crud-list
 
-**Quando usar:** Listagem com busca, filtro, paginação e ações por linha.
+**When to use:** List with search, filter, pagination, and per-row actions.
 
 ```openui
 root = Stack([header, toolbar, data_table, pager])
-header = PageHeader("Usuários", "Gerencie os usuários do sistema")
+header = PageHeader("Users", "Manage system users")
 
 toolbar = Toolbar([search, role_filter, add_btn])
-search = Input("Buscar usuários...", "search")
-role_filter = Select("Todos os papéis", ["Admin","Editor","Visualizador"])
-add_btn = Button("Adicionar Usuário", "default")
+search = Input("Search users...", "search")
+role_filter = Select("All roles", ["Admin","Editor","Viewer"])
+add_btn = Button("Add User", "default")
 
-data_table = DataTable(["Nome","Email","Papel","Status","Ações"], [])
+data_table = DataTable(["Name","Email","Role","Status","Actions"], [])
 pager = Pagination(1, 10, 0)
 ```
 
@@ -53,64 +53,64 @@ pager = Pagination(1, 10, 0)
 
 ## 3. form-wizard
 
-**Quando usar:** Cadastro ou processo em etapas com validação por passo.
+**When to use:** Registration or multi-step process with per-step validation.
 
 ```openui
 root = Stack([header, steps_indicator, step_content])
-header = PageHeader("Novo Cadastro", "Preencha os dados em 3 etapas")
+header = PageHeader("New Registration", "Fill in the data in 3 steps")
 
 steps_indicator = Breadcrumb([
-  {label: "Dados Básicos", href: null},
-  {label: "Endereço", href: null},
-  {label: "Confirmação", href: null}
+  {label: "Basic Data", href: null},
+  {label: "Address", href: null},
+  {label: "Confirmation", href: null}
 ])
 
 step_content = Form("step-1", step_buttons, [name_field, email_field, phone_field])
-name_field = FormControl("Nome completo", name_input, null, true)
-name_input = Input("João Silva", "text")
-email_field = FormControl("E-mail", email_input, null, true)
-email_input = Input("joao@exemplo.com", "email")
-phone_field = FormControl("Telefone", phone_input)
-phone_input = Input("(11) 90000-0000", "tel")
+name_field = FormControl("Full name", name_input, null, true)
+name_input = Input("John Smith", "text")
+email_field = FormControl("Email", email_input, null, true)
+email_input = Input("john@example.com", "email")
+phone_field = FormControl("Phone", phone_input)
+phone_input = Input("(555) 000-0000", "tel")
 
 step_buttons = Buttons([back_btn, next_btn])
-back_btn = Button("Voltar", "outline")
-next_btn = Button("Próximo", "default")
+back_btn = Button("Back", "outline")
+next_btn = Button("Next", "default")
 ```
 
 ---
 
 ## 4. detail-view
 
-**Quando usar:** Visualização de detalhes de uma entidade com seções e abas.
+**When to use:** Viewing details of an entity with sections and tabs.
 
 ```openui
 root = Stack([breadcrumb, header, info_grid, tabs_section])
 
 breadcrumb = Breadcrumb([
-  {label: "Usuários", href: "/users"},
-  {label: "João Silva", href: null}
+  {label: "Users", href: "/users"},
+  {label: "John Smith", href: null}
 ])
 
-header = PageHeader("João Silva", "Visualizando perfil")
+header = PageHeader("John Smith", "Viewing profile")
 
 info_grid = Grid([basic_card, contact_card])
-basic_card = Card("Informações Básicas", [info_list])
+basic_card = Card("Basic Information", [info_list])
 info_list = UnorderedList([
-  {label: "Papel", description: "Administrador"},
-  {label: "Status", description: "Ativo"},
-  {label: "Criado em", description: "01/01/2024"}
+  {label: "Role", description: "Administrator"},
+  {label: "Status", description: "Active"},
+  {label: "Created on", description: "01/01/2024"}
 ])
-contact_card = Card("Contato", [contact_list])
+contact_card = Card("Contact", [contact_list])
 contact_list = UnorderedList([
-  {label: "E-mail", description: "joao@exemplo.com"},
-  {label: "Telefone", description: "(11) 90000-0000"}
+  {label: "Email", description: "john@example.com"},
+  {label: "Phone", description: "(555) 000-0000"}
 ])
 
 tabs_section = Tabs([activity_tab, permissions_tab])
-activity_tab = TabItem("Atividade", [activity_table])
-activity_table = DataTable(["Data","Ação","Detalhes"], [])
-permissions_tab = TabItem("Permissões", [permissions_list])
+activity_tab = TabItem("Activity", [activity_table])
+activity_table = DataTable(["Date","Action","Details"], [])
+permissions_tab = TabItem("Permissions", [permissions_list])
 permissions_list = UnorderedList([])
 ```
 
@@ -118,156 +118,156 @@ permissions_list = UnorderedList([])
 
 ## 5. settings-page
 
-**Quando usar:** Configurações agrupadas por categoria em abas.
+**When to use:** Settings grouped by category in tabs.
 
 ```openui
 root = Stack([header, settings_tabs])
-header = PageHeader("Configurações", "Gerencie as preferências do sistema")
+header = PageHeader("Settings", "Manage system preferences")
 
 settings_tabs = Tabs([general_tab, notifications_tab, security_tab])
 
-general_tab = TabItem("Geral", [general_form])
+general_tab = TabItem("General", [general_form])
 general_form = Form("general-settings", save_buttons, [org_field, tz_field, lang_field])
-org_field = FormControl("Nome da organização", org_input, null, true)
-org_input = Input("Minha Empresa")
-tz_field = FormControl("Fuso horário", tz_select)
+org_field = FormControl("Organization name", org_input, null, true)
+org_input = Input("My Company")
+tz_field = FormControl("Time zone", tz_select)
 tz_select = Select("America/Sao_Paulo", ["America/Sao_Paulo","America/Fortaleza","America/Manaus"])
-lang_field = FormControl("Idioma", lang_select)
+lang_field = FormControl("Language", lang_select)
 lang_select = Select("Português (BR)", ["Português (BR)","English"])
 save_buttons = Buttons([save_btn])
-save_btn = Button("Salvar Alterações", "default")
+save_btn = Button("Save Changes", "default")
 
-notifications_tab = TabItem("Notificações", [notif_form])
+notifications_tab = TabItem("Notifications", [notif_form])
 notif_form = Form("notif-settings", notif_buttons, [email_notif, sms_notif])
-email_notif = FormControl("Notificações por e-mail", email_check)
-email_check = Checkbox("Receber alertas por e-mail", true)
-sms_notif = FormControl("Notificações por SMS", sms_check)
-sms_check = Checkbox("Receber alertas por SMS", false)
+email_notif = FormControl("Email notifications", email_check)
+email_check = Checkbox("Receive alerts by email", true)
+sms_notif = FormControl("SMS notifications", sms_check)
+sms_check = Checkbox("Receive alerts by SMS", false)
 notif_buttons = Buttons([notif_save_btn])
-notif_save_btn = Button("Salvar", "default")
+notif_save_btn = Button("Save", "default")
 
-security_tab = TabItem("Segurança", [pwd_card])
-pwd_card = Card("Alterar Senha", [pwd_form])
+security_tab = TabItem("Security", [pwd_card])
+pwd_card = Card("Change Password", [pwd_form])
 pwd_form = Form("password", pwd_buttons, [current_pwd, new_pwd, confirm_pwd])
-current_pwd = FormControl("Senha atual", current_input, null, true)
+current_pwd = FormControl("Current password", current_input, null, true)
 current_input = Input("••••••••", "password")
-new_pwd = FormControl("Nova senha", new_input, "Mínimo 8 caracteres", true)
+new_pwd = FormControl("New password", new_input, "Minimum 8 characters", true)
 new_input = Input("••••••••", "password")
-confirm_pwd = FormControl("Confirmar nova senha", confirm_input, null, true)
+confirm_pwd = FormControl("Confirm new password", confirm_input, null, true)
 confirm_input = Input("••••••••", "password")
 pwd_buttons = Buttons([update_pwd_btn])
-update_pwd_btn = Button("Atualizar Senha", "default")
+update_pwd_btn = Button("Update Password", "default")
 ```
 
 ---
 
 ## 6. auth-page
 
-**Quando usar:** Login, cadastro, reset de senha.
+**When to use:** Login, registration, password reset.
 
 ```openui
 root = Stack([auth_card])
-auth_card = Card("Entrar na plataforma", [auth_form])
+auth_card = Card("Sign in to the platform", [auth_form])
 
 auth_form = Form("login", login_buttons, [email_field, password_field])
-email_field = FormControl("E-mail", email_input, null, true)
-email_input = Input("seu@email.com", "email")
-password_field = FormControl("Senha", pwd_input, null, true)
+email_field = FormControl("Email", email_input, null, true)
+email_input = Input("you@email.com", "email")
+password_field = FormControl("Password", pwd_input, null, true)
 pwd_input = Input("••••••••", "password")
 
 login_buttons = Buttons([login_btn, forgot_btn])
-login_btn = Button("Entrar", "default")
-forgot_btn = Button("Esqueci minha senha", "ghost")
+login_btn = Button("Sign in", "default")
+forgot_btn = Button("Forgot my password", "ghost")
 ```
 
 ---
 
 ## 7. empty-state
 
-**Quando usar:** Estado inicial sem dados, busca vazia, ou feature não configurada.
+**When to use:** Initial state with no data, empty search, or unconfigured feature.
 
 ```openui
 root = Stack([header, empty_card])
-header = PageHeader("Documentos", "Gerencie seus arquivos")
+header = PageHeader("Documents", "Manage your files")
 
 empty_card = Card(null, [empty_title, empty_desc, empty_actions])
-empty_title = TextContent("Nenhum documento ainda", "h3")
-empty_desc = TextContent("Faça o upload do seu primeiro documento para começar.", "muted")
+empty_title = TextContent("No documents yet", "h3")
+empty_desc = TextContent("Upload your first document to get started.", "muted")
 empty_actions = Buttons([upload_btn])
-upload_btn = Button("Fazer Upload", "default")
+upload_btn = Button("Upload", "default")
 ```
 
 ---
 
 ## 8. onboarding
 
-**Quando usar:** Guia de primeiros passos após cadastro ou configuração inicial.
+**When to use:** First-steps guide after registration or initial setup.
 
 ```openui
 root = Stack([welcome_header, progress_alert, steps_grid])
 
-welcome_header = PageHeader("Bem-vindo! Vamos começar.", "Complete estas etapas para configurar sua conta")
-progress_alert = Alert("default", "2 de 4 etapas concluídas", "Você está indo bem!")
+welcome_header = PageHeader("Welcome! Let's get started.", "Complete these steps to set up your account")
+progress_alert = Alert("default", "2 of 4 steps completed", "You're doing great!")
 
 steps_grid = Grid([step1, step2, step3, step4])
-step1 = Card("Perfil configurado", [step1_desc, step1_badge])
-step1_desc = TextContent("Adicione sua foto e informações básicas", "small")
-step1_badge = Badge("Concluído", "default")
-step2 = Card("Convide sua equipe", [step2_desc, step2_btn])
-step2_desc = TextContent("Adicione membros para colaborar", "small")
-step2_btn = Button("Convidar", "outline")
-step3 = Card("Conecte integrações", [step3_desc, step3_btn])
-step3_desc = TextContent("Conecte suas ferramentas favoritas", "small")
-step3_btn = Button("Explorar", "outline")
-step4 = Card("Configure notificações", [step4_desc, step4_btn])
-step4_desc = TextContent("Escolha como receber alertas", "small")
-step4_btn = Button("Configurar", "outline")
+step1 = Card("Profile configured", [step1_desc, step1_badge])
+step1_desc = TextContent("Add your photo and basic information", "small")
+step1_badge = Badge("Completed", "default")
+step2 = Card("Invite your team", [step2_desc, step2_btn])
+step2_desc = TextContent("Add members to collaborate", "small")
+step2_btn = Button("Invite", "outline")
+step3 = Card("Connect integrations", [step3_desc, step3_btn])
+step3_desc = TextContent("Connect your favorite tools", "small")
+step3_btn = Button("Explore", "outline")
+step4 = Card("Configure notifications", [step4_desc, step4_btn])
+step4_desc = TextContent("Choose how to receive alerts", "small")
+step4_btn = Button("Configure", "outline")
 ```
 
 ---
 
-## Variações Comuns
+## Common Variations
 
-### Dashboard com Sidebar
+### Dashboard with Sidebar
 ```openui
 root = SidebarLayout(nav_sidebar, [header, kpi_row, charts_row])
 nav_sidebar = Sidebar([
   {label: "Dashboard", href: "/"},
-  {label: "Usuários", href: "/users"},
-  {label: "Relatórios", href: "/reports"},
-  {label: "Configurações", href: "/settings"}
+  {label: "Users", href: "/users"},
+  {label: "Reports", href: "/reports"},
+  {label: "Settings", href: "/settings"}
 ])
-# ... continua com padrão dashboard
+# ... continues with the dashboard pattern
 ```
 
-### CRUD com Sheet (sem modal)
+### CRUD with Sheet (no modal)
 ```openui
 root = Stack([header, toolbar, data_table, pager, edit_sheet])
-edit_sheet = Sheet("right", "Editar Registro", [edit_form])
+edit_sheet = Sheet("right", "Edit Record", [edit_form])
 edit_form = Form("edit-record", edit_buttons, [name_field, email_field])
 # ...
 ```
 
-### Detail View com ações no header
+### Detail View with actions in the header
 ```openui
 root = Stack([breadcrumb, header_with_actions, info_section])
-header_with_actions = PageHeader("João Silva", null, [edit_btn, delete_btn])
-edit_btn = Button("Editar", "outline")
-delete_btn = Button("Excluir", "destructive")
+header_with_actions = PageHeader("John Smith", null, [edit_btn, delete_btn])
+edit_btn = Button("Edit", "outline")
+delete_btn = Button("Delete", "destructive")
 # ...
 ```
 
 ---
 
-## Tabela de Seleção Rápida
+## Quick Selection Table
 
-| Situação | Padrão |
+| Situation | Pattern |
 |----------|--------|
-| Tela inicial com números | `dashboard` |
-| Listar/buscar/filtrar entidades | `crud-list` |
-| Criar entidade com muitos campos | `form-wizard` |
-| Ver detalhes de uma entidade | `detail-view` |
-| Configurar sistema/usuário | `settings-page` |
-| Login/cadastro/reset | `auth-page` |
-| Feature vazia ou sem dados | `empty-state` |
-| Primeiros passos pós-cadastro | `onboarding` |
+| Landing screen with numbers | `dashboard` |
+| List/search/filter entities | `crud-list` |
+| Create entity with many fields | `form-wizard` |
+| View details of an entity | `detail-view` |
+| Configure system/user | `settings-page` |
+| Login/registration/reset | `auth-page` |
+| Empty feature or no data | `empty-state` |
+| First steps after registration | `onboarding` |

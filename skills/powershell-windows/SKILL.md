@@ -1,6 +1,6 @@
 ---
 name: powershell-windows
-description: "Padrões e armadilhas críticas de PowerShell no Windows: sintaxe de operadores, null checks, JSON, paths e error handling. ACIONE quando: script PowerShell falhando com erro de parameter or ou Unexpected token, condicional if com -or/-and quebrando por falta de parênteses em cmdlets, JSON truncado por ConvertTo-Json sem -Depth, erro Cannot find property em objeto nulo, emoji ou Unicode quebrando o script, montar caminhos com Join-Path. Keywords: PowerShell, Windows, cmdlet, ConvertTo-Json, Join-Path, try/catch, ErrorActionPreference, null check, script, ASCII. Não acione para: bash em Linux/macOS (use bash-linux)."
+description: "Critical PowerShell patterns and pitfalls on Windows: operator syntax, null checks, JSON, paths, and error handling. Use when: a PowerShell script fails with a parameter or or Unexpected token error, an if conditional with -or/-and breaks due to missing parentheses around cmdlets, JSON truncated by ConvertTo-Json without -Depth, a Cannot find property error on a null object, an emoji or Unicode breaking the script, building paths with Join-Path. Keywords: PowerShell, Windows, cmdlet, ConvertTo-Json, Join-Path, try/catch, ErrorActionPreference, null check, script, ASCII. Do NOT use for: bash on Linux/macOS (use bash-linux)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

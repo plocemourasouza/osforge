@@ -1,6 +1,6 @@
 ---
 name: red-team-tactics
-description: "Táticas de red team baseadas em MITRE ATT&CK para simulação de adversário autorizada. ACIONE quando: planejar simulação de ataque/pentest autorizado, estruturar exercício de red team por fases ATT&CK (recon, initial access, lateral movement, exfiltration), avaliar evasão de detecção para testar defesas (purple team), escrever relatório de engajamento ofensivo, mapear TTPs de um adversário. Keywords: red team, pentest, MITRE ATT&CK, adversary simulation, simulação de ataque, lateral movement, TTPs, purple team, engajamento ofensivo, exploitation. Não acione para: análise defensiva de vulnerabilidades e auditoria de dependências (use vulnerability-scanner) nem para atividades sem autorização explícita."
+description: "Red team tactics based on MITRE ATT&CK for authorized adversary simulation. Use when: planning an authorized attack simulation/pentest, structuring a red team exercise by ATT&CK phases (recon, initial access, lateral movement, exfiltration), evaluating detection evasion to test defenses (purple team), writing an offensive engagement report, mapping an adversary's TTPs. Keywords: red team, pentest, MITRE ATT&CK, adversary simulation, attack simulation, lateral movement, TTPs, purple team, offensive engagement, exploitation. Do NOT use for: defensive vulnerability analysis and dependency auditing (use vulnerability-scanner) nor for activities without explicit authorization."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

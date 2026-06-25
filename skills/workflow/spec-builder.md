@@ -1,14 +1,14 @@
 # Spec Builder (Collaborative)
 
-**Trigger:** spec, especificar, definir feature, tech spec
+**Trigger:** spec, specify, define feature, tech spec
 
 ---
 
 ## Purpose
 
-Facilitação colaborativa de especificação técnica. Produz tech-spec com acceptance criteria testáveis, tasks ordenadas por dependência, e riscos.
+Collaborative facilitation of a technical specification. Produces a tech-spec with testable acceptance criteria, tasks ordered by dependency, and risks.
 
-**Princípio:** Não gera — FACILITA com o usuário.
+**Principle:** Does not generate — FACILITATES with the user.
 
 ---
 

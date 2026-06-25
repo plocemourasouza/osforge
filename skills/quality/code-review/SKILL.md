@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: "Review estruturado de código com checklist adaptado ao stack OSForge. ACIONE quando: code review, revisar código, review PR, CR. Integra adversarial-review e edge-case-hunter automaticamente. Keywords: code review, revisar código, review PR, CR, pull request, diff, changes, revisar mudanças."
+description: "Structured code review with a checklist adapted to the OSForge stack. Use when: code review, review code, review PR, CR. Integrates adversarial-review and edge-case-hunter automatically. Keywords: code review, review code, review PR, CR, pull request, diff, changes, review changes."
 model: sonnet
 context: fork
 agent: general-purpose
@@ -9,107 +9,107 @@ metadata:
   version: '1.1'
 ---
 
-## Contexto do review
-!`git log --oneline -10 2>/dev/null || echo "Git não disponível ou não inicializado"`
-!`git diff --stat HEAD 2>/dev/null | tail -5 || echo "Diff não disponível"`
+## Review context
+!`git log --oneline -10 2>/dev/null || echo "Git not available or not initialized"`
+!`git diff --stat HEAD 2>/dev/null | tail -5 || echo "Diff not available"`
 
 # Code Review
 
-## Papel
-Reviewer técnico rigoroso mas construtivo. Foco em correção, segurança,
-performance e manutenibilidade. Respeita project-context.md.
+## Role
+A rigorous but constructive technical reviewer. Focus on correctness, security,
+performance and maintainability. Respects project-context.md.
 
 ## Inputs
-- **diff ou changes** — Código a revisar (identificar automaticamente)
-- **story file** (opcional) — Se existe, verificar ACs contra implementação
-- **project-context.md** — Regras do codebase (carregar se existir)
+- **diff or changes** — Code to review (identify automatically)
+- **story file** (optional) — If it exists, verify ACs against the implementation
+- **project-context.md** — Codebase rules (load if it exists)
 
-## Execução
+## Execution
 
-### 1. Identificar Escopo
-- Identificar arquivos modificados e tipo de mudança
-- Carregar story file se referenciado
-- Carregar project-context.md
+### 1. Identify Scope
+- Identify modified files and the type of change
+- Load the story file if referenced
+- Load project-context.md
 
-### 2. Checklist Estruturado
+### 2. Structured Checklist
 
-**Funcionalidade:**
-- [ ] Todos ACs da story satisfeitos? (se story existe)
-- [ ] Lógica de negócio correta para happy path?
-- [ ] Error states tratados adequadamente?
-- [ ] Loading states implementados? (para UI changes)
+**Functionality:**
+- [ ] All story ACs satisfied? (if a story exists)
+- [ ] Business logic correct for the happy path?
+- [ ] Error states handled appropriately?
+- [ ] Loading states implemented? (for UI changes)
 
 **TypeScript:**
-- [ ] Tipos corretos e específicos (sem `any`)?
-- [ ] Strict mode respeitado?
-- [ ] Interfaces/types exportados quando necessário?
-- [ ] Zod schemas para inputs externos?
+- [ ] Correct and specific types (no `any`)?
+- [ ] Strict mode respected?
+- [ ] Interfaces/types exported when necessary?
+- [ ] Zod schemas for external inputs?
 
 **Next.js Patterns:**
-- [ ] Server vs Client Components corretos?
-- [ ] Server Actions vs API Routes conforme padrão do projeto?
-- [ ] Metadata/SEO configurado (para páginas)?
-- [ ] Error boundaries e loading states?
+- [ ] Server vs Client Components correct?
+- [ ] Server Actions vs API Routes per the project's pattern?
+- [ ] Metadata/SEO configured (for pages)?
+- [ ] Error boundaries and loading states?
 
 **Database/Supabase:**
-- [ ] Prisma queries eficientes (sem N+1)?
-- [ ] RLS policies cobrindo novos dados?
-- [ ] Migrations reversíveis?
-- [ ] Indexes para queries frequentes?
+- [ ] Prisma queries efficient (no N+1)?
+- [ ] RLS policies covering new data?
+- [ ] Migrations reversible?
+- [ ] Indexes for frequent queries?
 
-**Segurança:**
-- [ ] Inputs validados com Zod?
-- [ ] Auth verificado nos endpoints?
-- [ ] Sem dados sensíveis expostos em client?
-- [ ] CORS e rate limiting se aplicável?
-- [ ] LGPD compliance (dados pessoais)?
+**Security:**
+- [ ] Inputs validated with Zod?
+- [ ] Auth verified on endpoints?
+- [ ] No sensitive data exposed on the client?
+- [ ] CORS and rate limiting if applicable?
+- [ ] LGPD compliance (personal data)?
 
-**Qualidade:**
-- [ ] Sem console.log ou código de debug?
-- [ ] Imports organizados?
-- [ ] Naming conventions seguidas?
-- [ ] Sem código duplicado?
-- [ ] Testes para happy path + edge cases?
+**Quality:**
+- [ ] No console.log or debug code?
+- [ ] Imports organized?
+- [ ] Naming conventions followed?
+- [ ] No duplicated code?
+- [ ] Tests for happy path + edge cases?
 
-### 3. Análise Profunda
-- Invocar `edge-case-hunter` no diff (se mudanças > 20 linhas)
-- Identificar patterns que divergem do project-context
+### 3. Deep Analysis
+- Invoke `edge-case-hunter` on the diff (if changes > 20 lines)
+- Identify patterns that diverge from project-context
 
-**Exemplos concretos de edge cases a procurar:**
-- **Null/undefined**: `user.profile.name` quando `profile` pode ser `null`; retorno de `findUnique` não checado antes de acessar campos
-- **Strings vazias**: `""` passando em validação que só checa `!== null`; busca/filtro com input vazio retornando tudo
-- **Condições de corrida**: dois requests simultâneos criando registro "único" sem constraint no banco; `read-modify-write` sem transação (ex.: decrementar saldo/estoque)
-- **Arrays vazios**: `items[0]` sem checar length; `reduce` sem valor inicial em array vazio
-- **Limites numéricos**: paginação com `page=0` ou negativo; valores monetários com float em vez de Decimal
+**Concrete examples of edge cases to look for:**
+- **Null/undefined**: `user.profile.name` when `profile` may be `null`; `findUnique` return not checked before accessing fields
+- **Empty strings**: `""` passing a validation that only checks `!== null`; search/filter with empty input returning everything
+- **Race conditions**: two simultaneous requests creating a "unique" record without a constraint in the database; `read-modify-write` without a transaction (e.g., decrementing balance/inventory)
+- **Empty arrays**: `items[0]` without checking length; `reduce` without an initial value on an empty array
+- **Numeric limits**: pagination with `page=0` or negative; monetary values with float instead of Decimal
 
 ### 4. Verdict
 
 ```markdown
-## Code Review: {identificação}
+## Code Review: {identification}
 
 **Verdict:** APPROVED | CHANGES_REQUESTED
 **Files reviewed:** {N}
 **Findings:** {N}
 
-### Issues (devem ser resolvidos)
-1. {issue com localização e sugestão}
+### Issues (must be resolved)
+1. {issue with location and suggestion}
 
-### Sugestões (recomendado)
-1. {sugestão}
+### Suggestions (recommended)
+1. {suggestion}
 
-### Positivos
-1. {algo que ficou bom}
+### Positives
+1. {something that turned out well}
 ```
 
-Se CHANGES_REQUESTED: listar cada issue com correção sugerida.
-Se APPROVED: pode incluir sugestões opcionais para melhorar.
+If CHANGES_REQUESTED: list each issue with a suggested fix.
+If APPROVED: may include optional suggestions to improve.
 
 
 ## Gotchas
 
-- **Aprovar sem verificar ACs da story**: se existe uma story associada, SEMPRE verificar cada AC contra o código. Muitos PRs passam no review técnico mas falham silenciosamente nos critérios de aceitação de negócio.
-- **Focar só em style issues**: review de code style (imports, naming) é Baixa prioridade. Issues de segurança, lógica de negócio incorreta e N+1 queries são Alta prioridade. Não investir 80% do review em problemas de formatação.
-- **Não invocar edge-case-hunter**: para diffs >20 linhas, edge-case-hunter é mandatório — ele encontra casos que o review manual rotineiramente perde (valores null, strings vazias, concorrência, limites de paginação).
-- **APPROVED com "sugestões opcionais" que são críticas**: se um issue é crítico para segurança ou correção, deve ser CHANGES_REQUESTED, não APPROVED com nota. A distinção importa para o PR workflow.
-- **Não checar impacto de mudanças de schema**: toda mudança em `prisma/schema.prisma` exige verificação de: (1) migration gerada, (2) RLS policies impactadas, (3) queries que podem quebrar com o novo schema.
-- **Ignorar `bun tsc --noEmit`**: sempre mencionar se o type-check passa. TypeScript errors silenciados com `@ts-ignore` ou `any` são red flags que devem aparecer no relatório de review.
+- **Approving without verifying the story ACs**: if there is an associated story, ALWAYS verify each AC against the code. Many PRs pass technical review but silently fail the business acceptance criteria.
+- **Focusing only on style issues**: code style review (imports, naming) is Low priority. Security issues, incorrect business logic and N+1 queries are High priority. Don't invest 80% of the review in formatting problems.
+- **Not invoking edge-case-hunter**: for diffs >20 lines, edge-case-hunter is mandatory — it finds cases that manual review routinely misses (null values, empty strings, concurrency, pagination limits).
+- **APPROVED with "optional suggestions" that are critical**: if an issue is critical for security or correctness, it must be CHANGES_REQUESTED, not APPROVED with a note. The distinction matters for the PR workflow.
+- **Not checking the impact of schema changes**: every change in `prisma/schema.prisma` requires verification of: (1) the generated migration, (2) impacted RLS policies, (3) queries that may break with the new schema.
+- **Ignoring `bun tsc --noEmit`**: always mention whether the type-check passes. TypeScript errors silenced with `@ts-ignore` or `any` are red flags that must appear in the review report.

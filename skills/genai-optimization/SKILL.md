@@ -1,6 +1,6 @@
 ---
 name: genai-optimization
-description: "Generative Engine Optimization (GEO) para conteúdo ser citado por motores de busca com IA. ACIONE quando: fazer conteúdo ser citado pelo ChatGPT/Perplexity/Claude/Gemini, otimizar para busca por IA (AI search), estruturar conteúdo para retrieval RAG, aumentar taxa de citação em respostas geradas, comparar estratégia SEO vs GEO. Keywords: GEO, generative engine optimization, AI search, citação por IA, ChatGPT, Perplexity, RAG, AI citations, busca por IA, LLM visibility. Não acione para: ranking tradicional no Google, Core Web Vitals e schema markup clássico (use seo-fundamentals)."
+description: "Generative Engine Optimization (GEO) for content to be cited by AI-powered search engines. Use when: making content get cited by ChatGPT/Perplexity/Claude/Gemini, optimizing for AI search, structuring content for RAG retrieval, increasing citation rate in generated responses, comparing SEO vs GEO strategy. Keywords: GEO, generative engine optimization, AI search, AI citations, ChatGPT, Perplexity, RAG, AI citations, AI search, LLM visibility. Do NOT use for: traditional Google ranking, Core Web Vitals, and classic schema markup (use seo-fundamentals)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"

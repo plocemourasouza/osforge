@@ -93,24 +93,24 @@ export async function POST(req: Request) {
 
 ## Error Handling (Checkout & Webhook)
 
-### Sessão expirada e cartão recusado no checkout
+### Expired session and declined card at checkout
 ```typescript
-// Checkout sessions expiram em 24h por padrão — trate o evento e o retorno
+// Checkout sessions expire in 24h by default — handle the event and the return
 const session = await stripe.checkout.sessions.create({
   // ...
-  expires_at: Math.floor(Date.now() / 1000) + 60 * 30, // opcional: 30 min
+  expires_at: Math.floor(Date.now() / 1000) + 60 * 30, // optional: 30 min
 })
 
-// No webhook, trate a expiração para liberar reservas/carrinho:
+// In the webhook, handle the expiration to release reservations/cart:
 case 'checkout.session.expired': {
   const session = event.data.object as Stripe.Checkout.Session
-  await releaseReservedItems(session.metadata?.userId) // não marque como pago
+  await releaseReservedItems(session.metadata?.userId) // do not mark as paid
   break
 }
 ```
 
 ```typescript
-// Cartão recusado ao criar cobrança server-side (PaymentIntent/portal):
+// Declined card when creating a server-side charge (PaymentIntent/portal):
 try {
   await stripe.paymentIntents.create({ ... })
 } catch (err) {
@@ -118,25 +118,25 @@ try {
     // err.code: 'card_declined', 'expired_card', 'insufficient_funds'...
     return Response.json({ error: err.code, message: err.message }, { status: 402 })
   }
-  throw err // outros erros: logar e retornar 500 genérico (sem detalhes internos)
+  throw err // other errors: log and return a generic 500 (no internal details)
 }
 ```
-No Stripe Checkout hosted, cartão recusado é tratado na própria página do Stripe — o usuário tenta outro cartão ou cancela (cai no `cancel_url`). Nunca marque a assinatura como ativa no `success_url`; só via webhook `checkout.session.completed`.
+With hosted Stripe Checkout, a declined card is handled on Stripe's own page — the user tries another card or cancels (lands on `cancel_url`). Never mark the subscription as active on `success_url`; only via the `checkout.session.completed` webhook.
 
-### Falha de pagamento recorrente no webhook
+### Recurring payment failure in the webhook
 ```typescript
 case 'invoice.payment_failed': {
   const invoice = event.data.object as Stripe.Invoice
-  // 1. Marcar assinatura como past_due (não cancelar imediatamente —
-  //    Stripe faz retries automáticos via Smart Retries)
-  // 2. Notificar usuário para atualizar cartão (link do Customer Portal)
-  // 3. Só revogar acesso em customer.subscription.deleted ou status 'unpaid'
+  // 1. Mark subscription as past_due (do not cancel immediately —
+  //    Stripe does automatic retries via Smart Retries)
+  // 2. Notify the user to update their card (Customer Portal link)
+  // 3. Only revoke access on customer.subscription.deleted or status 'unpaid'
   await handlePaymentFailed(invoice)
   break
 }
 ```
-- Handlers de webhook devem capturar erros internos e ainda retornar 200 quando o evento foi reconhecido mas o processamento pode ser re-tentado internamente — ou 500 para o Stripe reenviar. Escolha consciente: 500 gera retry automático do Stripe.
-- Eventos chegam fora de ordem: sempre confie no estado atual do objeto (`subscription.status`), não na sequência de eventos.
+- Webhook handlers should catch internal errors and still return 200 when the event was acknowledged but processing can be retried internally — or 500 for Stripe to resend. Conscious choice: 500 triggers Stripe's automatic retry.
+- Events arrive out of order: always trust the object's current state (`subscription.status`), not the event sequence.
 
 ## Subscription Sync
 ```typescript

@@ -14,163 +14,163 @@ Plan and implement products with precision. User problems first. Granular tasks.
 ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌─────────┐   ┌───────────────────┐   ┌──────────┐
 │ DISCOVER │ → │ SPECIFY  │ → │  DESIGN  │ → │  TASKS  │ → │ IMPLEMENT+VALIDATE│ → │ MEASURE  │
 └──────────┘   └──────────┘   └──────────┘   └─────────┘   └───────────────────┘   └──────────┘
- Problema do    Requisitos     Arquitetura    Tarefas        Código + Testes         Métricas de
- usuário +      técnicos +     + decisões     atômicas +     + evidência de          sucesso +
- hipótese +     acceptance     + trade-offs   priorização    verificação             feedback loop
- métricas       criteria                      por impacto
+ User           Technical       Architecture   Atomic         Code + Tests            Success
+ problem +      requirements +  + decisions    tasks +        + verification          metrics +
+ hypothesis +   acceptance      + trade-offs   prioritization evidence                feedback loop
+ metrics        criteria                       by impact
 ```
 
-## Princípio PDD (Product Driven Development)
+## PDD Principle (Product Driven Development)
 
-Antes de resolver tecnicamente, pergunte:
-- **Isso resolve o problema do USUÁRIO ou o problema TÉCNICO?**
-- Existe uma solução mais simples que entrega 80% do valor?
-- Como o usuário vai perceber essa mudança?
-- Se ninguém usar esse feature, foi tempo bem gasto?
+Before solving technically, ask:
+- **Does this solve the USER's problem or the TECHNICAL problem?**
+- Is there a simpler solution that delivers 80% of the value?
+- How will the user perceive this change?
+- If nobody uses this feature, was it time well spent?
 
-PDD não substitui rigor técnico — ele DIRECIONA o rigor técnico para onde importa.
+PDD does not replace technical rigor — it DIRECTS technical rigor to where it matters.
 
-As seções a seguir detalham cada fase na ordem em que são executadas. Cada fase define os artefatos (arquivos `.md`) que produz; a estrutura de arquivos consolidada e o workflow completo aparecem depois das fases.
+The sections below detail each phase in the order they are executed. Each phase defines the artifacts (`.md` files) it produces; the consolidated file structure and the full workflow appear after the phases.
 
 ---
 
 ## Phase 0: DISCOVER (PDD)
 
-**Trigger:** "discover", "qual problema resolver", "por que construir", "validate hypothesis"
+**Trigger:** "discover", "which problem to solve", "why build", "validate hypothesis"
 
-**Propósito:** Garantir que estamos construindo a coisa certa ANTES de especificar a solução.
+**Purpose:** Ensure we are building the right thing BEFORE specifying the solution.
 
-**Saída:** `.specs/features/[feature]/discovery.md` — documento com problema, hipótese e métricas de sucesso da feature.
+**Output:** `.specs/features/[feature]/discovery.md` — a document with the feature's problem, hypothesis, and success metrics.
 
 ### Discovery Template
 
 ```markdown
 # Discovery: [Feature Name]
 
-## Problema do Usuário
-- **Quem sofre:** [persona específica, não "o usuário"]
-- **O que acontece:** [situação atual — dor concreta, observável]
-- **Evidência:** [dados, feedback, métricas, observações que comprovam o problema]
-- **Frequência:** [diário / semanal / ocasional]
+## User Problem
+- **Who suffers:** [specific persona, not "the user"]
+- **What happens:** [current situation — concrete, observable pain]
+- **Evidence:** [data, feedback, metrics, observations that prove the problem]
+- **Frequency:** [daily / weekly / occasional]
 
-## Hipótese
-Acreditamos que [solução proposta] vai [resultado esperado] para [persona]
-porque [razão baseada em evidência].
+## Hypothesis
+We believe that [proposed solution] will [expected outcome] for [persona]
+because [evidence-based reason].
 
-## Métricas de Sucesso
-| Métrica | Baseline (atual) | Target | Como medir | Prazo |
+## Success Metrics
+| Metric | Baseline (current) | Target | How to measure | Deadline |
 |---------|------------------|--------|------------|-------|
-| [primária] | [valor atual] | [meta] | [ferramenta/evento] | [semanas] |
-| [secundária] | [valor atual] | [meta] | [ferramenta/evento] | [semanas] |
+| [primary] | [current value] | [goal] | [tool/event] | [weeks] |
+| [secondary] | [current value] | [goal] | [tool/event] | [weeks] |
 
-## Critério de Sucesso/Falha
-- **Sucesso:** [métrica primária atinge target em prazo]
-- **Pivotar:** [se métrica < X% do target, mudar abordagem]
-- **Abandonar:** [se após Y semanas sem melhora, não prosseguir]
+## Success/Failure Criteria
+- **Success:** [primary metric hits target within the deadline]
+- **Pivot:** [if metric < X% of target, change approach]
+- **Abandon:** [if after Y weeks with no improvement, do not proceed]
 
-## MVP Scope (menor experimento que valida hipótese)
-- Inclui: [funcionalidades mínimas para testar hipótese]
-- NÃO inclui: [o que pode esperar para depois da validação]
+## MVP Scope (smallest experiment that validates the hypothesis)
+- Includes: [minimal features to test the hypothesis]
+- Does NOT include: [what can wait until after validation]
 
-## Alternativas Consideradas
-- [Opção A]: descartada porque [razão]
-- [Opção B]: descartada porque [razão]
-- Não fazer nada: [risco se não implementarmos]
+## Alternatives Considered
+- [Option A]: discarded because [reason]
+- [Option B]: discarded because [reason]
+- Do nothing: [risk if we don't implement it]
 
-## Prioridade de Produto
-Impacto: [Alto/Médio/Baixo] × Confiança: [Alta/Média/Baixa] / Esforço: [Alto/Médio/Baixo]
-Score: [H×H/L = muito alta ... L×L/H = muito baixa]
+## Product Priority
+Impact: [High/Medium/Low] × Confidence: [High/Medium/Low] / Effort: [High/Medium/Low]
+Score: [H×H/L = very high ... L×L/H = very low]
 ```
 
-### Regras do Discover
-- NUNCA pule esta fase para features que tocam o usuário final
-- Para tasks puramente técnicas (refactoring, infra, CI/CD), Discover é opcional
-- Se não há evidência do problema, busque antes de especificar
-- Se não consegue definir métrica de sucesso, o escopo está vago demais
+### Discover Rules
+- NEVER skip this phase for features that touch the end user
+- For purely technical tasks (refactoring, infra, CI/CD), Discover is optional
+- If there is no evidence of the problem, find it before specifying
+- If you can't define a success metric, the scope is too vague
 
 ---
 
 ## Phase 1-3: SPECIFY → DESIGN → TASKS
 
-Estas três fases produzem, respectivamente, os artefatos `spec.md` (requisitos técnicos + acceptance criteria), `design.md` (arquitetura + decisões + trade-offs) e `tasks.md` (tarefas atômicas priorizadas).
+These three phases produce, respectively, the artifacts `spec.md` (technical requirements + acceptance criteria), `design.md` (architecture + decisions + trade-offs), and `tasks.md` (prioritized atomic tasks).
 
-(Mantém workflow existente — ver references/)
+(Keeps the existing workflow — see references/)
 
-### Impact-First Prioritization (na fase TASKS)
+### Impact-First Prioritization (in the TASKS phase)
 
-Quando múltiplas tasks existem, priorize por impacto no usuário:
+When multiple tasks exist, prioritize by user impact:
 
 ```
-Prioridade = (Impacto no Usuário × Confiança) / Esforço Técnico
+Priority = (User Impact × Confidence) / Technical Effort
 ```
 
-| Fator | Alto (3) | Médio (2) | Baixo (1) |
+| Factor | High (3) | Medium (2) | Low (1) |
 |-------|----------|-----------|-----------|
-| **Impacto** | Afeta todos os usuários ou fluxo crítico | Afeta segmento relevante | Afeta poucos ou edge case |
-| **Confiança** | Dados/feedback confirmam | Evidência indireta | Intuição / suposição |
-| **Esforço** | > 1 semana | 2-5 dias | < 2 dias |
+| **Impact** | Affects all users or a critical flow | Affects a relevant segment | Affects few or an edge case |
+| **Confidence** | Data/feedback confirm | Indirect evidence | Intuition / guess |
+| **Effort** | > 1 week | 2-5 days | < 2 days |
 
-**Score > 4:** Fazer primeiro
-**Score 2-4:** Fazer neste ciclo
-**Score < 2:** Backlog (reavaliar depois)
+**Score > 4:** Do first
+**Score 2-4:** Do this cycle
+**Score < 2:** Backlog (reassess later)
 
-**Anti-pattern:** NÃO priorize pelo que é tecnicamente interessante. Priorize pelo que entrega mais valor ao usuário com maior confiança.
+**Anti-pattern:** Do NOT prioritize by what is technically interesting. Prioritize by what delivers the most user value with the highest confidence.
 
 ---
 
 ## Phase 4: IMPLEMENT + VALIDATE
 
-Implementação do código com testes e evidência de verificação para cada task.
+Code implementation with tests and verification evidence for each task.
 
-(Mantém workflow existente — ver references/)
+(Keeps the existing workflow — see references/)
 
 ---
 
 ## Phase 5: MEASURE (PDD)
 
-**Trigger:** "measure", "post-deploy", "verificar métricas", "feature funcionou?"
+**Trigger:** "measure", "post-deploy", "check metrics", "did the feature work?"
 
-**Propósito:** Fechar o loop — verificar se a hipótese do Discover se confirmou.
+**Purpose:** Close the loop — verify whether the Discover hypothesis was confirmed.
 
 ### Post-Deploy Checklist
 
 ```markdown
 ## Post-Deploy: [Feature Name]
-Data do deploy: [YYYY-MM-DD]
+Deploy date: [YYYY-MM-DD]
 
 ### Rollout
-- [ ] Feature flag configurada (canary/% rollout)
-- [ ] Plano de rollback documentado
-- [ ] Monitoramento de erros ativo (Sentry/logs)
+- [ ] Feature flag configured (canary/% rollout)
+- [ ] Rollback plan documented
+- [ ] Error monitoring active (Sentry/logs)
 
 ### Analytics
-- [ ] Eventos de analytics implementados para métricas de sucesso
-- [ ] Dashboard/query criada para acompanhar métricas
-- [ ] Baseline registrada antes do deploy
+- [ ] Analytics events implemented for success metrics
+- [ ] Dashboard/query created to track metrics
+- [ ] Baseline recorded before deploy
 
-### Revisão Agendada
-- [ ] Data de revisão: [YYYY-MM-DD] (conforme prazo do Discovery)
-- [ ] Responsável: [nome/role]
+### Scheduled Review
+- [ ] Review date: [YYYY-MM-DD] (per the Discovery deadline)
+- [ ] Owner: [name/role]
 
-### Resultado (preencher na data de revisão)
-- Métrica primária: [baseline] → [atual] (target era [X])
-- Métrica secundária: [baseline] → [atual]
-- Veredicto: [ ] Sucesso [ ] Pivotar [ ] Abandonar
-- Aprendizados: [o que descobrimos]
-- Próximos passos: [iterar / escalar / remover]
+### Result (fill in on the review date)
+- Primary metric: [baseline] → [current] (target was [X])
+- Secondary metric: [baseline] → [current]
+- Verdict: [ ] Success [ ] Pivot [ ] Abandon
+- Learnings: [what we discovered]
+- Next steps: [iterate / scale / remove]
 ```
 
-### Regras do Measure
-- NUNCA declare feature "entregue" sem métricas configuradas
-- Se não é possível medir (infra, refactoring), registre pelo menos: build time, error rate, deploy frequency
-- Revisão de métricas é tão importante quanto code review
-- Features sem evidência de impacto são candidatas a remoção
+### Measure Rules
+- NEVER declare a feature "delivered" without metrics configured
+- If measuring is not possible (infra, refactoring), record at least: build time, error rate, deploy frequency
+- Metrics review is as important as code review
+- Features with no evidence of impact are candidates for removal
 
 ---
 
 ## Project Structure
 
-Os artefatos produzidos pelas fases acima são organizados no diretório `.specs/`. Além dos arquivos por feature (discovery.md, spec.md, design.md, tasks.md — definidos nas fases), existem arquivos de nível de projeto, descritos inline abaixo:
+The artifacts produced by the phases above are organized in the `.specs/` directory. Besides the per-feature files (discovery.md, spec.md, design.md, tasks.md — defined in the phases), there are project-level files, described inline below:
 
 ```
 .specs/
@@ -188,7 +188,7 @@ Os artefatos produzidos pelas fases acima são organizados no diretório `.specs
 │   └── INTEGRATIONS.md
 └── features/           # Feature specifications
     └── [feature]/
-        ├── discovery.md    # ← NOVO: Problema, hipótese, métricas
+        ├── discovery.md    # ← NEW: Problem, hypothesis, metrics
         ├── spec.md
         ├── design.md
         ├── tasks.md
@@ -198,31 +198,31 @@ Os artefatos produzidos pelas fases acima são organizados no diretório `.specs
 ## Templates
 
 ### User Stories
-Antes de implementar features, crie user stories usando o template:
+Before implementing features, create user stories using the template:
 - Template: [templates/user-story.md](templates/user-story.md)
-- Local: `.specs/features/[feature]/stories/`
-- Criar ANTES da implementação para guiar acceptance testing
-- DEVE incluir Contexto de Produto e Métricas de Sucesso (PDD)
+- Location: `.specs/features/[feature]/stories/`
+- Create BEFORE implementation to guide acceptance testing
+- MUST include Product Context and Success Metrics (PDD)
 
 ### Decision Log (ADR)
-Registre decisões arquiteturais importantes:
+Record important architectural decisions:
 - Template: [templates/decisions.md](templates/decisions.md)
-- Local: `.specs/project/DECISIONS.md`
-- Toda decisão com trade-offs deve ser registrada
+- Location: `.specs/project/DECISIONS.md`
+- Every decision with trade-offs must be recorded
 
 ## Workflow
 
-Com as fases e a estrutura de arquivos definidas, o fluxo completo é:
+With the phases and file structure defined, the full flow is:
 
 **New project:**
 1. Initialize project → PROJECT.md
 2. Create roadmap → ROADMAP.md
-3. **Discover** → discovery.md (problema + hipótese + métricas)
+3. **Discover** → discovery.md (problem + hypothesis + metrics)
 4. Specify features → spec.md
 5. Design → design.md
 6. Tasks → tasks.md
 7. Implement + Validate
-8. **Measure** → verificar métricas pós-deploy
+8. **Measure** → check post-deploy metrics
 
 **Existing codebase:**
 1. Map codebase → 6 brownfield docs
@@ -233,7 +233,7 @@ Com as fases e a estrutura de arquivos definidas, o fluxo completo é:
 
 ## Commands
 
-Cada comando é acionado por um trigger pattern e detalhado em um arquivo de referência:
+Each command is triggered by a trigger pattern and detailed in a reference file:
 
 **Project-level:**
 
@@ -276,7 +276,7 @@ Be conversational, not robotic. Don't interrupt workflow—add as a natural clos
 
 ---
 
-As seções a seguir cobrem cuidados operacionais (gotchas): gestão de contexto e registro de tentativas falhadas.
+The following sections cover operational concerns (gotchas): context management and logging failed attempts.
 
 ## Context Loading Strategy
 
@@ -300,106 +300,106 @@ As seções a seguir cobrem cuidados operacionais (gotchas): gestão de contexto
 **Target:** <40k tokens total context
 **Reserve:** 160k+ tokens for work, reasoning, outputs
 
-### Context Budget — Regra dos 70%
+### Context Budget — The 70% Rule
 
-Acima de 70% do context window, o modelo degrada silenciosamente: ignora tools,
-alucina mais, para no meio de tasks, perde adherência a rules. Não há erro
-explícito — apenas degradação progressiva.
+Above 70% of the context window, the model degrades silently: it ignores tools,
+hallucinates more, stops mid-task, loses adherence to rules. There is no explicit
+error — just progressive degradation.
 
-**Sinais de saturação (auto-diagnóstico):**
-- Respostas ficam genéricas ou repetitivas
-- Agent "esquece" de rodar testes ou verificações
-- Tasks param abruptamente sem explicação
-- Rules documentadas são ignoradas
-- Agent começa a cortar caminho em processos definidos
+**Saturation signs (self-diagnosis):**
+- Responses become generic or repetitive
+- The agent "forgets" to run tests or verifications
+- Tasks stop abruptly with no explanation
+- Documented rules are ignored
+- The agent starts cutting corners in defined processes
 
-**Ações obrigatórias ao detectar saturação:**
+**Mandatory actions when saturation is detected:**
 
-1. **PARE** a task atual — não continue em contexto degradado
-2. **Salve estado** no STATE.md:
+1. **STOP** the current task — do not continue in a degraded context
+2. **Save state** to STATE.md:
    ```
    ## Context Reset — [YYYY-MM-DD HH:MM]
-   - Task em andamento: [descrição]
-   - Último checkpoint: [o que foi completado]
-   - Próximo passo: [o que falta]
-   - Arquivos modificados: [lista]
-   - Testes passando: [sim/não/parcial]
+   - Task in progress: [description]
+   - Last checkpoint: [what was completed]
+   - Next step: [what's left]
+   - Modified files: [list]
+   - Tests passing: [yes/no/partial]
    ```
-3. **Compact** ou inicie nova sessão
-4. **Retome** carregando apenas: STATE.md + task específica
+3. **Compact** or start a new session
+4. **Resume** loading only: STATE.md + the specific task
 
-**Prevenção (antes de saturar):**
-- Antes de tasks complexas: descarregue contexto desnecessário
-- Uma feature por sessão — não misture features no mesmo contexto
-- Após completar fase (Specify, Design, Tasks), salve em arquivo e limpe
-- Sub-agents para research, code-review e debugging (contexto isolado)
-- Se uma task precisa de mais de 3 specs, divida a task
+**Prevention (before saturating):**
+- Before complex tasks: unload unnecessary context
+- One feature per session — don't mix features in the same context
+- After completing a phase (Specify, Design, Tasks), save to a file and clear
+- Sub-agents for research, code-review, and debugging (isolated context)
+- If a task needs more than 3 specs, split the task
 
-**Estimativa de consumo:**
+**Consumption estimate:**
 
-| Item | Tokens (~) | Notas |
+| Item | Tokens (~) | Notes |
 |------|-----------|-------|
-| CLAUDE.md + SKILLS.md | ~5k | Base fixa |
-| 1 skill ativado | ~2-4k | Sob demanda |
-| 1 spec.md típico | ~1-3k | Sob demanda |
-| 1 agent completo | ~3-5k | Contexto isolado (não conta) |
-| MCP call + response | ~1-2k | Cada chamada |
-| Arquivo de código lido | ~0.5-2k | Por arquivo |
-| Histórico de mensagens | acumula | Principal vilão |
+| CLAUDE.md + SKILLS.md | ~5k | Fixed base |
+| 1 skill activated | ~2-4k | On demand |
+| 1 typical spec.md | ~1-3k | On demand |
+| 1 full agent | ~3-5k | Isolated context (doesn't count) |
+| MCP call + response | ~1-2k | Each call |
+| Code file read | ~0.5-2k | Per file |
+| Message history | accumulates | Main culprit |
 
-**Budget prático (200k window):**
-- 🟢 < 80k (~40%): zona confortável, modelo opera bem
-- 🟡 80-120k (~40-60%): atenção, evitar carregar mais contexto
-- 🔴 120-140k (~60-70%): salvar estado, preparar compaction
-- ⛔ > 140k (~70%+): PARAR, compactar AGORA, degradação ativa
+**Practical budget (200k window):**
+- 🟢 < 80k (~40%): comfortable zone, model operates well
+- 🟡 80-120k (~40-60%): caution, avoid loading more context
+- 🔴 120-140k (~60-70%): save state, prepare for compaction
+- ⛔ > 140k (~70%+): STOP, compact NOW, degradation active
 
-### Compression Mode (zonas 🟡 e 🔴)
+### Compression Mode (🟡 and 🔴 zones)
 
-Quando o contexto entra na zona amarela ou vermelha, adote automaticamente:
-- Respostas concisas sem preâmbulos ou recapitulações
-- Mostrar apenas diffs, nunca re-listar arquivos inteiros
-- Não repetir contexto já estabelecido na conversa
-- Omitir explicações de "por que" quando o usuário já tem o contexto
-- Priorizar ação sobre documentação inline
+When context enters the yellow or red zone, automatically adopt:
+- Concise responses with no preambles or recaps
+- Show only diffs, never re-list entire files
+- Don't repeat context already established in the conversation
+- Omit "why" explanations when the user already has the context
+- Prioritize action over inline documentation
 
-### Story Loading por Fase
+### Story Loading per Phase
 
-User stories (ver Templates acima) têm ~725 tokens. Cada fase precisa apenas de seções específicas:
+User stories (see Templates above) are ~725 tokens. Each phase needs only specific sections:
 
-| Fase | Seções necessárias da story | Ignorar |
+| Phase | Required story sections | Ignore |
 |------|----------------------------|--------|
-| **Discover/Specify** | Story completa | — |
-| **Design** | Acceptance criteria + edge cases + dependências | Contexto de produto, prioridade, métricas |
-| **Implement** | Acceptance criteria + happy path + edge cases | Contexto de produto, prioridade, métricas |
-| **Measure** | Métricas de sucesso + critério de completude | Acceptance criteria, edge cases, happy path |
+| **Discover/Specify** | Full story | — |
+| **Design** | Acceptance criteria + edge cases + dependencies | Product context, priority, metrics |
+| **Implement** | Acceptance criteria + happy path + edge cases | Product context, priority, metrics |
+| **Measure** | Success metrics + completion criteria | Acceptance criteria, edge cases, happy path |
 
-Isso reduz o consumo de ~725 → ~350 tokens por story nas fases de implementação.
+This reduces consumption from ~725 → ~350 tokens per story in the implementation phases.
 
-## Attempts Log (quando implementação falha)
+## Attempts Log (when implementation fails)
 
-Quando uma task falha após tentativa genuína, registre em STATE.md:
+When a task fails after a genuine attempt, record it in STATE.md:
 
 ```markdown
-## Attempts — STORY-{N}: [título]
+## Attempts — STORY-{N}: [title]
 
 ### Attempt 1 — [YYYY-MM-DD HH:MM]
-- Abordagem: [o que foi tentado]
-- Resultado: [o que aconteceu]
-- Root cause: [por que falhou]
-- Arquivos tocados: [lista]
+- Approach: [what was tried]
+- Result: [what happened]
+- Root cause: [why it failed]
+- Files touched: [list]
 - Rollback: [git stash / git checkout -- files]
 
 ### Attempt 2 — [YYYY-MM-DD HH:MM]
-- Abordagem: [diferente da anterior]
+- Approach: [different from the previous one]
 - ...
 
-### Decisão
-- [ ] Tentar abordagem diferente: [descrição]
-- [ ] Escalar complexidade para architect review
-- [ ] Simplificar escopo (remover edge cases)
+### Decision
+- [ ] Try a different approach: [description]
+- [ ] Escalate complexity to architect review
+- [ ] Simplify scope (remove edge cases)
 ```
 
-### Regras de Attempts
-- Após 3 tentativas falhadas na mesma task: PARE e revise a spec/design
-- Cada tentativa DEVE usar abordagem diferente (repetir = desperdício)
-- SEMPRE faça rollback limpo antes de nova tentativa (não acumule fixes)
+### Attempts Rules
+- After 3 failed attempts on the same task: STOP and review the spec/design
+- Each attempt MUST use a different approach (repeating = waste)
+- ALWAYS do a clean rollback before a new attempt (don't stack fixes)

@@ -1,6 +1,6 @@
-# The Agency — Biblioteca de Especialistas de IA
+# The Agency — AI Specialist Library
 
-**Trigger:** Precisar de um especialista em qualquer área não coberta pelas skills técnicas acima.
+**Trigger:** Needing a specialist in any area not covered by the technical skills above.
 
 ---
 
@@ -12,7 +12,7 @@ Leia skills/agency/SKILL.md
 
 ---
 
-## Divisões (10)
+## Divisions (10)
 
 | Division | Specialists | Focus |
 |----------|-------------|-------|
@@ -29,44 +29,44 @@ Leia skills/agency/SKILL.md
 
 ---
 
-## Carregamento Hierárquico
+## Hierarchical Loading
 
 ```
-1. Router (this file) → identifica divisão
-2. Division index → lista agentes disponíveis
-3. Agent file → carrega especialista específico
+1. Router (this file) → identifies division
+2. Division index → lists available agents
+3. Agent file → loads the specific specialist
 ```
 
-**Zero custo de contexto** até ser ativado.
+**Zero context cost** until activated.
 
 ---
 
-## Exemplos de Uso
+## Usage Examples
 
 ### Engineering
 ```
-"Preciso de ajuda com segurança de API"
+"I need help with API security"
 → Load: skills/agency/engineering/engineering-security-architect.md
 ```
 
 ### Design
 ```
-"Criar prompt para gerar imagem de produto"
+"Create a prompt to generate a product image"
 → Load: skills/agency/design/design-image-prompt-engineer.md
 ```
 
 ### Marketing
 ```
-"Estratégia de ASO para app mobile"
+"ASO strategy for a mobile app"
 → Load: skills/agency/marketing/marketing-aso-specialist.md
 ```
 
 ---
 
-## Total: 121 Especialistas
+## Total: 121 Specialists
 
-Cada especialista tem:
-- System prompt otimizado
-- Área de expertise definida
-- Exemplos de uso
-- Limitações documentadas
+Each specialist has:
+- Optimized system prompt
+- Defined area of expertise
+- Usage examples
+- Documented limitations

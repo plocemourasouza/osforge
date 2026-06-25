@@ -1,26 +1,26 @@
 num,category,method_name,description,output_pattern
-1,collaboration,Stakeholder Round Table,Múltiplas personas contribuem perspectivas diversas — essencial para requisitos e soluções balanceadas,perspectives → synthesis → alignment
-2,collaboration,Debate Club,Duas posições opostas com moderador pontuando — ótimo para decisões controversas e encontrar meio-termo,thesis → antithesis → synthesis
-3,collaboration,Cross-Functional War Room,PM + engenheiro + designer atacam problema juntos — revela trade-offs feasibility/desirability/viability,constraints → trade-offs → balanced solution
-4,collaboration,User Persona Focus Group,Personas do produto reagem a propostas e compartilham frustrações — valida features e descobre necessidades não atendidas,reactions → concerns → priorities
-5,advanced,Tree of Thoughts,Explorar múltiplos caminhos de raciocínio simultaneamente e selecionar o melhor — perfeito para problemas complexos com múltiplas abordagens válidas,paths → evaluation → selection
-6,advanced,Self-Consistency Validation,Gerar múltiplas abordagens independentes e comparar para consistência — crucial para decisões de alto impacto,approaches → comparison → consensus
-7,competitive,Red Team vs Blue Team,Análise adversarial ataque-defesa para encontrar vulnerabilidades — crítico para security testing e soluções robustas,defense → attack → hardening
-8,competitive,Shark Tank Pitch,Pitcher vs investidores céticos que furam buracos — stress-test de viabilidade e força clareza na proposta de valor,pitch → challenges → refinement
-9,technical,Architecture Decision Records,Arquitetos propõem e debatem escolhas com trade-offs explícitos — garante decisões bem fundamentadas e documentadas,options → trade-offs → decision → rationale
-10,technical,Security Audit Personas,Hacker + defensor + auditor examinam sistema de diferentes threat models — review de segurança completo,vulnerabilities → defenses → compliance
-11,technical,Performance Profiler Panel,DBA + frontend specialist + DevOps diagnosticam lentidão — encontra bottlenecks full stack,symptoms → analysis → optimizations
-12,creative,SCAMPER Method,7 lentes de criatividade: Substituir/Combinar/Adaptar/Modificar/Propor/Eliminar/Reverter — ideação sistemática,S→C→A→M→P→E→R
-13,creative,Reverse Engineering,Trabalhar backwards do resultado desejado para encontrar caminho de implementação,end state → steps backward → path forward
-14,creative,What If Scenarios,Explorar realidades alternativas para entender possibilidades e implicações — contingency planning,scenarios → implications → insights
-15,research,Comparative Analysis Matrix,Avaliar opções contra critérios ponderados com scoring explícito — decisão estruturada,options → criteria → scores → recommendation
-16,risk,Pre-mortem Analysis,Imaginar falha futura e trabalhar backwards para prevenir — poderoso para mitigação de risco,failure scenario → causes → prevention
-17,risk,Failure Mode Analysis,Explorar sistematicamente como cada componente pode falhar — confiabilidade e safety,components → failures → prevention
-18,risk,Chaos Monkey Scenarios,Quebrar deliberadamente para testar resiliência e recovery — validação de robustez,break → observe → harden
-19,risk,Challenge from Critical Perspective,Devil's advocate para stress-test de ideias e encontrar fraquezas — supera groupthink,assumptions → challenges → strengthening
-20,risk,Identify Potential Risks,Brainstorm o que pode dar errado em todas as categorias — fundamental para planejamento,categories → risks → mitigations
-21,core,First Principles Analysis,Eliminar suposições e reconstruir de verdades fundamentais — breakthrough para problemas impossíveis,assumptions → truths → new approach
-22,core,5 Whys Deep Dive,Perguntar por quê repetidamente até a causa raiz — simples mas poderoso,why chain → root cause → solution
-23,core,Socratic Questioning,Perguntas direcionadas para revelar suposições escondidas e guiar descoberta,questions → revelations → understanding
-24,core,Critique and Refine,Revisão sistemática de forças e fraquezas com melhoria iterativa,strengths/weaknesses → improvements → refined
-25,core,Expand or Contract for Audience,Ajustar nível de detalhe e profundidade técnica para audiência alvo,audience → adjustments → refined content
+1,collaboration,Stakeholder Round Table,Multiple personas contribute diverse perspectives — essential for balanced requirements and solutions,perspectives → synthesis → alignment
+2,collaboration,Debate Club,Two opposing positions with a moderator scoring them — great for controversial decisions and finding middle ground,thesis → antithesis → synthesis
+3,collaboration,Cross-Functional War Room,PM + engineer + designer attack the problem together — reveals feasibility/desirability/viability trade-offs,constraints → trade-offs → balanced solution
+4,collaboration,User Persona Focus Group,Product personas react to proposals and share frustrations — validates features and uncovers unmet needs,reactions → concerns → priorities
+5,advanced,Tree of Thoughts,Explore multiple reasoning paths simultaneously and select the best — perfect for complex problems with multiple valid approaches,paths → evaluation → selection
+6,advanced,Self-Consistency Validation,Generate multiple independent approaches and compare for consistency — crucial for high-impact decisions,approaches → comparison → consensus
+7,competitive,Red Team vs Blue Team,Adversarial attack-defense analysis to find vulnerabilities — critical for security testing and robust solutions,defense → attack → hardening
+8,competitive,Shark Tank Pitch,Pitcher vs skeptical investors who poke holes — viability stress-test and forces clarity in the value proposition,pitch → challenges → refinement
+9,technical,Architecture Decision Records,Architects propose and debate choices with explicit trade-offs — ensures well-grounded and documented decisions,options → trade-offs → decision → rationale
+10,technical,Security Audit Personas,Hacker + defender + auditor examine the system from different threat models — complete security review,vulnerabilities → defenses → compliance
+11,technical,Performance Profiler Panel,DBA + frontend specialist + DevOps diagnose slowness — finds full-stack bottlenecks,symptoms → analysis → optimizations
+12,creative,SCAMPER Method,7 creativity lenses: Substitute/Combine/Adapt/Modify/Put-to-other-use/Eliminate/Reverse — systematic ideation,S→C→A→M→P→E→R
+13,creative,Reverse Engineering,Work backwards from the desired result to find the implementation path,end state → steps backward → path forward
+14,creative,What If Scenarios,Explore alternative realities to understand possibilities and implications — contingency planning,scenarios → implications → insights
+15,research,Comparative Analysis Matrix,Evaluate options against weighted criteria with explicit scoring — structured decision,options → criteria → scores → recommendation
+16,risk,Pre-mortem Analysis,Imagine a future failure and work backwards to prevent it — powerful for risk mitigation,failure scenario → causes → prevention
+17,risk,Failure Mode Analysis,Systematically explore how each component can fail — reliability and safety,components → failures → prevention
+18,risk,Chaos Monkey Scenarios,Deliberately break things to test resilience and recovery — robustness validation,break → observe → harden
+19,risk,Challenge from Critical Perspective,Devil's advocate to stress-test ideas and find weaknesses — overcomes groupthink,assumptions → challenges → strengthening
+20,risk,Identify Potential Risks,Brainstorm what could go wrong across all categories — fundamental for planning,categories → risks → mitigations
+21,core,First Principles Analysis,Eliminate assumptions and rebuild from fundamental truths — breakthrough for impossible problems,assumptions → truths → new approach
+22,core,5 Whys Deep Dive,Ask why repeatedly until the root cause — simple but powerful,why chain → root cause → solution
+23,core,Socratic Questioning,Directed questions to reveal hidden assumptions and guide discovery,questions → revelations → understanding
+24,core,Critique and Refine,Systematic review of strengths and weaknesses with iterative improvement,strengths/weaknesses → improvements → refined
+25,core,Expand or Contract for Audience,Adjust the level of detail and technical depth for the target audience,audience → adjustments → refined content

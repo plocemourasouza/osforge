@@ -1,81 +1,81 @@
 ---
 name: osforge-evolve
 description: |
-  ACIONE quando: evolve, /evolve, osforge evolve, analisar observações, propor skills, clustering de padrões, instinct, promover instinct, aprendizado contínuo, fechar o loop de aprendizado, capturar padrões de sessão, add-observation, list-instincts, promote-instinct, evolução de configuração
+  Use when: evolve, /evolve, osforge evolve, analyze observations, propose skills, pattern clustering, instinct, promote instinct, continuous learning, close the learning loop, capture session patterns, add-observation, list-instincts, promote-instinct, configuration evolution
 ---
 
-# OSForge Evolve — Arquitetura Instinct
+# OSForge Evolve — Instinct Architecture
 
-Fecha o loop de aprendizado no OSForge: captura eventos de sessão como `observations`
-no banco SQLite, clusteriza por normalização de trigger, e propõe diffs concretos em
-`skills/` ou `rules/` para aprovação humana.
+Closes the learning loop in OSForge: captures session events as `observations`
+in the SQLite database, clusters them by trigger normalization, and proposes concrete diffs in
+`skills/` or `rules/` for human approval.
 
-**Princípios:** sem daemon, sem LLM no clustering, stdlib puro, human-in-loop.
+**Principles:** no daemon, no LLM in the clustering, pure stdlib, human-in-the-loop.
 
 ---
 
-## Fluxo Completo
+## Full Flow
 
 ```
-sessão de trabalho
+work session
       │
       ▼
-  add-observation            (manual ou via hook observe-capture.py)
+  add-observation            (manual or via the observe-capture.py hook)
       │
       ▼ (on-demand)
-  osforge-db evolve          (clusteriza + propõe diffs)
+  osforge-db evolve          (clusters + proposes diffs)
       │
-      ▼ (humano revisa)
-  editar skills/ ou rules/   (curadoria manual)
+      ▼ (human reviews)
+  edit skills/ or rules/     (manual curation)
       │
-      ▼ (confiança ≥ 0.8)
-  promote-instinct           (eleva scope project → global)
+      ▼ (confidence ≥ 0.8)
+  promote-instinct           (raises scope project → global)
       │
       ▼
-  ./deploy.sh                (propaga para ~/.claude/ e ~/.cursor/)
+  ./deploy.sh                (propagates to ~/.claude/ and ~/.cursor/)
 ```
 
 ---
 
-## Subcomandos
+## Subcommands
 
 ### `osforge-db add-observation <project> <trigger_text> [--context=<ctx>] [--tool=<tool>]`
 
-Grava uma observação de sessão para posterior clusterização.
+Records a session observation for later clustering.
 
 ```bash
-osforge-db add-observation meu-proj "when writing tests prefer TDD" \
-  --context="ficou mais fácil com red-green" --tool=Bash
+osforge-db add-observation my-proj "when writing tests prefer TDD" \
+  --context="it got easier with red-green" --tool=Bash
 ```
 
-- `project` — slug do projeto (ex.: `osforge`, `api-prod`)
-- `trigger_text` — frase descritiva do padrão observado (ex.: "when adding components run shadcn install")
-- `--context` — contexto ou justificativa livre
-- `--tool` — ferramenta que gerou a observação (ex.: `Bash`, `Edit`, `Write`)
+- `project` — project slug (e.g., `osforge`, `api-prod`)
+- `trigger_text` — descriptive phrase of the observed pattern (e.g., "when adding components run shadcn install")
+- `--context` — free-form context or justification
+- `--tool` — the tool that generated the observation (e.g., `Bash`, `Edit`, `Write`)
 
 ### `osforge-db evolve [--project=<slug>] [--min-count=2]`
 
-Clusteriza observations por normalização de trigger e propõe candidates.
+Clusters observations by trigger normalization and proposes candidates.
 
 ```bash
-osforge-db evolve --project=meu-proj
-osforge-db evolve --min-count=3   # cluster mais apertado
+osforge-db evolve --project=my-proj
+osforge-db evolve --min-count=3   # tighter cluster
 ```
 
-**Saída:** diff unificado sugerido por cluster, classificado como SKILL / COMMAND / AGENT.
+**Output:** a suggested unified diff per cluster, classified as SKILL / COMMAND / AGENT.
 
-Regras de classificação:
-| Critério | Tipo |
+Classification rules:
+| Criterion | Type |
 |----------|------|
-| cluster ≥ 3 E conf ≥ 0.75 | AGENT |
+| cluster ≥ 3 AND conf ≥ 0.75 | AGENT |
 | conf ≥ 0.70 | COMMAND |
 | default | SKILL |
 
-O humano revisa o diff, edita o arquivo real em `skills/` ou `rules/`, e só então commita.
+The human reviews the diff, edits the actual file in `skills/` or `rules/`, and only then commits.
 
 ### `osforge-db list-instincts [--project=<slug>] [--scope=project|global]`
 
-Lista instincts registrados, com filtros opcionais.
+Lists registered instincts, with optional filters.
 
 ```bash
 osforge-db list-instincts
@@ -85,48 +85,48 @@ osforge-db list-instincts --project=osforge
 
 ### `osforge-db promote-instinct <instinct_id> [--scope=global]`
 
-Eleva o scope de um instinct de `project` para `global` (requer confidence ≥ 0.8).
+Raises an instinct's scope from `project` to `global` (requires confidence ≥ 0.8).
 
 ```bash
 osforge-db promote-instinct 3
 ```
 
-Instincts `global` são candidatos a entrar em `claude-code/SKILLS.md` ou `rules/` via
-curadoria humana e `./deploy.sh`.
+`global` instincts are candidates to enter `claude-code/SKILLS.md` or `rules/` via
+human curation and `./deploy.sh`.
 
 ---
 
-## Esquema de Dados
+## Data Schema
 
-### Tabela `observations`
-| Campo | Tipo | Descrição |
+### `observations` table
+| Field | Type | Description |
 |-------|------|-----------|
 | `id` | INTEGER PK | autoincrement |
-| `project` | TEXT | slug do projeto (default `''` = global) |
-| `trigger_text` | TEXT | frase do padrão (ex.: "when writing tests prefer TDD") |
-| `context` | TEXT | contexto livre |
-| `tool` | TEXT | ferramenta geradora |
+| `project` | TEXT | project slug (default `''` = global) |
+| `trigger_text` | TEXT | pattern phrase (e.g., "when writing tests prefer TDD") |
+| `context` | TEXT | free-form context |
+| `tool` | TEXT | generating tool |
 | `created_at` | TEXT | UTC ISO8601 |
 
-### Tabela `instincts`
-| Campo | Tipo | Descrição |
+### `instincts` table
+| Field | Type | Description |
 |-------|------|-----------|
 | `id` | INTEGER PK | autoincrement |
-| `trigger` | TEXT | trigger canônico normalizado |
-| `guidance` | TEXT | orientação concreta |
-| `confidence` | REAL 0–1 | confiança estimada |
-| `domain` | TEXT | domínio temático |
-| `scope` | TEXT | `project` ou `global` |
-| `project` | TEXT | slug do projeto de origem |
-| `seen_count` | INTEGER | número de observações que geraram o instinct |
+| `trigger` | TEXT | normalized canonical trigger |
+| `guidance` | TEXT | concrete guidance |
+| `confidence` | REAL 0–1 | estimated confidence |
+| `domain` | TEXT | thematic domain |
+| `scope` | TEXT | `project` or `global` |
+| `project` | TEXT | slug of the originating project |
+| `seen_count` | INTEGER | number of observations that produced the instinct |
 | `created_at` / `updated_at` | TEXT | UTC ISO8601 |
 
 ---
 
-## Integração com Hook (observe-capture.py)
+## Hook Integration (observe-capture.py)
 
-O arquivo `hooks/observe-capture.py` é um hook `PostToolUse` leve que grava observações
-automaticamente. Para ativá-lo, adicione ao `hooks-claude-code.json`:
+The `hooks/observe-capture.py` file is a lightweight `PostToolUse` hook that records observations
+automatically. To enable it, add to `hooks-claude-code.json`:
 
 ```json
 {
@@ -144,24 +144,24 @@ automaticamente. Para ativá-lo, adicione ao `hooks-claude-code.json`:
 }
 ```
 
-**Importante:** o hook é silencioso por design (exit 0 sempre) e não bloqueia o fluxo
-principal mesmo em falha de gravação.
+**Important:** the hook is silent by design (always exit 0) and does not block the main
+flow even if the write fails.
 
 ---
 
-## Boas Práticas
+## Best Practices
 
-- Capture observations no fim de sessões produtivas, não em tempo real
-- Prefira triggers descritivos: "when X do Y" em vez de tags genéricas
-- Use `--min-count=3` para projetos grandes com muitas observações
-- Revise o diff sugerido pelo `evolve` — é um ponto de partida, não receita pronta
-- Só promova instincts para `global` após validação em múltiplos projetos
-- Não edite a tabela `instincts` diretamente; use os subcomandos
+- Capture observations at the end of productive sessions, not in real time
+- Prefer descriptive triggers: "when X do Y" instead of generic tags
+- Use `--min-count=3` for large projects with many observations
+- Review the diff suggested by `evolve` — it is a starting point, not a finished recipe
+- Only promote instincts to `global` after validation across multiple projects
+- Do not edit the `instincts` table directly; use the subcommands
 
 ---
 
-## Referências
+## References
 
-- `skills/evolve/references/clustering.md` — heurística de normalização detalhada
-- `scripts/osforge-db.py` — implementação completa (stdlib Python, zero deps)
-- `docs/DECISIONS.md` ADR-001 — fluxo de deploy obrigatório via `./deploy.sh`
+- `skills/evolve/references/clustering.md` — detailed normalization heuristic
+- `scripts/osforge-db.py` — full implementation (Python stdlib, zero deps)
+- `docs/DECISIONS.md` ADR-001 — mandatory deploy flow via `./deploy.sh`
