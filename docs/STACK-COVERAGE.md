@@ -76,6 +76,15 @@ Legend: ✅ dedicated skill · 🟦 covered by a broader skill · 📚 Context7 
 | Claude Code · Cursor | ✅ | this repo (deploy targets) |
 | Context7 (docs MCP) | ✅ | `context7-docs-first` — the docs-first discipline itself |
 
+## AI / LLM tooling (product features)
+
+| Technology | Coverage | Where |
+|---|---|---|
+| Structured LLM output (decision: Instructor / PydanticAI / Zod) | ✅ | `llm-structured-output` (discipline) |
+| Instructor (Python) · Instructor-JS | 📚 | Context7 (`instructor`) |
+| PydanticAI (typed agent runtime) | 📚 | Context7 (`pydantic-ai`) |
+| Zod (TS schema/validation) | 📚 / 🟦 | Context7 + `security-best-practices` (validate all external input) |
+
 ---
 
 **Maintenance:** when adding a technology to the stack, add a row here and apply ADR-012 —

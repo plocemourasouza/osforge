@@ -8,7 +8,7 @@
 > **ADR-001:** never edit `~/.claude/` directly. Edit `claude-code/CLAUDE.md` in the repo and run
 > `./deploy.sh`. Changing this file invalidates the prompt cache of every session — keep it stable.
 
-OSForge ships **173 skills**, **27 agents** (orchestrator + 26 specialists), **14** always-on **rules**,
+OSForge ships **174 skills**, **27 agents** (orchestrator + 26 specialists), **14** always-on **rules**,
 **9 `spec-*` commands**, hooks, and `osforge-db` (SQLite state + vector memory). Full rosters and
 operational reference live in the repo's `USAGE.md` — this file describes *how to orchestrate*, it doesn't catalog.
 
@@ -136,7 +136,7 @@ Conflict = the more specific level wins. Details in the `memory-hierarchy.mdc` r
 To maximize cache hits on the Anthropic API, content splits into two blocks:
 
 - **🔒 Cacheable prefix (stable):** identity + safety (this file, top), `settings.json` (permissions/hooks),
-  style rules (`typescript-strict.mdc`, `code-style.mdc`, `anti-ai-slop.mdc`), the skills index (`@SKILLS.md`, 173 skills).
+  style rules (`typescript-strict.mdc`, `code-style.mdc`, `anti-ai-slop.mdc`), the skills index (`@SKILLS.md`, 174 skills).
   **Keep it stable** — changing it invalidates every session's cache.
 - **🌊 Dynamic suffix (changes per session):** on-demand loaded skills, memory (`CLAUDE.local.md`, `.osforge/`),
   environment context (OS/dir/git), language preferences, active MCP instructions, context-window guidelines.

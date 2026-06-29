@@ -820,6 +820,16 @@
     "skill_dir": "lint-and-validate"
   },
   {
+    "name": "llm-structured-output",
+    "description": "Decision discipline for getting structured, validated data out of LLMs in product features. Use when: building an LLM feature that must return typed data (extraction, classification, parsing), choosing between Instructor / PydanticAI / Zod, adding retries+validation to model output, or streaming par",
+    "category": "🤖 AI / ML / Agents",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/llm-structured-output",
+    "skill_dir": "llm-structured-output"
+  },
+  {
     "name": "llmfit-advisor",
     "description": "Detects the machine",
     "category": "🤖 AI / ML / Agents",

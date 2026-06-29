@@ -243,6 +243,7 @@ Skills below are loaded automatically when their trigger is detected. Each skill
 | Context7 Docs-First | docs, latest, version-sensitive | `skills/claude-ai/context7.md` |
 | Smart Hooks | quality gates, pre-commit, audit | `skills/claude-ai/smart-hooks.md` |
 | llmfit Advisor | local LLM, Ollama, hardware fit | `skills/claude-ai/llmfit.md` |
+| LLM Structured Output | structured output, Instructor, PydanticAI, Zod schema, extraction, validation, retries | `skills/llm-structured-output/SKILL.md` |
 
 ## Meta & Utilities
 | Skill | Trigger | Load |

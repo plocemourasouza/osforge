@@ -1,6 +1,6 @@
 # 📚 Índice Completo de Agent Skills
 
-> **Total:** 173 skills indexadas de 1 repositórios
+> **Total:** 174 skills indexadas de 1 repositórios
 > **Pasta local:** `~/Development/osforge/sources/` (fontes) e `~/Development/osforge/skills/` (curadas)
 >
 > 💡 **Dica de busca:** Use `Ctrl+F` / `Cmd+F` para pesquisar por palavra-chave.
@@ -14,26 +14,26 @@
 
 | Categoria | Qtd | % |
 |-----------|-----|---|
-| 🔒 Security | 44 | 25.4% |
-| 🔄 Workflow / Process | 29 | 16.8% |
-| ⚛️ React / Frontend | 25 | 14.5% |
-| 🤖 AI / ML / Agents | 21 | 12.1% |
+| 🔒 Security | 44 | 25.3% |
+| 🔄 Workflow / Process | 29 | 16.7% |
+| ⚛️ React / Frontend | 25 | 14.4% |
+| 🤖 AI / ML / Agents | 22 | 12.6% |
 | 🧪 Testing | 17 | 9.8% |
 | 🏗️ Architecture | 8 | 4.6% |
 | 📦 General | 7 | 4.0% |
-| 📝 Documentation / Writing | 6 | 3.5% |
+| 📝 Documentation / Writing | 6 | 3.4% |
 | 🗄️ Database / Backend | 5 | 2.9% |
 | ☁️ Infrastructure / DevOps | 4 | 2.3% |
 | 📱 Mobile | 4 | 2.3% |
-| 💼 Business / Marketing | 2 | 1.2% |
+| 💼 Business / Marketing | 2 | 1.1% |
 | 🎨 Design / Creative | 1 | 0.6% |
-| **TOTAL** | **173** | **100%** |
+| **TOTAL** | **174** | **100%** |
 
 ### Por Origem
 
 | Origem | Repo | Qtd |
 |--------|------|-----|
-| skills | — | 173 |
+| skills | — | 174 |
 
 ---
 
@@ -42,7 +42,7 @@
 - [🔒 Security (44)](#)
 - [🔄 Workflow / Process (29)](#)
 - [⚛️ React / Frontend (25)](#)
-- [🤖 AI / ML / Agents (21)](#)
+- [🤖 AI / ML / Agents (22)](#)
 - [🧪 Testing (17)](#)
 - [🏗️ Architecture (8)](#)
 - [📦 General (7)](#)
@@ -176,7 +176,7 @@
 
 ## 🤖 AI / ML / Agents
 
-**21 skills**
+**22 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -194,6 +194,7 @@
 | **genai-optimization** | 📦 skills | Generative Engine Optimization (GEO) for content to be cited by AI-powered search engines. Use when: making content get cited by ChatGPT/Perplexity/Cl… | `skills/genai-optimization/` |
 | **git-workflow** | 📦 skills | Git workflow patterns for AI agent development: worktrees for parallel agents, branching strategy, commit discipline, and merge workflows. Use when cr… | `skills/git-workflow/` |
 | **humanizer** | 📦 skills | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and human-written. Based on Wikipedia… | `skills/humanizer/` |
+| **llm-structured-output** | 📦 skills | Decision discipline for getting structured, validated data out of LLMs in product features. Use when: building an LLM feature that must return typed d… | `skills/llm-structured-output/` |
 | **llmfit-advisor** | 📦 skills | Detects the machine | `skills/llmfit-advisor/` |
 | **phase-discussion** | 📦 skills | Captures implementation decisions for a phase BEFORE technical planning. Use when planning any phase with UI, API, content system, or data reorganizat… | `skills/planning/phase-discussion/` |
 | **project-context-generator** | 📦 skills | Analyzes a codebase and generates project-context.md + constitution.md — the project | `skills/context/project-context-generator/` |
@@ -428,6 +429,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 
 **L**
 - `lint-and-validate` — skills — `skills/lint-and-validate/`
+- `llm-structured-output` — skills — `skills/llm-structured-output/`
 - `llmfit-advisor` — skills — `skills/llmfit-advisor/`
 
 **M**

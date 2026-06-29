@@ -2,7 +2,7 @@
 
 **An AI-powered development framework: skills, agents, rules, hooks, commands, and a full library of specialists — the single source of truth for your global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration.**
 
-27 specialized agents · 173 on-demand skills · 14 always-on rules · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
+27 specialized agents · 174 on-demand skills · 14 always-on rules · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -31,7 +31,7 @@
 
 AI coding agents are only as good as the context they receive. OSForge solves five problems:
 
-1. **Context efficiency** — 173 skills in a ~12K-token base (~6% of a 200K window). Everything else loads on demand.
+1. **Context efficiency** — 174 skills in a ~12K-token base (~6% of a 200K window). Everything else loads on demand.
 2. **Stack-specific patterns** — skills tuned for Next.js App Router + Prisma + Supabase + shadcn/ui, with broad coverage for mobile, game dev, Rust, Python, and cross-platform.
 3. **Built-in quality gates** — TDD enforcement, security auditing, red-team tactics, insecure-defaults detection, a Reality Check + Quality Control loop in every agent, and zero-token Python hooks.
 4. **Local SQLite state** — `osforge-db` persists project state, decisions, blockers, and a task board (waves, dependencies, priorities) with a cross-project view. Session resume in ~50 tokens.
@@ -51,7 +51,7 @@ The repo is authoritative. Nothing is edited in `~/.claude/` directly (ADR-001);
 flowchart LR
   subgraph REPO["OSForge repo — single source of truth"]
     direction TB
-    SK["173 skills"]
+    SK["174 skills"]
     AG["27 agents"]
     RU["14 rules"]
     CM["9 spec commands"]
@@ -154,7 +154,7 @@ cd osforge
 
 **Next steps:**
 - **Usage and workflows** → [USAGE.md](USAGE.md)
-- **Skill index (173 skills + triggers)** → [claude-code/SKILLS.md](claude-code/SKILLS.md)
+- **Skill index (174 skills + triggers)** → [claude-code/SKILLS.md](claude-code/SKILLS.md)
 - **Session orchestration** → [claude-code/CLAUDE.md](claude-code/CLAUDE.md)
 - **Authoring a new skill** → [docs/SKILL-STANDARD.md](docs/SKILL-STANDARD.md) + [docs/SKILL.template.md](docs/SKILL.template.md)
 
@@ -173,7 +173,7 @@ Every agent ships a Reality Check (anti-self-deception) and a Quality Control lo
 - **Investigation** — debugger, explorer-agent, code-archaeologist.
 - **Docs & SEO** — documentation-writer, seo-specialist, git-commit-helper.
 
-### 173 on-demand skills
+### 174 on-demand skills
 
 Full index with triggers in [claude-code/SKILLS.md](claude-code/SKILLS.md). Main categories:
 

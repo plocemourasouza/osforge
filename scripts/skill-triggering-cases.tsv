@@ -31,3 +31,5 @@ better-auth	Quero login com email/senha e Google no meu app Next.js usando uma l
 better-auth	Set up session-based auth with OAuth providers in Next.js App Router (not Supabase).
 aws-deploy	Vou fazer deploy da aplicacao na AWS com containers. Qual servico usar e como configurar IAM com seguranca?
 aws-deploy	Deploy this app to AWS with least-privilege IAM and managed secrets — which compute service?
+llm-structured-output	Preciso extrair dados estruturados (nome, idade, cargo) de um texto livre com LLM e garantir validacao com retry. Como faco?
+llm-structured-output	Build an LLM feature that returns a validated typed object with retries — which library and pattern?
