@@ -4,15 +4,37 @@
 # the repo, remain indexed in SKILLS.md, and are pulled per-project on demand via
 # scripts/install-skill.sh. Override with ./deploy.sh --all-skills.
 # Blank lines and lines starting with # are ignored.
+#
+# ── Admission criterion ──────────────────────────────────────────────────────
+# Every entry costs its `description` in EVERY session, on every project, in
+# every domain. Admit a skill only if it clears one of these:
+#
+#   1. Unprompted discipline — must fire when the user did NOT ask for it
+#      (tdd-workflow, verification-before-completion, clean-code, output-enforcement).
+#   2. Cross-domain — earns its cost in a backend session AND a design session
+#      AND a security session (context-compact, smart-model-dispatch, brainstorming).
+#   3. Bootstrap — needed to reach other things (dispatching-parallel-agents,
+#      config-critique, osforge-canvas as the default presentation surface).
+#
+# A GENERATOR does not qualify: it runs on explicit request ("build me a brand
+# kit", "generate the mockups"), which the manifest + `osforge-db search-semantic`
+# resolve on demand. Generators belong in a project, installed once with
+# `install-skill.sh <name>` — after which they are native for that project anyway.
+#
+# 2026-07: 20 visual generators demoted under this rule (design-md, brandkit,
+# imagegen-*, stitch-*, taste/aesthetic dials, *-ui, redesign-*, image-to-code,
+# agency/design, mobile-design) — ~3.2k tokens per session. Reverting one is a
+# one-line edit here; prefer that over guessing.
+#
+# Next candidates, deliberately NOT demoted for lack of usage data:
+# tailwind-patterns, frontend-ui-system, nextjs-react-expert (~0.4k tokens).
+# They are stack-bound, so per-project install is the right home — but this
+# stack is the default here, so measure with `osforge-db evolve` before cutting.
 
-aesthetic-boost
-aesthetic-modes
-agency/design
 app-builder
 autorefine-skill
 behavioral-modes
 brainstorming
-brandkit
 clean-code
 coding-guidelines
 config-critique
@@ -22,22 +44,11 @@ context/db-state-sync
 context/doc-shard
 context/editorial-review
 context/project-context-generator
-design-md
-design-taste-frontend
 dispatching-parallel-agents
 finishing-a-development-branch
 frontend-design
 frontend-ui-system
-gpt-taste
-high-end-visual-design
-image-to-code
-imagegen-frontend-mobile
-imagegen-frontend-web
-industrial-brutalist-ui
-minimalist-ui
-mobile-design
 nextjs-react-expert
-openui-genui-layout
 osforge-canvas
 output-enforcement
 planning/arch-builder
@@ -54,15 +65,10 @@ quality/elicitation-engine
 quality/readiness-gate
 quality/ui-audit
 receiving-code-review
-redesign-audit
-redesign-existing-projects
 smart-model-dispatch
-stitch-design-export
-stitch-design-taste
 stuck-recovery
 systematic-debugging
 tailwind-patterns
-taste-design-dials
 tdd-workflow
 tool-safety-classifier
 ui-design-intelligence

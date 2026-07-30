@@ -197,7 +197,12 @@ def collect_knowledge() -> list[dict]:
 
 def render(skills: list[dict], knowledge: list[dict], core: set[str]) -> str:
     non_core = [s for s in skills if s["rel"] not in core]
-    live_knowledge = [k for k in knowledge if not k["duplicate_of"]]
+    # Every knowledge module is indexed, including the 30 whose filename collides
+    # with a skill: their content overlaps the skill by only 6-89%, so dropping
+    # them would hide material, not remove a copy. The collision is disambiguated
+    # inline by a precedence rule rather than by omission — an ambiguous pointer
+    # and a missing pointer fail the same way.
+    live_knowledge = knowledge
 
     lines: list[str] = [START, ""]
     lines.append("# On-Demand Manifest")
@@ -239,12 +244,21 @@ def render(skills: list[dict], knowledge: list[dict], core: set[str]) -> str:
         lines.append("")
 
     if live_knowledge:
+        collisions = sum(1 for k in live_knowledge if k["duplicate_of"])
         lines.append("## 📄 Knowledge modules (legacy flat format)")
         lines.append("")
-        lines.append("Reference notes, not skills — no frontmatter. Path: `skills/<shown>`.")
+        lines.append("Condensed reference notes, not skills — no frontmatter. Path: `skills/<shown>`.")
+        if collisions:
+            lines.append("")
+            lines.append(
+                f"**Precedence:** {collisions} of these share a name with a skill (marked ⇄). "
+                "The skill is the expanded version — read it first and treat the note as a "
+                "condensed supplement. Never load both."
+            )
         lines.append("")
         for k in live_knowledge:
-            lines.append(f"- **{k['name']}** (`{k['rel']}`) — {k['triggers']}")
+            mark = f" ⇄ skill `{k['duplicate_of']}`" if k["duplicate_of"] else ""
+            lines.append(f"- **{k['name']}** (`{k['rel']}`){mark} — {k['triggers']}")
         lines.append("")
 
     lines.append(END)
@@ -279,11 +293,13 @@ def report(skills: list[dict], knowledge: list[dict], core: set[str]) -> None:
             print(f"   {g}")
 
     dups = [k for k in knowledge if k["duplicate_of"]]
-    print(f"\nknowledge modules:      {len(knowledge)}")
-    print(f"  live (in manifest):   {len(knowledge) - len(dups)}")
-    print(f"  duplicate a skill:    {len(dups)}  <- curation debt, safe to delete after review")
+    print(f"\nknowledge modules:      {len(knowledge)} (all indexed)")
+    print(f"  name collisions:      {len(dups)}  <- merge debt, NOT duplicates")
+    print("  content overlap with the same-named skill is 6-89%: the flat note is an")
+    print("  older condensed generation, the skill the expanded one. Merging is a")
+    print("  per-pair human call; deleting on filename alone destroys material.")
     for k in dups:
-        print(f"   skills/{k['rel']}  ->  duplicates skill '{k['duplicate_of']}'")
+        print(f"   skills/{k['rel']}  <->  skill '{k['duplicate_of']}'")
 
     missing = [s for s in skills if not s["desc"]]
     if missing:
