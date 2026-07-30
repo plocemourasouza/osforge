@@ -7,7 +7,9 @@ import json
 import re
 from pathlib import Path
 
-BASE = Path(os.path.expanduser("~/Development/osforge"))
+# Repo root derived from this file, not from $HOME: the toolchain must work on
+# any clone, not only one living at ~/Development/osforge.
+BASE = Path(__file__).resolve().parent.parent
 
 SOURCE_LABELS = {
     "01-anthropic": {"label": "Anthropic (Oficial)", "emoji": "🟣", "url": "https://github.com/anthropics/skills"},
@@ -38,10 +40,14 @@ def extract_frontmatter(content):
     if m:
         name = m.group(1).strip()
     
-    # Description - try single line first
-    m = re.search(r'^description:\s*["\'](.+?)["\']', fm, re.MULTILINE)
+    # Description - quoted form first.
+    # The closing quote must MATCH the opening one (backreference) and sit at
+    # end of line: a bare ["\'] terminator truncated every description at its
+    # first apostrophe ("Detects the machine's hardware…" -> "Detects the machine")
+    # and at every inline "quoted trigger phrase", corrupting 59 of 174 entries.
+    m = re.search(r'^description:\s*(["\'])(.*?)\1\s*$', fm, re.MULTILINE | re.DOTALL)
     if m:
-        desc = m.group(1).strip()
+        desc = m.group(2).strip()
     else:
         m = re.search(r'^description:\s*(.+?)$', fm, re.MULTILINE)
         if m:

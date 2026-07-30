@@ -47,11 +47,27 @@ Complexity triage: **QUICK** (1–3 files, zero ambiguity) · **STANDARD** (mult
 **COMPLEX** (new system / ambiguous requirements). Roster of the 27 agents and "when to use which"
 → `USAGE.md §Agents`. Invoke the orchestrator with `"Read agents/orchestrator/AGENT.md"` or just by describing the demand.
 
-### 3. Skill triggers (on-demand index)
-`@SKILLS.md` is the index loaded every session (trigger phrase → skill path). A skill fires when:
-(a) the user mentions a trigger, (b) an agent detects the need, or (c) the orchestrator maps a phase to it.
-Each `SKILL.md`'s frontmatter carries `name` + `description` with `Use when:` (the trigger phrases).
-Core skills (TDD, verification-before-completion, security, coding-guidelines) are always active via SKILLS.md.
+### 3. Skill triggers (two channels, one protocol)
+Skills reach you through two channels, and confusing them is how a capability goes missing:
+
+- **Native** — the ~64 core skills in `~/.claude/skills/` (Model A allowlist). Their `description`
+  is already in context; they fire on their own triggers. Nothing to look up.
+- **On-demand** — every other skill lives only in the repo. It is invisible unless the
+  **MANIFEST** in `@SKILLS.md` names it. The manifest is generated from frontmatter and gated at
+  deploy, so it is authoritative: if it lists a skill, that skill exists and is reachable.
+
+**Resolution protocol** — before answering "there is no skill for that", run it:
+1. **Lexical** — a manifest trigger matches → `Read` the skill's `SKILL.md` and follow it.
+2. **Semantic** — no trigger matches but the intent is clear → `osforge-db search-semantic "<intent>"`,
+   then `buscar-skill.py <term>`. Cross-lingual: the user prompts in pt-BR, descriptions are English.
+3. **Promote** — it will be needed again in this project → `install-skill.sh <name>` makes it native
+   from the next session on.
+
+Heavy skills (`offensive-*`, `imagegen-*`, `agency/*`) declare `model:` / `context: fork` — dispatch a
+subagent to read them instead of loading them into the main context.
+
+Core disciplines (TDD, verification-before-completion, security, coding-guidelines) are inlined in
+`@SKILLS.md` above the manifest and are always active.
 
 ### 4. Spec workflow + parallel dispatch
 Non-trivial features go through the `spec-*` cycle: **discover → specify → design → tasks → implement → measure**

@@ -31,8 +31,8 @@
   },
   {
     "name": "agency",
-    "description": "General index of The Agency",
-    "category": "📦 General",
+    "description": "General index of The Agency's 121 specialist agents, organized into 10 divisions with on-demand routing. Use when: 'activate agent X', 'which specialist to use for reviewing my architecture', 'I need an agent to create an ads campaign', 'list the available sales agents', 'use the Agency to audit acc",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -41,8 +41,8 @@
   },
   {
     "name": "agency-design",
-    "description": "Index of the Agency",
-    "category": "🎨 Design / Creative",
+    "description": "Index of the Agency's 8 Design agents (Brand Guardian, UI Designer, UX Architect, UX Researcher, Image Prompt Engineer, Visual Storyteller, Whimsy Injector). Use when: 'create a design system for the app', 'review the brand's visual identity', 'write image prompts for AI', 'plan usability research w",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -51,8 +51,8 @@
   },
   {
     "name": "agency-engineering",
-    "description": "Index of the Agency",
-    "category": "📦 General",
+    "description": "Index of the Agency's 23 Engineering agents (Backend Architect, Code Reviewer, Security Engineer, SRE, DevOps Automator, AI Engineer, Database Optimizer, etc.). Use when: 'review the backend's scalable architecture', 'improve code or query performance', 'set up a CI/CD pipeline', 'do threat modeling",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -61,8 +61,8 @@
   },
   {
     "name": "agency-marketing",
-    "description": "Index of the Agency",
-    "category": "💼 Business / Marketing",
+    "description": "Index of the Agency's 26 Marketing agents and 25 workflows (Growth Hacker, Content Creator, SEO Specialist, platform-specific strategists, CRO, China/Asia markets). Use when: 'optimize my landing page for conversion', 'do an SEO audit of the site', 'plan a content calendar and strategy', 'create a n",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -71,8 +71,8 @@
   },
   {
     "name": "agency-paid-media",
-    "description": "Index of the Agency",
-    "category": "📦 General",
+    "description": "Index of the Agency's 7 Paid Media agents and 4 workflows (PPC Strategist, Paid Social Strategist, Creative Strategist, Tracking Specialist, Programmatic Buyer, Auditor). Use when: 'create a Google Ads or Meta Ads campaign', 'audit my ad account and budget waste', 'set up GA4, GTM, and conversion pi",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -81,8 +81,8 @@
   },
   {
     "name": "agency-product",
-    "description": "Index of the Agency",
-    "category": "🔄 Workflow / Process",
+    "description": "Index of the Agency's 5 Product agents (Product Manager, Sprint Prioritizer, Feedback Synthesizer, Trend Researcher, Behavioral Nudge Engine). Use when: 'prioritize features for the next sprint', 'synthesize user feedback into actionable insights', 'build a product roadmap', 'research market and com",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -91,8 +91,8 @@
   },
   {
     "name": "agency-project-management",
-    "description": "Index of the Agency",
-    "category": "🔄 Workflow / Process",
+    "description": "Index of the Agency's 6 Project Management agents (Project Shepherd, Studio Producer, Studio Operations, Jira Workflow Steward, Experiment Tracker, Senior Project Manager). Use when: 'convert the spec into executable tasks', 'organize a Git/Jira workflow with traceable commits', 'coordinate a projec",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -101,8 +101,8 @@
   },
   {
     "name": "agency-sales",
-    "description": "Index of the Agency",
-    "category": "💼 Business / Marketing",
+    "description": "Index of the Agency's 8 Sales agents and 3 workflows (Outbound Strategist, Discovery Coach, Deal Strategist, Proposal Strategist, Pipeline Analyst, Account Strategist, Sales Coach, Sales Engineer). Use when: 'build an outbound prospecting strategy', 'write a cold email sequence', 'prepare a discover",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -111,8 +111,8 @@
   },
   {
     "name": "agency-specialized",
-    "description": "Index of the Agency",
-    "category": "📦 General",
+    "description": "Index of the Agency's 24 Specialist agents (Agents Orchestrator, Compliance Auditor, Blockchain Security Auditor, MCP Builder, Document Generator, Workflow Architect, Supply Chain Strategist, ZK Steward, etc.). Use when: 'orchestrate a pipeline with multiple agents', 'prepare a SOC 2, ISO 27001, or ",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -121,8 +121,8 @@
   },
   {
     "name": "agency-support",
-    "description": "Index of the Agency",
-    "category": "📦 General",
+    "description": "Index of the Agency's 6 Support and Operations agents (Support Responder, Analytics Reporter, Executive Summary Generator, Finance Tracker, Legal Compliance Checker, Infrastructure Maintainer). Use when: 'create a customer service flow', 'respond to a difficult support ticket', 'generate an executiv",
+    "category": "☁️ Infrastructure / DevOps",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -131,8 +131,8 @@
   },
   {
     "name": "agency-testing",
-    "description": "Index of the Agency",
-    "category": "🧪 Testing",
+    "description": "Index of the Agency's 8 Quality and Testing agents (Accessibility Auditor, API Tester, Performance Benchmarker, Reality Checker, Evidence Collector, Test Results Analyzer, Tool Evaluator, Workflow Optimizer). Use when: 'audit the interface's WCAG accessibility', 'test API endpoints before the releas",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -191,7 +191,7 @@
   },
   {
     "name": "autorefine-skill",
-    "description": "Iterative autonomous refinement with autoresearch loop + meta-optimization + cross-domain transfer. Use when (e.g.",
+    "description": "Iterative autonomous refinement with autoresearch loop + meta-optimization + cross-domain transfer. Use when (e.g. 'improve my frontend skill'): user asks to 'improve a skill', 'optimize skill X', 'skill Y is not working well', 'iterate on a skill', 'autorefine', 'refine code', 'optimize performance",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -251,7 +251,7 @@
   },
   {
     "name": "brainstorming",
-    "description": "Socratic refinement of an idea BEFORE any code or technical spec. Use when: the user describes a vague idea, wants to explore alternatives before committing, says",
+    "description": "Socratic refinement of an idea BEFORE any code or technical spec. Use when: the user describes a vague idea, wants to explore alternatives before committing, says 'I want to build X' without clear details, or when the request has high product ambiguity. Keywords: brainstorm, explore idea, before sta",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -261,7 +261,7 @@
   },
   {
     "name": "brandkit",
-    "description": "Generates premium brand-kit images: brand guideline boards, logo systems, identity decks, and visual-universe presentations with clean grids, sparse typography, and a strong brand metaphor. Use when:",
+    "description": "Generates premium brand-kit images: brand guideline boards, logo systems, identity decks, and visual-universe presentations with clean grids, sparse typography, and a strong brand metaphor. Use when: 'create a brand kit for my startup', 'generate the brand's visual identity and logo system', 'put to",
     "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
@@ -271,7 +271,7 @@
   },
   {
     "name": "bun-development",
-    "description": "Bun runtime patterns, bundler configuration, and Bun-specific APIs. Trigger on Bun FFI, Bun.serve, Bun.file, Bun shell, workspace configuration, Bun-specific test patterns, or runtime edge cases that differ from Node.js. Common error triggers:",
+    "description": "Bun runtime patterns, bundler configuration, and Bun-specific APIs. Trigger on Bun FFI, Bun.serve, Bun.file, Bun shell, workspace configuration, Bun-specific test patterns, or runtime edge cases that differ from Node.js. Common error triggers: \"Cannot find module\" for native addons (.node incompatib",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
@@ -301,7 +301,7 @@
   },
   {
     "name": "clean-code",
-    "description": "Pragmatic clean-code standards: concise, direct, no over-engineering, and no unnecessary comments. Use when: code is over-engineered or has premature abstractions, a request to",
+    "description": "Pragmatic clean-code standards: concise, direct, no over-engineering, and no unnecessary comments. Use when: code is over-engineered or has premature abstractions, a request to 'simplify this', reviewing names/functions/structure, a giant function or excessively deep nesting, removing redundant comm",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -321,7 +321,7 @@
   },
   {
     "name": "coding-guidelines",
-    "description": "Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code changes, refactoring, bug fixes, or feature development. Trigger phrases:",
+    "description": "Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code changes, refactoring, bug fixes, or feature development. Trigger phrases: \"implement this feature\", \"refactor this code\", \"review this code\", \"fix this",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -351,8 +351,8 @@
   },
   {
     "name": "db-state-sync",
-    "description": "Manages project state in OSForge",
-    "category": "🤖 AI / ML / Agents",
+    "description": "Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db). Use when: saving phase progress, recording an architectural decision, adding/resolving a blocker, tracking tasks, viewing the cross-project board, resuming a previous session, searching past decisions. Keywords: save s",
+    "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -381,7 +381,7 @@
   },
   {
     "name": "project-context-generator",
-    "description": "Analyzes a codebase and generates project-context.md + constitution.md — the project",
+    "description": "Analyzes a codebase and generates project-context.md + constitution.md — the project's governing documents. Use when: starting on a new project, the project has no project-context.md, you need to update context after stack changes, or you want to create project principles. Keywords: project context,",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -401,7 +401,7 @@
   },
   {
     "name": "context7-docs-first",
-    "description": "Ground all platform and library answers in current official documentation by using Context7 MCP tools before responding. TRIGGER when: user asks about Next.js, Supabase, Prisma, Stripe, Playwright, Bun, shadcn/ui, Vercel, or any version-sensitive library behavior. Also trigger when user says",
+    "description": "Ground all platform and library answers in current official documentation by using Context7 MCP tools before responding. TRIGGER when: user asks about Next.js, Supabase, Prisma, Stripe, Playwright, Bun, shadcn/ui, Vercel, or any version-sensitive library behavior. Also trigger when user says 'docs',",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
@@ -461,7 +461,7 @@
   },
   {
     "name": "design-taste-frontend-v1",
-    "description": "Legacy v1 of the premium frontend taste-skill with fixed dials (variance 8, motion 6, density 4), anti-slop, Inter and AI-purple bans, and magnetic micro-physics with Framer Motion. Use when:",
+    "description": "Legacy v1 of the premium frontend taste-skill with fixed dials (variance 8, motion 6, density 4), anti-slop, Inter and AI-purple bans, and magnetic micro-physics with Framer Motion. Use when: 'use the taste skill v1', 'I need the old design-taste-frontend behavior', 'this project depends on v1 of th",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -501,7 +501,7 @@
   },
   {
     "name": "docs-writer",
-    "description": "Writes, reviews, and edits technical documentation by checking the source code and following the project",
+    "description": "Writes, reviews, and edits technical documentation by checking the source code and following the project's style guide. Use when: documenting a feature/command/API from the code, rewriting or improving an existing docs section, reviewing the clarity/tone/consistency of .md files, updating docs that ",
     "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
@@ -581,8 +581,8 @@
   },
   {
     "name": "2d-games",
-    "description": "2D game principles: sprites, atlases, tilemaps, 2D physics, cameras, and genre patterns (platformer, top-down). Use when: I",
-    "category": "🏗️ Architecture",
+    "description": "2D game principles: sprites, atlases, tilemaps, 2D physics, cameras, and genre patterns (platformer, top-down). Use when: I'm making a 2D platformer and the jump feels stiff (coyote time, jump buffering); how to organize sprites and animations in Godot, Unity 2D, or Phaser; I need to build tilemaps ",
+    "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -591,8 +591,8 @@
   },
   {
     "name": "3d-games",
-    "description": "3D game principles: rendering pipeline, shaders, 3D physics and collision, cameras, lighting, and LOD. Use when: my 3D game has too many draw calls and I need culling/batching/LOD; when it",
-    "category": "🔄 Workflow / Process",
+    "description": "3D game principles: rendering pipeline, shaders, 3D physics and collision, cameras, lighting, and LOD. Use when: my 3D game has too many draw calls and I need culling/batching/LOD; when it's worth writing a custom shader (water, toon, effects); which collider to use for 3D characters and terrain in ",
+    "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -601,7 +601,7 @@
   },
   {
     "name": "game-development",
-    "description": "Game development orchestrator that teaches universal principles (game loop, patterns, performance, AI, collision) and routes to platform and specialty sub-skills. Use when: I want to make a game but don",
+    "description": "Game development orchestrator that teaches universal principles (game loop, patterns, performance, AI, collision) and routes to platform and specialty sub-skills. Use when: I want to make a game but don't know where to start; I'm structuring my game's architecture (game loop, state machine, ECS, obj",
     "category": "🏗️ Architecture",
     "source": "skills",
     "source_emoji": "📦",
@@ -621,7 +621,7 @@
   },
   {
     "name": "game-audio",
-    "description": "Game audio principles: SFX, music, formats and compression, adaptive audio, performance, and audio accessibility. Use when: I want to add sounds and music to my game and don",
+    "description": "Game audio principles: SFX, music, formats and compression, adaptive audio, performance, and audio accessibility. Use when: I want to add sounds and music to my game and don't know which formats to use (WAV, OGG, MP3); how to make adaptive music that changes with combat, health, or location (layers,",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -631,8 +631,8 @@
   },
   {
     "name": "game-design",
-    "description": "Game design principles: core loop, GDD structure, player psychology, difficulty balancing, and progression. Use when: my game isn",
-    "category": "🔄 Workflow / Process",
+    "description": "Game design principles: core loop, GDD structure, player psychology, difficulty balancing, and progression. Use when: my game isn't fun and I want to analyze the 30-second core loop; I need to write a GDD (game design document) for my game; how to balance difficulty to keep the player in flow; I'm d",
+    "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -641,7 +641,7 @@
   },
   {
     "name": "mobile-games",
-    "description": "Mobile game principles: touch input, battery and thermal, App Store and Google Play requirements, monetization. Use when: I",
+    "description": "Mobile game principles: touch input, battery and thermal, App Store and Google Play requirements, monetization. Use when: I'm porting or building a game for iOS/Android and the touch controls are bad; my mobile game heats up the device or drains battery (thermal throttling, 30 vs 60 FPS); which requ",
     "category": "📱 Mobile",
     "source": "skills",
     "source_emoji": "📦",
@@ -651,7 +651,7 @@
   },
   {
     "name": "multiplayer",
-    "description": "Multiplayer game principles: network architecture (dedicated server, P2P, host-based), synchronization, lag compensation, anti-cheat, and matchmaking. Use when: I want to add multiplayer to my game and don",
+    "description": "Multiplayer game principles: network architecture (dedicated server, P2P, host-based), synchronization, lag compensation, anti-cheat, and matchmaking. Use when: I want to add multiplayer to my game and don't know which architecture to use; remote players keep teleporting or lagging (prediction, inte",
     "category": "🏗️ Architecture",
     "source": "skills",
     "source_emoji": "📦",
@@ -661,7 +661,7 @@
   },
   {
     "name": "pc-games",
-    "description": "PC game principles (Windows, Mac, Linux): publishing on Steam, graphics settings, control rebinding, modding, and desktop accessibility. Use when: I",
+    "description": "PC game principles (Windows, Mac, Linux): publishing on Steam, graphics settings, control rebinding, modding, and desktop accessibility. Use when: I'm launching my game on Steam (or Epic, GOG, itch.io) and need to prepare the store page; how to structure graphics options in tiers (resolution, shadow",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -671,7 +671,7 @@
   },
   {
     "name": "vr-ar",
-    "description": "VR/AR game principles: comfort and motion sickness prevention, locomotion, hand tracking, AR anchoring, and per-headset performance targets. Use when: players are getting sick in my VR game (motion sickness, teleport vs smooth locomotion); I",
+    "description": "VR/AR game principles: comfort and motion sickness prevention, locomotion, hand tracking, AR anchoring, and per-headset performance targets. Use when: players are getting sick in my VR game (motion sickness, teleport vs smooth locomotion); I'm developing for Meta Quest, PSVR2, or SteamVR and need th",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -681,7 +681,7 @@
   },
   {
     "name": "web-games",
-    "description": "Browser game principles: framework selection (Phaser, PixiJS, Three.js, Babylon.js), WebGPU vs WebGL, asset compression, PWA, and browser audio. Use when: I want to make a game that runs in the browser and don",
+    "description": "Browser game principles: framework selection (Phaser, PixiJS, Three.js, Babylon.js), WebGPU vs WebGL, asset compression, PWA, and browser audio. Use when: I want to make a game that runs in the browser and don't know which framework to choose; should I use WebGPU or WebGL in my new project; my web g",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -721,7 +721,7 @@
   },
   {
     "name": "gpt-taste",
-    "description": "Award-winning design engineering with advanced GSAP motion: layout randomization, AIDA structure, hero of at most 2-3 lines, bento grids with no empty cells, and ScrollTrigger with pinning, scrubbing, and card stacking. Use when:",
+    "description": "Award-winning design engineering with advanced GSAP motion: layout randomization, AIDA structure, hero of at most 2-3 lines, bento grids with no empty cells, and ScrollTrigger with pinning, scrubbing, and card stacking. Use when: 'Awwwards-level landing page with scroll animations', 'add GSAP Scroll",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -731,7 +731,7 @@
   },
   {
     "name": "high-end-visual-design",
-    "description": "Makes the site look expensive at agency level: premium fonts, double-bezel cards, ultra-diffused shadows, floating glass pill nav, and motion choreography with Apple/Linear-style spring physics. Use when:",
+    "description": "Makes the site look expensive at agency level: premium fonts, double-bezel cards, ultra-diffused shadows, floating glass pill nav, and motion choreography with Apple/Linear-style spring physics. Use when: 'this design looks like an AI template, make it premium', 'I want high-end agency visual polish",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -781,7 +781,7 @@
   },
   {
     "name": "imagegen-frontend-web",
-    "description": "Art direction for generating premium site mockups via image generation: one separate horizontal image per section, hero composition variety, and a single consistent palette across all images. Use when:",
+    "description": "Art direction for generating premium site mockups via image generation: one separate horizontal image per section, hero composition variety, and a single consistent palette across all images. Use when: 'generate reference images of the landing page design', 'create visual mockups of the site section",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -791,7 +791,7 @@
   },
   {
     "name": "industrial-brutalist-ui",
-    "description": "Generates industrial brutalist interfaces that fuse Swiss typographic print with military/CRT terminals: rigid grids, monospace, giant typography, hazard red, scanlines, and halftone. Use when:",
+    "description": "Generates industrial brutalist interfaces that fuse Swiss typographic print with military/CRT terminals: rigid grids, monospace, giant typography, hazard red, scanlines, and halftone. Use when: 'military terminal-style dashboard', 'declassified blueprint-style brutalist site', 'UI with retro-termina",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -831,7 +831,7 @@
   },
   {
     "name": "llmfit-advisor",
-    "description": "Detects the machine",
+    "description": "Detects the machine's hardware (RAM, CPU, GPU/VRAM) and recommends the best local LLMs with optimal quantization, speed estimate, and fit scoring. Use when: the user asks which models run locally, wants to set up Ollama/LM Studio, mentions running models offline, needs a local alternative for cost o",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -851,7 +851,7 @@
   },
   {
     "name": "minimalist-ui",
-    "description": "Generates ultra-minimalist editorial/document-style interfaces (Notion-like) with a warm monochrome palette, editorial serifs, flat bento grids, washed pastels, and near-nonexistent shadows. Use when:",
+    "description": "Generates ultra-minimalist editorial/document-style interfaces (Notion-like) with a warm monochrome palette, editorial serifs, flat bento grids, washed pastels, and near-nonexistent shadows. Use when: 'I want a Notion-style minimalist UI', 'clean editorial landing page with no gradients', 'workspace",
     "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
@@ -861,8 +861,8 @@
   },
   {
     "name": "mobile-design",
-    "description": "Mobile-first design principles for iOS and Android apps: touch interaction, thumb zone, 60fps performance, platform conventions (HIG, Material 3), offline-first, and native navigation. Use when:",
-    "category": "📱 Mobile",
+    "description": "Mobile-first design principles for iOS and Android apps: touch interaction, thumb zone, 60fps performance, platform conventions (HIG, Material 3), offline-first, and native navigation. Use when: 'create an app in React Native or Flutter', 'native mobile screen design', 'this button is too small for ",
+    "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1191,7 +1191,7 @@
   },
   {
     "name": "output-enforcement",
-    "description": "OSForge enhancement layer over full-output-enforcement: beyond complete output, requires a verification gate before declaring done and TDD protection (never weaken tests). Use when: asked for complete, the whole file, exhaustive, no placeholders, or don",
+    "description": "OSForge enhancement layer over full-output-enforcement: beyond complete output, requires a verification gate before declaring done and TDD protection (never weaken tests). Use when: asked for complete, the whole file, exhaustive, no placeholders, or don't truncate, multi-file refactor, generating se",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
@@ -1221,7 +1221,7 @@
   },
   {
     "name": "arch-builder",
-    "description": "Facilitation of architectural decisions with ADRs. Stack-aware — respects project-context.md and optimizes for Next.js/Prisma/Supabase. Use with phrases like:",
+    "description": "Facilitation of architectural decisions with ADRs. Stack-aware — respects project-context.md and optimizes for Next.js/Prisma/Supabase. Use with phrases like: 'define Prisma schema', 'decide Server Actions vs API Routes', 'design the auth flow', 'choose a caching strategy', 'architecture', 'technica",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1261,7 +1261,7 @@
   },
   {
     "name": "requirements-clarify",
-    "description": "Structured requirements clarification BEFORE the technical plan. Use when: a spec has vague or underspecified areas, the user said",
+    "description": "Structured requirements clarification BEFORE the technical plan. Use when: a spec has vague or underspecified areas, the user said 'it can be anything', the requirements leave room for multiple interpretations, BEFORE spec-builder on new demands. Keywords: clarify requirements, requirements clarific",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -1341,7 +1341,7 @@
   },
   {
     "name": "adversarial-review",
-    "description": "Cynical, adversarial review of any artifact. Use when: reviewing a spec before implementing, validating a PRD, critiquing a schema, reviewing code with maximum skepticism. Keywords: adversarial, cynical review, cynical review, critique this, critique, what",
+    "description": "Cynical, adversarial review of any artifact. Use when: reviewing a spec before implementing, validating a PRD, critiquing a schema, reviewing code with maximum skepticism. Keywords: adversarial, cynical review, cynical review, critique this, critique, what's wrong, find problems, worst case.",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",
@@ -1381,8 +1381,8 @@
   },
   {
     "name": "readiness-gate",
-    "description": "Pre-implementation quality gate. Validates that the PRD, Architecture and Epics are aligned and complete before starting the sprint loop. Use with:",
-    "category": "🏗️ Architecture",
+    "description": "Pre-implementation quality gate. Validates that the PRD, Architecture and Epics are aligned and complete before starting the sprint loop. Use with: 'readiness check', 'ready to implement?', 'quality gate', 'is the PRD aligned with the architecture?', 'validate requirements coverage', 'do all require",
+    "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1391,7 +1391,7 @@
   },
   {
     "name": "ui-audit",
-    "description": "Retroactive visual quality audit of already-implemented frontend code. Use after any UI/UX phase, or when:",
+    "description": "Retroactive visual quality audit of already-implemented frontend code. Use after any UI/UX phase, or when: 'the screen looks off', 'it's not how I wanted', 'review the UI', 'audit the frontend', 'check the visuals', 'check visual accessibility'. Keywords: audit ui, review ui, audit ui, ui review, ch",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -1491,8 +1491,8 @@
   },
   {
     "name": "seo-fundamentals",
-    "description": "SEO fundamentals for Google with E-E-A-T, Core Web Vitals, and technical SEO. Use when: improving a page",
-    "category": "🔄 Workflow / Process",
+    "description": "SEO fundamentals for Google with E-E-A-T, Core Web Vitals, and technical SEO. Use when: improving a page's Google ranking, implementing schema markup/structured data, optimizing Core Web Vitals (LCP, INP, CLS) for SEO, configuring sitemap/robots.txt/canonical, optimizing content title/meta descripti",
+    "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1501,7 +1501,7 @@
   },
   {
     "name": "server-management",
-    "description": "Server operations principles: process management (PM2, systemd, Docker), monitoring, logs, scaling, health checks, and troubleshooting. Use when: app crashes and doesn",
+    "description": "Server operations principles: process management (PM2, systemd, Docker), monitoring, logs, scaling, health checks, and troubleshooting. Use when: app crashes and doesn't restart on its own, high CPU or memory on the server, disk full from logs without rotation, slow response and unsure between verti",
     "category": "☁️ Infrastructure / DevOps",
     "source": "skills",
     "source_emoji": "📦",
@@ -1541,7 +1541,7 @@
   },
   {
     "name": "stitch-design-export",
-    "description": "OSForge enhancement layer sobre stitch-design-taste. Gera DESIGN.md para Google Stitch com tokens de osforge.config.json + Impeccable. ACIONE com stitch-design-taste quando:",
+    "description": "OSForge enhancement layer sobre stitch-design-taste. Gera DESIGN.md para Google Stitch com tokens de osforge.config.json + Impeccable. ACIONE com stitch-design-taste quando: 'Google Stitch', 'DESIGN.md', 'exportar design system', 'Stitch prompt'. Exemplos concretos de uso: 'quero gerar as telas dess",
     "category": "📱 Mobile",
     "source": "skills",
     "source_emoji": "📦",
@@ -1551,7 +1551,7 @@
   },
   {
     "name": "stitch-design-taste",
-    "description": "Generates semantic DESIGN.md files for Google Stitch, encoding atmosphere, calibrated palette, typography, components, and anti-patterns in natural language that Stitch",
+    "description": "Generates semantic DESIGN.md files for Google Stitch, encoding atmosphere, calibrated palette, typography, components, and anti-patterns in natural language that Stitch's agent interprets to generate premium screens. Use when: 'create a DESIGN.md for Stitch', 'I'm going to generate screens in Google",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1591,7 +1591,7 @@
   },
   {
     "name": "tailwind-patterns",
-    "description": "Technical Tailwind CSS v4 patterns: CSS-first configuration with @theme, the Oxide engine, native container queries, design tokens as CSS variables, and v3-to-v4 migration. Use when:",
+    "description": "Technical Tailwind CSS v4 patterns: CSS-first configuration with @theme, the Oxide engine, native container queries, design tokens as CSS variables, and v3-to-v4 migration. Use when: 'migrate the project from Tailwind v3 to v4', 'how to configure @theme in Tailwind 4', 'use container queries instead",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1601,7 +1601,7 @@
   },
   {
     "name": "taste-design-dials",
-    "description": "OSForge enhancement layer on top of the taste-skill with 3 adjustable dials (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY) plus Next.js App Router rules and OSForge structural constraints. Use when:",
+    "description": "OSForge enhancement layer on top of the taste-skill with 3 adjustable dials (DESIGN_VARIANCE, MOTION_INTENSITY, VISUAL_DENSITY) plus Next.js App Router rules and OSForge structural constraints. Use when: 'raise motion to 8' or 'I want more minimal/more bold' (adjust dials), 'apply the taste dials to",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1711,7 +1711,7 @@
   },
   {
     "name": "vulnerability-scanner",
-    "description": "Advanced vulnerability analysis with OWASP Top 10:2025, supply chain security, and risk prioritization. Use when: mapping a project",
+    "description": "Advanced vulnerability analysis with OWASP Top 10:2025, supply chain security, and risk prioritization. Use when: mapping a project's attack surface, auditing dependencies and supply chain (lockfiles, CI/CD), reviewing code for OWASP vulnerabilities (IDOR, SSRF, injection), prioritizing risks found ",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -1731,7 +1731,7 @@
   },
   {
     "name": "webapp-testing",
-    "description": "E2E testing of web applications with Playwright, deep route/endpoint auditing, and visual testing, with a browser runner script included. Use when: testing a flow with Playwright, writing E2E for login/checkout/a critical flow, auditing all of a webapp",
+    "description": "E2E testing of web applications with Playwright, deep route/endpoint auditing, and visual testing, with a browser runner script included. Use when: testing a flow with Playwright, writing E2E for login/checkout/a critical flow, auditing all of a webapp's routes and APIs, configuring Playwright in CI",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",

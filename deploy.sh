@@ -297,9 +297,10 @@ deploy_claude() {
 
   echo ""
   log "Verificar drift MCPs:"
-  python3 - <<'PYEOF'
+  # REPO via env: hardcoding ~/Development/osforge broke any clone living elsewhere.
+  MCP_SRC="$REPO/mcp/claude-code.json" python3 - <<'PYEOF'
 import json, os
-with open(os.path.expanduser("~/Development/osforge/mcp/claude-code.json")) as f:
+with open(os.environ["MCP_SRC"]) as f:
     repo_mcps = set(json.load(f).get("mcpServers", {}).keys())
 with open(os.path.expanduser("~/.claude.json")) as f:
     live_mcps = set(json.load(f).get("mcpServers", {}).keys())
@@ -556,12 +557,35 @@ deploy_cursor() {
   ok "Cursor deploy completo"
 }
 
+# ── Pre-flight: o índice não pode divergir do acervo ─────────────────────
+# Model A deploya só o core; as demais skills só existem para o agente através
+# do MANIFEST em SKILLS.md. Índice desatualizado = skill invisível. Falha cedo.
+preflight_manifest() {
+  echo ""
+  echo "🔍 Pre-flight: manifesto de skills"
+  if ! command -v python3 &>/dev/null; then
+    echo "  ⚠️  python3 ausente — pulando verificação do manifesto"
+    return 0
+  fi
+  if python3 "$REPO/scripts/_generate_manifest.py" --check; then
+    ok "manifesto sincronizado com skills/"
+  else
+    echo ""
+    echo "  ❌ O MANIFEST em claude-code/SKILLS.md está desatualizado."
+    echo "     Skills fora dele são invisíveis para o agente em runtime."
+    echo "     Corrija com: python3 scripts/_generate_manifest.py"
+    exit 1
+  fi
+}
+
 # ── Main ─────────────────────────────────────────────────────────────────
 echo "═══════════════════════════════════════════════════"
 echo " Agent Skills Framework — Deploy"
 echo " Repo: $REPO"
 $DRY_RUN && echo " Modo: DRY RUN (sem alterações reais)"
 echo "═══════════════════════════════════════════════════"
+
+preflight_manifest
 
 $DEPLOY_CLAUDE && deploy_claude
 $DEPLOY_CURSOR && deploy_cursor

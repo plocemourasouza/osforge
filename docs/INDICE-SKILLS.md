@@ -14,19 +14,17 @@
 
 | Categoria | Qtd | % |
 |-----------|-----|---|
-| 🔒 Security | 44 | 25.3% |
-| 🔄 Workflow / Process | 29 | 16.7% |
-| ⚛️ React / Frontend | 25 | 14.4% |
-| 🤖 AI / ML / Agents | 22 | 12.6% |
+| 🔒 Security | 51 | 29.3% |
+| ⚛️ React / Frontend | 27 | 15.5% |
+| 🤖 AI / ML / Agents | 25 | 14.4% |
+| 🔄 Workflow / Process | 24 | 13.8% |
 | 🧪 Testing | 17 | 9.8% |
-| 🏗️ Architecture | 8 | 4.6% |
-| 📦 General | 7 | 4.0% |
-| 📝 Documentation / Writing | 6 | 3.4% |
+| 📝 Documentation / Writing | 9 | 5.2% |
+| 🏗️ Architecture | 6 | 3.4% |
+| ☁️ Infrastructure / DevOps | 5 | 2.9% |
 | 🗄️ Database / Backend | 5 | 2.9% |
-| ☁️ Infrastructure / DevOps | 4 | 2.3% |
-| 📱 Mobile | 4 | 2.3% |
-| 💼 Business / Marketing | 2 | 1.1% |
-| 🎨 Design / Creative | 1 | 0.6% |
+| 📱 Mobile | 3 | 1.7% |
+| 📦 General | 2 | 1.1% |
 | **TOTAL** | **174** | **100%** |
 
 ### Por Origem
@@ -39,33 +37,38 @@
 
 ## 🗂️ Sumário por Categoria
 
-- [🔒 Security (44)](#)
-- [🔄 Workflow / Process (29)](#)
-- [⚛️ React / Frontend (25)](#)
-- [🤖 AI / ML / Agents (22)](#)
+- [🔒 Security (51)](#)
+- [⚛️ React / Frontend (27)](#)
+- [🤖 AI / ML / Agents (25)](#)
+- [🔄 Workflow / Process (24)](#)
 - [🧪 Testing (17)](#)
-- [🏗️ Architecture (8)](#)
-- [📦 General (7)](#)
-- [📝 Documentation / Writing (6)](#)
+- [📝 Documentation / Writing (9)](#)
+- [🏗️ Architecture (6)](#)
+- [☁️ Infrastructure / DevOps (5)](#)
 - [🗄️ Database / Backend (5)](#)
-- [☁️ Infrastructure / DevOps (4)](#)
-- [📱 Mobile (4)](#)
-- [💼 Business / Marketing (2)](#)
-- [🎨 Design / Creative (1)](#)
+- [📱 Mobile (3)](#)
+- [📦 General (2)](#)
 
 ---
 
 ## 🔒 Security
 
-**44 skills**
+**51 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
 | **accessibility** | 📦 skills | Audit and improve web accessibility following WCAG 2.1 guidelines. Use when asked to "improve accessibility", "a11y audit", "WCAG compliance", "screen… | `skills/accessibility/` |
+| **agency** | 📦 skills | General index of The Agency's 121 specialist agents, organized into 10 divisions with on-demand routing. Use when: 'activate agent X', 'which speciali… | `skills/agency/` |
+| **agency-engineering** | 📦 skills | Index of the Agency's 23 Engineering agents (Backend Architect, Code Reviewer, Security Engineer, SRE, DevOps Automator, AI Engineer, Database Optimiz… | `skills/agency/engineering/` |
+| **agency-marketing** | 📦 skills | Index of the Agency's 26 Marketing agents and 25 workflows (Growth Hacker, Content Creator, SEO Specialist, platform-specific strategists, CRO, China/… | `skills/agency/marketing/` |
+| **agency-paid-media** | 📦 skills | Index of the Agency's 7 Paid Media agents and 4 workflows (PPC Strategist, Paid Social Strategist, Creative Strategist, Tracking Specialist, Programma… | `skills/agency/paid-media/` |
+| **agency-specialized** | 📦 skills | Index of the Agency's 24 Specialist agents (Agents Orchestrator, Compliance Auditor, Blockchain Security Auditor, MCP Builder, Document Generator, Wor… | `skills/agency/specialized/` |
+| **agency-testing** | 📦 skills | Index of the Agency's 8 Quality and Testing agents (Accessibility Auditor, API Tester, Performance Benchmarker, Reality Checker, Evidence Collector, T… | `skills/agency/testing/` |
 | **agent-skills-search** | 📦 skills | Search and install Agent Skills from the local sources at ~/Development/osforge/sources/. Use when looking for specialized skills, best practices, or … | `skills/agent-skills-search/` |
 | **best-practices** | 📦 skills | Apply modern web development best practices for security, compatibility, and code quality. Use when asked to "apply best practices", "security audit",… | `skills/best-practices/` |
 | **code-review-checklist** | 📦 skills | Code review checklist covering correctness, security, performance, quality, testing, and patterns specific to AI-generated code. Use when: asked to re… | `skills/code-review-checklist/` |
 | **database-design** | 📦 skills | Database design principles: database and ORM choice, schema, indexes, optimization, and migrations. Use when: a slow query or N+1 in production, choos… | `skills/database-design/` |
+| **db-state-sync** | 📦 skills | Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db). Use when: saving phase progress, recording an architectural decision… | `skills/context/db-state-sync/` |
 | **differential-review** | 📦 skills | Security-focused code review of diffs and PRs. Trigger on PR security review, git diff analysis, change impact assessment, or when reviewing commits t… | `skills/differential-review/` |
 | **gdpr-data-handling** | 📦 skills | GDPR/LGPD compliance patterns for data handling. Trigger on consent management, data subject rights (access, deletion, portability), privacy policies,… | `skills/gdpr-data-handling/` |
 | **insecure-defaults** | 📦 skills | Detect fail-open patterns and insecure default configurations. Trigger on security hardening, env variable audit, default config review, permission ch… | `skills/insecure-defaults/` |
@@ -101,57 +104,22 @@
 | **security-best-practices** | 📦 skills | Perform language and framework specific security best-practice reviews and suggest improvements. Trigger only when the user explicitly requests securi… | `skills/security-best-practices/` |
 | **security-threat-model** | 📦 skills | Repository-grounded threat modeling that enumerates trust boundaries, assets, attacker capabilities, abuse paths, and mitigations, and writes a concis… | `skills/security-threat-model/` |
 | **tool-safety-classifier** | 📦 skills | LLM-powered security classifier for auto-approval of tool calls in autonomous modes (CI, headless, agent-of-agents). Use when: the user runs in "autom… | `skills/tool-safety-classifier/` |
-| **ui-audit** | 📦 skills | Retroactive visual quality audit of already-implemented frontend code. Use after any UI/UX phase, or when: | `skills/quality/ui-audit/` |
-| **vulnerability-scanner** | 📦 skills | Advanced vulnerability analysis with OWASP Top 10:2025, supply chain security, and risk prioritization. Use when: mapping a project | `skills/vulnerability-scanner/` |
+| **ui-audit** | 📦 skills | Retroactive visual quality audit of already-implemented frontend code. Use after any UI/UX phase, or when: 'the screen looks off', 'it's not how I wan… | `skills/quality/ui-audit/` |
+| **vulnerability-scanner** | 📦 skills | Advanced vulnerability analysis with OWASP Top 10:2025, supply chain security, and risk prioritization. Use when: mapping a project's attack surface, … | `skills/vulnerability-scanner/` |
 | **web-design-guidelines** | 📦 skills | Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "chec… | `skills/web-design-guidelines/` |
 | **webapp-testing** | 📦 skills | E2E testing of web applications with Playwright, deep route/endpoint auditing, and visual testing, with a browser runner script included. Use when: te… | `skills/webapp-testing/` |
 
-## 🔄 Workflow / Process
-
-**29 skills**
-
-| Skill | Origem | Descrição | Path Local |
-|-------|--------|-----------|-----------|
-| **3d-games** | 📦 skills | 3D game principles: rendering pipeline, shaders, 3D physics and collision, cameras, lighting, and LOD. Use when: my 3D game has too many draw calls an… | `skills/game-development/3d-games/` |
-| **adversarial-review** | 📦 skills | Cynical, adversarial review of any artifact. Use when: reviewing a spec before implementing, validating a PRD, critiquing a schema, reviewing code wit… | `skills/quality/adversarial-review/` |
-| **aesthetic-modes** | 📦 skills | Three distinct visual modes for projects with a strong identity: EDITORIAL_MINIMALIST (Notion/Linear, warm monochrome), INDUSTRIAL_BRUTALIST (Swiss + … | `skills/aesthetic-modes/` |
-| **agency-product** | 📦 skills | Index of the Agency | `skills/agency/product/` |
-| **agency-project-management** | 📦 skills | Index of the Agency | `skills/agency/project-management/` |
-| **asaas-integration** | 📦 skills | ASAAS payment integration (Brazilian gateway: Pix, boleto, credit card, subscriptions). Use when: integrating ASAAS, charging via Pix/boleto/card, han… | `skills/asaas-integration/` |
-| **behavioral-modes** | 📦 skills | AI operational modes (brainstorm, implement, debug, review, teach, ship, orchestrate). Use to adapt behavior based on task type. | `skills/behavioral-modes/` |
-| **brainstorming** | 📦 skills | Socratic refinement of an idea BEFORE any code or technical spec. Use when: the user describes a vague idea, wants to explore alternatives before comm… | `skills/brainstorming/` |
-| **code-review** | 📦 skills | Structured code review with a checklist adapted to the OSForge stack. Use when: code review, review code, review PR, CR. Integrates adversarial-review… | `skills/quality/code-review/` |
-| **core-web-vitals** | 📦 skills | Optimize Core Web Vitals (LCP, INP, CLS) for better page experience and search ranking. Use when asked to "improve Core Web Vitals", "fix LCP", "reduc… | `skills/core-web-vitals/` |
-| **finishing-a-development-branch** | 📦 skills | Development branch finalization workflow. Use when: all tasks on a branch are complete, the user wants to merge or open a PR, ready to ship. Keywords:… | `skills/finishing-a-development-branch/` |
-| **game-audio** | 📦 skills | Game audio principles: SFX, music, formats and compression, adaptive audio, performance, and audio accessibility. Use when: I want to add sounds and m… | `skills/game-development/game-audio/` |
-| **game-design** | 📦 skills | Game design principles: core loop, GDD structure, player psychology, difficulty balancing, and progression. Use when: my game isn | `skills/game-development/game-design/` |
-| **high-end-visual-design** | 📦 skills | Makes the site look expensive at agency level: premium fonts, double-bezel cards, ultra-diffused shadows, floating glass pill nav, and motion choreogr… | `skills/high-end-visual-design/` |
-| **image-to-code** | 📦 skills | Elite website image-to-code skill for Codex. Trigger on requests like "design a stunning hero section", "build a premium landing page", or "redesign t… | `skills/image-to-code/` |
-| **industrial-brutalist-ui** | 📦 skills | Generates industrial brutalist interfaces that fuse Swiss typographic print with military/CRT terminals: rigid grids, monospace, giant typography, haz… | `skills/industrial-brutalist-ui/` |
-| **osforge-canvas** | 📦 skills | Local generative UI for interactive review of plans, specs, and breakdowns in the browser, with native structured feedback. DEFAULT CHANNEL for presen… | `skills/osforge-canvas/` |
-| **pc-games** | 📦 skills | PC game principles (Windows, Mac, Linux): publishing on Steam, graphics settings, control rebinding, modding, and desktop accessibility. Use when: I | `skills/game-development/pc-games/` |
-| **receiving-code-review** | 📦 skills | How to respond to code review feedback. Use when: received review feedback, PR has comments, reviewer requested changes, CHANGES_REQUESTED. Keywords: … | `skills/receiving-code-review/` |
-| **requirements-clarify** | 📦 skills | Structured requirements clarification BEFORE the technical plan. Use when: a spec has vague or underspecified areas, the user said | `skills/planning/requirements-clarify/` |
-| **seo** | 📦 skills | Optimize for search engine visibility and ranking. Use when asked to "improve SEO", "optimize for search", "fix meta tags", "add structured data", "si… | `skills/seo/` |
-| **seo-fundamentals** | 📦 skills | SEO fundamentals for Google with E-E-A-T, Core Web Vitals, and technical SEO. Use when: improving a page | `skills/seo-fundamentals/` |
-| **story-executor** | 📦 skills | Executes implementation of a story following its tasks and ACs. Use when: execute story, implement story, dev story, run story. Coordinates invocation… | `skills/planning/story-executor/` |
-| **stripe-integration** | 📦 skills | Stripe payment processing for SaaS applications. Trigger on checkout implementation, subscription billing, webhook handling, pricing page, payment for… | `skills/stripe-integration/` |
-| **systematic-debugging** | 📦 skills | Systematic 4-phase debugging with root-cause analysis. Use when: a bug is hard to reproduce, a crash has no clear stacktrace, intermittent behavior, a… | `skills/systematic-debugging/` |
-| **ui-design-intelligence** | 📦 skills | Design system spec adapted to the product and industry. Use when: the user mentions visual style, identity, palette, typography, visual tone, product … | `skills/ui-design-intelligence/` |
-| **verification-before-completion** | 📦 skills | Requires running verification commands and confirming output before making any success claims. Use when about to claim work is complete, fixed, passin… | `skills/verification-before-completion/` |
-| **vr-ar** | 📦 skills | VR/AR game principles: comfort and motion sickness prevention, locomotion, hand tracking, AR anchoring, and per-headset performance targets. Use when:… | `skills/game-development/vr-ar/` |
-| **web-games** | 📦 skills | Browser game principles: framework selection (Phaser, PixiJS, Three.js, Babylon.js), WebGPU vs WebGL, asset compression, PWA, and browser audio. Use w… | `skills/game-development/web-games/` |
-
 ## ⚛️ React / Frontend
 
-**25 skills**
+**27 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
+| **2d-games** | 📦 skills | 2D game principles: sprites, atlases, tilemaps, 2D physics, cameras, and genre patterns (platformer, top-down). Use when: I'm making a 2D platformer a… | `skills/game-development/2d-games/` |
 | **aesthetic-boost** | 📦 skills | Anti-AI-slop aesthetic boost. Invoke alongside any frontend skill to elevate visual quality. Activate when the user asks for "beautiful design", "stri… | `skills/aesthetic-boost/` |
 | **app-builder** | 📦 skills | Orchestrator for building full-stack applications from natural-language requests, with 13 scaffolding templates and agent coordination. Use when: crea… | `skills/app-builder/` |
 | **arch-builder** | 📦 skills | Facilitation of architectural decisions with ADRs. Stack-aware — respects project-context.md and optimizes for Next.js/Prisma/Supabase. Use with phras… | `skills/planning/arch-builder/` |
-| **autorefine-skill** | 📦 skills | Iterative autonomous refinement with autoresearch loop + meta-optimization + cross-domain transfer. Use when (e.g. | `skills/autorefine-skill/` |
+| **autorefine-skill** | 📦 skills | Iterative autonomous refinement with autoresearch loop + meta-optimization + cross-domain transfer. Use when (e.g. 'improve my frontend skill'): user … | `skills/autorefine-skill/` |
 | **better-auth** | 📦 skills | Better Auth — framework-agnostic TypeScript auth (sessions, email/password, OAuth, plugins) in Next.js App Router. Use when: setting up Better Auth, s… | `skills/better-auth/` |
 | **design-md** | 📦 skills | PER-PROJECT brand identity contract in a DESIGN.md file — the 9-section document (Visual Theme, Color, Typography, Spacing, Layout, Components, Motion… | `skills/design-md/` |
 | **design-taste-frontend** | 📦 skills | Anti-slop frontend skill for landing pages, portfolios, and redesigns. Trigger on phrases like "build a landing page", "create my portfolio site", "re… | `skills/design-taste-frontend/` |
@@ -164,6 +132,7 @@
 | **i18n-localization** | 📦 skills | Internationalization for Next.js applications. Trigger on multi-language support ("set up multiple languages", "add English/Spanish support", "transla… | `skills/i18n-localization/` |
 | **imagegen-frontend-mobile** | 📦 skills | Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Keywords - mobile UI design, iOS app design, Andro… | `skills/imagegen-frontend-mobile/` |
 | **imagegen-frontend-web** | 📦 skills | Art direction for generating premium site mockups via image generation: one separate horizontal image per section, hero composition variety, and a sin… | `skills/imagegen-frontend-web/` |
+| **mobile-design** | 📦 skills | Mobile-first design principles for iOS and Android apps: touch interaction, thumb zone, 60fps performance, platform conventions (HIG, Material 3), off… | `skills/mobile-design/` |
 | **nextjs-react-expert** | 📦 skills | React and Next.js performance optimization from Vercel Engineering. Use when building React components, optimizing performance, eliminating waterfalls… | `skills/nextjs-react-expert/` |
 | **nextjs-supabase-auth** | 📦 skills | Next.js App Router + Supabase Auth authentication patterns. Use when: configuring auth middleware, multi-org RBAC, session management, token refresh, … | `skills/nextjs-supabase-auth/` |
 | **openui-genui-layout** | 📦 skills | UI planning and generation in Next.js. Use when: creating any page, screen, dashboard, form, table, layout component, route scaffold. Produces an Open… | `skills/openui-genui-layout/` |
@@ -176,10 +145,14 @@
 
 ## 🤖 AI / ML / Agents
 
-**22 skills**
+**25 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
+| **agency-design** | 📦 skills | Index of the Agency's 8 Design agents (Brand Guardian, UI Designer, UX Architect, UX Researcher, Image Prompt Engineer, Visual Storyteller, Whimsy Inj… | `skills/agency/design/` |
+| **agency-product** | 📦 skills | Index of the Agency's 5 Product agents (Product Manager, Sprint Prioritizer, Feedback Synthesizer, Trend Researcher, Behavioral Nudge Engine). Use whe… | `skills/agency/product/` |
+| **agency-project-management** | 📦 skills | Index of the Agency's 6 Project Management agents (Project Shepherd, Studio Producer, Studio Operations, Jira Workflow Steward, Experiment Tracker, Se… | `skills/agency/project-management/` |
+| **agency-sales** | 📦 skills | Index of the Agency's 8 Sales agents and 3 workflows (Outbound Strategist, Discovery Coach, Deal Strategist, Proposal Strategist, Pipeline Analyst, Ac… | `skills/agency/sales/` |
 | **architecture** | 📦 skills | Architectural decision framework with requirements analysis, trade-off evaluation, and documentation in ADRs. Use when: deciding between X and Y (mono… | `skills/architecture/` |
 | **claude-api-typescript** | 📦 skills | Build apps with the Claude API, Anthropic TypeScript SDK, and Agent SDK. TRIGGER when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent… | `skills/claude-api-typescript/` |
 | **clean-code** | 📦 skills | Pragmatic clean-code standards: concise, direct, no over-engineering, and no unnecessary comments. Use when: code is over-engineered or has premature … | `skills/clean-code/` |
@@ -187,7 +160,6 @@
 | **config-critique** | 📦 skills | LLM-powered lint of user customizations in OSForge — validates new SKILL.md, .mdc rules, custom hooks, additional agents, and CLAUDE.md overrides acro… | `skills/config-critique/` |
 | **context-compact** | 📦 skills | Structured conversation compaction when reaching ~70% of the context window. Use when: user says "compress context", "compact", "summary", "near the l… | `skills/context-compact/` |
 | **context-distillator** | 📦 skills | Lossless compression of long documents for optimized LLM consumption, preserving 100% of the factual information and eliminating textual overhead. Use… | `skills/context/context-distillator/` |
-| **db-state-sync** | 📦 skills | Manages project state in OSForge | `skills/context/db-state-sync/` |
 | **doc-shard** | 📦 skills | Split large markdown documents into smaller organized files with an index. Use when a document exceeds the context window or to organize extensive doc… | `skills/context/doc-shard/` |
 | **documentation-templates** | 📦 skills | Ready-made templates and structure guides for documentation: README, API docs, code comments, and AI-friendly docs. Use when: creating a README from s… | `skills/documentation-templates/` |
 | **editorial-review** | 📦 skills | Editorial review of technical documents in 2 modes: prose (clinical copy-editing) and structure (reorganization and simplification). Use with "editori… | `skills/context/editorial-review/` |
@@ -195,13 +167,44 @@
 | **git-workflow** | 📦 skills | Git workflow patterns for AI agent development: worktrees for parallel agents, branching strategy, commit discipline, and merge workflows. Use when cr… | `skills/git-workflow/` |
 | **humanizer** | 📦 skills | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and human-written. Based on Wikipedia… | `skills/humanizer/` |
 | **llm-structured-output** | 📦 skills | Decision discipline for getting structured, validated data out of LLMs in product features. Use when: building an LLM feature that must return typed d… | `skills/llm-structured-output/` |
-| **llmfit-advisor** | 📦 skills | Detects the machine | `skills/llmfit-advisor/` |
+| **llmfit-advisor** | 📦 skills | Detects the machine's hardware (RAM, CPU, GPU/VRAM) and recommends the best local LLMs with optimal quantization, speed estimate, and fit scoring. Use… | `skills/llmfit-advisor/` |
 | **phase-discussion** | 📦 skills | Captures implementation decisions for a phase BEFORE technical planning. Use when planning any phase with UI, API, content system, or data reorganizat… | `skills/planning/phase-discussion/` |
-| **project-context-generator** | 📦 skills | Analyzes a codebase and generates project-context.md + constitution.md — the project | `skills/context/project-context-generator/` |
+| **project-context-generator** | 📦 skills | Analyzes a codebase and generates project-context.md + constitution.md — the project's governing documents. Use when: starting on a new project, the p… | `skills/context/project-context-generator/` |
 | **rust-pro** | 📦 skills | Rust 1.75+ expert for high-performance systems: async with Tokio, ownership, lifetimes, advanced traits, unsafe/FFI, and web services with axum. Use w… | `skills/rust-pro/` |
 | **smart-model-dispatch** | 📦 skills | Claude model router. Use when: spawning subagents via Agent tool, implementing a feature with multiple mixed-complexity subtasks, optimizing API cost,… | `skills/smart-model-dispatch/` |
 | **stuck-recovery** | 📦 skills | Detects agent stuck patterns (loops, repetitions, scope drift, a tool failing 3x+) and runs surgical recovery: saves state to osforge-db, identifies r… | `skills/stuck-recovery/` |
 | **tlc-spec-driven** | 📦 skills | Product-driven planning with 5 phases - Discover, Specify, Design, Tasks, Implement+Validate+Measure. Creates atomic tasks with verification criteria … | `skills/tlc-spec-driven/` |
+
+## 🔄 Workflow / Process
+
+**24 skills**
+
+| Skill | Origem | Descrição | Path Local |
+|-------|--------|-----------|-----------|
+| **adversarial-review** | 📦 skills | Cynical, adversarial review of any artifact. Use when: reviewing a spec before implementing, validating a PRD, critiquing a schema, reviewing code wit… | `skills/quality/adversarial-review/` |
+| **aesthetic-modes** | 📦 skills | Three distinct visual modes for projects with a strong identity: EDITORIAL_MINIMALIST (Notion/Linear, warm monochrome), INDUSTRIAL_BRUTALIST (Swiss + … | `skills/aesthetic-modes/` |
+| **asaas-integration** | 📦 skills | ASAAS payment integration (Brazilian gateway: Pix, boleto, credit card, subscriptions). Use when: integrating ASAAS, charging via Pix/boleto/card, han… | `skills/asaas-integration/` |
+| **behavioral-modes** | 📦 skills | AI operational modes (brainstorm, implement, debug, review, teach, ship, orchestrate). Use to adapt behavior based on task type. | `skills/behavioral-modes/` |
+| **brainstorming** | 📦 skills | Socratic refinement of an idea BEFORE any code or technical spec. Use when: the user describes a vague idea, wants to explore alternatives before comm… | `skills/brainstorming/` |
+| **code-review** | 📦 skills | Structured code review with a checklist adapted to the OSForge stack. Use when: code review, review code, review PR, CR. Integrates adversarial-review… | `skills/quality/code-review/` |
+| **core-web-vitals** | 📦 skills | Optimize Core Web Vitals (LCP, INP, CLS) for better page experience and search ranking. Use when asked to "improve Core Web Vitals", "fix LCP", "reduc… | `skills/core-web-vitals/` |
+| **finishing-a-development-branch** | 📦 skills | Development branch finalization workflow. Use when: all tasks on a branch are complete, the user wants to merge or open a PR, ready to ship. Keywords:… | `skills/finishing-a-development-branch/` |
+| **game-audio** | 📦 skills | Game audio principles: SFX, music, formats and compression, adaptive audio, performance, and audio accessibility. Use when: I want to add sounds and m… | `skills/game-development/game-audio/` |
+| **high-end-visual-design** | 📦 skills | Makes the site look expensive at agency level: premium fonts, double-bezel cards, ultra-diffused shadows, floating glass pill nav, and motion choreogr… | `skills/high-end-visual-design/` |
+| **image-to-code** | 📦 skills | Elite website image-to-code skill for Codex. Trigger on requests like "design a stunning hero section", "build a premium landing page", or "redesign t… | `skills/image-to-code/` |
+| **industrial-brutalist-ui** | 📦 skills | Generates industrial brutalist interfaces that fuse Swiss typographic print with military/CRT terminals: rigid grids, monospace, giant typography, haz… | `skills/industrial-brutalist-ui/` |
+| **osforge-canvas** | 📦 skills | Local generative UI for interactive review of plans, specs, and breakdowns in the browser, with native structured feedback. DEFAULT CHANNEL for presen… | `skills/osforge-canvas/` |
+| **pc-games** | 📦 skills | PC game principles (Windows, Mac, Linux): publishing on Steam, graphics settings, control rebinding, modding, and desktop accessibility. Use when: I'm… | `skills/game-development/pc-games/` |
+| **receiving-code-review** | 📦 skills | How to respond to code review feedback. Use when: received review feedback, PR has comments, reviewer requested changes, CHANGES_REQUESTED. Keywords: … | `skills/receiving-code-review/` |
+| **requirements-clarify** | 📦 skills | Structured requirements clarification BEFORE the technical plan. Use when: a spec has vague or underspecified areas, the user said 'it can be anything… | `skills/planning/requirements-clarify/` |
+| **seo** | 📦 skills | Optimize for search engine visibility and ranking. Use when asked to "improve SEO", "optimize for search", "fix meta tags", "add structured data", "si… | `skills/seo/` |
+| **story-executor** | 📦 skills | Executes implementation of a story following its tasks and ACs. Use when: execute story, implement story, dev story, run story. Coordinates invocation… | `skills/planning/story-executor/` |
+| **stripe-integration** | 📦 skills | Stripe payment processing for SaaS applications. Trigger on checkout implementation, subscription billing, webhook handling, pricing page, payment for… | `skills/stripe-integration/` |
+| **systematic-debugging** | 📦 skills | Systematic 4-phase debugging with root-cause analysis. Use when: a bug is hard to reproduce, a crash has no clear stacktrace, intermittent behavior, a… | `skills/systematic-debugging/` |
+| **ui-design-intelligence** | 📦 skills | Design system spec adapted to the product and industry. Use when: the user mentions visual style, identity, palette, typography, visual tone, product … | `skills/ui-design-intelligence/` |
+| **verification-before-completion** | 📦 skills | Requires running verification commands and confirming output before making any success claims. Use when about to claim work is complete, fixed, passin… | `skills/verification-before-completion/` |
+| **vr-ar** | 📦 skills | VR/AR game principles: comfort and motion sickness prevention, locomotion, hand tracking, AR anchoring, and per-headset performance targets. Use when:… | `skills/game-development/vr-ar/` |
+| **web-games** | 📦 skills | Browser game principles: framework selection (Phaser, PixiJS, Three.js, Babylon.js), WebGPU vs WebGL, asset compression, PWA, and browser audio. Use w… | `skills/game-development/web-games/` |
 
 ## 🧪 Testing
 
@@ -209,7 +212,6 @@
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
-| **agency-testing** | 📦 skills | Index of the Agency | `skills/agency/testing/` |
 | **bun-development** | 📦 skills | Bun runtime patterns, bundler configuration, and Bun-specific APIs. Trigger on Bun FFI, Bun.serve, Bun.file, Bun shell, workspace configuration, Bun-s… | `skills/bun-development/` |
 | **context7-docs-first** | 📦 skills | Ground all platform and library answers in current official documentation by using Context7 MCP tools before responding. TRIGGER when: user asks about… | `skills/context7-docs-first/` |
 | **e2e-testing-patterns** | 📦 skills | End-to-end testing with Playwright for Next.js applications. Trigger on E2E test setup, cross-page flow testing (checkout, onboarding, multi-step form… | `skills/e2e-testing-patterns/` |
@@ -219,6 +221,7 @@
 | **offensive-ssrf** | 📦 skills | Server-Side Request Forgery testing checklist: SSRF discovery, blind SSRF with out-of-band, cloud metadata endpoints (AWS/GCP/Azure), SSRF filter bypa… | `skills/offensive-ssrf/` |
 | **output-enforcement** | 📦 skills | OSForge enhancement layer over full-output-enforcement: beyond complete output, requires a verification gate before declaring done and TDD protection … | `skills/output-enforcement/` |
 | **predictive-failure** | 📦 skills | Analyze implemented code to predict potential failure points that tests may not catch. Uses pattern matching against common production failure modes. … | `skills/predictive-failure/` |
+| **readiness-gate** | 📦 skills | Pre-implementation quality gate. Validates that the PRD, Architecture and Epics are aligned and complete before starting the sprint loop. Use with: 'r… | `skills/quality/readiness-gate/` |
 | **skill-creator** | 📦 skills | Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, update or op… | `skills/skill-creator/` |
 | **spec-builder** | 📦 skills | Collaborative facilitation of a tech spec with testable ACs. Use when: specifying a feature, defining what to build, writing a technical spec, detaili… | `skills/planning/spec-builder/` |
 | **tdd-workflow** | 📦 skills | Enforces Test-Driven Development (RED-GREEN-REFACTOR) workflow. Use when implementing any feature, bugfix, or behavior change. Ensures tests are writt… | `skills/tdd-workflow/` |
@@ -227,47 +230,46 @@
 | **using-git-worktrees** | 📦 skills | Setup and use of git worktrees for parallel development. Use when: working on multiple features simultaneously, needing isolated branches for each par… | `skills/using-git-worktrees/` |
 | **vercel-deploy** | 📦 skills | Deploy applications and websites to Vercel. Use when the user requests deployment actions like "deploy my app", "deploy and give me the link", "push t… | `skills/vercel-deploy/` |
 
-## 🏗️ Architecture
+## 📝 Documentation / Writing
 
-**8 skills**
+**9 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
-| **2d-games** | 📦 skills | 2D game principles: sprites, atlases, tilemaps, 2D physics, cameras, and genre patterns (platformer, top-down). Use when: I | `skills/game-development/2d-games/` |
+| **3d-games** | 📦 skills | 3D game principles: rendering pipeline, shaders, 3D physics and collision, cameras, lighting, and LOD. Use when: my 3D game has too many draw calls an… | `skills/game-development/3d-games/` |
+| **brandkit** | 📦 skills | Generates premium brand-kit images: brand guideline boards, logo systems, identity decks, and visual-universe presentations with clean grids, sparse t… | `skills/brandkit/` |
+| **doc-sanitization** | 📦 skills | Clean up, consolidate, and organize project documentation. Removes obsolete specs, merges duplicates, enforces lifecycle rules. Trigger on phrases lik… | `skills/doc-sanitization/` |
+| **docs-writer** | 📦 skills | Writes, reviews, and edits technical documentation by checking the source code and following the project's style guide. Use when: documenting a featur… | `skills/docs-writer/` |
+| **game-design** | 📦 skills | Game design principles: core loop, GDD structure, player psychology, difficulty balancing, and progression. Use when: my game isn't fun and I want to … | `skills/game-development/game-design/` |
+| **minimalist-ui** | 📦 skills | Generates ultra-minimalist editorial/document-style interfaces (Notion-like) with a warm monochrome palette, editorial serifs, flat bento grids, washe… | `skills/minimalist-ui/` |
+| **plan-writing** | 📦 skills | Structured work planning with breakdown into small tasks, dependencies, and verification criteria. Use when: planning a feature implementation, breaki… | `skills/plan-writing/` |
+| **prd-builder** | 📦 skills | Collaborative facilitation of a Product Requirements Document. Guides the user through problem definition, users, requirements, metrics, and MVP scope… | `skills/planning/prd-builder/` |
+| **seo-fundamentals** | 📦 skills | SEO fundamentals for Google with E-E-A-T, Core Web Vitals, and technical SEO. Use when: improving a page's Google ranking, implementing schema markup/… | `skills/seo-fundamentals/` |
+
+## 🏗️ Architecture
+
+**6 skills**
+
+| Skill | Origem | Descrição | Path Local |
+|-------|--------|-----------|-----------|
 | **bash-linux** | 📦 skills | Bash terminal patterns for Linux and macOS: essential commands, pipes, processes, text processing, and safe scripts. Use when: a bash script errors or… | `skills/bash-linux/` |
 | **elicitation-engine** | 📦 skills | Iterative refinement of outputs (specs, PRDs, architectural decisions, any artifact) via an interactive menu of structured elicitation techniques. Use… | `skills/quality/elicitation-engine/` |
 | **game-development** | 📦 skills | Game development orchestrator that teaches universal principles (game loop, patterns, performance, AI, collision) and routes to platform and specialty… | `skills/game-development/` |
 | **multiplayer** | 📦 skills | Multiplayer game principles: network architecture (dedicated server, P2P, host-based), synchronization, lag compensation, anti-cheat, and matchmaking.… | `skills/game-development/multiplayer/` |
 | **osforge-evolve** | 📦 skills | Use when: evolve, /evolve, osforge evolve, analyze observations, propose skills, pattern clustering, instinct, promote instinct, continuous learning, … | `skills/evolve/` |
 | **powershell-windows** | 📦 skills | Critical PowerShell patterns and pitfalls on Windows: operator syntax, null checks, JSON, paths, and error handling. Use when: a PowerShell script fai… | `skills/powershell-windows/` |
-| **readiness-gate** | 📦 skills | Pre-implementation quality gate. Validates that the PRD, Architecture and Epics are aligned and complete before starting the sprint loop. Use with: | `skills/quality/readiness-gate/` |
 
-## 📦 General
+## ☁️ Infrastructure / DevOps
 
-**7 skills**
-
-| Skill | Origem | Descrição | Path Local |
-|-------|--------|-----------|-----------|
-| **agency** | 📦 skills | General index of The Agency | `skills/agency/` |
-| **agency-engineering** | 📦 skills | Index of the Agency | `skills/agency/engineering/` |
-| **agency-paid-media** | 📦 skills | Index of the Agency | `skills/agency/paid-media/` |
-| **agency-specialized** | 📦 skills | Index of the Agency | `skills/agency/specialized/` |
-| **agency-support** | 📦 skills | Index of the Agency | `skills/agency/support/` |
-| **edge-case-hunter** | 📦 skills | Exhaustive edge-case hunt via systematic enumeration of branches and boundaries, reporting in JSON only the paths without handling. Use when: asked fo… | `skills/quality/edge-case-hunter/` |
-| **full-output-enforcement** | 📦 skills | Anti-truncation base rule: forbids placeholders and omissions, requires complete generation of every deliverable, and manages token-limit splits with … | `skills/full-output-enforcement/` |
-
-## 📝 Documentation / Writing
-
-**6 skills**
+**5 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
-| **brandkit** | 📦 skills | Generates premium brand-kit images: brand guideline boards, logo systems, identity decks, and visual-universe presentations with clean grids, sparse t… | `skills/brandkit/` |
-| **doc-sanitization** | 📦 skills | Clean up, consolidate, and organize project documentation. Removes obsolete specs, merges duplicates, enforces lifecycle rules. Trigger on phrases lik… | `skills/doc-sanitization/` |
-| **docs-writer** | 📦 skills | Writes, reviews, and edits technical documentation by checking the source code and following the project | `skills/docs-writer/` |
-| **minimalist-ui** | 📦 skills | Generates ultra-minimalist editorial/document-style interfaces (Notion-like) with a warm monochrome palette, editorial serifs, flat bento grids, washe… | `skills/minimalist-ui/` |
-| **plan-writing** | 📦 skills | Structured work planning with breakdown into small tasks, dependencies, and verification criteria. Use when: planning a feature implementation, breaki… | `skills/plan-writing/` |
-| **prd-builder** | 📦 skills | Collaborative facilitation of a Product Requirements Document. Guides the user through problem definition, users, requirements, metrics, and MVP scope… | `skills/planning/prd-builder/` |
+| **agency-support** | 📦 skills | Index of the Agency's 6 Support and Operations agents (Support Responder, Analytics Reporter, Executive Summary Generator, Finance Tracker, Legal Comp… | `skills/agency/support/` |
+| **aws-deploy** | 📦 skills | Deploy to AWS — pick the right service (Amplify, App Runner, ECS/Fargate, Lambda, S3+CloudFront), with least-privilege IAM, managed secrets, and rollb… | `skills/aws-deploy/` |
+| **claude-ci-actions** | 📦 skills | Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. TRIGGER when: setting up @claude in PRs/issues, configuring automat… | `skills/claude-ci-actions/` |
+| **deployment-procedures** | 📦 skills | Safe production deployment workflows with backup, post-deploy verification, and rollback for Vercel, Railway, VPS+PM2, Docker, and Kubernetes. Use whe… | `skills/deployment-procedures/` |
+| **server-management** | 📦 skills | Server operations principles: process management (PM2, systemd, Docker), monitoring, logs, scaling, health checks, and troubleshooting. Use when: app … | `skills/server-management/` |
 
 ## 🗄️ Database / Backend
 
@@ -281,44 +283,24 @@
 | **python-patterns** | 📦 skills | Python development principles: framework selection, async vs sync, type hints, Pydantic, project structure, and background tasks. Use when: choosing b… | `skills/python-patterns/` |
 | **smart-hooks** | 📦 skills | Production-grade Python hooks for Claude Code quality gates, safety rails, and developer experience. TRIGGER when: setting up hooks for a project, con… | `skills/smart-hooks/` |
 
-## ☁️ Infrastructure / DevOps
-
-**4 skills**
-
-| Skill | Origem | Descrição | Path Local |
-|-------|--------|-----------|-----------|
-| **aws-deploy** | 📦 skills | Deploy to AWS — pick the right service (Amplify, App Runner, ECS/Fargate, Lambda, S3+CloudFront), with least-privilege IAM, managed secrets, and rollb… | `skills/aws-deploy/` |
-| **claude-ci-actions** | 📦 skills | Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. TRIGGER when: setting up @claude in PRs/issues, configuring automat… | `skills/claude-ci-actions/` |
-| **deployment-procedures** | 📦 skills | Safe production deployment workflows with backup, post-deploy verification, and rollback for Vercel, Railway, VPS+PM2, Docker, and Kubernetes. Use whe… | `skills/deployment-procedures/` |
-| **server-management** | 📦 skills | Server operations principles: process management (PM2, systemd, Docker), monitoring, logs, scaling, health checks, and troubleshooting. Use when: app … | `skills/server-management/` |
-
 ## 📱 Mobile
 
-**4 skills**
+**3 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
 | **mcp-builder** | 📦 skills | Builds custom MCP (Model Context Protocol) servers in TypeScript or Python. Use when: creating an MCP server from scratch, exposing an internal API as… | `skills/mcp-builder/` |
-| **mobile-design** | 📦 skills | Mobile-first design principles for iOS and Android apps: touch interaction, thumb zone, 60fps performance, platform conventions (HIG, Material 3), off… | `skills/mobile-design/` |
-| **mobile-games** | 📦 skills | Mobile game principles: touch input, battery and thermal, App Store and Google Play requirements, monetization. Use when: I | `skills/game-development/mobile-games/` |
+| **mobile-games** | 📦 skills | Mobile game principles: touch input, battery and thermal, App Store and Google Play requirements, monetization. Use when: I'm porting or building a ga… | `skills/game-development/mobile-games/` |
 | **stitch-design-export** | 📦 skills | OSForge enhancement layer sobre stitch-design-taste. Gera DESIGN.md para Google Stitch com tokens de osforge.config.json + Impeccable. ACIONE com stit… | `skills/stitch-design-export/` |
 
-## 💼 Business / Marketing
+## 📦 General
 
 **2 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
-| **agency-marketing** | 📦 skills | Index of the Agency | `skills/agency/marketing/` |
-| **agency-sales** | 📦 skills | Index of the Agency | `skills/agency/sales/` |
-
-## 🎨 Design / Creative
-
-**1 skills**
-
-| Skill | Origem | Descrição | Path Local |
-|-------|--------|-----------|-----------|
-| **agency-design** | 📦 skills | Index of the Agency | `skills/agency/design/` |
+| **edge-case-hunter** | 📦 skills | Exhaustive edge-case hunt via systematic enumeration of branches and boundaries, reporting in JSON only the paths without handling. Use when: asked fo… | `skills/quality/edge-case-hunter/` |
+| **full-output-enforcement** | 📦 skills | Anti-truncation base rule: forbids placeholders and omissions, requires complete generation of every deliverable, and manages token-limit splits with … | `skills/full-output-enforcement/` |
 
 ---
 
