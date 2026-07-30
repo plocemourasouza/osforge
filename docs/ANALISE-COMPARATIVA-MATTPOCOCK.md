@@ -81,8 +81,8 @@ parou no commit 2. Medindo o acervo contra o próprio padrão:
 
 | Regra do `SKILL-STANDARD.md` | Cobertura real |
 |---|---|
-| `Use when:` na description | 101 / 174 |
-| `Do NOT use for:` (desambiguação) | **48 / 174** |
+| `Use when:` na description | 133 / 174 |
+| `Do NOT use for:` (desambiguação) | **71 / 174** |
 | `Done when:` em cada passo | **4 / 174** |
 | Eixo de invocação decidido | **1 / 174** |
 | Legado pt-BR (`ACIONE`) removido | 2 skills restantes |
@@ -189,7 +189,8 @@ Registro do que a v1 errou, para não repetir:
 | "R2: criar cura de context load" | O "Model A" já estava escrito, só não commitado |
 | "R10: empacotar como plugin (P2)" | Rejeitada — `install-skill.sh` cobre o caso |
 | "30 duplicatas, seguro deletar" | **Não são duplicatas** — colisão de nome com 6–89% de sobreposição; deletar destruiria conteúdo |
-| "manifesto vai cortar ~2k tokens" | Cortou o custo *por item* (77 → 28), mas o total subiu: cobertura foi de 51 para 176 itens indexados |
+| "manifesto vai cortar ~2k tokens" | Cortou o custo *por item* (77 → 28), mas o total subiu: cobertura foi de 51 para 206 itens indexados |
+| "`Use when` em 101, `Do NOT use for` em 48" | **133** e **71** — contagem da v1 varreu só os diretórios de topo |
 
 **Bugs encontrados durante a auditoria** (corrigidos):
 
