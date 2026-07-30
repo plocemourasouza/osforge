@@ -11,6 +11,7 @@ DRY_RUN=false
 DEPLOY_CLAUDE=true
 DEPLOY_CURSOR=true
 DEPLOY_QDRANT_OVERRIDE=""   # "yes" | "no" | "" (interativo)
+DEPLOY_ALL_SKILLS=false     # false = só o core allowlist (Model A); true = todas as skills
 
 # ── Flags ──────────────────────────────────────────────────────────────
 for arg in "$@"; do
@@ -20,11 +21,13 @@ for arg in "$@"; do
     --dry-run) DRY_RUN=true ;;
     --with-qdrant) DEPLOY_QDRANT_OVERRIDE="yes" ;;
     --no-qdrant)   DEPLOY_QDRANT_OVERRIDE="no"  ;;
+    --all-skills)  DEPLOY_ALL_SKILLS=true ;;
     --help)
-      echo "Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run | --with-qdrant | --no-qdrant]"
+      echo "Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run | --with-qdrant | --no-qdrant | --all-skills]"
       echo ""
       echo "  --with-qdrant   Sobe Qdrant via Docker sem prompt interativo"
       echo "  --no-qdrant     Pula Qdrant; configura SQLite como backend vetorial"
+      echo "  --all-skills    Deploya TODAS as skills globalmente (default: só o core de claude-code/skills-core.txt)"
       exit 0 ;;
     *) echo "Flag desconhecida: $arg"; exit 1 ;;
   esac
@@ -114,6 +117,41 @@ PYEOF
 }
 
 
+merge_settings_claude() {
+  # Merge não-destrutivo de claude-code/settings-base.json em ~/.claude/settings.json.
+  # Chaves top-level do base são autoritativas; env é mesclado chave-a-chave
+  # (preserva o env do usuário); qualquer outra config do usuário é preservada.
+  # Objetivo: cortar bloat de contexto de MCP (disableClaudeAiConnectors, ENABLE_TOOL_SEARCH).
+  local base_src="$REPO/claude-code/settings-base.json"
+  local settings="$CLAUDE/settings.json"
+  [ -f "$base_src" ] || return 0
+  if $DRY_RUN; then skip "merge settings-base.json → settings.json (disableClaudeAiConnectors, ENABLE_TOOL_SEARCH)"; return; fi
+  backup_file "$settings"
+  BASE_SRC="$base_src" SETTINGS="$settings" python3 - <<'PYEOF'
+import json, os
+base_src = os.environ['BASE_SRC']; settings = os.environ['SETTINGS']
+with open(base_src) as f: base = json.load(f)
+base.pop('_comment', None)
+try:
+    with open(settings) as f: cur = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    cur = {}
+applied = []
+for k, v in base.items():
+    if k == 'env' and isinstance(v, dict):
+        env = cur.setdefault('env', {})
+        for ek, ev in v.items():
+            if env.get(ek) != ev: applied.append(f"env.{ek}={ev}")
+            env[ek] = ev
+    else:
+        if cur.get(k) != v: applied.append(f"{k}={v}")
+        cur[k] = v
+with open(settings, 'w') as f: json.dump(cur, f, indent=2, ensure_ascii=False)
+print("  ✅ settings-base aplicado: " + (", ".join(applied) if applied else "já em paridade"))
+PYEOF
+}
+
+
 sync_mcps_claude() {
   # Merge não-destrutivo de mcp/claude-code.json em ~/.claude.json
   local mcp_src="$REPO/mcp/claude-code.json"
@@ -149,6 +187,43 @@ else:
 PYEOF
 }
 
+# ── Skills deploy (Model A: core allowlist, ou todas com --all-skills) ────
+# Deploya só as skills listadas em claude-code/skills-core.txt (paths relativos
+# sob skills/). As demais permanecem no repo, indexadas em SKILLS.md, e são
+# puxadas por projeto via scripts/install-skill.sh. --all-skills volta ao antigo.
+deploy_skills() {
+  local dst="$1"
+  local manifest="$REPO/claude-code/skills-core.txt"
+
+  if $DRY_RUN; then
+    if $DEPLOY_ALL_SKILLS || [ ! -f "$manifest" ]; then skip "rsync TODAS skills/ → $dst"
+    else skip "deploy core skills (~$(grep -cvE '^[[:space:]]*(#|$)' "$manifest" 2>/dev/null || echo '?') dirs) → $dst"; fi
+    return
+  fi
+
+  mkdir -p "$dst"
+
+  if $DEPLOY_ALL_SKILLS || [ ! -f "$manifest" ]; then
+    rsync -a --delete "$REPO/skills/" "$dst/"
+    ok "$(find "$dst" -name 'SKILL.md' | wc -l | tr -d ' ') skills sincronizadas (todas)"
+    return
+  fi
+
+  # Stage apenas o core, depois rsync --delete espelha exatamente o allowlist.
+  local stage; stage="$(mktemp -d)"
+  while IFS= read -r rel; do
+    rel="${rel%$'\r'}"                          # tolera CRLF
+    case "$rel" in ''|\#*) continue ;; esac     # ignora vazias/comentários
+    local src="$REPO/skills/$rel"
+    if [ ! -d "$src" ]; then echo "  ⚠️  core skill ausente no repo: $rel" >&2; continue; fi
+    mkdir -p "$stage/$(dirname "$rel")"
+    cp -a "$src" "$stage/$rel"
+  done < "$manifest"
+  rsync -a --delete "$stage/" "$dst/"
+  rm -rf "$stage"
+  ok "$(find "$dst" -name 'SKILL.md' | wc -l | tr -d ' ') skills core sincronizadas (demais via install-skill.sh)"
+}
+
 # ── Deploy Claude Code ───────────────────────────────────────────────────
 deploy_claude() {
   echo ""
@@ -167,14 +242,8 @@ deploy_claude() {
   fi
 
   echo ""
-  log "Skills (on-demand):"
-  if $DRY_RUN; then skip "rsync skills/ → ~/.claude/skills/"
-  else
-    mkdir -p "$CLAUDE/skills"
-    rsync -a --delete "$REPO/skills/" "$CLAUDE/skills/"
-    count=$(find "$CLAUDE/skills" -name 'SKILL.md' | wc -l | tr -d ' ')
-    ok "$count skills sincronizadas"
-  fi
+  log "Skills (Model A: core global + domínio on-demand):"
+  deploy_skills "$CLAUDE/skills"
 
   echo ""
   log "Commands spec-* (9):"
@@ -205,6 +274,10 @@ deploy_claude() {
   echo ""
   log "Hooks → settings.json (merge não-destrutivo):"
   HOOK_SRC="$REPO/hooks/hooks-claude-code.json" SETTINGS="$CLAUDE/settings.json" merge_hooks_claude
+
+  echo ""
+  log "Settings base → settings.json (anti-bloat de contexto MCP):"
+  merge_settings_claude
 
   echo ""
   log "CLAUDE.md + SKILLS.md:"
@@ -448,14 +521,8 @@ deploy_cursor() {
   fi
 
   echo ""
-  log "Skills (on-demand):"
-  if $DRY_RUN; then skip "rsync skills/ → ~/.cursor/skills/"
-  else
-    mkdir -p "$CURSOR/skills"
-    rsync -a --delete "$REPO/skills/" "$CURSOR/skills/"
-    count=$(find "$CURSOR/skills" -name 'SKILL.md' | wc -l | tr -d ' ')
-    ok "$count skills sincronizadas"
-  fi
+  log "Skills (Model A: core global + domínio on-demand):"
+  deploy_skills "$CURSOR/skills"
 
   echo ""
   log "Rules:"

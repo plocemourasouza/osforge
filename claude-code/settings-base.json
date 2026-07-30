@@ -1,0 +1,7 @@
+{
+  "_comment": "OSForge-managed base settings, merged non-destructively into ~/.claude/settings.json by deploy.sh. Top-level keys are authoritative; env is merged key-by-key preserving the user's own env. Goal: cut MCP context bloat.",
+  "disableClaudeAiConnectors": true,
+  "env": {
+    "ENABLE_TOOL_SEARCH": "auto"
+  }
+}

@@ -38,6 +38,11 @@ and counts domains (frontend, backend, security, debug, refactor, data, devops, 
 - **1–2 domains** → announce the agent and respond in its persona.
 - **3+ domains or COMPLEX** → propose the full flow: `INTAKE → TRIAGE → PLAN → [APPROVE] → ROUTE → TRACK → [CORRECT]`.
 
+Before routing, the orchestrator **consults `@SKILLS.md`** (always in context) as the authoritative
+trigger→skill map. Native skill descriptions (auto-discovered from `~/.claude/skills/` and the project's
+`.claude/skills/`) supplement it. When a needed skill is indexed in `@SKILLS.md` but not natively present,
+resolve it on demand (`buscar-skill.py <term>` → `Read` the `SKILL.md` path) rather than assuming it is unavailable.
+
 Complexity triage: **QUICK** (1–3 files, zero ambiguity) · **STANDARD** (multi-file, known domain) ·
 **COMPLEX** (new system / ambiguous requirements). Roster of the 27 agents and "when to use which"
 → `USAGE.md §Agents`. Invoke the orchestrator with `"Read agents/orchestrator/AGENT.md"` or just by describing the demand.
@@ -143,10 +148,16 @@ To maximize cache hits on the Anthropic API, content splits into two blocks:
 
 ---
 
-## MCP Servers (8)
-Context7 (library docs), Github (repos/PRs/issues), Supabase (DB/migrations/RLS), Shadcn (components),
-Browsermcp (browser automation), next-devtools (Next.js), Prisma-Local + Prisma-Remote (schema/migrations).
-Definitions in the repo's `mcp/claude-code.json`.
+## MCP Servers (context-scoped)
+MCP tool schemas are the biggest context cost — scope them tightly.
+- **Global (loads every session):** only **Context7** (library docs) — transversal + cheap. `mcp/claude-code.json`.
+- **Per-project:** `github · supabase · prisma · nextjs · shadcn · browser` — connect only where used, via
+  `scripts/install-mcp.sh <stack>` (writes the project's `.mcp.json`). Templates in `mcp/stacks/`.
+- **Anti-bloat settings** (deployed from `claude-code/settings-base.json` → `~/.claude/settings.json`):
+  `disableClaudeAiConnectors: true` (keeps claude.ai account connectors — Gmail, Drive, Figma, Higgsfield… — **out** of
+  Claude Code) and `env.ENABLE_TOOL_SEARCH=auto` (defers large tool schemas, loading them on demand).
+- **Cleanup:** deploy merges MCPs additively and never prunes; remove accumulated/dead globals with
+  `scripts/prune-global-mcps.sh` (`--dead` drops `MCP_DOCKER` + `Prisma-Remote`).
 
 ---
 

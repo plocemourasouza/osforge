@@ -1,0 +1,71 @@
+# skills-core.txt — OSForge core skill allowlist (Model A)
+# Relative paths under skills/. Only these are deployed to ~/.claude/skills and
+# ~/.cursor/skills (native auto-discovery / always-on). All other skills stay in
+# the repo, remain indexed in SKILLS.md, and are pulled per-project on demand via
+# scripts/install-skill.sh. Override with ./deploy.sh --all-skills.
+# Blank lines and lines starting with # are ignored.
+
+aesthetic-boost
+aesthetic-modes
+agency/design
+app-builder
+autorefine-skill
+behavioral-modes
+brainstorming
+brandkit
+clean-code
+coding-guidelines
+config-critique
+context-compact
+context/context-distillator
+context/db-state-sync
+context/doc-shard
+context/editorial-review
+context/project-context-generator
+design-md
+design-taste-frontend
+dispatching-parallel-agents
+finishing-a-development-branch
+frontend-design
+frontend-ui-system
+gpt-taste
+high-end-visual-design
+image-to-code
+imagegen-frontend-mobile
+imagegen-frontend-web
+industrial-brutalist-ui
+minimalist-ui
+mobile-design
+nextjs-react-expert
+openui-genui-layout
+osforge-canvas
+output-enforcement
+planning/arch-builder
+planning/epic-decomposer
+planning/phase-discussion
+planning/prd-builder
+planning/requirements-clarify
+planning/spec-builder
+planning/story-executor
+quality/adversarial-review
+quality/code-review
+quality/edge-case-hunter
+quality/elicitation-engine
+quality/readiness-gate
+quality/ui-audit
+receiving-code-review
+redesign-audit
+redesign-existing-projects
+smart-model-dispatch
+stitch-design-export
+stitch-design-taste
+stuck-recovery
+systematic-debugging
+tailwind-patterns
+taste-design-dials
+tdd-workflow
+tool-safety-classifier
+ui-design-intelligence
+verification-before-completion
+visual-planner
+web-design-guidelines

@@ -1,59 +1,11 @@
 {
+  "_comment": "GLOBAL MCP servers only. Everything here loads in EVERY project and costs context on every session. Keep it transversal + cheap. Stack-specific servers moved to mcp/stacks/*.mcp.json, installed per-project via scripts/install-mcp.sh. deploy.sh merges this additively into ~/.claude.json (never prunes — use scripts/prune-global-mcps.sh to clean up).",
   "mcpServers": {
     "Context7": {
       "command": "npx",
       "args": [
         "-y",
         "@upstash/context7-mcp@latest"
-      ]
-    },
-    "Github": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_TOKEN"
-      }
-    },
-    "Supabase": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--access-token",
-        "YOUR_SUPABASE_ACCESS_TOKEN"
-      ]
-    },
-    "next-devtools": {
-      "command": "npx",
-      "args": [
-        "next-devtools-mcp@latest"
-      ]
-    },
-    "Prisma-Local": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "prisma",
-        "mcp"
-      ]
-    },
-    "Prisma-Remote": {
-      "url": "https://mcp.prisma.io/mcp"
-    },
-    "Shadcn": {
-      "command": "npx",
-      "args": [
-        "shadcn@latest",
-        "mcp"
-      ]
-    },
-    "Browsermcp": {
-      "command": "npx",
-      "args": [
-        "@browsermcp/mcp@latest"
       ]
     }
   }
