@@ -240,14 +240,25 @@ deploy_skills() {
   fi
 
   # Stage apenas o core, depois rsync --delete espelha exatamente o allowlist.
+  #
+  # ACHATADO no destino: a descoberta nativa do Claude Code só varre UM nível
+  # (~/.claude/skills/<dir>/SKILL.md). Preservar o caminho do repo
+  # (planning/phase-discussion) deixava as 17 skills aninhadas do core
+  # invisíveis em runtime — medido no init de sessão real: todas as flat
+  # apareciam, nenhuma aninhada. Pré-condições verificadas: basenames do core
+  # não colidem e o `name:` do frontmatter é igual ao basename.
   local stage; stage="$(mktemp -d)"
   while IFS= read -r rel; do
     rel="${rel%$'\r'}"                          # tolera CRLF
     case "$rel" in ''|\#*) continue ;; esac     # ignora vazias/comentários
     local src="$REPO/skills/$rel"
     if [ ! -d "$src" ]; then echo "  ⚠️  core skill ausente no repo: $rel" >&2; continue; fi
-    mkdir -p "$stage/$(dirname "$rel")"
-    cp -a "$src" "$stage/$rel"
+    local flat; flat="$(basename "$rel")"
+    if [ -e "$stage/$flat" ]; then
+      echo "  ❌ colisão de basename no core: '$rel' vs skill já staged como '$flat' — ajuste skills-core.txt" >&2
+      rm -rf "$stage"; exit 1
+    fi
+    cp -a "$src" "$stage/$flat"
   done < "$manifest"
   rsync -a --delete "$stage/" "$dst/"
   rm -rf "$stage"
