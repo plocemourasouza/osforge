@@ -28,6 +28,22 @@ Read before executing:
 
 3. **Structure of each task**: Atomic, 2-5 minutes. Specify exact paths. No ambiguity about what "done" means.
 
+3a. **Slice vertically (tracer bullets)**: a group of tasks must cut through ALL integration
+   layers end-to-end — schema, action, UI, test — so something is demoable when it closes. Never
+   slice horizontally ("all migrations, then all actions, then all UI"): a horizontal layer is
+   only verifiable against imagined callers, which is how integration bugs survive to the end.
+
+3b. **Declare autonomy per task — HITL or AFK**:
+   - **AFK** — fully specified, an agent can execute and verify it with no human in the loop.
+   - **HITL** — needs a human decision or review mid-flight (design approval, ambiguous contract,
+     irreversible migration).
+   Parallel wave dispatch runs AFK tasks unattended; a wave containing a HITL task stops at it.
+   Mislabeling HITL as AFK is how an agent makes an architectural decision alone at 2am — when in
+   doubt, HITL. Prefer redesigning a task to make it genuinely AFK over relabeling it.
+
+3c. **Declare `wave` and `depends_on`** on every task — this is what `osforge-db` and the parallel
+   dispatcher consume. Same wave = provably independent (no shared files, no dependency edge).
+
 4. **Create `tasks.md`**:
 
 ```markdown
@@ -47,6 +63,7 @@ Read before executing:
   - File: `prisma/migrations/[timestamp]_[name]/migration.sql`
   - Criterion: `bun prisma migrate dev` runs without error
   - Estimate: 15min
+  - wave: 1 · depends_on: [] · mode: AFK
 
 - [ ] **T-02**: Generate Prisma Client after migration
   - Command: `bun prisma generate`
@@ -104,6 +121,8 @@ Read before executing:
 
 ## Rules
 - Every task must have an executable verification criterion (command + expected output)
+- Every task declares `wave`, `depends_on` and `mode: AFK|HITL` — the dispatcher consumes these
+- Slices are vertical (tracer bullets through all layers), never horizontal by layer
 - Test tasks ALWAYS before implementation tasks (TDD)
 - Never group "implement X and Y" into one task — one responsibility per task
 - The AC → Tasks mapping ensures no acceptance criterion is left without coverage

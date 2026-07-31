@@ -320,6 +320,16 @@
     "skill_dir": "code-review-checklist"
   },
   {
+    "name": "codebase-design",
+    "description": "Shared vocabulary and discipline for designing **deep modules** — a lot of behaviour behind a small interface, placed at a clean **seam**. Use when: designing or improving a module's interface, deciding where a seam goes, making code testable or AI-navigable, a debugging post-mortem flagged an archi",
+    "category": "🧪 Testing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/codebase-design",
+    "skill_dir": "codebase-design"
+  },
+  {
     "name": "coding-guidelines",
     "description": "Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code changes, refactoring, bug fixes, or feature development. Trigger phrases: \"implement this feature\", \"refactor this code\", \"review this code\", \"fix this",
     "category": "🤖 AI / ML / Agents",
@@ -1591,7 +1601,7 @@
   },
   {
     "name": "systematic-debugging",
-    "description": "Systematic 4-phase debugging with root-cause analysis. Use when: a bug is hard to reproduce, a crash has no clear stacktrace, intermittent behavior, a regression with no obvious cause, deep root-cause investigation. Keywords: debug, bug, error, crash, fix, issue, not working, broken, regression, inv",
+    "description": "Diagnosis discipline anchored on the **feedback loop**: build a fast, deterministic pass/fail signal for the bug before touching any code. Use when: a bug is hard to reproduce, behavior is intermittent, a crash has no clear stacktrace, a regression has no obvious cause, or a performance problem need",
     "category": "🔄 Workflow / Process",
     "source": "skills",
     "source_emoji": "📦",

@@ -58,6 +58,8 @@ clean-code	I need help with this: code is over-engineered or has premature abstr
 clean-code	I need help with this: a request to 'simplify this'. What's the right approach?
 code-review-checklist	I need help with this: checking for SQL injection/XSS/hardcoded secrets. What's the right approach?
 code-review-checklist	I need help with this: flagging anti-patterns like magic numbers and deep nesting. What's the right approach?
+codebase-design	I need help with this: designing or improving a module's interface. What's the right approach?
+codebase-design	I need help with this: deciding where a seam goes. What's the right approach?
 config-critique	I need help with this: "review my skill", "validate my rule", "check hook conflict", "lint config", "is my skill good?", "will this agent work?", "PR review of a skill". What's the right approach?
 context-distillator	I need help with this: distill the context before passing it to another skill. What's the right approach?
 context-distillator	I need help with this: a PRD/spec/architecture too large for the context window. What's the right approach?

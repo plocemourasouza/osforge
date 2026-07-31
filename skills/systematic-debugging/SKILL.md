@@ -1,127 +1,125 @@
 ---
 name: systematic-debugging
-description: "Systematic 4-phase debugging with root-cause analysis. Use when: a bug is hard to reproduce, a crash has no clear stacktrace, intermittent behavior, a regression with no obvious cause, deep root-cause investigation. Keywords: debug, bug, error, crash, fix, issue, not working, broken, regression, investigate."
+description: "Diagnosis discipline anchored on the **feedback loop**: build a fast, deterministic pass/fail signal for the bug before touching any code. Use when: a bug is hard to reproduce, behavior is intermittent, a crash has no clear stacktrace, a regression has no obvious cause, or a performance problem needs root-cause work. Keywords: debug, crash, intermittent, flaky, regression, root cause, performance regression. Do NOT use for: a trivial bug with an obvious stack trace (fix it directly), a type or lint error (clean-code), an already-red test with a clear cause (tdd-workflow)."
 model: sonnet
 context: fork
 agent: general-purpose
-allowed-tools: Read, Bash, Glob, Grep
+allowed-tools: Read, Bash, Glob, Grep, Edit
 metadata:
+  version: "2.0"
   author: antigravity-kit (adapted)
-  version: "1.1"
   source: "antigravity-kit"
+  inspired_by: mattpocock/skills (diagnose)
+  license_note: "Phase structure adapted from mattpocock/skills under MIT"
 ---
 
-# Systematic Debugging
+# Systematic Debugging (feedback loop)
 
-> Source: obra/superpowers
+**Iron Law:** `NO HYPOTHESIS UNTIL THE LOOP EXISTS — NO FIX UNTIL THE LOOP GOES RED`
 
-## Overview
-This skill provides a structured approach to debugging that prevents random guessing and ensures problems are properly understood before solving.
+The feedback loop **is** the skill. Everything after it is mechanical: with a fast, deterministic,
+agent-runnable pass/fail signal, bisection and hypothesis-testing just consume the signal. Without
+one, no amount of staring at code compensates. Spend disproportionate effort here.
 
-## 4-Phase Debugging Process
+## When NOT to use
 
-### Phase 1: Reproduce
-Before fixing, reliably reproduce the issue.
+- Obvious stack trace pointing at the line → fix it directly
+- Type/lint error → `clean-code`
+- A red test whose cause is clear → `tdd-workflow`
 
-```markdown
-## Reproduction Steps
-1. [Exact step to reproduce]
-2. [Next step]
-3. [Expected vs actual result]
+## Process
 
-## Reproduction Rate
-- [ ] Always (100%)
-- [ ] Often (50-90%)
-- [ ] Sometimes (10-50%)
-- [ ] Rare (<10%)
-```
+### Phase 1 — Build the feedback loop
 
-### Phase 2: Isolate
-Narrow down the source.
+Try, in rough order: a failing test at whatever seam reaches the bug · a curl/HTTP script against
+the dev server · a CLI invocation diffing stdout against a known-good snapshot · a headless browser
+script · replaying a captured payload/trace through the code path in isolation · a throwaway
+harness (one service, mocked deps, single function call) · a property/fuzz loop for
+"sometimes wrong output" · a bisection harness (`git bisect run`) when the bug appeared between two
+known states · a differential loop (old vs new version, same input, diff outputs).
 
-```markdown
-## Isolation Questions
-- When did this start happening?
-- What changed recently?
-- Does it happen in all environments?
-- Can we reproduce with minimal code?
-- What's the smallest change that triggers it?
-```
+Then treat the loop as a product: make it faster (skip unrelated init), sharper (assert the
+specific symptom, not "didn't crash"), more deterministic (pin time, seed RNG, freeze network).
+A 2-second deterministic loop is a superpower; a 30-second flaky one is barely better than none.
 
-### Phase 3: Understand
-Find the root cause, not just symptoms.
+**Non-deterministic bugs:** the goal is not a clean repro but a **higher reproduction rate** — loop
+the trigger 100×, parallelise, add stress, narrow timing windows. A 50% flake is debuggable; 1% is
+not. Raise the rate until it is.
 
-```markdown
-## Root Cause Analysis
-### The 5 Whys
-1. Why: [First observation]
-2. Why: [Deeper reason]
-3. Why: [Still deeper]
-4. Why: [Getting closer]
-5. Why: [Root cause]
-```
+**If you genuinely cannot build a loop:** stop and say so. List what you tried; ask for a captured
+artifact (HAR, log dump, core dump) or access to the reproducing environment. Do NOT proceed to
+hypotheses without a loop.
 
-### Phase 4: Fix & Verify
-Fix and verify it's truly fixed.
+**Done when:** running one command shows the bug failing, deterministically or at a rate high
+enough to debug against — and you have SEEN it fail. "I believe this would catch it" is not a loop.
 
-```markdown
-## Fix Verification
-- [ ] Bug no longer reproduces
-- [ ] Related functionality still works
-- [ ] No new issues introduced
-- [ ] Test added to prevent regression
-```
+### Phase 2 — Reproduce
 
-## Debugging Checklist
+Run the loop. Watch the bug appear.
 
-```markdown
-## Before Starting
-- [ ] Can reproduce consistently
-- [ ] Have minimal reproduction case
-- [ ] Understand expected behavior
+**Done when:** the loop shows the failure mode the USER described — not a different failure that
+happens to live nearby — and the exact symptom (message, wrong output, timing) is captured so
+later phases can verify the fix addresses it. Wrong bug = wrong fix.
 
-## During Investigation
-- [ ] Check recent changes (git log)
-- [ ] Check logs for errors
-- [ ] Add logging if needed
-- [ ] Use debugger/breakpoints
+### Phase 3 — Hypothesise (before testing anything)
 
-## After Fix
-- [ ] Root cause documented
-- [ ] Fix verified
-- [ ] Regression test added
-- [ ] Similar code checked
-```
+Generate **3–5 ranked hypotheses** before testing any of them — single-hypothesis generation
+anchors on the first plausible idea. Each must be **falsifiable**:
 
-## Common Debugging Commands
+> "If X is the cause, then changing Y makes the bug disappear / changing Z makes it worse."
 
-```bash
-# Recent changes
-git log --oneline -20
-git diff HEAD~5
+Cannot state the prediction? It is a vibe, not a hypothesis — discard or sharpen. Show the ranked
+list to the user before testing: they often re-rank instantly ("we just deployed a change to #3").
+Don't block on it; proceed with your ranking if they are AFK.
 
-# Search for pattern
-grep -r "errorPattern" --include="*.ts"
+**Done when:** 3–5 hypotheses exist, each with its written prediction, ranked.
 
-# Check logs
-pm2 logs app-name --err --lines 100
-```
+### Phase 4 — Instrument
 
-## Anti-Patterns
+Each probe maps to one prediction from Phase 3. **One variable at a time.** Prefer a debugger or
+REPL over logs; when logging, target the boundaries that distinguish hypotheses — never "log
+everything and grep".
 
-❌ **Random changes** - "Maybe if I change this..."
-❌ **Ignoring evidence** - "That can't be the cause"
-❌ **Assuming** - "It must be X" without proof
-❌ **Not reproducing first** - Fixing blindly
-❌ **Stopping at symptoms** - Not finding root cause
+**Tag every debug log with a unique prefix** (e.g. `[DEBUG-a4f2]`). Cleanup becomes one grep;
+untagged logs survive into production.
 
----
+For performance regressions: measure first (timing harness, profiler, query plan), then bisect.
+Logs are usually the wrong tool.
 
-## Gotchas
+**Done when:** the surviving hypothesis is confirmed by its own prediction coming true under the
+loop — not by plausibility.
 
-- **Starting to fix before reproducing**: the most common cause of a wrong fix. Always reproduce reliably before any change — if you can't reproduce it, you don't know what you're fixing.
-- **Stopping at symptoms**: "the button doesn't work" is a symptom, not a cause. Always dig deeper with the 5 Whys until you reach a cause that makes mechanical sense. Stopping at the first plausible explanation is the most frequent mistake.
-- **Not checking `git log` first**: most bugs have a temporal correlation with a recent change. `git log --oneline -20` should be the first action, not the last.
-- **Multiple simultaneous changes**: when testing a hypothesis, make ONE change at a time. Multiple simultaneous changes make it impossible to identify what fixed the problem — or introduced another.
-- **Assuming an identical environment**: different behaviors across dev/staging/prod usually indicate different environment variables, seed data, or dependency versions. Always verify with `node -e "require('./package.json').dependencies"` or equivalent.
-- **Not adding a regression test**: after fixing, always add a test that fails without the fix and passes with it. Without it, the bug will come back in 3 months.
+### Phase 5 — Fix + regression test
+
+Write the regression test **before** the fix, at a seam that exercises the real bug pattern as it
+occurred. If the only available seam is too shallow to replicate the triggering chain, **that
+itself is the finding** — record it and flag the architecture. False confidence from the wrong
+seam is worse than a documented gap.
+
+Then: watch the test fail → apply the fix → watch it pass → re-run the Phase 1 loop against the
+original, un-minimised scenario.
+
+**Done when:** the original loop no longer reproduces the bug AND the regression test passed from
+red, or the absence of a correct seam is documented.
+
+### Phase 6 — Cleanup + post-mortem
+
+- [ ] `grep` the `[DEBUG-…]` prefix returns nothing
+- [ ] Throwaway harnesses deleted or moved to a marked debug location
+- [ ] The confirmed hypothesis stated in the commit message — the next debugger learns
+- [ ] Ask: **what would have prevented this bug?** If the answer is architectural (no good test
+  seam, tangled callers, hidden coupling), hand off to `codebase-design` with the specifics —
+  after the fix is in, when you know more than when you started
+
+**Done when:** all four boxes are checked. An undeleted debug log is a defect you authored.
+
+## Anti-patterns
+
+| WRONG | RIGHT |
+|---|---|
+| Read code → guess → edit → hope | Build the loop first; the loop decides |
+| One plausible hypothesis, tested immediately | 3–5 ranked, falsifiable, THEN test |
+| "Added logging everywhere" | Targeted probes, one per prediction, tagged |
+| Test written after the fix, passing immediately | Test written before, seen red, then green |
+| "Fixed — the error stopped appearing" | The original loop re-run and green, evidence quoted |
+| Flaky bug set aside as untestable | Reproduction rate raised until debuggable |

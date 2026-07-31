@@ -1,6 +1,6 @@
 # 📚 Índice Completo de Agent Skills
 
-> **Total:** 175 skills indexadas de 1 repositórios
+> **Total:** 176 skills indexadas de 1 repositórios
 > **Pasta local:** `~/Development/osforge/sources/` (fontes) e `~/Development/osforge/skills/` (curadas)
 >
 > 💡 **Dica de busca:** Use `Ctrl+F` / `Cmd+F` para pesquisar por palavra-chave.
@@ -14,24 +14,24 @@
 
 | Categoria | Qtd | % |
 |-----------|-----|---|
-| 🔒 Security | 51 | 29.1% |
-| ⚛️ React / Frontend | 27 | 15.4% |
-| 🤖 AI / ML / Agents | 25 | 14.3% |
-| 🔄 Workflow / Process | 24 | 13.7% |
-| 🧪 Testing | 18 | 10.3% |
+| 🔒 Security | 51 | 29.0% |
+| ⚛️ React / Frontend | 27 | 15.3% |
+| 🤖 AI / ML / Agents | 25 | 14.2% |
+| 🔄 Workflow / Process | 24 | 13.6% |
+| 🧪 Testing | 19 | 10.8% |
 | 📝 Documentation / Writing | 9 | 5.1% |
 | 🏗️ Architecture | 6 | 3.4% |
-| ☁️ Infrastructure / DevOps | 5 | 2.9% |
-| 🗄️ Database / Backend | 5 | 2.9% |
+| ☁️ Infrastructure / DevOps | 5 | 2.8% |
+| 🗄️ Database / Backend | 5 | 2.8% |
 | 📱 Mobile | 3 | 1.7% |
 | 📦 General | 2 | 1.1% |
-| **TOTAL** | **175** | **100%** |
+| **TOTAL** | **176** | **100%** |
 
 ### Por Origem
 
 | Origem | Repo | Qtd |
 |--------|------|-----|
-| skills | — | 175 |
+| skills | — | 176 |
 
 ---
 
@@ -41,7 +41,7 @@
 - [⚛️ React / Frontend (27)](#)
 - [🤖 AI / ML / Agents (25)](#)
 - [🔄 Workflow / Process (24)](#)
-- [🧪 Testing (18)](#)
+- [🧪 Testing (19)](#)
 - [📝 Documentation / Writing (9)](#)
 - [🏗️ Architecture (6)](#)
 - [☁️ Infrastructure / DevOps (5)](#)
@@ -200,7 +200,7 @@
 | **seo** | 📦 skills | Optimize for search engine visibility and ranking. Use when asked to "improve SEO", "optimize for search", "fix meta tags", "add structured data", "si… | `skills/seo/` |
 | **story-executor** | 📦 skills | Executes implementation of a story following its tasks and ACs. Use when: execute story, implement story, dev story, run story. Coordinates invocation… | `skills/planning/story-executor/` |
 | **stripe-integration** | 📦 skills | Stripe payment processing for SaaS applications. Trigger on checkout implementation, subscription billing, webhook handling, pricing page, payment for… | `skills/stripe-integration/` |
-| **systematic-debugging** | 📦 skills | Systematic 4-phase debugging with root-cause analysis. Use when: a bug is hard to reproduce, a crash has no clear stacktrace, intermittent behavior, a… | `skills/systematic-debugging/` |
+| **systematic-debugging** | 📦 skills | Diagnosis discipline anchored on the **feedback loop**: build a fast, deterministic pass/fail signal for the bug before touching any code. Use when: a… | `skills/systematic-debugging/` |
 | **ui-design-intelligence** | 📦 skills | Design system spec adapted to the product and industry. Use when: the user mentions visual style, identity, palette, typography, visual tone, product … | `skills/ui-design-intelligence/` |
 | **verification-before-completion** | 📦 skills | Requires running verification commands and confirming output before making any success claims. Use when about to claim work is complete, fixed, passin… | `skills/verification-before-completion/` |
 | **vr-ar** | 📦 skills | VR/AR game principles: comfort and motion sickness prevention, locomotion, hand tracking, AR anchoring, and per-headset performance targets. Use when:… | `skills/game-development/vr-ar/` |
@@ -208,11 +208,12 @@
 
 ## 🧪 Testing
 
-**18 skills**
+**19 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
 | **bun-development** | 📦 skills | Bun runtime patterns, bundler configuration, and Bun-specific APIs. Trigger on Bun FFI, Bun.serve, Bun.file, Bun shell, workspace configuration, Bun-s… | `skills/bun-development/` |
+| **codebase-design** | 📦 skills | Shared vocabulary and discipline for designing **deep modules** — a lot of behaviour behind a small interface, placed at a clean **seam**. Use when: d… | `skills/codebase-design/` |
 | **context7-docs-first** | 📦 skills | Ground all platform and library answers in current official documentation by using Context7 MCP tools before responding. TRIGGER when: user asks about… | `skills/context7-docs-first/` |
 | **e2e-testing-patterns** | 📦 skills | End-to-end testing with Playwright for Next.js applications. Trigger on E2E test setup, cross-page flow testing (checkout, onboarding, multi-step form… | `skills/e2e-testing-patterns/` |
 | **epic-decomposer** | 📦 skills | Decomposes specs, PRDs, or requirements into implementable epics and stories. Each story with testable ACs, tasks with file paths, and mapped dependen… | `skills/planning/epic-decomposer/` |
@@ -354,6 +355,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `clean-code` — skills — `skills/clean-code/`
 - `code-review` — skills — `skills/quality/code-review/`
 - `code-review-checklist` — skills — `skills/code-review-checklist/`
+- `codebase-design` — skills — `skills/codebase-design/`
 - `coding-guidelines` — skills — `skills/coding-guidelines/`
 - `config-critique` — skills — `skills/config-critique/`
 - `context-compact` — skills — `skills/context-compact/`
