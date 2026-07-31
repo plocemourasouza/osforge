@@ -208,5 +208,22 @@ After any significant feature/fix: record lessons in `tasks/lessons.md`
 - If the answer is in the code, explore the code instead of asking.
 - For each question, offer your recommended answer.
 
+## Ubiquitous language (two levels)
+`@CONTEXT.md` (this file's sibling) is the **global glossary** — the portfolio's vocabulary, always
+in context. A project may add `<repo>/CONTEXT.md` for its own domain terms; `CONTEXT-MAP.md` marks a
+repo with several bounded contexts. **The more specific level wins.**
+
+- **Read the project glossary before naming anything** — variables, functions, files, test names,
+  task titles, commit messages, spec sections. Naming a concept twice is how a codebase stops being
+  navigable in one pass.
+- **A word in the conversation that contradicts the glossary is stopped there and then**, not
+  quietly translated. Same for a project term that shadows a global one.
+- **No glossary and the project keeps producing terms** → offer `domain-modeling`. Create the file
+  lazily, on the first term actually resolved — never as an empty scaffold.
+- Glossary holds what things **are**. Why a hard-to-reverse choice was made goes to a Decision
+  (`osforge-db add-decision`); what is being built now goes to `.specs/`.
+
+@CONTEXT.md
+
 ## Authoring skills
 - Start from `~/.claude/docs/SKILL.template.md`; follow `~/.claude/docs/SKILL-STANDARD.md` (predictability, leading words, completion criteria, invocation axis). Validate triggering with `scripts/test-skill-triggering.sh` (OSForge repo).

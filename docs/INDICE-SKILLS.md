@@ -1,6 +1,6 @@
 # 📚 Índice Completo de Agent Skills
 
-> **Total:** 174 skills indexadas de 1 repositórios
+> **Total:** 175 skills indexadas de 1 repositórios
 > **Pasta local:** `~/Development/osforge/sources/` (fontes) e `~/Development/osforge/skills/` (curadas)
 >
 > 💡 **Dica de busca:** Use `Ctrl+F` / `Cmd+F` para pesquisar por palavra-chave.
@@ -14,31 +14,31 @@
 
 | Categoria | Qtd | % |
 |-----------|-----|---|
-| 🔒 Security | 51 | 29.3% |
-| ⚛️ React / Frontend | 27 | 15.5% |
-| 🤖 AI / ML / Agents | 25 | 14.4% |
-| 🔄 Workflow / Process | 24 | 13.8% |
-| 🧪 Testing | 17 | 9.8% |
-| 📝 Documentation / Writing | 9 | 5.2% |
+| 🔒 Security | 51 | 29.1% |
+| ⚛️ React / Frontend | 28 | 16.0% |
+| 🤖 AI / ML / Agents | 25 | 14.3% |
+| 🔄 Workflow / Process | 24 | 13.7% |
+| 🧪 Testing | 17 | 9.7% |
+| 📝 Documentation / Writing | 9 | 5.1% |
 | 🏗️ Architecture | 6 | 3.4% |
 | ☁️ Infrastructure / DevOps | 5 | 2.9% |
 | 🗄️ Database / Backend | 5 | 2.9% |
 | 📱 Mobile | 3 | 1.7% |
 | 📦 General | 2 | 1.1% |
-| **TOTAL** | **174** | **100%** |
+| **TOTAL** | **175** | **100%** |
 
 ### Por Origem
 
 | Origem | Repo | Qtd |
 |--------|------|-----|
-| skills | — | 174 |
+| skills | — | 175 |
 
 ---
 
 ## 🗂️ Sumário por Categoria
 
 - [🔒 Security (51)](#)
-- [⚛️ React / Frontend (27)](#)
+- [⚛️ React / Frontend (28)](#)
 - [🤖 AI / ML / Agents (25)](#)
 - [🔄 Workflow / Process (24)](#)
 - [🧪 Testing (17)](#)
@@ -111,7 +111,7 @@
 
 ## ⚛️ React / Frontend
 
-**27 skills**
+**28 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -125,6 +125,7 @@
 | **design-taste-frontend** | 📦 skills | Anti-slop frontend skill for landing pages, portfolios, and redesigns. Trigger on phrases like "build a landing page", "create my portfolio site", "re… | `skills/design-taste-frontend/` |
 | **design-taste-frontend-v1** | 📦 skills | Legacy v1 of the premium frontend taste-skill with fixed dials (variance 8, motion 6, density 4), anti-slop, Inter and AI-purple bans, and magnetic mi… | `skills/design-taste-frontend-v1/` |
 | **dispatching-parallel-agents** | 📦 skills | Orchestrates parallel tasks across independent subagents. Use when: 2+ tasks with no shared state, refactoring across multiple unrelated files, decomp… | `skills/dispatching-parallel-agents/` |
+| **domain-modeling** | 📦 skills | Build and sharpen a project's **ubiquitous language** in CONTEXT.md — one canonical term per concept, aliases banned. Use when: naming a new concept o… | `skills/domain-modeling/` |
 | **frontend-design** | 📦 skills | Design thinking and decision-making for web UI. ACTIVATE whenever the user asks to design or style UI components, build page layouts, choose color pal… | `skills/frontend-design/` |
 | **frontend-ui-system** | 📦 skills | Frontend UI development using shadcn/ui ecosystem with extended registries (Magic UI, Aceternity UI, mapcn). Leverages shadcn MCP and shadcn Studio ex… | `skills/frontend-ui-system/` |
 | **game-art** | 📦 skills | Game art principles: asset pipeline, texture optimization, animation (sprite, skeletal, procedural), VFX, and art direction. Use when: how to organize… | `skills/game-development/game-art/` |
@@ -373,6 +374,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `doc-shard` — skills — `skills/context/doc-shard/`
 - `docs-writer` — skills — `skills/docs-writer/`
 - `documentation-templates` — skills — `skills/documentation-templates/`
+- `domain-modeling` — skills — `skills/domain-modeling/`
 
 **E**
 - `e2e-testing-patterns` — skills — `skills/e2e-testing-patterns/`

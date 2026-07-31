@@ -307,9 +307,10 @@ deploy_claude() {
   merge_settings_claude
 
   echo ""
-  log "CLAUDE.md + SKILLS.md:"
+  log "CLAUDE.md + SKILLS.md + CONTEXT.md:"
   copy_file "$REPO/claude-code/CLAUDE.md" "$CLAUDE/CLAUDE.md" true
   copy_skills_md "$CLAUDE/SKILLS.md"
+  copy_file "$REPO/claude-code/CONTEXT.md" "$CLAUDE/CONTEXT.md"
 
   log "Authoring templates/standards → docs/:"
   mkdir -p "$CLAUDE/docs"
@@ -585,8 +586,9 @@ deploy_cursor() {
   copy_file "$REPO/hooks/hooks.json" "$CURSOR/hooks.json" true
 
   echo ""
-  log "SKILLS.md:"
+  log "SKILLS.md + CONTEXT.md:"
   copy_skills_md "$CURSOR/SKILLS.md"
+  copy_file "$REPO/claude-code/CONTEXT.md" "$CURSOR/CONTEXT.md"
 
   log "Authoring templates/standards → docs/:"
   mkdir -p "$CURSOR/docs"

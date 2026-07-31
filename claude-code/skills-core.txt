@@ -45,6 +45,7 @@ context/doc-shard
 context/editorial-review
 context/project-context-generator
 dispatching-parallel-agents
+domain-modeling
 finishing-a-development-branch
 frontend-design
 frontend-ui-system

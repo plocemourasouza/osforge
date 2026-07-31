@@ -91,6 +91,8 @@ docs-writer	I need help with this: documenting a feature/command/API from the co
 docs-writer	I need help with this: rewriting or improving an existing docs section. What's the right approach?
 documentation-templates	I need help with this: creating a README from scratch with a standard structure. What's the right approach?
 documentation-templates	I need help with this: building an API documentation skeleton. What's the right approach?
+domain-modeling	I need help with this: naming a new concept or module. What's the right approach?
+domain-modeling	I need help with this: two words are being used for the same thing. What's the right approach?
 finishing-a-development-branch	I need help with this: all tasks on a branch are complete. What's the right approach?
 finishing-a-development-branch	I need help with this: wants to merge or open a PR. What's the right approach?
 frontend-ui-system	I need help with this: when choosing between component libraries. What's the right approach?

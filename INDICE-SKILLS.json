@@ -520,6 +520,16 @@
     "skill_dir": "documentation-templates"
   },
   {
+    "name": "domain-modeling",
+    "description": "Build and sharpen a project's **ubiquitous language** in CONTEXT.md — one canonical term per concept, aliases banned. Use when: naming a new concept or module, two words are being used for the same thing, a term is being used for two different things, the code and the conversation disagree about wha",
+    "category": "⚛️ React / Frontend",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/domain-modeling",
+    "skill_dir": "domain-modeling"
+  },
+  {
     "name": "e2e-testing-patterns",
     "description": "End-to-end testing with Playwright for Next.js applications. Trigger on E2E test setup, cross-page flow testing (checkout, onboarding, multi-step forms), visual regression, or Playwright debugging. Keywords: E2E test, Playwright, test failure, flaky test, browser test, integration test, page.goto, l",
     "category": "🧪 Testing",
