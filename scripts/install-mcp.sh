@@ -12,7 +12,17 @@
 #   install-mcp.sh --target <dir> <stack> # destino explícito
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")/.." && pwd)"
+# Mesma resolução do install-skill.sh: override → posição do script → âncora
+# do deploy (necessária quando roda de ~/.local/bin).
+REPO="${OSFORGE_REPO:-$(cd "$(dirname "$0")/.." && pwd)}"
+if [ ! -d "$REPO/mcp/stacks" ] && [ -f "$HOME/.osforge/repo-path" ]; then
+  REPO="$(cat "$HOME/.osforge/repo-path")"
+fi
+if [ ! -d "$REPO/mcp/stacks" ]; then
+  echo "erro: repo OSForge não encontrado (tentei '$REPO')." >&2
+  echo "      rode ./deploy.sh no repo, ou exporte OSFORGE_REPO=/caminho/do/osforge" >&2
+  exit 1
+fi
 STACKS="$REPO/mcp/stacks"
 TARGET_DIR="$PWD"
 declare -a NAMES=()

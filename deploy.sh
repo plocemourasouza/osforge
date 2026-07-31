@@ -58,6 +58,18 @@ copy_file() {
   ok "$(basename $src)"
 }
 
+# SKILLS.md carrega o MANIFEST, cujos paths precisam ser ABSOLUTOS: as skills
+# não-core só existem neste repo, e o manifesto é lido em sessões satélite
+# (outro diretório), onde um `skills/<nome>/SKILL.md` relativo não resolve.
+# O repo guarda o token; o deploy grava o caminho real desta cópia.
+copy_skills_md() {
+  local dst="$1"
+  local src="$REPO/claude-code/SKILLS.md"
+  if $DRY_RUN; then skip "cp SKILLS.md → $dst (com raiz de skills expandida)"; return; fi
+  sed "s|__OSFORGE_SKILLS_ROOT__|$REPO/skills|g" "$src" > "$dst"
+  ok "SKILLS.md (raiz: $REPO/skills)"
+}
+
 copy_dir() {
   local src_dir="$1" dst_dir="$2"
   mkdir -p "$dst_dir"
@@ -282,7 +294,7 @@ deploy_claude() {
   echo ""
   log "CLAUDE.md + SKILLS.md:"
   copy_file "$REPO/claude-code/CLAUDE.md" "$CLAUDE/CLAUDE.md" true
-  copy_file "$REPO/claude-code/SKILLS.md" "$CLAUDE/SKILLS.md"
+  copy_skills_md "$CLAUDE/SKILLS.md"
 
   log "Authoring templates/standards → docs/:"
   mkdir -p "$CLAUDE/docs"
@@ -335,9 +347,23 @@ deploy_osforge_db() {
 
   mkdir -p "$db_dir"
   mkdir -p "$HOME/.local/bin"
+  # Âncora: helpers rodando de ~/.local/bin não conseguem derivar o repo da
+  # própria posição. Escrita aqui, lida por install-skill.sh / install-mcp.sh.
+  printf '%s\n' "$REPO" > "$db_dir/repo-path"
   cp "$script_src" "$db_bin"
   chmod +x "$db_bin"
   ok "osforge-db instalado em $db_bin"
+
+  # O protocolo de resolução do MANIFEST manda rodar `install-skill.sh <nome>`
+  # de dentro de um projeto satélite — então ele precisa estar no PATH, não só
+  # no repo. Idem install-mcp.sh, citado no CLAUDE.md global.
+  for helper in install-skill install-mcp; do
+    if [ -f "$REPO/scripts/${helper}.sh" ]; then
+      cp "$REPO/scripts/${helper}.sh" "$HOME/.local/bin/${helper}"
+      chmod +x "$HOME/.local/bin/${helper}"
+      ok "${helper} instalado em ~/.local/bin/${helper}"
+    fi
+  done
 
   # Inicializar banco global se ainda não existe
   if [ ! -f "$db_dir/osforge.db" ]; then
@@ -545,7 +571,7 @@ deploy_cursor() {
 
   echo ""
   log "SKILLS.md:"
-  copy_file "$REPO/claude-code/SKILLS.md" "$CURSOR/SKILLS.md"
+  copy_skills_md "$CURSOR/SKILLS.md"
 
   log "Authoring templates/standards → docs/:"
   mkdir -p "$CURSOR/docs"

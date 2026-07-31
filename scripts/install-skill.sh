@@ -15,7 +15,18 @@
 # Resolve o path via INDICE-SKILLS.json (match exato de name → depois substring).
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")/.." && pwd)"
+# Resolução do repo, em ordem: override explícito → posição do script (uso a
+# partir do próprio repo) → âncora escrita pelo deploy (uso a partir de
+# ~/.local/bin, onde "../" seria ~/.local e não acharia skills/).
+REPO="${OSFORGE_REPO:-$(cd "$(dirname "$0")/.." && pwd)}"
+if [ ! -f "$REPO/INDICE-SKILLS.json" ] && [ -f "$HOME/.osforge/repo-path" ]; then
+  REPO="$(cat "$HOME/.osforge/repo-path")"
+fi
+if [ ! -f "$REPO/INDICE-SKILLS.json" ]; then
+  echo "erro: repo OSForge não encontrado (tentei '$REPO')." >&2
+  echo "      rode ./deploy.sh no repo, ou exporte OSFORGE_REPO=/caminho/do/osforge" >&2
+  exit 1
+fi
 INDEX="$REPO/INDICE-SKILLS.json"
 SKILLS_DIR="$REPO/skills"
 

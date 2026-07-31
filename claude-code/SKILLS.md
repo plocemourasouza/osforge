@@ -162,7 +162,7 @@ The 130 skills below are **not** deployed to `~/.claude/skills` (Model A ships o
 2. **Semantic** — nothing matches but the intent is clear → `osforge-db search-semantic "<intent>"`, then `buscar-skill.py <term>`.
 3. **Promote** — the skill will be needed again in this project → `install-skill.sh <name>` makes it native from the next session on.
 
-**Path rule:** `skills/<name>/SKILL.md`. Only paths that differ are shown in parentheses.
+**Path rule:** `__OSFORGE_SKILLS_ROOT__/<name>/SKILL.md`. Only paths that differ are shown in parentheses.
 
 **Heavy skills** (`offensive-*`, `imagegen-*`, `agency/*`) declare `model:`/`context: fork` in their frontmatter — dispatch a subagent to read them instead of reading inline.
 
