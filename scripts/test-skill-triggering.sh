@@ -403,10 +403,15 @@ fi
 # Carregar casos e iterar
 while IFS=$'\t' read -r skill_name prompt; do
     echo "------------------------------------------------------------"
-    set +e
-    run_case "$skill_name" "$prompt"
-    case_exit=$?
-    set -e
+    # NÃO usar o par `set +e` / `set -e` aqui: run_case contém o seu próprio
+    # `set -e` interno (após capturar o exit do claude), que reativava o errexit
+    # GLOBALMENTE e anulava a proteção do call site — o script morria no
+    # primeiro return 1, ou seja, no primeiro FAIL, sem placar e sem erro.
+    # Duas rodadas reais morreram assim. A forma `|| case_exit=$?` põe a chamada
+    # em contexto de condição, onde o bash ignora errexit inclusive DENTRO da
+    # função. Regressão coberta por tests/test-assertions.sh (loop survival).
+    case_exit=0
+    run_case "$skill_name" "$prompt" || case_exit=$?
 
     case "$case_exit" in
         0)

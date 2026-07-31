@@ -106,6 +106,33 @@ check "skill inexistente"      ""                  "$(skill_rel_path nao-existe-
 check "tdd-workflow é core"    PASS "$(verdict is_core_skill tdd-workflow)"
 check "brandkit não é core"    FAIL "$(verdict is_core_skill brandkit)"
 
+# ── Sobrevivência do loop (regressão do set -e) ─────────────────────────────
+# run_case tem um `set -e` interno que reativava o errexit global e matava o
+# harness no PRIMEIRO FAIL — duas rodadas reais morreram sem placar. Este teste
+# roda o harness DE VERDADE com um claude falso (zero API): 3 casos, todos FAIL,
+# e exige que os 3 executem e o placar final saia.
+echo ""
+echo "loop survival (harness completo com claude mock):"
+MOCKBIN="$WORK/mockbin"
+mkdir -p "$MOCKBIN"
+cat > "$MOCKBIN/claude" <<'MOCK'
+#!/usr/bin/env bash
+echo '{"type":"system","subtype":"init","tools":["Skill","Read"],"mcp_servers":[]}'
+echo '{"type":"assistant","message":{"content":[{"type":"text","text":"sem skill"}],"usage":{"input_tokens":1}}}'
+echo '{"type":"result","subtype":"success"}'
+MOCK
+chmod +x "$MOCKBIN/claude"
+printf 'tdd-workflow\tcaso um\nclean-code\tcaso dois\ngrilling\tcaso tres\n' > "$WORK/cases.tsv"
+set +e
+PATH="$MOCKBIN:$PATH" OSFORGE_TEST_TIMEOUT=10 \
+    "$HARNESS" --cases "$WORK/cases.tsv" > "$WORK/loop.log" 2>&1
+loop_exit=$?
+set -e
+done_cases=$(grep -cE '^\[(PASS|FAIL)\]' "$WORK/loop.log" || true)
+check "os 3 casos executaram (não morreu no 1º FAIL)" "3" "$done_cases"
+check "placar final impresso" "PASS" "$(grep -q 'RESULTADO FINAL' "$WORK/loop.log" && echo PASS || echo FAIL)"
+check "exit 1 com FAILs presentes" "1" "$loop_exit"
+
 # ── Resultado ───────────────────────────────────────────────────────────────
 echo ""
 echo "============================================================"
