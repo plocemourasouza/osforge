@@ -57,8 +57,16 @@ NOT_A_PROMPT = re.compile(
 )
 META = re.compile(r"\b(this skill|these \d|the skill|paradigms?|frontmatter|sub-?agent)\b", re.I)
 
-# Leading connectives left over from splitting a long clause list.
-LEAD = re.compile(r"^(or|and|when|whenever|if|after|before|user|the user)\s+", re.I)
+# Conectivos que sobram ao fatiar uma lista longa de cláusulas. O `[:,]?` cobre
+# o "when:" órfão que sobra quando a description escreve "Use when: user asks…".
+LEAD = re.compile(r"^(or|and|when|whenever|if|after|before|user|the user)\b[:,]?\s+", re.I)
+
+# Uma cláusula que emenda em exemplo vira fragmento quando o exemplo é cortado
+# ("… extensive docs — e.g."). Corta antes do exemplo.
+EXAMPLE = re.compile(r"\s*[—\-–(,;]\s*(e\.g\.?|i\.e\.?|ex\.|por exemplo|such as)\b.*$", re.I)
+
+# Sobrou pontuação de emenda no fim → a cláusula foi cortada no meio.
+DANGLING = re.compile(r"[—\-–:,;/(]\s*$|\b(e\.g|i\.e|etc|ex)\.?\s*$", re.I)
 
 
 def quoted_phrases(desc: str) -> list[str]:
@@ -85,15 +93,38 @@ def use_when_clauses(desc: str) -> list[str]:
     return [p.strip().rstrip(".") for p in parts if p.strip()]
 
 
+def carry(clause: str) -> str:
+    """
+    Embrulha uma cláusula de `Use when:` numa mensagem de usuário.
+
+    Cláusula solta chega como fragmento e o modelo responde ao fragmento, não
+    ao pedido. Observado duas vezes em rodadas reais:
+      "a response came back truncated"  -> "Workdir empty, session fresh — no
+                                            truncated response here."
+      "a document exceeds the context…" -> "Message look like cut-off fragment"
+    Nos dois casos a skill não disparou porque não havia pedido nenhum. O
+    embrulho preserva o vocabulário do gatilho e devolve a forma de pergunta.
+    """
+    clause = clause[0].lower() + clause[1:] if clause[:1].isupper() else clause
+    return f"I need help with this: {clause}. What's the right approach?"
+
+
 def make_cases(name: str, desc: str, per_skill: int) -> list[str]:
     cands: list[str] = []
     seen: set[str] = set()
 
-    for p in quoted_phrases(desc) + use_when_clauses(desc):
+    # Frases entre aspas já são fala de usuário e vão verbatim; cláusulas
+    # precisam do embrulho.
+    quoted = quoted_phrases(desc)
+    for p in quoted + use_when_clauses(desc):
+        is_quoted = p in quoted
         p = LEAD.sub("", p.strip().strip("`").strip()).strip()
         # A trigger ends at the first sentence break; what follows is identity
         # ("Produces a 9-section summary…"), which no user would type.
         p = p.split(". ")[0].strip()
+        p = EXAMPLE.sub("", p).strip()
+        if DANGLING.search(p):
+            continue
         # Splitting a clause list can cut inside parentheses, leaving "(lsof" —
         # a prompt no human would send, so the case would be unfair.
         if p.count("(") != p.count(")"):
@@ -111,7 +142,7 @@ def make_cases(name: str, desc: str, per_skill: int) -> list[str]:
         if key in seen:
             continue
         seen.add(key)
-        cands.append(p)
+        cands.append(p if is_quoted else carry(p))
         if len(cands) >= per_skill:
             break
 

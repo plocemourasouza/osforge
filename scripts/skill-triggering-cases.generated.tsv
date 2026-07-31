@@ -33,219 +33,218 @@ agency-testing	test API endpoints before the release
 agency-testing	run an application performance benchmark
 agent-skills-search	procura um padrão de PostgreSQL
 agent-skills-search	tem alguma skill de testing?
-api-patterns	standardizing the response envelope and error format
-api-patterns	auditing an API against the OWASP API Top 10
-app-builder	creating a new app from scratch
-app-builder	deciding which stack to use for a project
-architecture	writing or reviewing an ADR
-architecture	evaluating whether the proposed complexity is justified
-asaas-integration	migrating from Stripe to a BR provider
+api-patterns	I need help with this: standardizing the response envelope and error format. What's the right approach?
+api-patterns	I need help with this: auditing an API against the OWASP API Top 10. What's the right approach?
+app-builder	I need help with this: creating a new app from scratch. What's the right approach?
+app-builder	I need help with this: deciding which stack to use for a project. What's the right approach?
+architecture	I need help with this: writing or reviewing an ADR. What's the right approach?
+architecture	I need help with this: evaluating whether the proposed complexity is justified. What's the right approach?
+asaas-integration	I need help with this: migrating from Stripe to a BR provider. What's the right approach?
 autorefine-skill	skill Y is not working well
 autorefine-skill	apply a pattern from another project
-aws-deploy	choosing an AWS compute/hosting service
-bash-linux	a bash script errors or behaves unexpectedly
-bash-linux	searching and transforming text with grep
-brainstorming	wants to explore alternatives before committing
-brainstorming	says 'I want to build X' without clear details
+aws-deploy	I need help with this: choosing an AWS compute/hosting service. What's the right approach?
+bash-linux	I need help with this: a bash script errors or behaves unexpectedly. What's the right approach?
+bash-linux	I need help with this: searching and transforming text with grep. What's the right approach?
+brainstorming	I need help with this: wants to explore alternatives before committing. What's the right approach?
+brainstorming	I need help with this: says 'I want to build X' without clear details. What's the right approach?
 brandkit	create a brand kit for my startup
 brandkit	put together a studio-style brand guidelines board
-bun-development	runtime edge cases that differ from Node.js
-bun-development	segfault loading a native dependency
-claude-api-typescript	when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent-sdk
-claude-ci-actions	when: setting up @claude in PRs/issues
-claude-ci-actions	configuring automated code review
-clean-code	code is over-engineered or has premature abstractions
-clean-code	a request to 'simplify this'
-code-review-checklist	checking for SQL injection/XSS/hardcoded secrets
-code-review-checklist	flagging anti-patterns like magic numbers and deep nesting
-config-critique	"review my skill", "validate my rule", "check hook conflict", "lint config", "is my skill good?", "will this agent work?", "PR review of a skill"
-config-critique	when the user adds/edits config in ~/.claude/ or ~/.cursor/
-context-distillator	distill the context before passing it to another skill
-context-distillator	a PRD/spec/architecture too large for the context window
-db-state-sync	recording an architectural decision
-db-state-sync	viewing the cross-project board
-doc-shard	a document exceeds the context window or to organize extensive docs — e.g
-doc-shard	a spec with multiple sections
+bun-development	I need help with this: runtime edge cases that differ from Node.js. What's the right approach?
+bun-development	I need help with this: segfault loading a native dependency. What's the right approach?
+claude-api-typescript	I need help with this: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent-sdk. What's the right approach?
+claude-ci-actions	I need help with this: setting up @claude in PRs/issues. What's the right approach?
+claude-ci-actions	I need help with this: configuring automated code review. What's the right approach?
+clean-code	I need help with this: code is over-engineered or has premature abstractions. What's the right approach?
+clean-code	I need help with this: a request to 'simplify this'. What's the right approach?
+code-review-checklist	I need help with this: checking for SQL injection/XSS/hardcoded secrets. What's the right approach?
+code-review-checklist	I need help with this: flagging anti-patterns like magic numbers and deep nesting. What's the right approach?
+config-critique	I need help with this: "review my skill", "validate my rule", "check hook conflict", "lint config", "is my skill good?", "will this agent work?", "PR review of a skill". What's the right approach?
+context-distillator	I need help with this: distill the context before passing it to another skill. What's the right approach?
+context-distillator	I need help with this: a PRD/spec/architecture too large for the context window. What's the right approach?
+db-state-sync	I need help with this: recording an architectural decision. What's the right approach?
+db-state-sync	I need help with this: viewing the cross-project board. What's the right approach?
+doc-shard	I need help with this: a document exceeds the context window or to organize extensive docs. What's the right approach?
+doc-shard	I need help with this: a spec with multiple sections. What's the right approach?
 editorial-review	this doc is poorly organized
-project-context-generator	the project has no project-context.md
-project-context-generator	you need to update context after stack changes
-context-compact	says "compress context", "compact", "summary", "near the limit", "context full", "save state", "/compact", "/clear"
-context-compact	when the token counter passes 140k
-context7-docs-first	when: user asks about Next.js
-context7-docs-first	any version-sensitive library behavior
-database-design	a slow query or N+1 in production
-database-design	modeling the schema and relationships of a new feature
-deployment-procedures	a deploy failed or broke production
-deployment-procedures	a service went down after a release and needs a quick rollback
+project-context-generator	I need help with this: the project has no project-context.md. What's the right approach?
+project-context-generator	I need help with this: you need to update context after stack changes. What's the right approach?
+context-compact	I need help with this: says "compress context", "compact", "summary", "near the limit", "context full", "save state", "/compact", "/clear". What's the right approach?
+context-compact	I need help with this: when the token counter passes 140k. What's the right approach?
+context7-docs-first	I need help with this: any version-sensitive library behavior. What's the right approach?
+context7-docs-first	I need help with this: is integrating APIs that change between versions. What's the right approach?
+database-design	I need help with this: a slow query or N+1 in production. What's the right approach?
+database-design	I need help with this: modeling the schema and relationships of a new feature. What's the right approach?
+deployment-procedures	I need help with this: a deploy failed or broke production. What's the right approach?
+deployment-procedures	I need help with this: a service went down after a release and needs a quick rollback. What's the right approach?
 design-md	how this product should look
-design-md	is starting a new project that needs its own identity
+design-md	I need help with this: is starting a new project that needs its own identity. What's the right approach?
 design-taste-frontend	redesign this site so it doesn
 design-taste-frontend	make it not look AI-generated
 design-taste-frontend-v1	I need the old design-taste-frontend behavior
 design-taste-frontend-v1	this project depends on v1 of the taste skill
-differential-review	when reviewing commits that touch auth
-dispatching-parallel-agents	2+ tasks with no shared state
-dispatching-parallel-agents	refactoring across multiple unrelated files
+differential-review	I need help with this: when reviewing commits that touch auth. What's the right approach?
+dispatching-parallel-agents	I need help with this: 2+ tasks with no shared state. What's the right approach?
+dispatching-parallel-agents	I need help with this: refactoring across multiple unrelated files. What's the right approach?
 doc-sanitization	I have a lot of disorganized documentation
 doc-sanitization	these .md files are a mess
-docs-writer	documenting a feature/command/API from the code
-docs-writer	rewriting or improving an existing docs section
-documentation-templates	creating a README from scratch with a standard structure
-documentation-templates	building an API documentation skeleton
-finishing-a-development-branch	all tasks on a branch are complete
-finishing-a-development-branch	wants to merge or open a PR
-frontend-ui-system	when choosing between component libraries
-full-output-enforcement	a response came back truncated
-full-output-enforcement	asks for the complete file or says give me everything without summarizing
-2d-games	how to organize sprites and animations in Godot
-2d-games	I need to build tilemaps with auto-tiling and layers
-3d-games	my 3D game has too many draw calls and I need culling/batching/LOD
-3d-games	which collider to use for 3D characters and terrain in Unity
-game-development	I want to make a game but don't know where to start
-game-development	my game has low FPS and I need a performance budget
-game-art	my textures are heavy and I need atlases
-game-art	which type of animation to use for characters (frame-based vs skeletal)
-game-audio	how to make adaptive music that changes with combat
-game-audio	audio is consuming too much memory/CPU and I need pooling
+docs-writer	I need help with this: documenting a feature/command/API from the code. What's the right approach?
+docs-writer	I need help with this: rewriting or improving an existing docs section. What's the right approach?
+documentation-templates	I need help with this: creating a README from scratch with a standard structure. What's the right approach?
+documentation-templates	I need help with this: building an API documentation skeleton. What's the right approach?
+finishing-a-development-branch	I need help with this: all tasks on a branch are complete. What's the right approach?
+finishing-a-development-branch	I need help with this: wants to merge or open a PR. What's the right approach?
+frontend-ui-system	I need help with this: when choosing between component libraries. What's the right approach?
+full-output-enforcement	I need help with this: a response came back truncated. What's the right approach?
+full-output-enforcement	I need help with this: asks for the complete file or says give me everything without summarizing. What's the right approach?
+2d-games	I need help with this: how to organize sprites and animations in Godot. What's the right approach?
+2d-games	I need help with this: i need to build tilemaps with auto-tiling and layers. What's the right approach?
+3d-games	I need help with this: my 3D game has too many draw calls and I need culling/batching/LOD. What's the right approach?
+3d-games	I need help with this: which collider to use for 3D characters and terrain in Unity. What's the right approach?
+game-development	I need help with this: i want to make a game but don't know where to start. What's the right approach?
+game-development	I need help with this: my game has low FPS and I need a performance budget. What's the right approach?
+game-art	I need help with this: my textures are heavy and I need atlases. What's the right approach?
+game-art	I need help with this: which type of animation to use for characters (frame-based vs skeletal). What's the right approach?
+game-audio	I need help with this: how to make adaptive music that changes with combat. What's the right approach?
+game-audio	I need help with this: audio is consuming too much memory/CPU and I need pooling. What's the right approach?
 game-design	m designing progression, rewards, and retention (loot, levels, unlocks); what type of player I
-game-design	my game isn't fun and I want to analyze the 30-second core loop
-mobile-games	I'm porting or building a game for iOS/Android and the touch controls are bad
-mobile-games	my mobile game heats up the device or drains battery (thermal throttling, 30 vs 60 FPS)
-multiplayer	how to design matchmaking by skill and latency
-pc-games	I need to support keyboard+mouse and controller with full rebinding
-pc-games	I want to add mod support and Steam Workshop
-vr-ar	I'm developing for Meta Quest
-vr-ar	SteamVR and need the FPS/latency targets (90+ FPS, <20ms)
-web-games	I want to make a game that runs in the browser and don't know which framework to choose
-web-games	should I use WebGPU or WebGL in my new project
-genai-optimization	making content get cited by ChatGPT/Perplexity/Claude/Gemini
-genai-optimization	structuring content for RAG retrieval
-git-workflow	structuring git operations for agent-driven development
+game-design	I need help with this: my game isn't fun and I want to analyze the 30-second core loop. What's the right approach?
+mobile-games	I need help with this: i'm porting or building a game for iOS/Android and the touch controls are bad. What's the right approach?
+mobile-games	I need help with this: my mobile game heats up the device or drains battery (thermal throttling, 30 vs 60 FPS). What's the right approach?
+multiplayer	I need help with this: how to design matchmaking by skill and latency. What's the right approach?
+pc-games	I need help with this: i need to support keyboard+mouse and controller with full rebinding. What's the right approach?
+pc-games	I need help with this: i want to add mod support and Steam Workshop. What's the right approach?
+vr-ar	I need help with this: i'm developing for Meta Quest. What's the right approach?
+vr-ar	I need help with this: steamVR and need the FPS/latency targets (90+ FPS, <20ms). What's the right approach?
+web-games	I need help with this: i want to make a game that runs in the browser and don't know which framework to choose. What's the right approach?
+web-games	I need help with this: should I use WebGPU or WebGL in my new project. What's the right approach?
+genai-optimization	I need help with this: making content get cited by ChatGPT/Perplexity/Claude/Gemini. What's the right approach?
+genai-optimization	I need help with this: structuring content for RAG retrieval. What's the right approach?
+git-workflow	I need help with this: structuring git operations for agent-driven development. What's the right approach?
 gpt-taste	Awwwards-level landing page with scroll animations
 gpt-taste	add GSAP ScrollTrigger with pinned sections
 high-end-visual-design	this design looks like an AI template, make it premium
 high-end-visual-design	I want high-end agency visual polish
-humanizer	editing or reviewing text to make it sound more natural and human-written
-i18n-localization	multi-language support ("set up multiple languages", "add English/Spanish support", "translate the app")
-i18n-localization	locale routing ("/en routes", "detect user language")
+humanizer	I need help with this: editing or reviewing text to make it sound more natural and human-written. What's the right approach?
+i18n-localization	I need help with this: multi-language support ("set up multiple languages", "add English/Spanish support", "translate the app"). What's the right approach?
+i18n-localization	I need help with this: locale routing ("/en routes", "detect user language"). What's the right approach?
 image-to-code	design a stunning hero section
 image-to-code	build a premium landing page
 imagegen-frontend-web	generate reference images of the landing page design
 imagegen-frontend-web	create visual mockups of the site section by section
 industrial-brutalist-ui	declassified blueprint-style brutalist site
 industrial-brutalist-ui	UI with retro-terminal CRT aesthetic and scanlines
-lint-and-validate	you just edited or created code
-lint-and-validate	committing or marking a task as done
-llm-structured-output	choosing between Instructor / PydanticAI / Zod
-llm-structured-output	adding retries+validation to model output
-llmfit-advisor	asks which models run locally
-llmfit-advisor	wants to set up Ollama/LM Studio
-mcp-builder	creating an MCP server from scratch
-mcp-builder	exposing an internal API as an MCP tool
+lint-and-validate	I need help with this: you just edited or created code. What's the right approach?
+lint-and-validate	I need help with this: committing or marking a task as done. What's the right approach?
+llm-structured-output	I need help with this: choosing between Instructor / PydanticAI / Zod. What's the right approach?
+llm-structured-output	I need help with this: adding retries+validation to model output. What's the right approach?
+llmfit-advisor	I need help with this: asks which models run locally. What's the right approach?
+llmfit-advisor	I need help with this: wants to set up Ollama/LM Studio. What's the right approach?
+mcp-builder	I need help with this: creating an MCP server from scratch. What's the right approach?
+mcp-builder	I need help with this: exposing an internal API as an MCP tool. What's the right approach?
 minimalist-ui	clean editorial landing page with no gradients
 minimalist-ui	workspace or productivity tool design
 mobile-design	create an app in React Native or Flutter
 mobile-design	native mobile screen design
-nextjs-react-expert	reviewing code for performance issues
-nextjs-react-expert	First Load JS bundle > 200KB
-nodejs-best-practices	async/await hanging or event loop blocked by CPU-bound work
-nodejs-best-practices	ArkType for validation, 500 error with no centralized handling or wrong status code
-offensive-ai-security	researching AI attack vectors
-offensive-business-logic	scoping an application after surface-level OWASP Top 10 has been covered
-offensive-business-logic	when the asset is a transactional/marketplace/fintech/e-commerce/SaaS app where logic flaws produce direct financial impact
-offensive-cloud	the engagement scope is cloud accounts
-offensive-cloud	you have obtained cloud credentials
-offensive-deserialization	testing deserialization endpoints or developing deserialization exploits
-offensive-fuzzing	setting up or running fuzz campaigns against any target: file parsers
-offensive-graphql	assessing GraphQL endpoints in web app tests or bug bounty
-offensive-idor	insecure direct object reference
-offensive-jwt	hunting auth bypass via token manipulation
-offensive-jwt	evaluating JWT implementation security in web or mobile apps
-offensive-oauth	testing OAuth implementations in web apps or bug bounty
-offensive-osint	performing reconnaissance against a target domain or organization
-offensive-osint	investigating a person or entity
-offensive-parameter-pollution	testing web applications for parameter handling flaws
-offensive-request-smuggling	testing reverse proxy/load balancer configurations
-offensive-sqli	performing web application SQL injection testing
-offensive-sqli	privilege escalation via SQLi
-offensive-ssti	testing web apps for template injection vulnerabilities
-offensive-toctou	you've identified a 'check then act' pattern in code
-offensive-toctou	fuzzing for race conditions
-offensive-waf-bypass	WAF is blocking payloads during web app tests
+nextjs-react-expert	I need help with this: reviewing code for performance issues. What's the right approach?
+nextjs-react-expert	I need help with this: first Load JS bundle > 200KB. What's the right approach?
+nodejs-best-practices	I need help with this: async/await hanging or event loop blocked by CPU-bound work. What's the right approach?
+nodejs-best-practices	I need help with this: arkType for validation, 500 error with no centralized handling or wrong status code. What's the right approach?
+offensive-ai-security	I need help with this: researching AI attack vectors. What's the right approach?
+offensive-business-logic	I need help with this: scoping an application after surface-level OWASP Top 10 has been covered. What's the right approach?
+offensive-business-logic	I need help with this: when the asset is a transactional/marketplace/fintech/e-commerce/SaaS app where logic flaws produce direct financial impact. What's the right approach?
+offensive-cloud	I need help with this: the engagement scope is cloud accounts. What's the right approach?
+offensive-cloud	I need help with this: you have obtained cloud credentials. What's the right approach?
+offensive-deserialization	I need help with this: testing deserialization endpoints or developing deserialization exploits. What's the right approach?
+offensive-fuzzing	I need help with this: setting up or running fuzz campaigns against any target: file parsers. What's the right approach?
+offensive-graphql	I need help with this: assessing GraphQL endpoints in web app tests or bug bounty. What's the right approach?
+offensive-idor	I need help with this: insecure direct object reference. What's the right approach?
+offensive-jwt	I need help with this: hunting auth bypass via token manipulation. What's the right approach?
+offensive-jwt	I need help with this: evaluating JWT implementation security in web or mobile apps. What's the right approach?
+offensive-oauth	I need help with this: testing OAuth implementations in web apps or bug bounty. What's the right approach?
+offensive-osint	I need help with this: performing reconnaissance against a target domain or organization. What's the right approach?
+offensive-osint	I need help with this: investigating a person or entity. What's the right approach?
+offensive-parameter-pollution	I need help with this: testing web applications for parameter handling flaws. What's the right approach?
+offensive-request-smuggling	I need help with this: testing reverse proxy/load balancer configurations. What's the right approach?
+offensive-sqli	I need help with this: performing web application SQL injection testing. What's the right approach?
+offensive-sqli	I need help with this: privilege escalation via SQLi. What's the right approach?
+offensive-ssti	I need help with this: testing web apps for template injection vulnerabilities. What's the right approach?
+offensive-toctou	I need help with this: you've identified a 'check then act' pattern in code. What's the right approach?
+offensive-toctou	I need help with this: fuzzing for race conditions. What's the right approach?
+offensive-waf-bypass	I need help with this: wAF is blocking payloads during web app tests. What's the right approach?
 osforge-canvas	I want to review interactively
 osforge-canvas	I need to approve before implementing
-output-enforcement	generating several components or long documentation
-output-enforcement	test suite that needs all cases written
-performance-profiling	slow page or poor LCP/INP/CLS
-performance-profiling	scroll jank or stuttering animations
-plan-writing	planning a feature implementation
-plan-writing	breaking multi-step work into tasks
+output-enforcement	I need help with this: generating several components or long documentation. What's the right approach?
+output-enforcement	I need help with this: test suite that needs all cases written. What's the right approach?
+performance-profiling	I need help with this: slow page or poor LCP/INP/CLS. What's the right approach?
+performance-profiling	I need help with this: scroll jank or stuttering animations. What's the right approach?
+plan-writing	I need help with this: planning a feature implementation. What's the right approach?
+plan-writing	I need help with this: breaking multi-step work into tasks. What's the right approach?
 arch-builder	decide Server Actions vs API Routes
-phase-discussion	planning any phase with UI
-requirements-clarify	a spec has vague or underspecified areas
-requirements-clarify	the requirements leave room for multiple interpretations
-spec-builder	detailing requirements before implementing
-postgres-optimization	slow page loads caused by database
-powershell-windows	a PowerShell script fails with a parameter or or Unexpected token error
-powershell-windows	an if conditional with -or/-and breaks due to missing parentheses around cmdlets
-prisma-expert	schema changes with >3 models
-prisma-expert	many-to-many or polymorphic relations
-python-patterns	async def blocking or mixing a sync lib into async code
-python-patterns	validating request/response with Pydantic
-adversarial-review	reviewing a spec before implementing
-adversarial-review	reviewing code with maximum skepticism
-edge-case-hunter	asked for edge cases or boundary conditions of a diff/file/function
-edge-case-hunter	verifying null/empty inputs and off-by-one before merging
-elicitation-engine	improve or deepen a spec/PRD
-elicitation-engine	dig deeper into a design decision
+phase-discussion	I need help with this: planning any phase with UI. What's the right approach?
+requirements-clarify	I need help with this: a spec has vague or underspecified areas. What's the right approach?
+requirements-clarify	I need help with this: the requirements leave room for multiple interpretations. What's the right approach?
+spec-builder	I need help with this: detailing requirements before implementing. What's the right approach?
+postgres-optimization	I need help with this: slow page loads caused by database. What's the right approach?
+powershell-windows	I need help with this: a PowerShell script fails with a parameter or or Unexpected token error. What's the right approach?
+powershell-windows	I need help with this: an if conditional with -or/-and breaks due to missing parentheses around cmdlets. What's the right approach?
+prisma-expert	I need help with this: schema changes with >3 models. What's the right approach?
+prisma-expert	I need help with this: many-to-many or polymorphic relations. What's the right approach?
+python-patterns	I need help with this: async def blocking or mixing a sync lib into async code. What's the right approach?
+python-patterns	I need help with this: validating request/response with Pydantic. What's the right approach?
+adversarial-review	I need help with this: reviewing a spec before implementing. What's the right approach?
+adversarial-review	I need help with this: reviewing code with maximum skepticism. What's the right approach?
+edge-case-hunter	I need help with this: asked for edge cases or boundary conditions of a diff/file/function. What's the right approach?
+edge-case-hunter	I need help with this: verifying null/empty inputs and off-by-one before merging. What's the right approach?
+elicitation-engine	I need help with this: improve or deepen a spec/PRD. What's the right approach?
+elicitation-engine	I need help with this: dig deeper into a design decision. What's the right approach?
 readiness-gate	is the PRD aligned with the architecture?
 readiness-gate	do all requirements have a story?
-red-team-tactics	planning an authorized attack simulation/pentest
-red-team-tactics	evaluating detection evasion to test defenses (purple team)
-redesign-existing-projects	I inherited code with generic design
-redesign-existing-projects	modernize the look of this project
-rust-pro	borrow checker or lifetime error in generic code
-rust-pro	designing an async web service with Tokio
-security-threat-model	ly when the user explicitly asks to threat model a codebase or path
-security-threat-model	perform AppSec threat modeling
-seo-fundamentals	improving a page's Google ranking
-seo-fundamentals	implementing schema markup/structured data
-server-management	app crashes and doesn't restart on its own
-server-management	high CPU or memory on the server
+red-team-tactics	I need help with this: planning an authorized attack simulation/pentest. What's the right approach?
+red-team-tactics	I need help with this: evaluating detection evasion to test defenses (purple team). What's the right approach?
+redesign-existing-projects	I need help with this: i inherited code with generic design. What's the right approach?
+redesign-existing-projects	I need help with this: modernize the look of this project. What's the right approach?
+rust-pro	I need help with this: borrow checker or lifetime error in generic code. What's the right approach?
+rust-pro	I need help with this: designing an async web service with Tokio. What's the right approach?
+security-threat-model	I need help with this: ly when the user explicitly asks to threat model a codebase or path. What's the right approach?
+security-threat-model	I need help with this: perform AppSec threat modeling. What's the right approach?
+seo-fundamentals	I need help with this: improving a page's Google ranking. What's the right approach?
+seo-fundamentals	I need help with this: implementing schema markup/structured data. What's the right approach?
+server-management	I need help with this: app crashes and doesn't restart on its own. What's the right approach?
+server-management	I need help with this: high CPU or memory on the server. What's the right approach?
 skill-creator	s description for better triggering accuracy
 skill-creator	testa se a skill dispara bem
-smart-hooks	when: setting up hooks for a project
-smart-hooks	improving Claude Code DX with notifications and backups
-smart-model-dispatch	spawning subagents via Agent tool
-smart-model-dispatch	implementing a feature with multiple mixed-complexity subtasks
+smart-hooks	I need help with this: setting up hooks for a project. What's the right approach?
+smart-hooks	I need help with this: improving Claude Code DX with notifications and backups. What's the right approach?
+smart-model-dispatch	I need help with this: spawning subagents via Agent tool. What's the right approach?
+smart-model-dispatch	I need help with this: implementing a feature with multiple mixed-complexity subtasks. What's the right approach?
 stitch-design-export	quero gerar as telas desse projeto no Google Stitch
 stitch-design-export	cria um DESIGN.md com os tokens do projeto para o Stitch
 stitch-design-taste	m going to generate screens in Google Stitch and want a design system
 stitch-design-taste	translate my visual style into the Stitch format
 stuck-recovery	forget what you were doing
-stuck-recovery	says "stuck", "loop", "it's not working", "try again", "this isn't making progress", "forget what you were doing"
-systematic-debugging	a bug is hard to reproduce
-systematic-debugging	a crash has no clear stacktrace
+stuck-recovery	I need help with this: says "stuck", "loop", "it's not working", "try again", "this isn't making progress", "forget what you were doing". What's the right approach?
+systematic-debugging	I need help with this: a bug is hard to reproduce. What's the right approach?
+systematic-debugging	I need help with this: a crash has no clear stacktrace. What's the right approach?
 tailwind-patterns	migrate the project from Tailwind v3 to v4
 tailwind-patterns	how to configure @theme in Tailwind 4
 taste-design-dials	I want more minimal/more bold
 taste-design-dials	apply the taste dials to this OSForge project
-tdd-workflow	then writes minimal code to pass
-tdd-workflow	when the user mentions TDD
-testing-patterns	writing unit or integration tests
-testing-patterns	deciding what to test vs what to mock
-tlc-spec-driven	tracking decisions across sessions
-tool-safety-classifier	runs in "automatic mode", "yolo mode", "headless", "CI mode", "auto-approve", "no confirmation"
-using-git-worktrees	working on multiple features simultaneously
-using-git-worktrees	needing isolated branches for each parallel agent
+tdd-workflow	I need help with this: then writes minimal code to pass. What's the right approach?
+tdd-workflow	I need help with this: when the user mentions TDD. What's the right approach?
+testing-patterns	I need help with this: writing unit or integration tests. What's the right approach?
+testing-patterns	I need help with this: deciding what to test vs what to mock. What's the right approach?
+tlc-spec-driven	I need help with this: tracking decisions across sessions. What's the right approach?
+tool-safety-classifier	I need help with this: runs in "automatic mode", "yolo mode", "headless", "CI mode", "auto-approve", "no confirmation". What's the right approach?
+using-git-worktrees	I need help with this: working on multiple features simultaneously. What's the right approach?
+using-git-worktrees	I need help with this: needing isolated branches for each parallel agent. What's the right approach?
 vercel-deploy	deploy and give me the link
 vercel-deploy	create a preview deployment
-verification-before-completion	about to claim work is complete
-visual-planner	creating a visual breakdown
-visual-planner	generating interactive architecture HTML
-vulnerability-scanner	mapping a project's attack surface
-vulnerability-scanner	prioritizing risks found in a scan
+verification-before-completion	I need help with this: about to claim work is complete. What's the right approach?
+visual-planner	I need help with this: creating a visual breakdown. What's the right approach?
+visual-planner	I need help with this: generating interactive architecture HTML. What's the right approach?
+vulnerability-scanner	I need help with this: mapping a project's attack surface. What's the right approach?
+vulnerability-scanner	I need help with this: prioritizing risks found in a scan. What's the right approach?
 web-design-guidelines	check my site against best practices
-web-design-guidelines	asked to "review my UI", "check accessibility", "audit design", "review UX"
-webapp-testing	testing a flow with Playwright
-webapp-testing	writing E2E for login/checkout/a critical flow
+web-design-guidelines	I need help with this: asked to "review my UI", "check accessibility", "audit design", "review UX". What's the right approach?
+webapp-testing	I need help with this: testing a flow with Playwright. What's the right approach?
+webapp-testing	I need help with this: writing E2E for login/checkout/a critical flow. What's the right approach?
