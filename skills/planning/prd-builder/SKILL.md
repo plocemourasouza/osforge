@@ -25,7 +25,11 @@ A partnership of equals — not a client-vendor relationship.
 ### 1. Context Discovery
 - Scan the project's docs directory for existing artifacts
 - Load project-context.md if available
+- Load `CONTEXT.md` if it exists, so the PRD is written in the project's canonical terms
 - Report what was found and ask if there are more inputs
+
+**Done when:** the user has confirmed the input list is complete. Starting a PRD on a partial set
+means rewriting it once the missing document turns up, and by then people have read it.
 
 ### 2. Facilitate Definition — Section by Section
 
@@ -62,6 +66,10 @@ Never generate an entire section without input from the user.
 #### F. Risks and Mitigations
 - Technical, business, compliance
 - Each risk with severity and a mitigation plan
+
+**Done when:** all six sections were drafted, shown, and refined with the user's input — A through
+F, none generated unilaterally. A section written without the user is the agent's assumption
+wearing the user's authority, and everything downstream will build on it as if it were decided.
 
 ### 3. Artifact Format
 

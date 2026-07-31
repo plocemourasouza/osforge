@@ -24,6 +24,9 @@ overhead that humans need and LLMs don't.
 - Classify type: PRD, architecture, spec, code, config, docs
 - Estimate total size in tokens
 
+**Done when:** every source file was read end to end. Skimming here is invisible in the output —
+the distillate looks equally confident whether or not it saw the last third of a document.
+
 ### 2. Entity Extraction
 Extract ALL discrete information:
 - Facts and data (numbers, dates, versions, percentages)
@@ -37,6 +40,10 @@ Extract ALL discrete information:
 - Success and validation criteria
 - Risks with severity
 
+**Done when:** every category above was swept across every source — exhaustive, category by
+category. This is the only lossy step in the skill: anything not extracted here cannot be
+recovered downstream, because the distillate replaces the sources rather than accompanying them.
+
 ### 3. Deduplication
 Apply the rules in `./compression-rules.md`:
 - Same fact in multiple docs → keep the version with the most context
@@ -49,6 +56,10 @@ For each item: "Does the downstream skill need this?"
 - Eliminate clearly irrelevant items
 - When in doubt, KEEP — err toward preservation
 - NEVER eliminate: decisions, rejected alternatives, open questions, constraints
+
+**Done when:** every dropped item was dropped by an explicit judgement, not by running out of
+attention. The four protected classes are still present in full — verify by counting them before
+and after, since this is where silent loss happens.
 
 ### 5. Thematic Grouping
 Organize into themes derived from the content (not a fixed template).
@@ -80,6 +91,10 @@ compression_ratio: "{X:1}"
 Body: dense bullets grouped by thematic `##` headings.
 No prose, no paragraphs — bullets only.
 No decorative formatting. Semicolons for short related items.
+
+**Done when:** every entity that survived step 4 appears in the body. A distillate is judged by
+what it did NOT lose; a smaller ratio achieved by dropping content is not compression, it is
+deletion wearing compression's name.
 
 ### 8. Splitting (if distillate > ~5000 tokens)
 Create a `{base}-distillate/` directory:

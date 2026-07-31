@@ -49,6 +49,10 @@ Structure all received comments:
 5. **{question}** → {answer}
 ```
 
+**Done when:** every comment on the PR appears in the catalog, including the ones you disagree
+with and the ones that read as throwaway remarks. Cataloguing only what you intend to act on
+turns this step into agreement with yourself.
+
 ### 2. Classify each item
 
 For each piece of feedback, classify:
@@ -56,6 +60,9 @@ For each piece of feedback, classify:
 - **Partially agree → discuss**: I get the point but there's nuance, respond on the PR explaining
 - **Disagree → justify**: I have a good reason to keep the code as is, explain why
 - **Unsure → ask**: I didn't understand the comment, request clarification
+
+**Done when:** every catalogued item carries one of the four classifications. Silence is not a
+classification — an unclassified comment is one the reviewer will have to raise a second time.
 
 ### 3. Implement fixes
 
@@ -73,6 +80,10 @@ After implementing, verify:
 - `bun tsc --noEmit` — TypeScript still clean?
 - `bun test` — tests still passing?
 - Does the fix resolve the reported problem?
+
+**Done when:** every "implement" item is implemented and the three checks were RUN after the last
+edit. Running them after the first fix and assuming they hold for the rest is how a review round
+produces a second review round.
 
 ### 4. Respond on the PR
 
@@ -93,6 +104,10 @@ For each handled item, formulate a response:
 **Optional — deferred:**
 - 📋 {item N}: I agree it would be better. Created issue #{N} to address in another branch.
 ```
+
+**Done when:** every catalogued item has a public response — including the disagreements and the
+deferrals. An item fixed silently leaves the reviewer re-checking it; an item ignored silently
+reads as having been missed.
 
 ### 5. Request re-review
 

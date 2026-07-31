@@ -26,10 +26,16 @@ Read `./methods.csv` (fields: num, category, method_name, description, output_pa
 - Analyze current content: type, complexity, risks, creative potential
 - Identify the weakest areas of the content that would benefit from elicitation
 
+**Done when:** the weak areas are named specifically — a section, a decision, an assumption — not
+"could be stronger overall". Selection in step 3 is only as good as this list.
+
 ### 3. Intelligent Selection
 1. Select 3 methods that best apply to the context and content type
 2. Balance between foundational and specialized
 3. Prioritize methods that attack the weakest identified areas
+
+**Done when:** each of the 3 methods is tied to a weak area from step 2. Three interesting methods
+that attack nothing identified is a menu, not a selection.
 
 ### 4. Present and Execute
 
@@ -58,6 +64,10 @@ x. Finish with current content
   Allow selection by number or name.
 
 **If x:** Return the final refined content to the calling skill.
+
+**Done when:** the user chose `x`. This loop ends on the user's decision, never on yours — a
+refinement round closed early because the content "looks good now" is the one judgement this skill
+exists to take away from the agent.
 
 ### 5. Accumulation
 Each method accumulates on top of previous improvements.
