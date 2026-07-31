@@ -79,6 +79,10 @@ Check coverage in each dimension:
 - Who can view/edit what?
 - Are there LGPD or auditing requirements?
 
+**Done when:** all five dimensions carry a verdict — covered, or a named gap. A dimension left
+unexamined produces no question, and the gap then travels into the spec looking like a decision
+somebody made.
+
 ### 2. Generate clarification questions
 
 For each identified gap, formulate a specific and actionable question:
@@ -105,12 +109,19 @@ For each identified gap, formulate a specific and actionable question:
 
 Present the questions in groups by dimension. Maximum 8-10 questions total — prioritize the most impactful ones.
 
+**Done when:** every gap from step 1 either has a question or an explicit note that it was
+deprioritised out of the 8-10 budget. A gap silently dropped for lack of room is indistinguishable
+later from a gap nobody found.
+
 ### 3. Process answers
 
 For each answer received:
 - Record the decision
 - Identify whether the answer generates new questions (maximum 2 rounds of follow-up)
 - Mark the area as "clarified" ✅
+
+**Done when:** every question asked has an answer recorded, or is marked as deferred with what
+would settle it. "The user did not reply to that one" is a state to write down, not to forget.
 
 ### 4. Generate the Clarifications Record
 

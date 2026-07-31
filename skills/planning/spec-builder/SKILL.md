@@ -54,11 +54,19 @@ Bring structure and questions, not ready-made answers.
 - Identify files that will be affected by the change
 - Map relevant existing patterns (naming, structure, data flow)
 - If project-context.md exists: check the rules that apply
+- If `CONTEXT.md` exists: the spec is written in its vocabulary, not in new words
+
+**Done when:** every file the change will touch is named. A spec that discovers affected files
+during implementation was an estimate, and the wave plan built on it is wrong by the same amount.
 
 ### 2. Clarify Intent
 - If the demand has ambiguity → numbered questions
 - Verify that ALL were answered before moving forward
 - Do not make things up — if you do not know, ask
+
+**Done when:** every question asked has an answer. Not "most" — an unanswered question becomes an
+assumption, and an assumption in a spec is indistinguishable from a decision to everyone who reads
+it afterwards.
 
 ### 3. Produce the Tech Spec
 
@@ -110,6 +118,9 @@ Before presenting, validate:
 - [ ] **Scoped:** Is the spec at most ~1600 tokens?
 
 If the spec exceeds 1600 tokens, propose a split to the user.
+
+**Done when:** all five boxes are ticked against the actual text, not against intent. This is the
+last check before the spec reaches a decomposer that will treat every word in it as settled.
 
 ### 5. CHECKPOINT
 Present the complete spec to the user.

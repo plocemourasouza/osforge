@@ -50,6 +50,10 @@ For each relevant architectural decision:
 **Consequences:** {what changes with this decision}
 ```
 
+**Done when:** the decision has a recorded ADR carrying real rejected alternatives. An ADR with no
+alternatives means there was no trade-off, and a decision with no trade-off did not need a
+decision step — say so and move on rather than manufacturing one.
+
 ### 3. Decision Areas (adapt to the project)
 
 - **Data Model:** Prisma schema — entities, relations, enums
@@ -61,6 +65,10 @@ For each relevant architectural decision:
 - **Caching:** When and how (ISR, SWR, edge cache)
 - **Error Handling:** Error and recovery patterns
 - **Observability:** Logging, monitoring if applicable
+
+**Done when:** each area above is either decided or explicitly marked not-applicable to this
+project. Exhaustive: an area passed over in silence resurfaces during implementation, where the
+choice gets made by whoever hits it first, without a record.
 
 ### 4. Artifact Format
 
