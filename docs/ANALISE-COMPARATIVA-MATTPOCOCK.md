@@ -222,6 +222,24 @@ bloqueadas pelo harness (**R14**). Essa é a ordem correta: medir antes de corta
 
 ---
 
+## 8.1 Adendo — cobertura medida (2026-07-31)
+
+Três rodadas reais da suíte gerada (`--generated --sample 30`), no ambiente do usuário:
+
+| Rodada | Placar bruto | Após classificação |
+|---|---|---|
+| 1ª (interrompida por bug de `set -e` no harness) | 1 caso | expôs: 17 skills core aninhadas invisíveis em runtime (deploy achatado em resposta) |
+| 2ª | 25 PASS · 4 FAIL · 1 TIMEOUT | 2 falhas reais; 3 artefatos do teste (workdir compartilhado, timeout-com-evidência, prompt pressupondo contexto) — todos corrigidos |
+| 3ª (pós-correções + protocolo ampliado) | **30 PASS · 0 FAIL · 0 TIMEOUT** | auditada nos streams: 9 invocações nativas, 21 resoluções via manifesto, zero falso positivo |
+
+As duas falhas reais da 2ª rodada tinham a mesma anatomia — o modelo respondeu competentemente de
+conhecimento próprio sem consultar o manifesto — e motivaram o segundo gatilho do protocolo de
+resolução ("prestes a produzir entregável multi-passo que se sente capaz de escrever sozinho →
+varra o manifesto antes"). A 3ª rodada, com o protocolo deployado, não repetiu o padrão.
+
+A métrica "skills com resolução provada por prompt ingênuo" saiu de **desconhecida** para
+**100% na amostra corrente** (30/240 casos por rodada; rodadas sucessivas cobrem casos novos).
+
 ## 9. Uma frase
 
 O OSForge tem **mais motor** (roteamento de modelo, agentes, ondas, estado, harness) e o repo do Matt
