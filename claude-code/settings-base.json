@@ -4,5 +4,6 @@
   "env": {
     "ENABLE_TOOL_SEARCH": "true"
   },
-  "_measured": "Same machine, same prompt, one variable (2026-07-30, 11 MCP servers): key absent -> 68 MCP tools upfront, 96,834 token baseline. 'auto' -> 32 upfront, overflow deferred, 82,914. 'true' -> 0 upfront, 75,875. So 'true' saves ~21k tokens per session versus absent and ~7k versus 'auto', with every MCP server still connected. Do not 'optimise' this to unset: the docs call unset the deferring default, but on this setup it loads everything upfront. Verify with scripts/measure-context.py before changing it."
+  "_measured": "Same machine, same prompt, one variable (2026-07-30, 11 MCP servers): key absent -> 68 MCP tools upfront, 96,834 token baseline. 'auto' -> 32 upfront, overflow deferred, 82,914. 'true' -> 0 upfront, 61,324 after deploy. ~35k tokens per session, every MCP server still connected.",
+  "_why_true_and_not_unset": "This machine sets ANTHROPIC_BASE_URL to a local proxy (127.0.0.1:8787) in ~/.claude/settings.json. Per docs.claude.com/en/docs/claude-code/mcp#configure-tool-search, an UNSET key falls back to loading every MCP tool upfront whenever the base URL is not a first-party host — so the documented 'deferring default' does the opposite here. 'true' forces deferral through the proxy, which this proxy supports (verified: 0 MCP tools in init, requests succeed). If ANTHROPIC_BASE_URL is ever removed, unset becomes correct again. Re-measure with scripts/measure-context.py before touching this."
 }
