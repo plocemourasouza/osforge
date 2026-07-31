@@ -97,6 +97,10 @@ expected response, for users who prefer to answer in a block.
 Continue until all relevant gray areas are resolved
 or the user explicitly says "enough, proceed".
 
+**Done when:** every gray area from step 2 is either decided or explicitly deferred by the user.
+The loop ends on the user's word, not on the agent judging the discussion sufficient — an area
+closed unilaterally becomes a decision nobody remembers making.
+
 ### 4. Generate CONTEXT.md
 
 ```markdown

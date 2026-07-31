@@ -81,6 +81,10 @@ Quick rules:
 blocks and overwrite as it completes. The viewer detects changes via SSE and
 reloads without a manual refresh.
 
+**Done when:** the file is written and valid against the schema, with the project-slug prefix in
+`id`. The data dir is shared across every project on the machine, so an unprefixed id silently
+overwrites another project's artifact.
+
 ### 3. Present to the user
 
 Print the URL and ask for review:
@@ -103,6 +107,10 @@ Mandatory checks:
   reviewed a previous version) — notify and reconcile before acting.
 - Act on `responses` per block: `checklist` → checked items; `form` → filled
   values; `decision` → action (`approve` / `edit` / `reject`) + comment.
+
+**Done when:** the feedback file was read and its revision matched, before anything else in the
+turn. Acting first and reading the feedback afterwards is the failure this step exists to prevent —
+by then the work has already ignored the user's review.
 
 **Requested revisions:** overwrite the same `artifacts/<slug>.json` file,
 incrementing `revision`. The viewer reloads via SSE automatically.

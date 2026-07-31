@@ -59,6 +59,10 @@ Before starting the loop, collect from the user:
 | What is the problem/objective? | "the skill generates code without TypeScript" or "p95 latency above 200ms" |
 | Which files may be modified? | Explicit list (scope constraint) |
 | Which files are read-only? | Guard files — never modified |
+
+**Done when:** all four answers exist, the modifiable list is closed, and the metric is stated as
+something measurable. A refinement loop with a fuzzy objective optimises for whatever the agent
+finds easiest to change, and reports success against it.
 ### 2. Verify + Guard (mandatory separation)
 
 ```
@@ -68,6 +72,10 @@ Guard:  <command that ensures nothing else broke>
 
 **Verify** = "Did the metric improve?" — it is the optimization objective.
 **Guard** = "Did anything else break?" — it is the safety net.
+
+**Done when:** both commands exist, are distinct, and were RUN once to establish the baseline
+before any edit. Without a before-value there is nothing to compare against, and every subsequent
+iteration reports improvement against a number nobody measured.
 
 | Scenario | Verify | Guard | Decision |
 |---|---|---|---|

@@ -122,6 +122,9 @@ config_type = detect_config_type(file_path)
 # possíveis: skill, rule, hook, agent, claude_md_override
 ```
 
+**Done when:** the type is settled. Every later step branches on it, so a wrong guess here yields a
+confident critique against the wrong baseline.
+
 ### Step 2: Load baseline for comparison
 
 ```python
@@ -132,6 +135,10 @@ baseline = {
     "agent": load_all_agents("agents/*.md"),
 }[config_type]
 ```
+
+**Done when:** the baseline is loaded. Conflicts and duplication are only visible against the rest
+of the config — critiquing a file in isolation catches typos and misses the collision that made the
+critique worth running.
 
 ### Step 3: Apply the 4 axes with structured output
 
@@ -164,6 +171,10 @@ critique:
       issues: []
   recommendation: "Iterate Clarity + Conflicts before merging. Completeness is nice-to-have."
 ```
+
+**Done when:** all **4 axes** carry a score and their issues — clarity, completeness, conflicts,
+actionability. Exhaustive: three axes plus a grade reads exactly like four, and the axis quietly
+dropped is the one the author most needed.
 
 ### Step 4: Final recommendation
 

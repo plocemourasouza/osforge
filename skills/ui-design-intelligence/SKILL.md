@@ -59,6 +59,11 @@ F → references/chart-types.md     — chart types if it's a dashboard/analytic
 
 When the product type matches a rule in `reasoning-rules.md`, use it as the backbone and refine with the other references.
 
+**Done when:** every reference A–F was consulted or explicitly ruled out for this product type
+(F only applies to dashboards, for instance). Skipping a reference produces a spec that looks
+complete while missing the one dimension it never considered — typography and colour survive that
+omission visibly, UX guidelines do not.
+
 ### 3. Synthesize the design system spec
 
 Produce a structured block:

@@ -55,6 +55,10 @@ is the source of truth that all skills and agents must respect.
 - Organization (`__tests__/`, co-located, `*.test.ts`, `*.spec.ts`)
 - Mocking patterns, fixtures, factories
 
+**Done when:** every config file above was read or confirmed absent, and each code area was sampled.
+Exhaustive by design — this file becomes the stack constraint that later skills trust without
+re-checking, so a pattern missed here is a pattern the whole project stops seeing.
+
 ### 2. Present Discovery
 Show a summary of what was found:
 - Stack with versions
@@ -62,6 +66,9 @@ Show a summary of what was found:
 - Rule areas found
 
 Ask: "Is this correct? Anything to add or fix?"
+
+**Done when:** the user has confirmed or corrected the summary. Discovery reads the code, but only
+the user knows which patterns are intended and which are accidents nobody has cleaned up yet.
 
 ### 3. Generate project-context.md
 

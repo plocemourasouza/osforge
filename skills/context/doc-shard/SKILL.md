@@ -28,12 +28,19 @@ with an index, for efficient consumption by LLMs and other skills.
 - Map sections and approximate sizes in tokens
 - Preserve the original frontmatter
 
+**Done when:** every heading at the target level is mapped. A section missed here is a section that
+simply does not exist after sharding, and the index will look complete without it.
+
 ### 2. Generate Shards
 For each section at the specified level:
 - Create file: `{NN}-{slug-do-heading}.md`
 - Include a context header: `<!-- Part N of M — {original heading} -->`
 - Include the section content with sub-headings preserved
 - If an individual section > ~3000 tokens, subdivide at the next heading level
+
+**Done when:** shard count equals the section count from step 1, and the concatenated shards
+account for the whole source. Sharding is lossless by definition — if content vanished, this is
+not a shard, it is a summary.
 
 ### 3. Generate Index
 Create `_index.md`:

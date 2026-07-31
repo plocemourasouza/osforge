@@ -106,6 +106,9 @@ Check each decision recorded in `CONTEXT.md`:
 - Identify the `.tsx` files to audit
 - If a screenshot is available: compare visually
 
+**Done when:** the file list is closed and every file on it was opened. An audit of the files that
+happened to be convenient reports on the UI it looked at, not on the UI that ships.
+
 ### 2. Audit pillar by pillar
 For each pillar, evaluate: ✅ OK | ⚠️ Attention | ❌ Problem
 
@@ -114,6 +117,9 @@ Record issues with:
 - **Description:** what's wrong and why
 - **Impact:** High (blocks use) / Medium (degrades experience) / Low (cosmetic)
 - **Suggested fix:** specific code or guidance
+
+**Done when:** all **6 pillars** carry a verdict — exhaustive, one by one. Pillars are not a menu:
+the one skipped is reliably the one nobody else checks either, which is why it was skipped.
 
 ### 3. Generate report
 
