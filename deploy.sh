@@ -144,11 +144,25 @@ import json, os
 base_src = os.environ['BASE_SRC']; settings = os.environ['SETTINGS']
 with open(base_src) as f: base = json.load(f)
 base.pop('_comment', None)
+base.pop('_unset_rationale', None)
+# _unset: caminhos "a.b" que o OSForge quer REMOVER da settings viva. Sem isso,
+# uma configuração empurrada por engano (como ENABLE_TOOL_SEARCH=auto) fica
+# presa para sempre: o merge só adiciona, nunca retrata.
+unset_paths = base.pop('_unset', [])
 try:
     with open(settings) as f: cur = json.load(f)
 except (FileNotFoundError, json.JSONDecodeError):
     cur = {}
 applied = []
+for path in unset_paths:
+    parts = path.split('.')
+    node = cur
+    for p in parts[:-1]:
+        node = node.get(p) if isinstance(node, dict) else None
+        if node is None: break
+    if isinstance(node, dict) and parts[-1] in node:
+        node.pop(parts[-1])
+        applied.append(f"-{path}")
 for k, v in base.items():
     if k == 'env' and isinstance(v, dict):
         env = cur.setdefault('env', {})
