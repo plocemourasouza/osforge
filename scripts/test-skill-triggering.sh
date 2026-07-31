@@ -34,6 +34,16 @@
 #   # Suíte ampla colhida do frontmatter (240 casos — custa API)
 #   ./scripts/test-skill-triggering.sh --generated --sample 20
 #
+#   # Rodar o claude em um diretório específico (padrão: temporário neutro)
+#   ./scripts/test-skill-triggering.sh --workdir ~/Projects/algum-projeto
+#
+# ONDE O CLAUDE RODA IMPORTA:
+#   Por padrão cada caso roda em um diretório temporário vazio. Rodando de
+#   dentro do repo OSForge, `skills/<x>/SKILL.md` está a um Glob de distância e
+#   o modelo acha a skill explorando o diretório — o teste passaria a medir
+#   "sabe achar arquivo no cwd" em vez de "o manifesto funciona". O script avisa
+#   se o WORKDIR estiver dentro do repo.
+#
 #   # Validar sintaxe sem rodar:
 #   bash -n scripts/test-skill-triggering.sh
 #
@@ -96,7 +106,8 @@ elif command -v gtimeout &>/dev/null; then
     TIMEOUT_CMD="gtimeout $TIMEOUT_SECS"
 else
     TIMEOUT_CMD=""
-    echo "[WARN] no timeout/gtimeout found — running without per-case timeout" >&2
+    echo "[WARN] sem timeout/gtimeout — rodando sem limite por caso" >&2
+    echo "[WARN] no macOS: brew install coreutils (fornece gtimeout)" >&2
 fi
 
 # ---------------------------------------------------------------------------
@@ -116,90 +127,20 @@ log_fail()  { echo "[FAIL]  $*"; }
 log_skip()  { echo "[SKIP]  $*"; }
 log_warn()  { echo "[WARN]  $*"; }
 
-# Extrai skills acionadas do log (nome do campo "skill" nos eventos)
-extract_triggered_skills() {
-    local log_file="$1"
-    grep -o '"skill":"[^"]*"' "$log_file" 2>/dev/null | \
-        sed 's/"skill":"//;s/"//' | sort -u || true
-}
-
-# Verifica se a skill esperada aparece no stream
-check_skill_triggered() {
-    local log_file="$1"
-    local skill_name="$2"
-
-    # Padrão: "skill":"nome" ou "skill":"namespace:nome"
-    local skill_pattern='"skill":"([^"]*:)?'"${skill_name}"'"'
-
-    if grep -q '"name":"Skill"' "$log_file" 2>/dev/null && \
-       grep -qE "$skill_pattern" "$log_file" 2>/dev/null; then
-        return 0
-    fi
-    return 1
-}
-
-# ---------------------------------------------------------------------------
-# Resolução via manifesto (Model A)
-# ---------------------------------------------------------------------------
-# Só as skills de claude-code/skills-core.txt vivem em ~/.claude/skills e podem
-# ser invocadas pela ferramenta Skill. As demais são alcançadas lendo o
-# SKILL.md apontado pelo MANIFEST em SKILLS.md — e para essas, exigir invocação
-# nativa reprovaria 100% dos casos por construção. Sem esta asserção o Model A
-# não tem critério de aceite.
-
-# Mapa nome→path relativo, construído uma vez (nome do frontmatter E nome do
-# diretório apontam para o mesmo path, porque divergem em algumas skills:
-# skills/evolve tem `name: osforge-evolve`).
-SKILL_MAP_FILE="${OUTPUT_BASE}/skill-map.tsv"
-
-build_skill_map() {
-    mkdir -p "$OUTPUT_BASE"
-    python3 - "$REPO_ROOT" > "$SKILL_MAP_FILE" <<'PY'
-import re, sys
-from pathlib import Path
-root = Path(sys.argv[1]) / "skills"
-for sf in sorted(root.rglob("SKILL.md")):
-    rel = sf.parent.relative_to(root).as_posix()
-    m = re.match(r"^---\s*\n(.*?)\n---", sf.read_text(encoding="utf-8", errors="replace"), re.S)
-    fm = m.group(1) if m else ""
-    n = re.search(r'^name:\s*["\']?([^"\'#\n]+)["\']?\s*$', fm, re.M)
-    keys = {sf.parent.name}
-    if n:
-        keys.add(n.group(1).strip())
-    for k in keys:
-        print(f"{k}\t{rel}")
-PY
-}
-
-skill_rel_path() {
-    awk -F'\t' -v n="$1" '$1==n {print $2; exit}' "$SKILL_MAP_FILE" 2>/dev/null || true
-}
-
-is_core_skill() {
-    local rel="$1"
-    [ -z "$rel" ] && return 1
-    grep -qxF "$rel" "$REPO_ROOT/claude-code/skills-core.txt" 2>/dev/null
-}
-
-# PASS por resolução: o stream mostra uma leitura do SKILL.md da skill esperada.
-# Exige name+path no MESMO evento — o modelo apenas CITAR o caminho em texto não
-# conta como ter alcançado a skill.
-check_skill_resolved() {
-    local log_file="$1"
-    local rel="$2"
-    [ -z "$rel" ] && return 1
-
-    grep -E '"name":"(Read|Glob|Grep|Bash)"' "$log_file" 2>/dev/null \
-        | grep -qF "skills/${rel}/SKILL.md" 2>/dev/null
-}
+# Lógica de veredito: arquivo compartilhado com tests/test-assertions.sh
+# shellcheck source=lib/harness-assertions.sh
+source "$SCRIPT_DIR/lib/harness-assertions.sh"
 
 # Mostra primeira resposta do assistant (truncada)
 show_first_response() {
     local log_file="$1"
     if [ "$HAS_JQ" = "1" ]; then
+        # Pega o primeiro bloco de TEXTO. `content[0]` pegava o bloco de
+        # thinking, cujo texto é vazio e vinha acompanhado de uma signature
+        # gigante — o relatório ficava ilegível.
         grep '"type":"assistant"' "$log_file" 2>/dev/null | \
-            head -1 | \
-            jq -r '.message.content[0].text // .message.content // "n/a"' 2>/dev/null | \
+            jq -r '[.message.content[]? | select(.type=="text") | .text] | first // empty' 2>/dev/null | \
+            grep -v '^$' | head -1 | \
             head -c 300 || echo "(não foi possível extrair)"
     else
         grep '"type":"assistant"' "$log_file" 2>/dev/null | \
@@ -232,14 +173,20 @@ run_case() {
 
     # Rodar claude headless com output stream-json
     # --dangerously-skip-permissions: necessário em modo headless/não-interativo
+    #
+    # cd para WORKDIR: rodando de dentro do repo OSForge, `skills/<x>/SKILL.md`
+    # está a um Glob de distância, e o modelo acha a skill explorando o
+    # diretório — não pelo manifesto. O teste mediria "o modelo sabe achar
+    # arquivo no cwd", que é justamente o que NÃO queremos saber. O ambiente
+    # honesto é um diretório neutro, como qualquer projeto satélite.
     set +e
-    $TIMEOUT_CMD claude \
+    ( cd "$WORKDIR" && $TIMEOUT_CMD claude \
         -p "$prompt" \
         --dangerously-skip-permissions \
         --max-turns "$MAX_TURNS" \
         --output-format stream-json \
         --verbose \
-        < /dev/null > "$log_file" 2>&1
+        < /dev/null ) > "$log_file" 2>&1
     local exit_code=$?
     set -e
 
@@ -339,6 +286,7 @@ load_cases() {
 CASES_FILE="$DEFAULT_CASES_FILE"
 FILTER_SKILLS=""
 SAMPLE_N=""
+WORKDIR=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -359,6 +307,11 @@ while [[ $# -gt 0 ]]; do
             # Amostra aleatória de N casos: a suíte completa custa API demais
             # para rodar inteira a cada commit.
             SAMPLE_N="$2"
+            shift 2
+            ;;
+        --workdir)
+            # Diretório onde o `claude` roda. Padrão: temporário vazio.
+            WORKDIR="$2"
             shift 2
             ;;
         --help|-h)
@@ -411,6 +364,21 @@ FAILED=0
 SKIPPED=0
 TIMED_OUT=0
 declare -a RESULTS=()
+
+# Diretório neutro: o teste tem de medir alcance pelo manifesto, não a
+# capacidade do modelo de achar arquivo no diretório corrente.
+if [ -z "$WORKDIR" ]; then
+    WORKDIR="${OUTPUT_BASE}/workdir"
+    mkdir -p "$WORKDIR"
+fi
+case "$(cd "$WORKDIR" && pwd)/" in
+    "$REPO_ROOT"/*)
+        log_warn "WORKDIR está dentro do repo OSForge ($WORKDIR)."
+        log_warn "As skills não-core ficam alcançáveis por exploração do diretório,"
+        log_warn "e um PASS por resolução deixa de provar que o manifesto funcionou."
+        ;;
+esac
+log_info "Workdir do claude: $WORKDIR"
 
 build_skill_map
 log_info "Mapa de skills: $(wc -l < "$SKILL_MAP_FILE" | tr -d ' ') entradas"

@@ -21,10 +21,13 @@ HARNESS="$REPO_ROOT/scripts/test-skill-triggering.sh"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
-# Importa só as funções do harness, sem executar o corpo dele.
-# shellcheck disable=SC1090
+# A mesma biblioteca que o harness usa — não uma cópia, nem um trecho extraído.
+# (A versão anterior fatiava o harness com sed e sourceava via process
+# substitution: silenciosamente não definia nada no bash 3.2 do macOS, e o
+# relatório acusava "asserção falhou" em vez de "biblioteca não carregou".)
 OUTPUT_BASE="$WORK"
-source <(sed -n '/^# Helpers$/,/^# Rodar um único caso/p' "$HARNESS")
+# shellcheck source=../scripts/lib/harness-assertions.sh
+source "$REPO_ROOT/scripts/lib/harness-assertions.sh"
 
 PASS=0
 FAIL=0
