@@ -31,6 +31,9 @@
 #   # Usar arquivo de casos diferente
 #   ./scripts/test-skill-triggering.sh --cases /caminho/para/outros-casos.tsv
 #
+#   # Suíte ampla colhida do frontmatter (240 casos — custa API)
+#   ./scripts/test-skill-triggering.sh --generated --sample 20
+#
 #   # Validar sintaxe sem rodar:
 #   bash -n scripts/test-skill-triggering.sh
 #
@@ -38,14 +41,31 @@
 #   Arquivos de log em /tmp/osforge-skill-tests/<timestamp>/<skill>/
 #   Relatório final no stdout com PASS/FAIL por skill e contagem total.
 #
-# COMO DECIDE PASS/FAIL:
-#   O stream-json do `claude` emite eventos por linha. Um evento de invocação
-#   da ferramenta Skill tem `"name":"Skill"` e dentro do input o campo
-#   `"skill":"<nome>"` (podendo ter namespace: "ns:nome"). O script:
-#     1. Grava o stream completo em LOG_FILE
-#     2. Verifica se alguma linha contém '"name":"Skill"'
-#     3. Verifica se alguma linha contém '"skill":"<nome>"' ou '"skill":"*:<nome>"'
-#     4. Ambas verdadeiras → PASS; qualquer falha → FAIL
+# COMO DECIDE PASS/FAIL (dois modos, por causa do Model A):
+#   Só as skills de claude-code/skills-core.txt vivem em ~/.claude/skills e podem
+#   ser invocadas pela ferramenta Skill. As demais são alcançadas lendo o SKILL.md
+#   apontado pelo MANIFEST em SKILLS.md. Exigir invocação nativa de todas
+#   reprovaria as não-core por construção — e sem a segunda asserção o Model A
+#   não teria como ser validado.
+#
+#   skill CORE      → PASS exige invocação nativa:
+#                     linha com '"name":"Skill"' E '"skill":"<nome>"' (ou "ns:nome")
+#   skill NÃO-CORE  → PASS com invocação nativa OU resolução via manifesto:
+#                     evento Read/Glob/Grep/Bash citando skills/<rel>/SKILL.md.
+#                     O OU existe porque install-skill.sh pode tê-la tornado
+#                     nativa naquele projeto.
+#                     Só MENCIONAR o caminho em texto não conta — nome da
+#                     ferramenta e caminho têm de estar no mesmo evento.
+#
+#   A lógica de veredito é testada offline, sem gastar API: ./tests/test-assertions.sh
+#
+# SUÍTES DE CASOS:
+#   scripts/skill-triggering-cases.tsv            escrita à mão, ~25 casos, difícil
+#                                                 (fraseado do usuário, sem vocabulário da description)
+#   scripts/skill-triggering-cases.generated.tsv  colhida do frontmatter (--generated),
+#                                                 240 casos: o gatilho que o próprio autor escreveu.
+#                                                 FAIL aqui = description quebrada.
+#                                                 Regenerar: python3 scripts/_generate_triggering_cases.py
 #
 # VARIÁVEIS DE AMBIENTE (override):
 #   OSFORGE_TEST_MAX_TURNS   número de turnos max por caso (padrão: 3)
@@ -118,6 +138,61 @@ check_skill_triggered() {
     return 1
 }
 
+# ---------------------------------------------------------------------------
+# Resolução via manifesto (Model A)
+# ---------------------------------------------------------------------------
+# Só as skills de claude-code/skills-core.txt vivem em ~/.claude/skills e podem
+# ser invocadas pela ferramenta Skill. As demais são alcançadas lendo o
+# SKILL.md apontado pelo MANIFEST em SKILLS.md — e para essas, exigir invocação
+# nativa reprovaria 100% dos casos por construção. Sem esta asserção o Model A
+# não tem critério de aceite.
+
+# Mapa nome→path relativo, construído uma vez (nome do frontmatter E nome do
+# diretório apontam para o mesmo path, porque divergem em algumas skills:
+# skills/evolve tem `name: osforge-evolve`).
+SKILL_MAP_FILE="${OUTPUT_BASE}/skill-map.tsv"
+
+build_skill_map() {
+    mkdir -p "$OUTPUT_BASE"
+    python3 - "$REPO_ROOT" > "$SKILL_MAP_FILE" <<'PY'
+import re, sys
+from pathlib import Path
+root = Path(sys.argv[1]) / "skills"
+for sf in sorted(root.rglob("SKILL.md")):
+    rel = sf.parent.relative_to(root).as_posix()
+    m = re.match(r"^---\s*\n(.*?)\n---", sf.read_text(encoding="utf-8", errors="replace"), re.S)
+    fm = m.group(1) if m else ""
+    n = re.search(r'^name:\s*["\']?([^"\'#\n]+)["\']?\s*$', fm, re.M)
+    keys = {sf.parent.name}
+    if n:
+        keys.add(n.group(1).strip())
+    for k in keys:
+        print(f"{k}\t{rel}")
+PY
+}
+
+skill_rel_path() {
+    awk -F'\t' -v n="$1" '$1==n {print $2; exit}' "$SKILL_MAP_FILE" 2>/dev/null || true
+}
+
+is_core_skill() {
+    local rel="$1"
+    [ -z "$rel" ] && return 1
+    grep -qxF "$rel" "$REPO_ROOT/claude-code/skills-core.txt" 2>/dev/null
+}
+
+# PASS por resolução: o stream mostra uma leitura do SKILL.md da skill esperada.
+# Exige name+path no MESMO evento — o modelo apenas CITAR o caminho em texto não
+# conta como ter alcançado a skill.
+check_skill_resolved() {
+    local log_file="$1"
+    local rel="$2"
+    [ -z "$rel" ] && return 1
+
+    grep -E '"name":"(Read|Glob|Grep|Bash)"' "$log_file" 2>/dev/null \
+        | grep -qF "skills/${rel}/SKILL.md" 2>/dev/null
+}
+
 # Mostra primeira resposta do assistant (truncada)
 show_first_response() {
     local log_file="$1"
@@ -181,11 +256,27 @@ run_case() {
     fi
 
     # Verificar PASS/FAIL
-    local result
+    #   core     → tem de ser invocada nativamente (ferramenta Skill)
+    #   não-core → vale invocação nativa OU resolução via manifesto (Read do SKILL.md);
+    #              já pode estar instalada no projeto por install-skill.sh, daí o OU
+    local rel result
+    rel="$(skill_rel_path "$skill_name")"
+
     if check_skill_triggered "$log_file" "$skill_name"; then
         result="PASS"
+        log_info "Modo: invocação nativa"
+    elif ! is_core_skill "$rel" && check_skill_resolved "$log_file" "$rel"; then
+        result="PASS"
+        log_info "Modo: resolvida via manifesto (skills/${rel}/SKILL.md)"
     else
         result="FAIL"
+        if [ -z "$rel" ]; then
+            log_warn "skill '$skill_name' não existe em skills/ — caso órfão no TSV"
+        elif is_core_skill "$rel"; then
+            log_info "Esperado: invocação nativa (skill está no core allowlist)"
+        else
+            log_info "Esperado: invocação nativa OU leitura de skills/${rel}/SKILL.md"
+        fi
     fi
 
     echo "$result" > "${out_dir}/result.txt"
@@ -247,6 +338,7 @@ load_cases() {
 # ---------------------------------------------------------------------------
 CASES_FILE="$DEFAULT_CASES_FILE"
 FILTER_SKILLS=""
+SAMPLE_N=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -256,6 +348,17 @@ while [[ $# -gt 0 ]]; do
             ;;
         --cases)
             CASES_FILE="$2"
+            shift 2
+            ;;
+        --generated)
+            # Suíte ampla colhida do frontmatter (_generate_triggering_cases.py)
+            CASES_FILE="$SCRIPT_DIR/skill-triggering-cases.generated.tsv"
+            shift
+            ;;
+        --sample)
+            # Amostra aleatória de N casos: a suíte completa custa API demais
+            # para rodar inteira a cada commit.
+            SAMPLE_N="$2"
             shift 2
             ;;
         --help|-h)
@@ -309,6 +412,26 @@ SKIPPED=0
 TIMED_OUT=0
 declare -a RESULTS=()
 
+build_skill_map
+log_info "Mapa de skills: $(wc -l < "$SKILL_MAP_FILE" | tr -d ' ') entradas"
+log_info "Core allowlist: $(grep -vc '^\s*#\|^\s*$' "$REPO_ROOT/claude-code/skills-core.txt" 2>/dev/null || echo '?') skills (invocação nativa exigida)"
+
+# Amostragem: a suíte gerada tem centenas de casos e cada um custa API.
+CASES_STREAM="${OUTPUT_BASE}/cases.tsv"
+mkdir -p "$OUTPUT_BASE"
+load_cases "$CASES_FILE" "$FILTER_SKILLS" > "$CASES_STREAM"
+if [ -n "$SAMPLE_N" ]; then
+    TOTAL_AVAIL=$(wc -l < "$CASES_STREAM" | tr -d ' ')
+    if command -v shuf &>/dev/null; then
+        shuf -n "$SAMPLE_N" "$CASES_STREAM" > "${CASES_STREAM}.sample"
+    else
+        # macOS sem coreutils: sort -R é o fallback disponível
+        sort -R "$CASES_STREAM" | head -n "$SAMPLE_N" > "${CASES_STREAM}.sample"
+    fi
+    mv "${CASES_STREAM}.sample" "$CASES_STREAM"
+    log_info "Amostra: $SAMPLE_N de $TOTAL_AVAIL casos"
+fi
+
 # Carregar casos e iterar
 while IFS=$'\t' read -r skill_name prompt; do
     echo "------------------------------------------------------------"
@@ -333,7 +456,7 @@ while IFS=$'\t' read -r skill_name prompt; do
     esac
 
     echo ""
-done < <(load_cases "$CASES_FILE" "$FILTER_SKILLS")
+done < "$CASES_STREAM"
 
 # ---------------------------------------------------------------------------
 # Relatório final

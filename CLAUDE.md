@@ -23,6 +23,12 @@ OSForge is **not an application** — it is the source of truth for the user's g
 python3 scripts/_extract_index.py       # → INDICE-SKILLS.json (scans all SKILL.md files)
 python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the JSON)
 
+python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
+python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
+
+./tests/test-assertions.sh              # Verdict logic of the harness — offline, no API cost
+./scripts/test-skill-triggering.sh --generated --sample 20   # Real triggering run (consumes API)
+
 python3 scripts/buscar-skill.py <query> # Search skills locally
 python3 scripts/osforge-db.py --help    # State CLI (deployed as `osforge-db` in ~/.local/bin)
 bun scripts/canvas/server.ts            # OSForge Canvas — local generative UI viewer (port 4242, see skills/osforge-canvas/)

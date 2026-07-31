@@ -21,10 +21,10 @@ spec-builder	Preciso escrever a especificação técnica da feature de notifica�
 epic-decomposer	Tenho a spec pronta da feature de pagamentos. Como quebro isso em épicos e stories menores para o time?
 story-executor	Implementar a story US-14: como usuário quero receber e-mail de confirmação após cadastro.
 adversarial-review	Antes de mergar esse PR de autenticação, quero uma revisão cética que busque os piores cenários.
-frontend-ui	Preciso criar um dashboard com cards de métricas e tabela de dados usando shadcn.
-supabase-auth	Quero implementar login com Google OAuth e controle de acesso por roles no meu projeto Next.js.
+frontend-ui-system	Preciso criar um dashboard com cards de métricas e tabela de dados usando shadcn.
+nextjs-supabase-auth	Quero implementar login com Google OAuth e controle de acesso por roles no meu projeto Next.js.
 prisma-expert	Preciso criar uma migration para adicionar a tabela de assinaturas com relacionamento para usuários.
-finishing-branch	Terminei a implementação. O que preciso verificar antes de abrir o PR?
+finishing-a-development-branch	Terminei a implementação. O que preciso verificar antes de abrir o PR?
 asaas-integration	Preciso cobrar meus clientes via Pix e boleto no checkout e confirmar o pagamento. Como integro?
 asaas-integration	How do I charge customers with Pix/boleto from a BR gateway and handle the payment webhook?
 better-auth	Quero login com email/senha e Google no meu app Next.js usando uma lib de auth agnostica de framework. Por onde comeco?

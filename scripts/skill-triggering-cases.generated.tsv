@@ -1,0 +1,251 @@
+# skill-triggering-cases.generated.tsv — GENERATED, do not hand-edit.
+# Source: scripts/_generate_triggering_cases.py (harvests each skill's own
+# `Use when:` clauses and quoted trigger phrases).
+#
+# A FAIL here means the skill does not fire on the wording its own author
+# chose as its trigger — that is a defect in the description, not in the test.
+# The hand-written skill-triggering-cases.tsv is the harder suite: naive user
+# phrasing that shares no vocabulary with the description.
+#
+# Format: skill_name<TAB>prompt
+
+agency	which specialist to use for reviewing my architecture
+agency	I need an agent to create an ads campaign
+agency-design	create a design system for the app
+agency-design	write image prompts for AI
+agency-engineering	improve code or query performance
+agency-engineering	do threat modeling of the application
+agency-marketing	optimize my landing page for conversion
+agency-marketing	do an SEO audit of the site
+agency-paid-media	create a Google Ads or Meta Ads campaign
+agency-paid-media	audit my ad account and budget waste
+agency-product	prioritize features for the next sprint
+agency-product	synthesize user feedback into actionable insights
+agency-project-management	convert the spec into executable tasks
+agency-project-management	organize a Git/Jira workflow with traceable commits
+agency-sales	build an outbound prospecting strategy
+agency-sales	write a cold email sequence
+agency-specialized	orchestrate a pipeline with multiple agents
+agency-specialized	prepare a SOC 2, ISO 27001, or HIPAA audit
+agency-support	create a customer service flow
+agency-support	respond to a difficult support ticket
+agency-testing	test API endpoints before the release
+agency-testing	run an application performance benchmark
+agent-skills-search	procura um padrão de PostgreSQL
+agent-skills-search	tem alguma skill de testing?
+api-patterns	standardizing the response envelope and error format
+api-patterns	auditing an API against the OWASP API Top 10
+app-builder	creating a new app from scratch
+app-builder	deciding which stack to use for a project
+architecture	writing or reviewing an ADR
+architecture	evaluating whether the proposed complexity is justified
+asaas-integration	migrating from Stripe to a BR provider
+autorefine-skill	skill Y is not working well
+autorefine-skill	apply a pattern from another project
+aws-deploy	choosing an AWS compute/hosting service
+bash-linux	a bash script errors or behaves unexpectedly
+bash-linux	searching and transforming text with grep
+brainstorming	wants to explore alternatives before committing
+brainstorming	says 'I want to build X' without clear details
+brandkit	create a brand kit for my startup
+brandkit	put together a studio-style brand guidelines board
+bun-development	runtime edge cases that differ from Node.js
+bun-development	segfault loading a native dependency
+claude-api-typescript	when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent-sdk
+claude-ci-actions	when: setting up @claude in PRs/issues
+claude-ci-actions	configuring automated code review
+clean-code	code is over-engineered or has premature abstractions
+clean-code	a request to 'simplify this'
+code-review-checklist	checking for SQL injection/XSS/hardcoded secrets
+code-review-checklist	flagging anti-patterns like magic numbers and deep nesting
+config-critique	"review my skill", "validate my rule", "check hook conflict", "lint config", "is my skill good?", "will this agent work?", "PR review of a skill"
+config-critique	when the user adds/edits config in ~/.claude/ or ~/.cursor/
+context-distillator	distill the context before passing it to another skill
+context-distillator	a PRD/spec/architecture too large for the context window
+db-state-sync	recording an architectural decision
+db-state-sync	viewing the cross-project board
+doc-shard	a document exceeds the context window or to organize extensive docs — e.g
+doc-shard	a spec with multiple sections
+editorial-review	this doc is poorly organized
+project-context-generator	the project has no project-context.md
+project-context-generator	you need to update context after stack changes
+context-compact	says "compress context", "compact", "summary", "near the limit", "context full", "save state", "/compact", "/clear"
+context-compact	when the token counter passes 140k
+context7-docs-first	when: user asks about Next.js
+context7-docs-first	any version-sensitive library behavior
+database-design	a slow query or N+1 in production
+database-design	modeling the schema and relationships of a new feature
+deployment-procedures	a deploy failed or broke production
+deployment-procedures	a service went down after a release and needs a quick rollback
+design-md	how this product should look
+design-md	is starting a new project that needs its own identity
+design-taste-frontend	redesign this site so it doesn
+design-taste-frontend	make it not look AI-generated
+design-taste-frontend-v1	I need the old design-taste-frontend behavior
+design-taste-frontend-v1	this project depends on v1 of the taste skill
+differential-review	when reviewing commits that touch auth
+dispatching-parallel-agents	2+ tasks with no shared state
+dispatching-parallel-agents	refactoring across multiple unrelated files
+doc-sanitization	I have a lot of disorganized documentation
+doc-sanitization	these .md files are a mess
+docs-writer	documenting a feature/command/API from the code
+docs-writer	rewriting or improving an existing docs section
+documentation-templates	creating a README from scratch with a standard structure
+documentation-templates	building an API documentation skeleton
+finishing-a-development-branch	all tasks on a branch are complete
+finishing-a-development-branch	wants to merge or open a PR
+frontend-ui-system	when choosing between component libraries
+full-output-enforcement	a response came back truncated
+full-output-enforcement	asks for the complete file or says give me everything without summarizing
+2d-games	how to organize sprites and animations in Godot
+2d-games	I need to build tilemaps with auto-tiling and layers
+3d-games	my 3D game has too many draw calls and I need culling/batching/LOD
+3d-games	which collider to use for 3D characters and terrain in Unity
+game-development	I want to make a game but don't know where to start
+game-development	my game has low FPS and I need a performance budget
+game-art	my textures are heavy and I need atlases
+game-art	which type of animation to use for characters (frame-based vs skeletal)
+game-audio	how to make adaptive music that changes with combat
+game-audio	audio is consuming too much memory/CPU and I need pooling
+game-design	m designing progression, rewards, and retention (loot, levels, unlocks); what type of player I
+game-design	my game isn't fun and I want to analyze the 30-second core loop
+mobile-games	I'm porting or building a game for iOS/Android and the touch controls are bad
+mobile-games	my mobile game heats up the device or drains battery (thermal throttling, 30 vs 60 FPS)
+multiplayer	how to design matchmaking by skill and latency
+pc-games	I need to support keyboard+mouse and controller with full rebinding
+pc-games	I want to add mod support and Steam Workshop
+vr-ar	I'm developing for Meta Quest
+vr-ar	SteamVR and need the FPS/latency targets (90+ FPS, <20ms)
+web-games	I want to make a game that runs in the browser and don't know which framework to choose
+web-games	should I use WebGPU or WebGL in my new project
+genai-optimization	making content get cited by ChatGPT/Perplexity/Claude/Gemini
+genai-optimization	structuring content for RAG retrieval
+git-workflow	structuring git operations for agent-driven development
+gpt-taste	Awwwards-level landing page with scroll animations
+gpt-taste	add GSAP ScrollTrigger with pinned sections
+high-end-visual-design	this design looks like an AI template, make it premium
+high-end-visual-design	I want high-end agency visual polish
+humanizer	editing or reviewing text to make it sound more natural and human-written
+i18n-localization	multi-language support ("set up multiple languages", "add English/Spanish support", "translate the app")
+i18n-localization	locale routing ("/en routes", "detect user language")
+image-to-code	design a stunning hero section
+image-to-code	build a premium landing page
+imagegen-frontend-web	generate reference images of the landing page design
+imagegen-frontend-web	create visual mockups of the site section by section
+industrial-brutalist-ui	declassified blueprint-style brutalist site
+industrial-brutalist-ui	UI with retro-terminal CRT aesthetic and scanlines
+lint-and-validate	you just edited or created code
+lint-and-validate	committing or marking a task as done
+llm-structured-output	choosing between Instructor / PydanticAI / Zod
+llm-structured-output	adding retries+validation to model output
+llmfit-advisor	asks which models run locally
+llmfit-advisor	wants to set up Ollama/LM Studio
+mcp-builder	creating an MCP server from scratch
+mcp-builder	exposing an internal API as an MCP tool
+minimalist-ui	clean editorial landing page with no gradients
+minimalist-ui	workspace or productivity tool design
+mobile-design	create an app in React Native or Flutter
+mobile-design	native mobile screen design
+nextjs-react-expert	reviewing code for performance issues
+nextjs-react-expert	First Load JS bundle > 200KB
+nodejs-best-practices	async/await hanging or event loop blocked by CPU-bound work
+nodejs-best-practices	ArkType for validation, 500 error with no centralized handling or wrong status code
+offensive-ai-security	researching AI attack vectors
+offensive-business-logic	scoping an application after surface-level OWASP Top 10 has been covered
+offensive-business-logic	when the asset is a transactional/marketplace/fintech/e-commerce/SaaS app where logic flaws produce direct financial impact
+offensive-cloud	the engagement scope is cloud accounts
+offensive-cloud	you have obtained cloud credentials
+offensive-deserialization	testing deserialization endpoints or developing deserialization exploits
+offensive-fuzzing	setting up or running fuzz campaigns against any target: file parsers
+offensive-graphql	assessing GraphQL endpoints in web app tests or bug bounty
+offensive-idor	insecure direct object reference
+offensive-jwt	hunting auth bypass via token manipulation
+offensive-jwt	evaluating JWT implementation security in web or mobile apps
+offensive-oauth	testing OAuth implementations in web apps or bug bounty
+offensive-osint	performing reconnaissance against a target domain or organization
+offensive-osint	investigating a person or entity
+offensive-parameter-pollution	testing web applications for parameter handling flaws
+offensive-request-smuggling	testing reverse proxy/load balancer configurations
+offensive-sqli	performing web application SQL injection testing
+offensive-sqli	privilege escalation via SQLi
+offensive-ssti	testing web apps for template injection vulnerabilities
+offensive-toctou	you've identified a 'check then act' pattern in code
+offensive-toctou	fuzzing for race conditions
+offensive-waf-bypass	WAF is blocking payloads during web app tests
+osforge-canvas	I want to review interactively
+osforge-canvas	I need to approve before implementing
+output-enforcement	generating several components or long documentation
+output-enforcement	test suite that needs all cases written
+performance-profiling	slow page or poor LCP/INP/CLS
+performance-profiling	scroll jank or stuttering animations
+plan-writing	planning a feature implementation
+plan-writing	breaking multi-step work into tasks
+arch-builder	decide Server Actions vs API Routes
+phase-discussion	planning any phase with UI
+requirements-clarify	a spec has vague or underspecified areas
+requirements-clarify	the requirements leave room for multiple interpretations
+spec-builder	detailing requirements before implementing
+postgres-optimization	slow page loads caused by database
+powershell-windows	a PowerShell script fails with a parameter or or Unexpected token error
+powershell-windows	an if conditional with -or/-and breaks due to missing parentheses around cmdlets
+prisma-expert	schema changes with >3 models
+prisma-expert	many-to-many or polymorphic relations
+python-patterns	async def blocking or mixing a sync lib into async code
+python-patterns	validating request/response with Pydantic
+adversarial-review	reviewing a spec before implementing
+adversarial-review	reviewing code with maximum skepticism
+edge-case-hunter	asked for edge cases or boundary conditions of a diff/file/function
+edge-case-hunter	verifying null/empty inputs and off-by-one before merging
+elicitation-engine	improve or deepen a spec/PRD
+elicitation-engine	dig deeper into a design decision
+readiness-gate	is the PRD aligned with the architecture?
+readiness-gate	do all requirements have a story?
+red-team-tactics	planning an authorized attack simulation/pentest
+red-team-tactics	evaluating detection evasion to test defenses (purple team)
+redesign-existing-projects	I inherited code with generic design
+redesign-existing-projects	modernize the look of this project
+rust-pro	borrow checker or lifetime error in generic code
+rust-pro	designing an async web service with Tokio
+security-threat-model	ly when the user explicitly asks to threat model a codebase or path
+security-threat-model	perform AppSec threat modeling
+seo-fundamentals	improving a page's Google ranking
+seo-fundamentals	implementing schema markup/structured data
+server-management	app crashes and doesn't restart on its own
+server-management	high CPU or memory on the server
+skill-creator	s description for better triggering accuracy
+skill-creator	testa se a skill dispara bem
+smart-hooks	when: setting up hooks for a project
+smart-hooks	improving Claude Code DX with notifications and backups
+smart-model-dispatch	spawning subagents via Agent tool
+smart-model-dispatch	implementing a feature with multiple mixed-complexity subtasks
+stitch-design-export	quero gerar as telas desse projeto no Google Stitch
+stitch-design-export	cria um DESIGN.md com os tokens do projeto para o Stitch
+stitch-design-taste	m going to generate screens in Google Stitch and want a design system
+stitch-design-taste	translate my visual style into the Stitch format
+stuck-recovery	forget what you were doing
+stuck-recovery	says "stuck", "loop", "it's not working", "try again", "this isn't making progress", "forget what you were doing"
+systematic-debugging	a bug is hard to reproduce
+systematic-debugging	a crash has no clear stacktrace
+tailwind-patterns	migrate the project from Tailwind v3 to v4
+tailwind-patterns	how to configure @theme in Tailwind 4
+taste-design-dials	I want more minimal/more bold
+taste-design-dials	apply the taste dials to this OSForge project
+tdd-workflow	then writes minimal code to pass
+tdd-workflow	when the user mentions TDD
+testing-patterns	writing unit or integration tests
+testing-patterns	deciding what to test vs what to mock
+tlc-spec-driven	tracking decisions across sessions
+tool-safety-classifier	runs in "automatic mode", "yolo mode", "headless", "CI mode", "auto-approve", "no confirmation"
+using-git-worktrees	working on multiple features simultaneously
+using-git-worktrees	needing isolated branches for each parallel agent
+vercel-deploy	deploy and give me the link
+vercel-deploy	create a preview deployment
+verification-before-completion	about to claim work is complete
+visual-planner	creating a visual breakdown
+visual-planner	generating interactive architecture HTML
+vulnerability-scanner	mapping a project's attack surface
+vulnerability-scanner	prioritizing risks found in a scan
+web-design-guidelines	check my site against best practices
+web-design-guidelines	asked to "review my UI", "check accessibility", "audit design", "review UX"
+webapp-testing	testing a flow with Playwright
+webapp-testing	writing E2E for login/checkout/a critical flow
