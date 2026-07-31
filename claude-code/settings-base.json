@@ -1,8 +1,7 @@
 {
-  "_comment": "OSForge-managed base settings, merged non-destructively into ~/.claude/settings.json by deploy.sh. Top-level keys are authoritative; env is merged key-by-key preserving the user's own env. Keys listed in _unset are REMOVED from the live settings — that is how OSForge retracts a setting it previously pushed. Goal: cut MCP context bloat.",
+  "_comment": "OSForge-managed base settings, merged non-destructively into ~/.claude/settings.json by deploy.sh. Top-level keys are authoritative; env is merged key-by-key preserving the user's own env. Goal: cut MCP context bloat.",
   "disableClaudeAiConnectors": true,
-  "_unset": [
-    "env.ENABLE_TOOL_SEARCH"
-  ],
-  "_unset_rationale": "ENABLE_TOOL_SEARCH=auto shipped here as an anti-bloat measure and did the opposite. Per the Claude Code MCP docs, UNSET is the aggressive setting: every MCP tool is deferred and loaded on demand. 'auto' switches to threshold mode, loading schemas UPFRONT whenever they fit within 10% of the context window. Measured on this machine: 11 servers, 32 MCP tools, all loaded at session start, inside a 71-83k token baseline. Removing the key restores full deferral without removing a single MCP server. https://docs.claude.com/en/docs/claude-code/mcp#configure-tool-search"
+  "env": {
+    "ENABLE_TOOL_SEARCH": "auto"
+  }
 }

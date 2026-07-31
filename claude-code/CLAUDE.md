@@ -171,9 +171,7 @@ MCP tool schemas are the biggest context cost — scope them tightly.
   `scripts/install-mcp.sh <stack>` (writes the project's `.mcp.json`). Templates in `mcp/stacks/`.
 - **Anti-bloat settings** (deployed from `claude-code/settings-base.json` → `~/.claude/settings.json`):
   `disableClaudeAiConnectors: true` (keeps claude.ai account connectors — Gmail, Drive, Figma, Higgsfield… — **out** of
-  Claude Code). **`ENABLE_TOOL_SEARCH` is deliberately left UNSET:** unset is the aggressive mode (every MCP tool
-  deferred, loaded on demand); `auto` means threshold loading — schemas come in **upfront** whenever they fit in 10%
-  of the context window. Setting it to `auto` cost 32 MCP tools loaded at every session start.
+  Claude Code) and `env.ENABLE_TOOL_SEARCH=auto` (defers large tool schemas, loading them on demand).
 - **Cleanup:** deploy merges MCPs additively and never prunes; remove accumulated/dead globals with
   `scripts/prune-global-mcps.sh` (`--dead` drops `MCP_DOCKER` + `Prisma-Remote`).
 
