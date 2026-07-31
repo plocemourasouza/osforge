@@ -231,8 +231,11 @@ deploy_skills() {
   mkdir -p "$dst"
 
   if $DEPLOY_ALL_SKILLS || [ ! -f "$manifest" ]; then
-    rsync -a --delete "$REPO/skills/" "$dst/"
-    ok "$(find "$dst" -name 'SKILL.md' | wc -l | tr -d ' ') skills sincronizadas (todas)"
+    # Buckets de ciclo de vida ficam de fora mesmo em --all-skills: uma skill
+    # aposentada deployada volta a competir por gatilho, que é justamente o que
+    # aposentá-la deveria impedir.
+    rsync -a --delete --exclude '_deprecated/' --exclude '_in-progress/' "$REPO/skills/" "$dst/"
+    ok "$(find "$dst" -name 'SKILL.md' | wc -l | tr -d ' ') skills sincronizadas (todas, exceto buckets _)"
     return
   fi
 

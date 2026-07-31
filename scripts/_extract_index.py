@@ -133,8 +133,14 @@ def main():
     for sf in skill_files:
         rel = sf.relative_to(BASE)
         parts = list(rel.parts)
-        
+
         if len(parts) < 2:
+            continue
+
+        # Buckets de ciclo de vida (skills/_deprecated/, skills/_in-progress/):
+        # fora do deploy e fora de todo índice. O check de "_" abaixo olha só
+        # parts[0], que é sempre "skills", então nunca pegaria estes.
+        if any(p.startswith("_") for p in parts[1:-1]):
             continue
             
         source_folder = parts[0]

@@ -23,6 +23,9 @@ Success is measured by finding planning flaws BEFORE implementing.
 - Find the PRD, Architecture, Epics in the project's output directories
 - If any mandatory one is missing → immediate FAIL with an indication of what's missing
 
+**Done when:** every mandatory artifact is either loaded or named as missing. A gate that ran
+against a partial set is worse than no gate — it issues a PASS that nobody re-checks.
+
 ### 2. Traceability Cross-Check
 
 **Requirements → Stories:**
@@ -50,6 +53,10 @@ Success is measured by finding planning flaws BEFORE implementing.
 - [ ] RLS policies planned for new data models?
 - [ ] LGPD considered for personal data?
 - [ ] Do auth flows cover all roles?
+
+**Done when:** every checkbox above carries a verdict traced to a specific artifact — exhaustive,
+one by one. Unticked is not the same as passing, and a cross-check that skipped a row cannot tell
+the difference.
 
 ### 3. Produce Report
 

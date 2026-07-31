@@ -80,8 +80,6 @@ design-md	how this product should look
 design-md	I need help with this: is starting a new project that needs its own identity. What's the right approach?
 design-taste-frontend	redesign this site so it doesn
 design-taste-frontend	make it not look AI-generated
-design-taste-frontend-v1	I need the old design-taste-frontend behavior
-design-taste-frontend-v1	this project depends on v1 of the taste skill
 differential-review	I need help with this: when reviewing commits that touch auth. What's the right approach?
 dispatching-parallel-agents	I need help with this: 2+ tasks with no shared state. What's the right approach?
 dispatching-parallel-agents	I need help with this: refactoring across multiple unrelated files. What's the right approach?
@@ -124,6 +122,8 @@ genai-optimization	I need help with this: structuring content for RAG retrieval.
 git-workflow	I need help with this: structuring git operations for agent-driven development. What's the right approach?
 gpt-taste	Awwwards-level landing page with scroll animations
 gpt-taste	add GSAP ScrollTrigger with pinned sections
+grilling	I need help with this: a plan or design needs stress-testing before any code is written. What's the right approach?
+grilling	I need help with this: the request is ambiguous enough that building the wrong thing is plausible. What's the right approach?
 high-end-visual-design	this design looks like an AI template, make it premium
 high-end-visual-design	I want high-end agency visual polish
 humanizer	I need help with this: editing or reviewing text to make it sound more natural and human-written. What's the right approach?
@@ -203,6 +203,8 @@ readiness-gate	is the PRD aligned with the architecture?
 readiness-gate	do all requirements have a story?
 red-team-tactics	I need help with this: planning an authorized attack simulation/pentest. What's the right approach?
 red-team-tactics	I need help with this: evaluating detection evasion to test defenses (purple team). What's the right approach?
+redesign-audit	I need help with this: modernising the UI of an existing project. What's the right approach?
+redesign-audit	I need help with this: a site "looks like a template" or "looks AI-generated". What's the right approach?
 redesign-existing-projects	I need help with this: i inherited code with generic design. What's the right approach?
 redesign-existing-projects	I need help with this: modernize the look of this project. What's the right approach?
 rust-pro	I need help with this: borrow checker or lifetime error in generic code. What's the right approach?
@@ -219,8 +221,8 @@ smart-hooks	I need help with this: setting up hooks for a project. What's the ri
 smart-hooks	I need help with this: improving Claude Code DX with notifications and backups. What's the right approach?
 smart-model-dispatch	I need help with this: spawning subagents via Agent tool. What's the right approach?
 smart-model-dispatch	I need help with this: implementing a feature with multiple mixed-complexity subtasks. What's the right approach?
-stitch-design-export	quero gerar as telas desse projeto no Google Stitch
-stitch-design-export	cria um DESIGN.md com os tokens do projeto para o Stitch
+stitch-design-export	I need help with this: generating this project's screens in Google Stitch. What's the right approach?
+stitch-design-export	I need help with this: exporting the design system to a DESIGN.md. What's the right approach?
 stitch-design-taste	m going to generate screens in Google Stitch and want a design system
 stitch-design-taste	translate my visual style into the Stitch format
 stuck-recovery	forget what you were doing

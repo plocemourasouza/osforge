@@ -15,10 +15,10 @@
 | Categoria | Qtd | % |
 |-----------|-----|---|
 | 🔒 Security | 51 | 29.1% |
-| ⚛️ React / Frontend | 28 | 16.0% |
+| ⚛️ React / Frontend | 27 | 15.4% |
 | 🤖 AI / ML / Agents | 25 | 14.3% |
 | 🔄 Workflow / Process | 24 | 13.7% |
-| 🧪 Testing | 17 | 9.7% |
+| 🧪 Testing | 18 | 10.3% |
 | 📝 Documentation / Writing | 9 | 5.1% |
 | 🏗️ Architecture | 6 | 3.4% |
 | ☁️ Infrastructure / DevOps | 5 | 2.9% |
@@ -38,10 +38,10 @@
 ## 🗂️ Sumário por Categoria
 
 - [🔒 Security (51)](#)
-- [⚛️ React / Frontend (28)](#)
+- [⚛️ React / Frontend (27)](#)
 - [🤖 AI / ML / Agents (25)](#)
 - [🔄 Workflow / Process (24)](#)
-- [🧪 Testing (17)](#)
+- [🧪 Testing (18)](#)
 - [📝 Documentation / Writing (9)](#)
 - [🏗️ Architecture (6)](#)
 - [☁️ Infrastructure / DevOps (5)](#)
@@ -99,7 +99,7 @@
 | **offensive-xss** | 📦 skills | Cross-Site Scripting testing checklist: stored/reflected/DOM/blind XSS discovery, polyglot payloads, CSP bypass, XSS filter bypass, event handler inje… | `skills/offensive-xss/` |
 | **offensive-xxe** | 📦 skills | XML External Entity injection testing checklist: classic XXE, blind XXE (out-of-band), XXE via file upload (SVG/docx), XXE in SOAP/REST, error-based X… | `skills/offensive-xxe/` |
 | **red-team-tactics** | 📦 skills | Red team tactics based on MITRE ATT&CK for authorized adversary simulation. Use when: planning an authorized attack simulation/pentest, structuring a … | `skills/red-team-tactics/` |
-| **redesign-audit** | 📦 skills | OSForge enhancement layer sobre redesign-existing-projects. Audita projeto existente, identifica padrões AI-genéricos, aplica upgrades cirúrgicos + re… | `skills/redesign-audit/` |
+| **redesign-audit** | 📦 skills | OSForge enhancement layer over redesign-existing-projects. Audits an existing project, spots generic AI-looking patterns, and applies surgical upgrade… | `skills/redesign-audit/` |
 | **redesign-existing-projects** | 📦 skills | Elevates existing sites and apps to premium quality: audits the current design, identifies generic AI patterns, and applies typography, color, and lay… | `skills/redesign-existing-projects/` |
 | **security-best-practices** | 📦 skills | Perform language and framework specific security best-practice reviews and suggest improvements. Trigger only when the user explicitly requests securi… | `skills/security-best-practices/` |
 | **security-threat-model** | 📦 skills | Repository-grounded threat modeling that enumerates trust boundaries, assets, attacker capabilities, abuse paths, and mitigations, and writes a concis… | `skills/security-threat-model/` |
@@ -111,7 +111,7 @@
 
 ## ⚛️ React / Frontend
 
-**28 skills**
+**27 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -123,7 +123,6 @@
 | **better-auth** | 📦 skills | Better Auth — framework-agnostic TypeScript auth (sessions, email/password, OAuth, plugins) in Next.js App Router. Use when: setting up Better Auth, s… | `skills/better-auth/` |
 | **design-md** | 📦 skills | PER-PROJECT brand identity contract in a DESIGN.md file — the 9-section document (Visual Theme, Color, Typography, Spacing, Layout, Components, Motion… | `skills/design-md/` |
 | **design-taste-frontend** | 📦 skills | Anti-slop frontend skill for landing pages, portfolios, and redesigns. Trigger on phrases like "build a landing page", "create my portfolio site", "re… | `skills/design-taste-frontend/` |
-| **design-taste-frontend-v1** | 📦 skills | Legacy v1 of the premium frontend taste-skill with fixed dials (variance 8, motion 6, density 4), anti-slop, Inter and AI-purple bans, and magnetic mi… | `skills/design-taste-frontend-v1/` |
 | **dispatching-parallel-agents** | 📦 skills | Orchestrates parallel tasks across independent subagents. Use when: 2+ tasks with no shared state, refactoring across multiple unrelated files, decomp… | `skills/dispatching-parallel-agents/` |
 | **domain-modeling** | 📦 skills | Build and sharpen a project's **ubiquitous language** in CONTEXT.md — one canonical term per concept, aliases banned. Use when: naming a new concept o… | `skills/domain-modeling/` |
 | **frontend-design** | 📦 skills | Design thinking and decision-making for web UI. ACTIVATE whenever the user asks to design or style UI components, build page layouts, choose color pal… | `skills/frontend-design/` |
@@ -209,7 +208,7 @@
 
 ## 🧪 Testing
 
-**17 skills**
+**18 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -217,6 +216,7 @@
 | **context7-docs-first** | 📦 skills | Ground all platform and library answers in current official documentation by using Context7 MCP tools before responding. TRIGGER when: user asks about… | `skills/context7-docs-first/` |
 | **e2e-testing-patterns** | 📦 skills | End-to-end testing with Playwright for Next.js applications. Trigger on E2E test setup, cross-page flow testing (checkout, onboarding, multi-step form… | `skills/e2e-testing-patterns/` |
 | **epic-decomposer** | 📦 skills | Decomposes specs, PRDs, or requirements into implementable epics and stories. Each story with testable ACs, tasks with file paths, and mapped dependen… | `skills/planning/epic-decomposer/` |
+| **grilling** | 📦 skills | Interview the user **relentlessly** about a plan until every branch of the decision tree is resolved. Use when: a plan or design needs stress-testing … | `skills/grilling/` |
 | **offensive-oauth** | 📦 skills | OAuth 2.0 attack checklist: authorization code interception, redirect_uri bypass, CSRF on OAuth flow, state parameter abuse, open redirector chaining,… | `skills/offensive-oauth/` |
 | **offensive-reporting** | 📦 skills | Penetration test and red team report writing methodology. Covers executive summary structuring (risk-led narrative for non-technical readers), technic… | `skills/offensive-reporting/` |
 | **offensive-ssrf** | 📦 skills | Server-Side Request Forgery testing checklist: SSRF discovery, blind SSRF with out-of-band, cloud metadata endpoints (AWS/GCP/Azure), SSRF filter bypa… | `skills/offensive-ssrf/` |
@@ -292,7 +292,7 @@
 |-------|--------|-----------|-----------|
 | **mcp-builder** | 📦 skills | Builds custom MCP (Model Context Protocol) servers in TypeScript or Python. Use when: creating an MCP server from scratch, exposing an internal API as… | `skills/mcp-builder/` |
 | **mobile-games** | 📦 skills | Mobile game principles: touch input, battery and thermal, App Store and Google Play requirements, monetization. Use when: I'm porting or building a ga… | `skills/game-development/mobile-games/` |
-| **stitch-design-export** | 📦 skills | OSForge enhancement layer sobre stitch-design-taste. Gera DESIGN.md para Google Stitch com tokens de osforge.config.json + Impeccable. ACIONE com stit… | `skills/stitch-design-export/` |
+| **stitch-design-export** | 📦 skills | OSForge enhancement layer over stitch-design-taste. Generates DESIGN.md for Google Stitch from osforge.config.json tokens + Impeccable. Use when: gene… | `skills/stitch-design-export/` |
 
 ## 📦 General
 
@@ -367,7 +367,6 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `deployment-procedures` — skills — `skills/deployment-procedures/`
 - `design-md` — skills — `skills/design-md/`
 - `design-taste-frontend` — skills — `skills/design-taste-frontend/`
-- `design-taste-frontend-v1` — skills — `skills/design-taste-frontend-v1/`
 - `differential-review` — skills — `skills/differential-review/`
 - `dispatching-parallel-agents` — skills — `skills/dispatching-parallel-agents/`
 - `doc-sanitization` — skills — `skills/doc-sanitization/`
@@ -398,6 +397,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `genai-optimization` — skills — `skills/genai-optimization/`
 - `git-workflow` — skills — `skills/git-workflow/`
 - `gpt-taste` — skills — `skills/gpt-taste/`
+- `grilling` — skills — `skills/grilling/`
 
 **H**
 - `high-end-visual-design` — skills — `skills/high-end-visual-design/`

@@ -1,10 +1,14 @@
 ---
 name: redesign-audit
 description: >
-  OSForge enhancement layer sobre redesign-existing-projects. Audita projeto existente,
-  identifica padrões AI-genéricos, aplica upgrades cirúrgicos + regras estruturais OSForge
-  (4 estados, footer slots, i18n, RSC). ACIONE com redesign-existing-projects quando:
-  "redesenhar", "modernizar UI", "upgrade visual", "tirar cara de AI", "site parece template".
+  OSForge enhancement layer over redesign-existing-projects. Audits an existing project, spots
+  generic AI-looking patterns, and applies surgical upgrades plus OSForge structural rules
+  (4 states, footer slots, i18n, RSC). Use when: modernising the UI of an existing project,
+  a site "looks like a template" or "looks AI-generated", or a visual upgrade is wanted without
+  a rewrite. Keywords: redesign, modernise UI, visual upgrade, AI-looking, template-looking,
+  refresh design. Do NOT use for: designing a screen from scratch (high-end-visual-design),
+  generating mockup images (imagegen-frontend-web), or design tokens and dials
+  (taste-design-dials).
 version: 1.1.0
 compose_with:
   upstream:

@@ -1,6 +1,6 @@
 ---
 name: stitch-design-export
-description: "OSForge enhancement layer sobre stitch-design-taste. Gera DESIGN.md para Google Stitch com tokens de osforge.config.json + Impeccable. ACIONE com stitch-design-taste quando: 'Google Stitch', 'DESIGN.md', 'exportar design system', 'Stitch prompt'. Exemplos concretos de uso: 'quero gerar as telas desse projeto no Google Stitch', 'cria um DESIGN.md com os tokens do projeto para o Stitch', 'exporta o design system OSForge para usar no Stitch', 'prepara o prompt de design antes de gerar screens no Stitch'."
+description: "OSForge enhancement layer over stitch-design-taste. Generates DESIGN.md for Google Stitch from osforge.config.json tokens + Impeccable. Use when: generating this project's screens in Google Stitch, exporting the design system to a DESIGN.md, or preparing the design prompt before generating screens. Keywords: Google Stitch, DESIGN.md, export design system, Stitch prompt. Do NOT use for: choosing the visual direction (stitch-design-taste), producing mockup images directly (imagegen-frontend-web), or auditing an existing UI (redesign-audit)."
 version: 1.1.0
 compose_with:
   upstream:

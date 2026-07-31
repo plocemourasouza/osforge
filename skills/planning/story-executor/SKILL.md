@@ -59,7 +59,11 @@ Required fields:
 ### 1. Loading
 - Read the complete story file (ACs, tasks, dependencies)
 - Verify that dependencies are complete (previous stories done)
-- Load project-context.md for codebase rules
+- Load project-context.md for codebase rules, and the project's `CONTEXT.md` glossary so task
+  titles, names and test descriptions use the canonical terms
+
+**Done when:** every AC and every task is accounted for, and each declared dependency is confirmed
+done — not assumed done because the wave scheduler dispatched this story.
 
 ### 2. Execution per task
 For each task in the story:
@@ -79,6 +83,9 @@ For each task in the story:
 - [x] `{file/path.ts}` — {action} ✅
 ```
 
+**Done when:** the task's `<verify>` command was RUN and its output read — not "should pass". A
+task is done when the evidence exists, never when the edit was made.
+
 ### 3. Review (two-stage per task — superpowers pattern)
 
 After each completed task, before marking it `[x]`, run two review stages in sequence:
@@ -97,11 +104,17 @@ After each completed task, before marking it `[x]`, run two review stages in seq
 If ANY stage fails → fix it before moving on to the next task.
 This double check prevents bugs from accumulating across tasks.
 
+**Done when:** both stages ran on THIS task and both passed. A task carried forward with a known
+stage failure poisons every later task in the wave, and the wave scheduler will not catch it.
+
 ### 4. AC Validation
 After completing ALL tasks (self-check — ACs satisfied?):
 - Verify each AC against the produced code
 - Run `skills/quality/edge-case-hunter` on the produced diff
 - If any AC is not satisfied → identify the gap and resolve it
+
+**Done when:** every AC in the story is individually marked satisfied or unsatisfied, with the
+evidence that settled it. Exhaustive: "all ACs look fine" does not close this step.
 
 ### 5. Handoff
 Update the story:
@@ -116,6 +129,10 @@ files_changed: [{list of files}]
 Report to the Orchestrator or user:
 "Story {id} implemented. {N} tasks complete, {N} files modified.
 All ACs verified. Ready for code review."
+
+**Done when:** the story file carries the new status, the task list and the changed files, AND the
+report states the verification evidence rather than a claim of success. This is the last step, so
+nothing downstream will catch an optimistic handoff — in a wave, the next wave simply starts.
 
 ## Critical Rules
 - DO NOT stop for a "milestone" or "significant progress" — continue until

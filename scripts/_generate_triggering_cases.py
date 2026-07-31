@@ -179,6 +179,10 @@ def main() -> int:
     covered = 0
     skipped: list[str] = []
     for sf in sorted(SKILLS_DIR.rglob("SKILL.md")):
+        # Buckets de ciclo de vida ficam fora da suíte: uma skill aposentada
+        # falhando o teste é ruído, não sinal.
+        if any(p.startswith("_") for p in sf.relative_to(SKILLS_DIR).parts[:-1]):
+            continue
         content = sf.read_text(encoding="utf-8", errors="replace")
         name, desc = extract_frontmatter(content)
         name = (name or sf.parent.name).strip()
@@ -198,7 +202,10 @@ def main() -> int:
         return 0
 
     OUT.write_text(body, encoding="utf-8")
-    n_skills = len(list(SKILLS_DIR.rglob("SKILL.md")))
+    n_skills = sum(
+        1 for sf in SKILLS_DIR.rglob("SKILL.md")
+        if not any(p.startswith("_") for p in sf.relative_to(SKILLS_DIR).parts[:-1])
+    )
     print(f"{OUT.relative_to(BASE)}")
     print(f"  {total} cases from {covered}/{n_skills} skills ({args.per_skill} max each)")
     print(f"  {len(skipped)} skills yielded nothing usable — their description has no")

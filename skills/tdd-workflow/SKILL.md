@@ -39,19 +39,31 @@ Wrote code before the test? **Delete it. Start over.**
 - Run it. Confirm it **fails for the expected reason**
 - If it passes without implementation → test is wrong, fix the test
 
+**Done when:** you have SEEN the failure output and it names the behaviour you intend to build. A
+test that fails for a typo or a missing import is not red, it is broken.
+
 ### 2. GREEN — Make It Pass
 - Write the **minimum** code to make the test pass
 - No future-proofing, no "while I'm here" additions
 - Run the test. Confirm it passes.
+
+**Done when:** this test passes AND the rest of the suite is still green. Passing the new test
+while breaking two others is not GREEN, and only running the new test hides it.
 
 ### 3. REFACTOR — Clean Up
 - Improve code quality while keeping tests green
 - Extract functions, rename variables, remove duplication
 - Run tests after each change. Still green? Continue.
 
+**Done when:** the suite is green after the last refactor step. Never leave this phase mid-edit —
+refactoring is the one phase where stopping early leaves the code worse than not starting.
+
 ### 4. COMMIT
 - Commit after each complete RED-GREEN-REFACTOR cycle
 - Message format: `test: add test for X` → `feat: implement X`
+
+**Done when:** the commit contains the test and its implementation together, and the behaviour is
+named in the project's glossary vocabulary — not in whatever word came to mind.
 
 ## Cycle Size Guide
 

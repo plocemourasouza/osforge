@@ -150,9 +150,20 @@ def triggers_from(description: str, fallback: str) -> str:
     return cand or fallback
 
 
+def retired(sf: Path) -> bool:
+    """
+    Skills under a `_`-prefixed bucket (_deprecated/, _in-progress/) are out of
+    play: not deployed, not indexed, not tested. A retired skill still competing
+    for a trigger is the whole reason the buckets exist.
+    """
+    return any(p.startswith("_") for p in sf.relative_to(SKILLS_DIR).parts[:-1])
+
+
 def collect_skills() -> list[dict]:
     skills = []
     for sf in sorted(SKILLS_DIR.rglob("SKILL.md")):
+        if retired(sf):
+            continue
         rel = sf.parent.relative_to(SKILLS_DIR).as_posix()
         content = sf.read_text(encoding="utf-8", errors="replace")
         name, desc = extract_frontmatter(content)
@@ -174,10 +185,12 @@ def collect_knowledge() -> list[dict]:
     a `**Trigger:**` line instead. They are never deployed natively, so they are
     only ever reachable through the manifest.
     """
-    skill_dirs = {sf.parent.name for sf in SKILLS_DIR.rglob("SKILL.md")}
+    skill_dirs = {sf.parent.name for sf in SKILLS_DIR.rglob("SKILL.md") if not retired(sf)}
     out = []
     for p in sorted(SKILLS_DIR.glob("*/*.md")):
         if p.name == "SKILL.md" or p.name in NOT_A_SKILL:
+            continue
+        if p.parent.name.startswith("_"):
             continue
         duplicate_of = p.stem if p.stem in skill_dirs else None
         text = p.read_text(encoding="utf-8", errors="replace")

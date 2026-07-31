@@ -460,16 +460,6 @@
     "skill_dir": "design-taste-frontend"
   },
   {
-    "name": "design-taste-frontend-v1",
-    "description": "Legacy v1 of the premium frontend taste-skill with fixed dials (variance 8, motion 6, density 4), anti-slop, Inter and AI-purple bans, and magnetic micro-physics with Framer Motion. Use when: 'use the taste skill v1', 'I need the old design-taste-frontend behavior', 'this project depends on v1 of th",
-    "category": "⚛️ React / Frontend",
-    "source": "skills",
-    "source_emoji": "📦",
-    "source_url": "",
-    "local_path": "skills/design-taste-frontend-v1",
-    "skill_dir": "design-taste-frontend-v1"
-  },
-  {
     "name": "differential-review",
     "description": "Security-focused code review of diffs and PRs. Trigger on PR security review, git diff analysis, change impact assessment, or when reviewing commits that touch auth, payments, permissions, or data access patterns.",
     "category": "🔒 Security",
@@ -738,6 +728,16 @@
     "source_url": "",
     "local_path": "skills/gpt-taste",
     "skill_dir": "gpt-taste"
+  },
+  {
+    "name": "grilling",
+    "description": "Interview the user **relentlessly** about a plan until every branch of the decision tree is resolved. Use when: a plan or design needs stress-testing before any code is written, the request is ambiguous enough that building the wrong thing is plausible, the user says grill me / question me / poke ho",
+    "category": "🧪 Testing",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/grilling",
+    "skill_dir": "grilling"
   },
   {
     "name": "high-end-visual-design",
@@ -1441,7 +1441,7 @@
   },
   {
     "name": "redesign-audit",
-    "description": "OSForge enhancement layer sobre redesign-existing-projects. Audita projeto existente, identifica padrões AI-genéricos, aplica upgrades cirúrgicos + regras estruturais OSForge (4 estados, footer slots, i18n, RSC). ACIONE com redesign-existing-projects quando: \"redesenhar\", \"modernizar UI\", \"upgrade v",
+    "description": "OSForge enhancement layer over redesign-existing-projects. Audits an existing project, spots generic AI-looking patterns, and applies surgical upgrades plus OSForge structural rules (4 states, footer slots, i18n, RSC). Use when: modernising the UI of an existing project, a site \"looks like a templat",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",
@@ -1551,7 +1551,7 @@
   },
   {
     "name": "stitch-design-export",
-    "description": "OSForge enhancement layer sobre stitch-design-taste. Gera DESIGN.md para Google Stitch com tokens de osforge.config.json + Impeccable. ACIONE com stitch-design-taste quando: 'Google Stitch', 'DESIGN.md', 'exportar design system', 'Stitch prompt'. Exemplos concretos de uso: 'quero gerar as telas dess",
+    "description": "OSForge enhancement layer over stitch-design-taste. Generates DESIGN.md for Google Stitch from osforge.config.json tokens + Impeccable. Use when: generating this project's screens in Google Stitch, exporting the design system to a DESIGN.md, or preparing the design prompt before generating screens. ",
     "category": "📱 Mobile",
     "source": "skills",
     "source_emoji": "📦",
