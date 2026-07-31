@@ -33,6 +33,11 @@ from pathlib import Path
 LOGS_ROOT = Path("/tmp/osforge-skill-tests")
 
 
+def is_stream_file(p: Path) -> bool:
+    """Um stream-json avulso (ex.: saída de `claude -p ... > /tmp/t.json`)."""
+    return p.is_file() and p.suffix in (".json", ".jsonl", ".log")
+
+
 def latest_run() -> Path | None:
     if not LOGS_ROOT.is_dir():
         return None
@@ -109,18 +114,34 @@ def main() -> int:
     ap.add_argument("--raw", action="store_true", help="despeja o evento de init de um caso")
     args = ap.parse_args()
 
-    run = Path(args.run_dir) if args.run_dir else latest_run()
-    if not run or not run.is_dir():
-        print(f"nenhuma rodada encontrada em {LOGS_ROOT} — rode o harness primeiro.", file=sys.stderr)
-        return 1
+    target = Path(args.run_dir) if args.run_dir else latest_run()
 
-    streams = sorted(run.rglob("stream.json"))
-    if not streams:
-        print(f"nenhum stream.json em {run}", file=sys.stderr)
-        return 1
+    # Um arquivo avulso é o caso do experimento manual:
+    #   ENABLE_TOOL_SEARCH=true claude -p "oi" --output-format stream-json > /tmp/t.json
+    # Antes, passar /tmp aqui varria os stream.json das rodadas ANTIGAS do
+    # harness e reportava com confiança números que não tinham nada a ver com o
+    # experimento — silenciosamente medindo a coisa errada.
+    if target and is_stream_file(target):
+        streams = [target]
+        print(f"Arquivo: {target}\n")
+    else:
+        if not target or not target.is_dir():
+            print(f"nenhuma rodada encontrada em {LOGS_ROOT} — rode o harness primeiro.", file=sys.stderr)
+            return 1
+        streams = sorted(target.rglob("stream.json"))
+        if not streams:
+            print(f"nenhum stream.json em {target}", file=sys.stderr)
+            print("(se você quer medir um stream avulso, passe o ARQUIVO: measure-context.py /tmp/t.json)",
+                  file=sys.stderr)
+            return 1
 
-    print(f"Rodada: {run}")
-    print(f"Casos:  {len(streams)}\n")
+        runs = {s.parent.parent for s in streams}
+        if len(runs) > 1:
+            print(f"⚠️  {len(runs)} rodadas diferentes sob {target} — as ferramentas listadas abaixo")
+            print(f"    vêm de UMA delas ({streams[0].parent.parent.name}) e os tokens misturam todas.")
+            print(f"    Para comparar configurações, aponte para uma rodada específica.\n")
+        print(f"Rodada: {target}")
+        print(f"Casos:  {len(streams)}\n")
 
     results = []
     for i, s in enumerate(streams):
