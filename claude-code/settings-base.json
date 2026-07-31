@@ -1,7 +1,8 @@
 {
-  "_comment": "OSForge-managed base settings, merged non-destructively into ~/.claude/settings.json by deploy.sh. Top-level keys are authoritative; env is merged key-by-key preserving the user's own env. Goal: cut MCP context bloat.",
+  "_comment": "OSForge-managed base settings, merged non-destructively into ~/.claude/settings.json by deploy.sh. Top-level keys are authoritative; env is merged key-by-key preserving the user's own env. Keys listed in _unset are REMOVED from the live settings. Goal: cut MCP context bloat.",
   "disableClaudeAiConnectors": true,
   "env": {
-    "ENABLE_TOOL_SEARCH": "auto"
-  }
+    "ENABLE_TOOL_SEARCH": "true"
+  },
+  "_measured": "Same machine, same prompt, one variable (2026-07-30, 11 MCP servers): key absent -> 68 MCP tools upfront, 96,834 token baseline. 'auto' -> 32 upfront, overflow deferred, 82,914. 'true' -> 0 upfront, 75,875. So 'true' saves ~21k tokens per session versus absent and ~7k versus 'auto', with every MCP server still connected. Do not 'optimise' this to unset: the docs call unset the deferring default, but on this setup it loads everything upfront. Verify with scripts/measure-context.py before changing it."
 }
