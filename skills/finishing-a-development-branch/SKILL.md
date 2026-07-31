@@ -52,6 +52,10 @@ git diff --check
 
 **If any check fails:** stop, report the problem to the user, do not proceed.
 
+**Done when:** all five commands were RUN in this session and their output read — exit codes, not
+impressions. This is the last gate before a branch leaves your hands, so a check skipped here is a
+check nobody runs.
+
 ### 2. Work summary
 
 Present a summary of what was done on the branch:

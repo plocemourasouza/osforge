@@ -68,12 +68,21 @@ Lock that number explicitly.
 
 > Example: "User asked for 3 React components + 1 test file + 1 README → SCOPE = 5 deliverables."
 
+**Done when:** the count is written down as a number. An unstated scope cannot be cross-checked in
+step 3, which is the whole mechanism this skill runs on.
+
 ### 2. BUILD
 Generate every deliverable completely. No partial drafts. No "you can extend this later."
+
+**Done when:** each of the SCOPE deliverables exists in full. Exhaustive: N−1 complete deliverables
+plus an apology is the exact failure this skill exists to prevent.
 
 ### 3. CROSS-CHECK
 Before output, re-read the original request. Compare deliverable count against SCOPE.
 If anything is missing → add it before responding.
+
+**Done when:** the delivered count equals SCOPE, checked against the original request rather than
+against your memory of it.
 
 ## Handling Long Outputs (when token limit looms)
 

@@ -45,9 +45,16 @@ Edge classes derived from the content (not a fixed checklist):
 - Date/timezone edge cases
 - Cross-platform file/path separators
 
+**Done when:** every branching path in the content has been walked — each conditional, loop, error
+handler and early return accounted for. Exhaustive, not representative: the value of this skill is
+the path nobody thought to look at, so stopping at "found several" defeats it.
+
 ### 3. Validate Completeness
 Revisit each edge class from Step 2.
 Add any new unhandled paths found.
+
+**Done when:** the second pass produced no new finding. If it did produce one, the pass was not
+complete — run it again rather than shipping the list.
 
 ### 4. Output — JSON Array
 

@@ -55,6 +55,11 @@ Areas of attack (adapt to the content type):
 
 Find a **MINIMUM of 10 issues** to fix or improve.
 
+**Done when:** every area of attack listed for this content type has been worked through, and each
+finding names the file, line or section it attacks. The 10-issue floor is a floor, not a target —
+hitting it is not permission to stop while an area is still unexamined, and padding the list to
+reach it defeats the skill more thoroughly than finding nine.
+
 ### 3. Present Findings
 
 ```markdown

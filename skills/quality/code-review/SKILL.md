@@ -29,7 +29,11 @@ performance and maintainability. Respects project-context.md.
 ### 1. Identify Scope
 - Identify modified files and the type of change
 - Load the story file if referenced
-- Load project-context.md
+- Load project-context.md and the project's `CONTEXT.md` glossary
+
+**Done when:** the review covers the whole diff since the agreed point — every modified file
+named, none silently skipped. A review that saw part of the change reports a clean bill for code
+it never read.
 
 ### 2. Structured Checklist
 
@@ -67,9 +71,13 @@ performance and maintainability. Respects project-context.md.
 **Quality:**
 - [ ] No console.log or debug code?
 - [ ] Imports organized?
-- [ ] Naming conventions followed?
+- [ ] Naming conventions followed, and names drawn from the project's glossary?
 - [ ] No duplicated code?
 - [ ] Tests for happy path + edge cases?
+
+**Done when:** every box above carries a verdict — pass, fail, or explicitly not-applicable with
+the reason. Exhaustive by design: a checklist where unexamined boxes look the same as passing ones
+has stopped being a checklist.
 
 ### 3. Deep Analysis
 - Invoke `edge-case-hunter` on the diff (if changes > 20 lines)
@@ -81,6 +89,9 @@ performance and maintainability. Respects project-context.md.
 - **Race conditions**: two simultaneous requests creating a "unique" record without a constraint in the database; `read-modify-write` without a transaction (e.g., decrementing balance/inventory)
 - **Empty arrays**: `items[0]` without checking length; `reduce` without an initial value on an empty array
 - **Numeric limits**: pagination with `page=0` or negative; monetary values with float instead of Decimal
+
+**Done when:** each divergence found is tied to the file and line that shows it. A finding without
+a location is an opinion, and the author is entitled to ignore it.
 
 ### 4. Verdict
 
