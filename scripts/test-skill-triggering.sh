@@ -162,6 +162,17 @@ run_case() {
     local out_dir="${OUTPUT_BASE}/${skill_name}"
     mkdir -p "$out_dir"
 
+    # Workdir POR CASO. O workdir único contaminava casos entre si: o
+    # agency-support escreveu customer-service-flow.md e o agency-marketing,
+    # dois casos depois, LEU esse arquivo procurando "the site" — gastando os
+    # turnos em contexto alheio. Um --workdir explícito (projeto real do
+    # usuário) continua compartilhado de propósito.
+    local case_workdir="$WORKDIR"
+    if [ "$WORKDIR_IS_DEFAULT" = "1" ]; then
+        case_workdir="${out_dir}/workdir"
+        mkdir -p "$case_workdir"
+    fi
+
     local log_file="${out_dir}/stream.json"
     local prompt_file="${out_dir}/prompt.txt"
 
@@ -180,7 +191,7 @@ run_case() {
     # arquivo no cwd", que é justamente o que NÃO queremos saber. O ambiente
     # honesto é um diretório neutro, como qualquer projeto satélite.
     set +e
-    ( cd "$WORKDIR" && $TIMEOUT_CMD claude \
+    ( cd "$case_workdir" && $TIMEOUT_CMD claude \
         -p "$prompt" \
         --dangerously-skip-permissions \
         --max-turns "$MAX_TURNS" \
@@ -191,6 +202,18 @@ run_case() {
     set -e
 
     if [ "$exit_code" = "124" ]; then
+        # Antes de declarar TIMEOUT, olhar o stream parcial: o offensive-fuzzing
+        # identificou a skill, leu o SKILL.md certo e despachou um subagente
+        # (comportamento que o CLAUDE.md manda ter) — e foi marcado TIMEOUT
+        # porque o subagente estourou os 120s DEPOIS da evidência existir.
+        # Evidência no stream = a ativação aconteceu; o tempo é outro assunto.
+        local rel_t; rel_t="$(skill_rel_path "$skill_name")"
+        if check_skill_triggered "$log_file" "$skill_name" || \
+           { [ -n "$rel_t" ] && ! is_core_skill "$rel_t" && check_skill_resolved "$log_file" "$rel_t"; }; then
+            log_pass "PASS (evidência antes do timeout): $skill_name"
+            echo "PASS" > "${out_dir}/result.txt"
+            return 0
+        fi
         log_warn "Timeout (${TIMEOUT_SECS}s) para skill: $skill_name"
         echo "TIMEOUT" > "${out_dir}/result.txt"
         return 2
@@ -367,8 +390,10 @@ declare -a RESULTS=()
 
 # Diretório neutro: o teste tem de medir alcance pelo manifesto, não a
 # capacidade do modelo de achar arquivo no diretório corrente.
+WORKDIR_IS_DEFAULT=0
 if [ -z "$WORKDIR" ]; then
     WORKDIR="${OUTPUT_BASE}/workdir"
+    WORKDIR_IS_DEFAULT=1        # dispara workdir POR CASO em run_case
     mkdir -p "$WORKDIR"
 fi
 case "$(cd "$WORKDIR" && pwd)/" in

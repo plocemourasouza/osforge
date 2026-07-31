@@ -56,7 +56,11 @@ Skills reach you through two channels, and confusing them is how a capability go
   **MANIFEST** in `@SKILLS.md` names it. The manifest is generated from frontmatter and gated at
   deploy, so it is authoritative: if it lists a skill, that skill exists and is reachable.
 
-**Resolution protocol** — before answering "there is no skill for that", run it:
+**Resolution protocol** — runs in TWO situations, and the second is the one skipped in practice:
+(a) a capability seems missing; (b) **you are about to produce a multi-step deliverable you feel
+able to write unaided** — a review, an audit, a flow, a plan. Feeling able is not the test
+(measured: "create a customer service flow" and "check for SQL injection/XSS" were both answered
+competently with the matching skill never consulted). Scan the manifest before starting, then:
 1. **Lexical** — a manifest trigger matches → `Read` the skill's `SKILL.md` and follow it.
 2. **Semantic** — no trigger matches but the intent is clear → `osforge-db search-semantic "<intent>"`,
    then `buscar-skill.py <term>`. Cross-lingual: the user prompts in pt-BR, descriptions are English.

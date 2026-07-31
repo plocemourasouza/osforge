@@ -156,7 +156,7 @@ No `console.log` in production, no `var`, no `enum`, no `export default`.
 
 The 130 skills below are **not** deployed to `~/.claude/skills` (Model A ships only the core allowlist), so the agent cannot see them by description. This manifest is their only pointer — treat it as authoritative.
 
-**Resolution protocol — never conclude a capability is unavailable without running it:**
+**Resolution protocol.** Two situations trigger it, and the second is the one skipped in practice: (a) you lack a capability; (b) **you are about to produce a multi-step deliverable you feel perfectly able to write yourself** — a review, an audit, a flow, a checklist. Feeling able is not the test; these skills exist because the unaided version misses what the discipline catches. Scan the manifest BEFORE starting such work, not after getting stuck:
 
 1. **Lexical** — a trigger below matches → `Read` the skill's `SKILL.md`.
 2. **Semantic** — nothing matches but the intent is clear → `osforge-db search-semantic "<intent>"`, then `buscar-skill.py <term>`.

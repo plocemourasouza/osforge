@@ -68,6 +68,15 @@ EXAMPLE = re.compile(r"\s*[—\-–(,;]\s*(e\.g\.?|i\.e\.?|ex\.|por exemplo|such
 # Sobrou pontuação de emenda no fim → a cláusula foi cortada no meio.
 DANGLING = re.compile(r"[—\-–:,;/(]\s*$|\b(e\.g|i\.e|etc|ex)\.?\s*$", re.I)
 
+# Prompts que pressupõem um artefato existente falham por construção num
+# workdir vazio: "create mockups of THE SITE" e "do an SEO audit of THE SITE"
+# fizeram o modelo gastar todos os turnos caçando um site que não existe —
+# duas rodadas reais, dois FAILs injustos. Vale para frase citada também.
+CONTEXT_PRESUME = re.compile(
+    r"\b(the|this|that|my|our|o|a|meu|minha|nosso|desse|deste)\s+"
+    r"(site|website|app|application|project|repo|codebase|component|file|page|branch|PR|"
+    r"projeto|aplicativo|reposit[óo]rio|arquivo|p[áa]gina)\b", re.I)
+
 
 def quoted_phrases(desc: str) -> list[str]:
     """
@@ -128,6 +137,8 @@ def make_cases(name: str, desc: str, per_skill: int) -> list[str]:
         # Splitting a clause list can cut inside parentheses, leaving "(lsof" —
         # a prompt no human would send, so the case would be unfair.
         if p.count("(") != p.count(")"):
+            continue
+        if CONTEXT_PRESUME.search(p):
             continue
         if not (MIN_LEN <= len(p) <= MAX_LEN):
             continue

@@ -229,7 +229,11 @@ def render(skills: list[dict], knowledge: list[dict], core: set[str]) -> str:
         "description. This manifest is their only pointer — treat it as authoritative."
     )
     lines.append("")
-    lines.append("**Resolution protocol — never conclude a capability is unavailable without running it:**")
+    lines.append("**Resolution protocol.** Two situations trigger it, and the second is the one skipped in "
+                 "practice: (a) you lack a capability; (b) **you are about to produce a multi-step deliverable "
+                 "you feel perfectly able to write yourself** — a review, an audit, a flow, a checklist. "
+                 "Feeling able is not the test; these skills exist because the unaided version misses what "
+                 "the discipline catches. Scan the manifest BEFORE starting such work, not after getting stuck:")
     lines.append("")
     lines.append("1. **Lexical** — a trigger below matches → `Read` the skill's `SKILL.md`.")
     lines.append("2. **Semantic** — nothing matches but the intent is clear → "
