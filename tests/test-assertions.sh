@@ -106,6 +106,30 @@ check "skill inexistente"      ""                  "$(skill_rel_path nao-existe-
 check "tdd-workflow é core"    PASS "$(verdict is_core_skill tdd-workflow)"
 check "brandkit não é core"    FAIL "$(verdict is_core_skill brandkit)"
 
+# ── Asserções de roteamento (orquestrador) ──────────────────────────────────
+echo ""
+echo "check_agent_routed / check_tier_mentioned:"
+
+cat > "$WORK/route-announce.json" <<'EOF'
+{"type":"assistant","message":{"content":[{"type":"text","text":"🤖 Applying expertise from @debugger + @backend-engineer...\nVamos reproduzir o 500."}]}}
+EOF
+cat > "$WORK/route-dispatch.json" <<'EOF'
+{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Task","input":{"subagent_type":"security-auditor","prompt":"audit auth"}}]}}
+EOF
+cat > "$WORK/route-plan.json" <<'EOF'
+{"type":"assistant","message":{"content":[{"type":"text","text":"## Roster\n- model: sonnet — implementação\n- agent: frontend-engineer"}]}}
+EOF
+cat > "$WORK/route-none.json" <<'EOF'
+{"type":"assistant","message":{"content":[{"type":"text","text":"Aqui está a resposta direta, sem roteamento."}]}}
+EOF
+
+check "anúncio @persona"               PASS "$(verdict check_agent_routed "$WORK/route-announce.json" "debugger|frontend-engineer")"
+check "despacho subagent_type"          PASS "$(verdict check_agent_routed "$WORK/route-dispatch.json" "security-auditor")"
+check "agente errado não passa"         FAIL "$(verdict check_agent_routed "$WORK/route-dispatch.json" "game-developer")"
+check "sem roteamento não passa"        FAIL "$(verdict check_agent_routed "$WORK/route-none.json" "debugger")"
+check "tier citado no Roster"           PASS "$(verdict check_tier_mentioned "$WORK/route-plan.json" "sonnet|opus")"
+check "tier ausente não passa"          FAIL "$(verdict check_tier_mentioned "$WORK/route-none.json" "opus")"
+
 # ── Sobrevivência do loop (regressão do set -e) ─────────────────────────────
 # run_case tem um `set -e` interno que reativava o errexit global e matava o
 # harness no PRIMEIRO FAIL — duas rodadas reais morreram sem placar. Este teste

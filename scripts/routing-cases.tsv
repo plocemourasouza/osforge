@@ -1,0 +1,26 @@
+# routing-cases.tsv — eval de roteamento do orquestrador (DETECT → agente/skill/tier)
+# Formato (TAB): id	expected_agents	expected_skill	expected_tier	prompt
+#   expected_agents: alternativas com | (qualquer uma passa). "-" = não asserta.
+#   expected_skill : nome da skill cuja evidência (invocação nativa OU leitura do
+#                    SKILL.md) deve aparecer. Alternativas com |. "-" = não asserta.
+#   expected_tier  : palavra de tier esperada na resposta (Roster/manifesto de plano).
+#                    Só faz sentido em demanda STANDARD/COMPLEX. "-" = não asserta.
+#   prompt         : demanda ingênua, sem citar agente nem skill pelo nome.
+# Prompts em pt-BR de propósito: valida a fronteira de tradução do ADR-011.
+#
+r01	debugger|backend-engineer	systematic-debugging	-	Minha API em Next retorna 500 só em produção, local funciona. Algumas requisições passam. Como investigar?
+r02	frontend-engineer	frontend-design|frontend-ui-system	-	Cria uma landing page com hero, prova social e pricing usando shadcn.
+r03	security-auditor|penetration-tester	security-threat-model|differential-review|insecure-defaults	-	Preciso de uma auditoria de segurança no fluxo de autenticação antes do lançamento.
+r04	database-architect|backend-engineer	database-design|postgres-optimization	-	O schema tem N+1 em quase toda listagem e as queries de relatório estão lentas. Como reestruturar?
+r05	test-engineer|qa-automation-engineer	tdd-workflow|webapp-testing|e2e-testing-patterns	-	Quero cobrir o fluxo de checkout com testes antes de refatorar ele.
+r06	devops-engineer	aws-deploy|deployment-procedures	-	Preciso subir essa aplicação na AWS com deploy automatizado a cada merge na main.
+r07	mobile-developer	mobile-design|expo-development	-	Vamos portar o app web para React Native. Por onde começar?
+r08	game-developer	game-development|web-games	-	Quero fazer um jogo 2D que rode no navegador, tipo puzzle.
+r09	seo-specialist	seo-fundamentals|genai-optimization	-	Nosso blog não aparece nem no Google nem nas respostas do ChatGPT. O que fazer?
+r10	performance-optimizer	performance-profiling|react-performance	-	O LCP da home passa de 4s no mobile. Preciso baixar isso.
+r11	code-refactorer|code-archaeologist	clean-code|codebase-design	-	Herdei um módulo de 3 mil linhas sem testes e preciso deixá-lo manutenível.
+r12	penetration-tester	offensive-jwt|offensive-idor	-	Teste a autenticação da minha API atrás de bypass: JWT fraco, IDOR, esse tipo de coisa.
+r13	product-manager|product-owner	planning/prd-builder|prd-builder|requirements-clarify	-	Tenho uma ideia de feature de assinaturas mas os requisitos estão vagos. Me ajuda a estruturar?
+r14	frontend-engineer|backend-engineer	-	sonnet|opus	Feature completa: painel de admin com login, permissões por papel, CRUD de usuários e auditoria de ações. Monta o plano.
+r15	git-commit-helper	-	-	Commita essas mudanças com uma mensagem bem formatada seguindo convenções.
+r16	documentation-writer	docs-writer|documentation-templates	-	Escreve a documentação técnica de onboarding do repositório para novos devs.

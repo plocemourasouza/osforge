@@ -91,3 +91,48 @@ check_skill_resolved() {
     grep -E '"name":"(Read|Glob|Grep|Bash)"' "$log_file" 2>/dev/null \
         | grep -qF "skills/${rel}/SKILL.md" 2>/dev/null
 }
+
+# ── Roteamento do orquestrador ──────────────────────────────────────────────
+# O CLAUDE.md/orchestrator promete saídas verificáveis: anúncio de persona
+# (`@agent-name`), despacho via Task/Agent (`"subagent_type":"<name>"`), ou
+# leitura do AGENT.md. Qualquer uma das três evidências conta.
+
+# Texto do assistant concatenado (para asserções de prosa: @agent, tier).
+response_text() {
+    local log_file="$1"
+    if command -v jq &>/dev/null; then
+        grep '"type":"assistant"' "$log_file" 2>/dev/null \
+            | jq -r '[.message.content[]? | select(.type=="text") | .text] | join("\n")' 2>/dev/null
+    else
+        grep -o '"text":"[^"]*"' "$log_file" 2>/dev/null | sed 's/"text":"//;s/"$//'
+    fi
+}
+
+# Agente esperado alcançado? Aceita lista separada por | (alternativas válidas).
+check_agent_routed() {
+    local log_file="$1"
+    local agents_alt="$2"   # ex.: "debugger|backend-engineer"
+    local text; text="$(response_text "$log_file")"
+    local IFS='|'
+    for a in $agents_alt; do
+        # 1. anúncio de persona: @nome no texto
+        if printf '%s' "$text" | grep -qF "@${a}"; then return 0; fi
+        # 2. despacho real de subagente
+        if grep -qE "\"subagent_type\":\"${a}\"" "$log_file" 2>/dev/null; then return 0; fi
+        # 3. leitura do AGENT.md correspondente
+        if grep -E '"name":"(Read|Bash)"' "$log_file" 2>/dev/null | grep -q "agents/${a}"; then return 0; fi
+    done
+    return 1
+}
+
+# Tier de modelo citado na resposta (Roster do plano / manifesto de tasks).
+check_tier_mentioned() {
+    local log_file="$1"
+    local tier="$2"         # sonnet | opus | haiku (aceita alternativas com |)
+    local text; text="$(response_text "$log_file")"
+    local IFS='|'
+    for t in $tier; do
+        if printf '%s' "$text" | grep -qiE "\b${t}\b"; then return 0; fi
+    done
+    return 1
+}
