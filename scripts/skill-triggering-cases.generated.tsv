@@ -9,12 +9,18 @@
 #
 # Format: skill_name<TAB>prompt
 
+accessibility	I need help with this: a11y audit. What's the right approach?
+accessibility	I need help with this: WCAG compliance. What's the right approach?
+aesthetic-boost	I need help with this: beautiful design. What's the right approach?
+aesthetic-boost	I need help with this: striking visuals. What's the right approach?
+aesthetic-modes	editorial minimalist style
+aesthetic-modes	I need help with this: linear style. What's the right approach?
 agency	which specialist to use for reviewing my architecture
 agency	I need an agent to create an ads campaign
+agency-design	I need help with this: review the brand. What's the right approach?
 agency-design	write image prompts for AI
-agency-design	plan usability research with users
+agency-engineering	I need help with this: review the backend. What's the right approach?
 agency-engineering	improve code or query performance
-agency-engineering	write technical API documentation
 agency-marketing	optimize my landing page for conversion
 agency-marketing	plan a content calendar and strategy
 agency-paid-media	create a Google Ads or Meta Ads campaign
@@ -29,81 +35,106 @@ agency-specialized	orchestrate a pipeline with multiple agents
 agency-specialized	prepare a SOC 2, ISO 27001, or HIPAA audit
 agency-support	create a customer service flow
 agency-support	respond to a difficult support ticket
+agency-testing	I need help with this: audit the interface. What's the right approach?
 agency-testing	test API endpoints before the release
-agency-testing	run an application performance benchmark
+agent-skills-search	I need help with this: instala a skill de prisma. What's the right approach?
 agent-skills-search	procura um padrão de PostgreSQL
-agent-skills-search	tem alguma skill de testing?
+api-patterns	I need help with this: choosing between REST. What's the right approach?
 api-patterns	I need help with this: standardizing the response envelope and error format. What's the right approach?
-api-patterns	I need help with this: auditing an API against the OWASP API Top 10. What's the right approach?
 app-builder	I need help with this: creating a new app from scratch. What's the right approach?
-app-builder	I need help with this: coordinating agents to build a complete project. What's the right approach?
+app-builder	I need help with this: deciding which stack to use for a project. What's the right approach?
 architecture	I need help with this: writing or reviewing an ADR. What's the right approach?
 architecture	I need help with this: evaluating whether the proposed complexity is justified. What's the right approach?
-asaas-integration	I need help with this: migrating from Stripe to a BR provider. What's the right approach?
-autorefine-skill	skill Y is not working well
-autorefine-skill	apply a pattern from another project
+asaas-integration	I need help with this: integrating ASAAS. What's the right approach?
+asaas-integration	I need help with this: handling ASAAS webhooks. What's the right approach?
+autorefine-skill	I need help with this: improve my frontend skill. What's the right approach?
+autorefine-skill	I need help with this: improve a skill. What's the right approach?
+aws-deploy	I need help with this: deploying to AWS. What's the right approach?
 aws-deploy	I need help with this: choosing an AWS compute/hosting service. What's the right approach?
 bash-linux	I need help with this: a bash script errors or behaves unexpectedly. What's the right approach?
 bash-linux	I need help with this: searching and transforming text with grep. What's the right approach?
-brainstorming	I need help with this: wants to explore alternatives before committing. What's the right approach?
-brainstorming	I need help with this: says 'I want to build X' without clear details. What's the right approach?
+behavioral-modes	switch to brainstorm mode\
+behavioral-modes	just implement, no questions\
+best-practices	I need help with this: security audit. What's the right approach?
+best-practices	I need help with this: modernize code. What's the right approach?
+better-auth	I need help with this: session management. What's the right approach?
+better-auth	I need help with this: OAuth/social login. What's the right approach?
+brainstorming	I need help with this: i want to build X. What's the right approach?
+brainstorming	I need help with this: describes a vague idea. What's the right approach?
 brandkit	create a brand kit for my startup
-brandkit	put together a studio-style brand guidelines board
-bun-development	I need help with this: runtime edge cases that differ from Node.js. What's the right approach?
-bun-development	I need help with this: segfault loading a native dependency. What's the right approach?
+brandkit	I need help with this: generate the brand. What's the right approach?
+bun-development	I need help with this: cannot find module. What's the right approach?
+bun-development	I need help with this: node-gyp rebuild failed. What's the right approach?
 claude-api-typescript	I need help with this: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent-sdk. What's the right approach?
+claude-api-typescript	I need help with this: asks to use Claude API. What's the right approach?
 claude-ci-actions	I need help with this: setting up @claude in PRs/issues. What's the right approach?
 claude-ci-actions	I need help with this: configuring automated code review. What's the right approach?
+clean-code	I need help with this: simplify this. What's the right approach?
 clean-code	I need help with this: code is over-engineered or has premature abstractions. What's the right approach?
-clean-code	I need help with this: a request to 'simplify this'. What's the right approach?
+code-review-checklist	I need help with this: approving a merge. What's the right approach?
 code-review-checklist	I need help with this: checking for SQL injection/XSS/hardcoded secrets. What's the right approach?
-code-review-checklist	I need help with this: flagging anti-patterns like magic numbers and deep nesting. What's the right approach?
 codebase-design	I need help with this: designing or improving a module's interface. What's the right approach?
 codebase-design	I need help with this: deciding where a seam goes. What's the right approach?
-config-critique	I need help with this: "review my skill", "validate my rule", "check hook conflict", "lint config", "is my skill good?", "will this agent work?", "PR review of a skill". What's the right approach?
+coding-guidelines	I need help with this: implement this feature. What's the right approach?
+coding-guidelines	I need help with this: refactor this code. What's the right approach?
+config-critique	I need help with this: review my skill. What's the right approach?
+config-critique	I need help with this: validate my rule. What's the right approach?
+context-distillator	I need help with this: compress this long doc. What's the right approach?
 context-distillator	I need help with this: distill the context before passing it to another skill. What's the right approach?
-context-distillator	I need help with this: a PRD/spec/architecture too large for the context window. What's the right approach?
+db-state-sync	I need help with this: saving phase progress. What's the right approach?
 db-state-sync	I need help with this: recording an architectural decision. What's the right approach?
-db-state-sync	I need help with this: viewing the cross-project board. What's the right approach?
-doc-shard	I need help with this: a document exceeds the context window or to organize extensive docs. What's the right approach?
-doc-shard	I need help with this: a spec with multiple sections. What's the right approach?
-editorial-review	this doc is poorly organized
+doc-shard	I need help with this: shard doc. What's the right approach?
+doc-shard	I need help with this: split document. What's the right approach?
+editorial-review	I need help with this: review prose. What's the right approach?
+editorial-review	I need help with this: review structure. What's the right approach?
+project-context-generator	I need help with this: starting on a new project. What's the right approach?
 project-context-generator	I need help with this: you need to update context after stack changes. What's the right approach?
-project-context-generator	I need help with this: you want to create project principles. What's the right approach?
-context-compact	I need help with this: says "compress context", "compact", "summary", "near the limit", "context full", "save state", "/compact", "/clear". What's the right approach?
-context-compact	I need help with this: when the token counter passes 140k. What's the right approach?
-context7-docs-first	I need help with this: any version-sensitive library behavior. What's the right approach?
-context7-docs-first	I need help with this: is integrating APIs that change between versions. What's the right approach?
+context-compact	I need help with this: compress context. What's the right approach?
+context-compact	I need help with this: near the limit. What's the right approach?
+context7-docs-first	I need help with this: current version. What's the right approach?
+context7-docs-first	I need help with this: how does X work now. What's the right approach?
+core-web-vitals	I need help with this: reduce CLS. What's the right approach?
+core-web-vitals	I need help with this: optimize INP. What's the right approach?
 database-design	I need help with this: a slow query or N+1 in production. What's the right approach?
-database-design	I need help with this: modeling the schema and relationships of a new feature. What's the right approach?
+database-design	I need help with this: choosing between Drizzle. What's the right approach?
 deployment-procedures	I need help with this: a deploy failed or broke production. What's the right approach?
 deployment-procedures	I need help with this: a service went down after a release and needs a quick rollback. What's the right approach?
-design-md	how this product should look
-design-md	I need help with this: is starting a new project that needs its own identity. What's the right approach?
-design-taste-frontend	make it not look AI-generated
-design-taste-frontend	I need help with this: infers the right design direction. What's the right approach?
-differential-review	I need help with this: when reviewing commits that touch auth. What's the right approach?
+design-md	I need help with this: s identity. What's the right approach?
+design-md	I need help with this: project design tokens. What's the right approach?
+design-taste-frontend	I need help with this: build a landing page. What's the right approach?
+design-taste-frontend	I need help with this: create my portfolio site. What's the right approach?
+differential-review	I need help with this: PR security review. What's the right approach?
+differential-review	I need help with this: git diff analysis. What's the right approach?
 dispatching-parallel-agents	I need help with this: 2+ tasks with no shared state. What's the right approach?
 dispatching-parallel-agents	I need help with this: refactoring across multiple unrelated files. What's the right approach?
 doc-sanitization	I have a lot of disorganized documentation
-doc-sanitization	these .md files are a mess
+doc-sanitization	I need help with this: consolidate old specs. What's the right approach?
 docs-writer	I need help with this: documenting a feature/command/API from the code. What's the right approach?
 docs-writer	I need help with this: rewriting or improving an existing docs section. What's the right approach?
 documentation-templates	I need help with this: creating a README from scratch with a standard structure. What's the right approach?
 documentation-templates	I need help with this: building an API documentation skeleton. What's the right approach?
 domain-modeling	I need help with this: naming a new concept or module. What's the right approach?
 domain-modeling	I need help with this: two words are being used for the same thing. What's the right approach?
-frontend-ui-system	I need help with this: when choosing between component libraries. What's the right approach?
+e2e-testing-patterns	I need help with this: e2E test setup. What's the right approach?
+e2e-testing-patterns	I need help with this: visual regression. What's the right approach?
+osforge-evolve	I need help with this: evolve, /evolve. What's the right approach?
+osforge-evolve	I need help with this: analyze observations. What's the right approach?
+finishing-a-development-branch	I need help with this: all tasks on a branch are complete. What's the right approach?
+finishing-a-development-branch	I need help with this: wants to merge or open a PR. What's the right approach?
+frontend-design	I need help with this: create a layout. What's the right approach?
+frontend-design	I need help with this: choose a color scheme. What's the right approach?
+frontend-ui-system	I need help with this: building interfaces. What's the right approach?
+frontend-ui-system	I need help with this: landing pages. What's the right approach?
 full-output-enforcement	I need help with this: a response came back truncated. What's the right approach?
-full-output-enforcement	I need help with this: asks for the complete file or says give me everything without summarizing. What's the right approach?
+full-output-enforcement	I need help with this: code came out with // ... What's the right approach?
 2d-games	I need help with this: how to organize sprites and animations in Godot. What's the right approach?
-2d-games	I need help with this: i need to build tilemaps with auto-tiling and layers. What's the right approach?
+2d-games	I need help with this: unity 2D. What's the right approach?
 3d-games	I need help with this: my 3D game has too many draw calls and I need culling/batching/LOD. What's the right approach?
 3d-games	I need help with this: which collider to use for 3D characters and terrain in Unity. What's the right approach?
+game-development	I need help with this: t know where to start; I. What's the right approach?
 game-development	I need help with this: i want to make a game but don't know where to start. What's the right approach?
-game-development	I need help with this: my game has low FPS and I need a performance budget. What's the right approach?
+game-art	I need help with this: m defining the game. What's the right approach?
 game-art	I need help with this: my textures are heavy and I need atlases. What's the right approach?
-game-art	I need help with this: which type of animation to use for characters (frame-based vs skeletal). What's the right approach?
 game-audio	I need help with this: how to make adaptive music that changes with combat. What's the right approach?
 game-audio	I need help with this: audio is consuming too much memory/CPU and I need pooling. What's the right approach?
 game-design	m designing progression, rewards, and retention (loot, levels, unlocks); what type of player I
@@ -111,30 +142,38 @@ game-design	I need help with this: my game isn't fun and I want to analyze the 3
 mobile-games	I need help with this: i'm porting or building a game for iOS/Android and the touch controls are bad. What's the right approach?
 mobile-games	I need help with this: my mobile game heats up the device or drains battery (thermal throttling, 30 vs 60 FPS). What's the right approach?
 multiplayer	I need help with this: how to design matchmaking by skill and latency. What's the right approach?
+pc-games	I need help with this: ray tracing. What's the right approach?
 pc-games	I need help with this: i need to support keyboard+mouse and controller with full rebinding. What's the right approach?
-pc-games	I need help with this: i want to add mod support and Steam Workshop. What's the right approach?
 vr-ar	I need help with this: i'm developing for Meta Quest. What's the right approach?
 vr-ar	I need help with this: steamVR and need the FPS/latency targets (90+ FPS, <20ms). What's the right approach?
 web-games	I need help with this: i want to make a game that runs in the browser and don't know which framework to choose. What's the right approach?
 web-games	I need help with this: should I use WebGPU or WebGL in my new project. What's the right approach?
+gdpr-data-handling	I need help with this: consent management. What's the right approach?
+gdpr-data-handling	I need help with this: privacy policies. What's the right approach?
 genai-optimization	I need help with this: making content get cited by ChatGPT/Perplexity/Claude/Gemini. What's the right approach?
-genai-optimization	I need help with this: structuring content for RAG retrieval. What's the right approach?
-git-workflow	I need help with this: structuring git operations for agent-driven development. What's the right approach?
+genai-optimization	I need help with this: optimizing for AI search. What's the right approach?
+git-workflow	I need help with this: creating branches. What's the right approach?
+git-workflow	I need help with this: setting up parallel work. What's the right approach?
 gpt-taste	Awwwards-level landing page with scroll animations
 gpt-taste	add GSAP ScrollTrigger with pinned sections
 grilling	I need help with this: a plan or design needs stress-testing before any code is written. What's the right approach?
 grilling	I need help with this: the request is ambiguous enough that building the wrong thing is plausible. What's the right approach?
 high-end-visual-design	this design looks like an AI template, make it premium
 high-end-visual-design	I want high-end agency visual polish
+humanizer	I need help with this: s comprehensive. What's the right approach?
 humanizer	I need help with this: editing or reviewing text to make it sound more natural and human-written. What's the right approach?
-i18n-localization	I need help with this: locale routing ("/en routes", "detect user language"). What's the right approach?
-i18n-localization	I need help with this: date/currency formatting ("format prices in BRL", "localize dates"). What's the right approach?
+i18n-localization	I need help with this: set up multiple languages. What's the right approach?
+i18n-localization	add English/Spanish support
 image-to-code	design a stunning hero section
 image-to-code	build a premium landing page
+imagegen-frontend-mobile	I need help with this: mockup das telas do app\. What's the right approach?
+imagegen-frontend-mobile	design the mobile onboarding flow as images\
 imagegen-frontend-web	generate reference images of the landing page design
 imagegen-frontend-web	generate a design comp for the dev to recreate
+industrial-brutalist-ui	military terminal-style dashboard
 industrial-brutalist-ui	declassified blueprint-style brutalist site
-industrial-brutalist-ui	UI with retro-terminal CRT aesthetic and scanlines
+insecure-defaults	I need help with this: security hardening. What's the right approach?
+insecure-defaults	I need help with this: env variable audit. What's the right approach?
 lint-and-validate	I need help with this: you just edited or created code. What's the right approach?
 lint-and-validate	I need help with this: committing or marking a task as done. What's the right approach?
 llm-structured-output	I need help with this: choosing between Instructor / PydanticAI / Zod. What's the right approach?
@@ -147,105 +186,160 @@ minimalist-ui	clean editorial landing page with no gradients
 minimalist-ui	workspace or productivity tool design
 mobile-design	create an app in React Native or Flutter
 mobile-design	native mobile screen design
-nextjs-react-expert	I need help with this: reviewing code for performance issues. What's the right approach?
-nextjs-react-expert	I need help with this: first Load JS bundle > 200KB. What's the right approach?
-nodejs-best-practices	I need help with this: async/await hanging or event loop blocked by CPU-bound work. What's the right approach?
-nodejs-best-practices	I need help with this: arkType for validation, 500 error with no centralized handling or wrong status code. What's the right approach?
-offensive-ai-security	I need help with this: researching AI attack vectors. What's the right approach?
+nextjs-react-expert	I need help with this: building React components. What's the right approach?
+nextjs-react-expert	I need help with this: optimizing performance. What's the right approach?
+nextjs-supabase-auth	I need help with this: multi-org RBAC. What's the right approach?
+nextjs-supabase-auth	I need help with this: session management. What's the right approach?
+nodejs-best-practices	I need help with this: choosing between Hono. What's the right approach?
+nodejs-best-practices	I need help with this: express for a new project. What's the right approach?
+offensive-ai-security	I need help with this: assessing AI/ML systems. What's the right approach?
+offensive-ai-security	I need help with this: red-teaming LLMs. What's the right approach?
+offensive-bug-identification	I need help with this: code audits. What's the right approach?
+offensive-bug-identification	I need help with this: bug bounty triage. What's the right approach?
 offensive-business-logic	I need help with this: scoping an application after surface-level OWASP Top 10 has been covered. What's the right approach?
 offensive-business-logic	I need help with this: when the asset is a transactional/marketplace/fintech/e-commerce/SaaS app where logic flaws produce direct financial impact. What's the right approach?
 offensive-cloud	I need help with this: the engagement scope is cloud accounts. What's the right approach?
 offensive-cloud	I need help with this: you have obtained cloud credentials. What's the right approach?
 offensive-deserialization	I need help with this: testing deserialization endpoints or developing deserialization exploits. What's the right approach?
+offensive-fast-checking	I need help with this: time-boxed assessments. What's the right approach?
+offensive-fast-checking	I need help with this: CTF-speed engagements. What's the right approach?
+offensive-file-upload	I need help with this: assessing file upload endpoints in web app pentests or bug bounty. What's the right approach?
 offensive-fuzzing	I need help with this: setting up or running fuzz campaigns against any target: file parsers. What's the right approach?
+offensive-fuzzing	I need help with this: network protocols. What's the right approach?
 offensive-graphql	I need help with this: assessing GraphQL endpoints in web app tests or bug bounty. What's the right approach?
-offensive-idor	I need help with this: insecure direct object reference. What's the right approach?
+offensive-idor	I need help with this: web app pentests and bug bounty IDOR discovery. What's the right approach?
 offensive-jwt	I need help with this: hunting auth bypass via token manipulation. What's the right approach?
 offensive-jwt	I need help with this: evaluating JWT implementation security in web or mobile apps. What's the right approach?
+offensive-mobile	I need help with this: mobile pentest. What's the right approach?
+offensive-mobile	I need help with this: bug bounty mobile triage. What's the right approach?
 offensive-oauth	I need help with this: testing OAuth implementations in web apps or bug bounty. What's the right approach?
+offensive-open-redirect	I need help with this: web app testing and bug bounty open redirect discovery. What's the right approach?
 offensive-osint	I need help with this: performing reconnaissance against a target domain or organization. What's the right approach?
 offensive-osint	I need help with this: investigating a person or entity. What's the right approach?
 offensive-parameter-pollution	I need help with this: testing web applications for parameter handling flaws. What's the right approach?
+offensive-race-condition	I need help with this: web app race condition testing or bug bounty time-of-check-to-time-of-use bugs. What's the right approach?
+offensive-rce	I need help with this: web app pentests and bug bounty RCE discovery. What's the right approach?
+offensive-reporting	I need help with this: authoring the pentest or red-team report at the end of an engagement. What's the right approach?
+offensive-reporting	I need help with this: restructuring a draft for executive readability. What's the right approach?
 offensive-request-smuggling	I need help with this: testing reverse proxy/load balancer configurations. What's the right approach?
 offensive-sqli	I need help with this: performing web application SQL injection testing. What's the right approach?
-offensive-sqli	I need help with this: privilege escalation via SQLi. What's the right approach?
+offensive-sqli	I need help with this: database enumeration. What's the right approach?
+offensive-ssrf	I need help with this: web app SSRF testing and bug bounty. What's the right approach?
 offensive-ssti	I need help with this: testing web apps for template injection vulnerabilities. What's the right approach?
+offensive-toctou	I need help with this: ve identified a. What's the right approach?
 offensive-toctou	I need help with this: you've identified a 'check then act' pattern in code. What's the right approach?
-offensive-toctou	I need help with this: fuzzing for race conditions. What's the right approach?
-offensive-waf-bypass	I need help with this: wAF is blocking payloads during web app tests. What's the right approach?
-osforge-canvas	I want to review interactively
-osforge-canvas	I need to approve before implementing
-output-enforcement	I need help with this: generating several components or long documentation. What's the right approach?
-output-enforcement	I need help with this: test suite that needs all cases written. What's the right approach?
+offensive-waf-bypass	I need help with this: WAF is blocking payloads during web app tests. What's the right approach?
+offensive-xss	I need help with this: web app XSS testing and bug bounty. What's the right approach?
+offensive-xxe	I need help with this: web app XXE testing and bug bounty. What's the right approach?
+openui-genui-layout	I need help with this: creating any page. What's the right approach?
+openui-genui-layout	I need help with this: layout component. What's the right approach?
+osforge-canvas	I need help with this: open in canvas. What's the right approach?
+osforge-canvas	I need help with this: show in the browser. What's the right approach?
+output-enforcement	I need help with this: t skip items. What's the right approach?
+output-enforcement	I need help with this: asked for complete. What's the right approach?
 performance-profiling	I need help with this: slow page or poor LCP/INP/CLS. What's the right approach?
-performance-profiling	I need help with this: scroll jank or stuttering animations. What's the right approach?
+performance-profiling	I need help with this: suspected memory leak. What's the right approach?
 plan-writing	I need help with this: planning a feature implementation. What's the right approach?
 plan-writing	I need help with this: breaking multi-step work into tasks. What's the right approach?
+arch-builder	I need help with this: define Prisma schema. What's the right approach?
 arch-builder	decide Server Actions vs API Routes
+epic-decomposer	break this spec into stories
+epic-decomposer	I need help with this: decompose the PRD. What's the right approach?
 phase-discussion	I need help with this: planning any phase with UI. What's the right approach?
+phase-discussion	I need help with this: content system. What's the right approach?
+prd-builder	I need help with this: product requirements. What's the right approach?
+requirements-clarify	I need help with this: it can be anything. What's the right approach?
 requirements-clarify	I need help with this: a spec has vague or underspecified areas. What's the right approach?
-requirements-clarify	I need help with this: the requirements leave room for multiple interpretations. What's the right approach?
-spec-builder	I need help with this: detailing requirements before implementing. What's the right approach?
-postgres-optimization	I need help with this: slow page loads caused by database. What's the right approach?
+spec-builder	I need help with this: specifying a feature. What's the right approach?
+spec-builder	I need help with this: defining what to build. What's the right approach?
+story-executor	I need help with this: execute story. What's the right approach?
+story-executor	I need help with this: implement story. What's the right approach?
+postgres-optimization	I need help with this: writing complex queries. What's the right approach?
+postgres-optimization	I need help with this: creating migrations. What's the right approach?
 powershell-windows	I need help with this: a PowerShell script fails with a parameter or or Unexpected token error. What's the right approach?
 powershell-windows	I need help with this: an if conditional with -or/-and breaks due to missing parentheses around cmdlets. What's the right approach?
+predictive-failure	I need help with this: predict failures. What's the right approach?
+predictive-failure	I need help with this: what could go wrong. What's the right approach?
 prisma-expert	I need help with this: schema changes with >3 models. What's the right approach?
-prisma-expert	I need help with this: many-to-many or polymorphic relations. What's the right approach?
+prisma-expert	I need help with this: migration strategies. What's the right approach?
+python-patterns	I need help with this: choosing between FastAPI. What's the right approach?
 python-patterns	I need help with this: async def blocking or mixing a sync lib into async code. What's the right approach?
-python-patterns	I need help with this: validating request/response with Pydantic. What's the right approach?
 adversarial-review	I need help with this: reviewing a spec before implementing. What's the right approach?
-adversarial-review	I need help with this: reviewing code with maximum skepticism. What's the right approach?
+adversarial-review	I need help with this: validating a PRD. What's the right approach?
+code-review	I need help with this: review code. What's the right approach?
+code-review	I need help with this: review PR. What's the right approach?
 edge-case-hunter	I need help with this: asked for edge cases or boundary conditions of a diff/file/function. What's the right approach?
 edge-case-hunter	I need help with this: verifying null/empty inputs and off-by-one before merging. What's the right approach?
+elicitation-engine	I need help with this: asked to refine this. What's the right approach?
 elicitation-engine	I need help with this: improve or deepen a spec/PRD. What's the right approach?
-elicitation-engine	I need help with this: dig deeper into a design decision. What's the right approach?
-readiness-gate	is the PRD aligned with the architecture?
-readiness-gate	do all requirements have a story?
+readiness-gate	I need help with this: readiness check. What's the right approach?
+readiness-gate	I need help with this: ready to implement?. What's the right approach?
+ui-audit	I need help with this: the screen looks off. What's the right approach?
+ui-audit	I need help with this: s not how I wanted. What's the right approach?
+react-performance	I need help with this: next.js pages. What's the right approach?
+react-performance	I need help with this: data fetching. What's the right approach?
+receiving-code-review	I need help with this: received review feedback. What's the right approach?
+receiving-code-review	I need help with this: PR has comments. What's the right approach?
 red-team-tactics	I need help with this: planning an authorized attack simulation/pentest. What's the right approach?
-red-team-tactics	I need help with this: evaluating detection evasion to test defenses (purple team). What's the right approach?
-redesign-audit	I need help with this: modernising the UI of an existing project. What's the right approach?
-redesign-audit	I need help with this: a visual upgrade is wanted without a rewrite. What's the right approach?
+red-team-tactics	I need help with this: initial access. What's the right approach?
+redesign-audit	I need help with this: looks like a template. What's the right approach?
+redesign-audit	I need help with this: looks AI-generated. What's the right approach?
 redesign-existing-projects	I need help with this: i inherited code with generic design. What's the right approach?
-redesign-existing-projects	I need help with this: improve typography/colors/spacing of existing UI. What's the right approach?
+redesign-existing-projects	I need help with this: three identical cards. What's the right approach?
 rust-pro	I need help with this: borrow checker or lifetime error in generic code. What's the right approach?
 rust-pro	I need help with this: designing an async web service with Tokio. What's the right approach?
+security-best-practices	I need help with this: a security review/report. What's the right approach?
+security-threat-model	I need help with this: ly when the user explicitly asks to threat model a codebase or path. What's the right approach?
 security-threat-model	I need help with this: perform AppSec threat modeling. What's the right approach?
+seo	I need help with this: optimize for search. What's the right approach?
+seo	I need help with this: fix meta tags. What's the right approach?
+seo-fundamentals	I need help with this: improving a page's Google ranking. What's the right approach?
 seo-fundamentals	I need help with this: implementing schema markup/structured data. What's the right approach?
-seo-fundamentals	I need help with this: optimizing content title/meta description/headings. What's the right approach?
 server-management	I need help with this: app crashes and doesn't restart on its own. What's the right approach?
 server-management	I need help with this: high CPU or memory on the server. What's the right approach?
 skill-creator	s description for better triggering accuracy
-skill-creator	testa se a skill dispara bem
-smart-hooks	I need help with this: improving Claude Code DX with notifications and backups. What's the right approach?
-smart-model-dispatch	I need help with this: spawning subagents via Agent tool. What's the right approach?
-smart-model-dispatch	I need help with this: implementing a feature with multiple mixed-complexity subtasks. What's the right approach?
+skill-creator	I need help with this: make a skill for X. What's the right approach?
+smart-hooks	I need help with this: setting up hooks for a project. What's the right approach?
+smart-hooks	I need help with this: configuring quality gates. What's the right approach?
+smart-model-dispatch	I need help with this: which model. What's the right approach?
+smart-model-dispatch	I need help with this: use opus. What's the right approach?
 stitch-design-export	I need help with this: exporting the design system to a DESIGN.md. What's the right approach?
 stitch-design-export	I need help with this: preparing the design prompt before generating screens. What's the right approach?
 stitch-design-taste	m going to generate screens in Google Stitch and want a design system
 stitch-design-taste	translate my visual style into the Stitch format
-stuck-recovery	forget what you were doing
-stuck-recovery	I need help with this: says "stuck", "loop", "it's not working", "try again", "this isn't making progress", "forget what you were doing". What's the right approach?
+stripe-integration	I need help with this: checkout implementation. What's the right approach?
+stripe-integration	I need help with this: subscription billing. What's the right approach?
+stuck-recovery	I need help with this: s not working. What's the right approach?
+stuck-recovery	I need help with this: try again. What's the right approach?
 systematic-debugging	I need help with this: a bug is hard to reproduce. What's the right approach?
-systematic-debugging	I need help with this: a crash has no clear stacktrace. What's the right approach?
+systematic-debugging	I need help with this: behavior is intermittent. What's the right approach?
 tailwind-patterns	how to configure @theme in Tailwind 4
 tailwind-patterns	use container queries instead of breakpoints
+taste-design-dials	I need help with this: raise motion to 8. What's the right approach?
 taste-design-dials	I want more minimal/more bold
-taste-design-dials	apply the taste dials to this OSForge project
-tdd-workflow	I need help with this: then writes minimal code to pass. What's the right approach?
-tdd-workflow	I need help with this: when the user mentions TDD. What's the right approach?
+tdd-workflow	I need help with this: implementing any feature. What's the right approach?
+tdd-workflow	I need help with this: behavior change. What's the right approach?
+technical-design-doc-creator	write the technical design doc\
+technical-design-doc-creator	I need help with this: preciso de um TDD\. What's the right approach?
 testing-patterns	I need help with this: writing unit or integration tests. What's the right approach?
-testing-patterns	I need help with this: deciding what to test vs what to mock. What's the right approach?
-tlc-spec-driven	I need help with this: tracking decisions across sessions. What's the right approach?
-tool-safety-classifier	I need help with this: runs in "automatic mode", "yolo mode", "headless", "CI mode", "auto-approve", "no confirmation". What's the right approach?
+testing-patterns	I need help with this: fixing a flaky test. What's the right approach?
+tlc-spec-driven	I need help with this: initialize project. What's the right approach?
+tlc-spec-driven	I need help with this: map codebase. What's the right approach?
+tool-safety-classifier	I need help with this: automatic mode. What's the right approach?
+tool-safety-classifier	I need help with this: yolo mode. What's the right approach?
+ui-design-intelligence	I need help with this: mentions visual style. What's the right approach?
+ui-design-intelligence	I need help with this: visual tone. What's the right approach?
 using-git-worktrees	I need help with this: working on multiple features simultaneously. What's the right approach?
 using-git-worktrees	I need help with this: needing isolated branches for each parallel agent. What's the right approach?
 vercel-deploy	deploy and give me the link
-vercel-deploy	create a preview deployment
+vercel-deploy	I need help with this: push this live. What's the right approach?
 verification-before-completion	I need help with this: about to claim work is complete. What's the right approach?
-visual-planner	I need help with this: creating a visual breakdown. What's the right approach?
-visual-planner	I need help with this: generating interactive architecture HTML. What's the right approach?
+verification-before-completion	I need help with this: any completion statement. What's the right approach?
+visual-planner	I need help with this: visualizing a plan. What's the right approach?
+visual-planner	I need help with this: turning a spec into HTML. What's the right approach?
+vulnerability-scanner	I need help with this: mapping a project's attack surface. What's the right approach?
 vulnerability-scanner	I need help with this: prioritizing risks found in a scan. What's the right approach?
-vulnerability-scanner	I need help with this: validating an auth/API/data security checklist. What's the right approach?
-web-design-guidelines	I need help with this: asked to "review my UI", "check accessibility", "audit design", "review UX". What's the right approach?
+web-design-guidelines	I need help with this: review my UI. What's the right approach?
+web-design-guidelines	I need help with this: check accessibility. What's the right approach?
 webapp-testing	I need help with this: testing a flow with Playwright. What's the right approach?
 webapp-testing	I need help with this: writing E2E for login/checkout/a critical flow. What's the right approach?

@@ -72,10 +72,20 @@ DANGLING = re.compile(r"[—\-–:,;/(]\s*$|\b(e\.g|i\.e|etc|ex)\.?\s*$", re.I)
 # workdir vazio: "create mockups of THE SITE" e "do an SEO audit of THE SITE"
 # fizeram o modelo gastar todos os turnos caçando um site que não existe —
 # duas rodadas reais, dois FAILs injustos. Vale para frase citada também.
-CONTEXT_PRESUME = re.compile(
-    r"\b(the|this|that|my|our|o|a|meu|minha|nosso|desse|deste)\s+"
-    r"(site|website|app|application|project|repo|codebase|component|file|page|branch|PR|"
-    r"projeto|aplicativo|reposit[óo]rio|arquivo|p[áa]gina)\b", re.I)
+# Dois regexes separados: o artigo pt-BR "a" colidia com o indefinido inglês —
+# "a branch" e "a PR" (genéricos, justos) eram filtrados como se pressupusessem
+# contexto. Indefinido NUNCA pressupõe; só definido/possessivo, em cada idioma
+# com seus próprios substantivos.
+CONTEXT_PRESUME_EN = re.compile(
+    r"\b(the|this|that|my|our)\s+"
+    r"(site|website|app|application|project|repo|codebase|component|file|page|branch|PR|schema)\b", re.I)
+CONTEXT_PRESUME_PT = re.compile(
+    r"\b(o|a|os|as|meu|minha|nosso|nossa|esse|essa|deste|desse)\s+"
+    r"(site|app|projeto|aplicativo|reposit[óo]rio|arquivo|p[áa]gina|schema|c[óo]digo)\b", re.I)
+
+
+def presumes_context(p: str) -> bool:
+    return bool(CONTEXT_PRESUME_EN.search(p) or CONTEXT_PRESUME_PT.search(p))
 
 
 def quoted_phrases(desc: str) -> list[str]:
@@ -92,7 +102,7 @@ def quoted_phrases(desc: str) -> list[str]:
 
 
 def use_when_clauses(desc: str) -> list[str]:
-    m = re.search(r"Use when:?\s*(.+?)(?:\s*Keywords?:|\s*Do NOT|$)", desc, re.I | re.S)
+    m = re.search(r"Use (?:when|for):?\s*(.+?)(?:\s*Keywords?:|\s*Do NOT|$)", desc, re.I | re.S)
     if not m:
         m = re.search(r"(?:Triggers? on|Trigger):?\s*(.+?)(?:\s*Keywords?:|\s*Do NOT|$)", desc, re.I | re.S)
     if not m:
@@ -114,7 +124,9 @@ def carry(clause: str) -> str:
     Nos dois casos a skill não disparou porque não havia pedido nenhum. O
     embrulho preserva o vocabulário do gatilho e devolve a forma de pergunta.
     """
-    clause = clause[0].lower() + clause[1:] if clause[:1].isupper() else clause
+    # Preserva acrônimos: "WCAG compliance" não vira "wCAG compliance".
+    if clause[:1].isupper() and not clause[1:2].isupper():
+        clause = clause[0].lower() + clause[1:]
     return f"I need help with this: {clause}. What's the right approach?"
 
 
@@ -127,6 +139,9 @@ def make_cases(name: str, desc: str, per_skill: int) -> list[str]:
     quoted = quoted_phrases(desc)
     for p in quoted + use_when_clauses(desc):
         is_quoted = p in quoted
+        # Limpa rótulos que sobram do fatiamento ("keywords: `file upload") e
+        # crases de blobs de keywords (formato das skills offensive-*).
+        p = re.sub(r"^(keywords?|triggers?)\s*:\s*", "", p.strip(), flags=re.I)
         p = LEAD.sub("", p.strip().strip("`").strip()).strip()
         # A trigger ends at the first sentence break; what follows is identity
         # ("Produces a 9-section summary…"), which no user would type.
@@ -138,11 +153,19 @@ def make_cases(name: str, desc: str, per_skill: int) -> list[str]:
         # a prompt no human would send, so the case would be unfair.
         if p.count("(") != p.count(")"):
             continue
-        if CONTEXT_PRESUME.search(p):
+        if presumes_context(p):
             continue
+        # Candidato curto é fala de usuário legítima ("a11y audit", "fix LCP",
+        # "ready to ship") — descartá-lo pelo MIN_LEN jogava fora descriptions
+        # boas e inflava a lista de "sem gatilho aproveitável" com falsos
+        # positivos. O embrulho o transforma num prompt justo.
+        wrapped = False
+        if 7 <= len(p) < MIN_LEN and len(p.split()) >= 2:
+            p = carry(p)
+            wrapped = True
         if not (MIN_LEN <= len(p) <= MAX_LEN):
             continue
-        if len(p.split()) < MIN_WORDS:
+        if not wrapped and not is_quoted and len(p.split()) < MIN_WORDS:
             continue
         if NOT_A_PROMPT.match(p) or META.search(p):
             continue
@@ -153,7 +176,9 @@ def make_cases(name: str, desc: str, per_skill: int) -> list[str]:
         if key in seen:
             continue
         seen.add(key)
-        cands.append(p if is_quoted else carry(p))
+        # `wrapped` já passou pelo carry no bloco de cima — embrulhar de novo
+        # produzia "I need help with this: i need help with this: …".
+        cands.append(p if (is_quoted or wrapped) else carry(p))
         if len(cands) >= per_skill:
             break
 
