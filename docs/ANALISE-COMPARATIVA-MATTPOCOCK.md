@@ -248,6 +248,31 @@ A métrica "skills com resolução provada por prompt ingênuo" saiu de **descon
 tokens invariantes de idioma, skill declarada = skill carregada (core → invocação; manifesto →
 leitura; pesada → subagente), enforcement no Stop hook com kill-switch `OSFORGE_ROUTEGUARD=off`.
 
+## 8.2 Estado da incorporação (2026-08-01 — encerrada)
+
+Os quatro pilares do repo do Matt têm implementação OSForge-nativa, todos validados por eval:
+
+| Pilar | Implementação | Validação |
+|---|---|---|
+| Grilling | skill `grilling` (core) + regra global | eval de roteamento |
+| Linguagem ubíqua | `CONTEXT.md` em 2 níveis + `domain-modeling` + formatos adaptados | deployada |
+| Feedback loops | `systematic-debugging` 2.0 (loop-primeiro, hipóteses falsificáveis, tag DEBUG, post-mortem) | 30/30 harness |
+| Design de código | `codebase-design` (glossário-contrato, deletion test, 2 adapters) | r11 do eval |
+
+Método incorporado além das skills: teoria do `writing-great-skills` aplicada em 46/46 core
+(`Done when:` + barras de exaustividade) · ciclo de vida `_deprecated/`/`_in-progress/` ·
+`.out-of-scope/` · invariante checável = gate do manifesto · tracer bullets + HITL/AFK no
+`spec-tasks` · atribuição MIT via `inspired_by`.
+
+Deliberadamente não incorporado (registrado onde couber em `.out-of-scope/`): `to-issues`/`triage`
+com GitHub (o fluxo `spec-*` + ondas do `osforge-db` é superior; importou-se só a fatia vertical e
+o eixo HITL/AFK) · router `ask-matt`/R13 (obsoleto: linha de rota + manifesto cumprem o papel com
+auditoria) · bootstrap por repo (coberto por `project-context-generator` + criação lazy do
+`CONTEXT.md`) · empacotamento como plugin (R10, rejeitada).
+
+Pendências que NÃO são incorporação do Matt, e sim curadoria interna: R15 (30 pares
+nome-colidentes) e a aposentadoria da `agent-skills-search`.
+
 ## 9. Uma frase
 
 O OSForge tem **mais motor** (roteamento de modelo, agentes, ondas, estado, harness) e o repo do Matt
