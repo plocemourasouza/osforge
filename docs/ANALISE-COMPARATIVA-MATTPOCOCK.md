@@ -240,6 +240,14 @@ varra o manifesto antes"). A 3ª rodada, com o protocolo deployado, não repetiu
 A métrica "skills com resolução provada por prompt ingênuo" saiu de **desconhecida** para
 **100% na amostra corrente** (30/240 casos por rodada; rodadas sucessivas cobrem casos novos).
 
+**Camada de roteamento (2026-07-31, 5 rodadas do eval próprio):** dimensão agente 0/16 → 15/16 →
+**16/16** após a linha de rota obrigatória; falhas de skill 13 → 7 → 4 → **1** após a cláusula
+"declarar obriga carregar" + o Stop hook `route-guard.py` (determinístico, padrão GateGuard). A
+última falha era expectativa do próprio teste (demanda de plano roteada corretamente para
+`plan-writing`). Contrato: `🤖 route: @<agent> · skill: \`<name>\`|none · model: <tier>`,
+tokens invariantes de idioma, skill declarada = skill carregada (core → invocação; manifesto →
+leitura; pesada → subagente), enforcement no Stop hook com kill-switch `OSFORGE_ROUTEGUARD=off`.
+
 ## 9. Uma frase
 
 O OSForge tem **mais motor** (roteamento de modelo, agentes, ondas, estado, harness) e o repo do Matt
