@@ -39,7 +39,7 @@ and counts domains (frontend, backend, security, debug, refactor, data, devops, 
 pure question, the FIRST line of the response declares the routing decision:
 
 ```
-🤖 route: @<agent> [+ @<agent2>] · skill: `<name>`|none · model: <haiku|sonnet|opus>
+🤖 route: @<agent> [+ @<agent2>] · skill: `<name>`|none · model: <haiku|sonnet|opus|fable>
 ```
 
 Rules: the tokens (`@agent-name`, skill name, tier) are **language-invariant** — never translated,
@@ -48,6 +48,13 @@ stated explicitly — silence is not an option). One line, then proceed. This is
 the DETECT decision made visible, which (a) forces agent/skill/model to be DECIDED before the work
 starts instead of implied after, and (b) makes routing auditable — measured without it, 12 of 16
 demands were answered with no identifiable routing at all.
+
+**Declaring a skill OBLIGES loading it** before the work: a core skill by invoking it (Skill tool),
+a manifest skill by reading its `SKILL.md`, a heavy one by dispatching the subagent that reads it.
+Measured: 5 of 7 routing failures were the right skill DECLARED on the route line and then never
+opened — the discipline never actually informed the answer. A declaration without the load is the
+exact failure the route line exists to expose; if you will not load it, write `skill: none` and own
+the choice.
 
 - **1–2 domains** → route line, then respond in the agent's persona.
 - **3+ domains or COMPLEX** → route line, then propose the full flow:

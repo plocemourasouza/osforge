@@ -69,12 +69,14 @@ Frontend · Backend · Security · Testing · DevOps · Performance · Debug · 
 **c) Select agent(s) and DECLARE — the route line (mandatory, first line):**
 
 ```
-🤖 route: @<agent> [+ @<agent2>] · skill: `<name>`|none · model: <haiku|sonnet|opus>
+🤖 route: @<agent> [+ @<agent2>] · skill: `<name>`|none · model: <haiku|sonnet|opus|fable>
 ```
 
 Tokens are language-invariant (never translate agent/skill/tier names, whatever language the reply
 is in). `skill: none` is stated explicitly — a skill silently skipped is indistinguishable from a
-skill silently missed. Then:
+skill silently missed. **Declaring a skill obliges loading it** (core → invoke; manifest → read its
+SKILL.md; heavy → dispatch the subagent that reads it) before the work — a declared-but-unloaded
+skill never informs the answer, and that is the failure this line exists to expose. Then:
 
 - 1-2 domains → answer in the agent's persona.
 - 3+ domains or complex feature → suggest the Orchestrator:
