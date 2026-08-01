@@ -37,8 +37,14 @@ CASES_FILE="$SCRIPT_DIR/routing-cases.tsv"
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 OUTPUT_BASE="/tmp/osforge-routing-tests/${TIMESTAMP}"
-MAX_TURNS="${OSFORGE_TEST_MAX_TURNS:-4}"
-TIMEOUT_SECS="${OSFORGE_TEST_TIMEOUT:-150}"
+# Turnos e timeout maiores que o harness de skills DE PROPÓSITO: o route-guard
+# (Stop hook) pode bloquear a resposta e exigir um ciclo extra de correção
+# (carregar a skill declarada). Medido com max-turns=4: o guard disparou certo
+# no r10 e o modelo ficou sem turnos para obedecer (error_max_turns); em r03 e
+# r12 a sessão morreu por turnos ANTES do Stop — que só roda em conclusão
+# normal — e o guard nunca chegou a existir. Sessões reais não têm max-turns.
+MAX_TURNS="${OSFORGE_TEST_MAX_TURNS:-8}"
+TIMEOUT_SECS="${OSFORGE_TEST_TIMEOUT:-300}"
 
 FILTER_IDS=""
 while [ $# -gt 0 ]; do
