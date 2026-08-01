@@ -56,10 +56,20 @@ tool_name   = payload.get("tool_name", "")
 tool_input  = payload.get("tool_input", {})
 tool_result = payload.get("tool_result", {})
 
-# Só captura ferramentas de escrita/execução (mais sinal, menos ruído)
-CAPTURE_TOOLS = {"Edit", "Write", "Bash", "MultiEdit"}
+# Só captura ferramentas de escrita/execução (mais sinal, menos ruído).
+# Skill e Read entram para instrumentar DISPARO REAL de skill: qual skill é
+# invocada nativamente (Skill tool) e qual é resolvida via manifesto (Read de
+# um SKILL.md). É o dado que decide promoção/rebaixamento no allowlist e
+# aposentadoria — sem ele, curadoria é opinião. Read que não seja de SKILL.md
+# é descartado logo abaixo (ruído).
+CAPTURE_TOOLS = {"Edit", "Write", "Bash", "MultiEdit", "Skill", "Read"}
 if tool_name not in CAPTURE_TOOLS:
     sys.exit(0)
+
+if tool_name == "Read":
+    _p = str(tool_input.get("file_path", ""))
+    if not _p.endswith("SKILL.md"):
+        sys.exit(0)
 
 # ──────────────────────────────────────────────
 # Construir trigger_text e context a partir do tool_input
@@ -78,6 +88,14 @@ def _build_trigger(name: str, inp: dict) -> str:
         # Remove flags e pipes para simplificar
         first_token = cmd.split()[0] if cmd.split() else "bash"
         return f"when running {first_token}"
+    if name == "Skill":
+        s = str(inp.get("skill", "")).split(":")[-1]
+        return f"skill-invoked:{s}" if s else "skill-invoked:unknown"
+    if name == "Read":
+        # já filtrado: só chega aqui Read de SKILL.md → resolução via manifesto
+        path = str(inp.get("file_path", ""))
+        skill = os.path.basename(os.path.dirname(path))
+        return f"skill-resolved:{skill}" if skill else "skill-resolved:unknown"
     return f"when using {name.lower()}"
 
 
@@ -107,10 +125,18 @@ if not project_slug:
 # ──────────────────────────────────────────────
 osforge_db_bin = os.path.expanduser("~/.local/bin/osforge-db")
 if not os.path.isfile(osforge_db_bin):
-    # Fallback: fonte no repo de desenvolvimento (sem resolução por PATH,
-    # que seria suscetível a hijack e nem funcionaria com `python3 <nome>`).
-    _dev = os.path.expanduser("~/Development/osforge/scripts/osforge-db.py")
-    if os.path.isfile(_dev):
+    # Fallback: âncora escrita pelo deploy (~/.osforge/repo-path) — funciona em
+    # qualquer clone, ao contrário do antigo ~/Development/osforge fixo. Sem
+    # resolução por PATH, que seria suscetível a hijack.
+    _anchor = os.path.expanduser("~/.osforge/repo-path")
+    _dev = ""
+    if os.path.isfile(_anchor):
+        try:
+            with open(_anchor) as _f:
+                _dev = os.path.join(_f.read().strip(), "scripts", "osforge-db.py")
+        except OSError:
+            _dev = ""
+    if _dev and os.path.isfile(_dev):
         osforge_db_bin = _dev
     else:
         sys.exit(0)  # osforge-db indisponível — observação descartada silenciosamente

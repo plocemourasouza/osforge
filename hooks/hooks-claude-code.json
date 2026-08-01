@@ -29,7 +29,7 @@
         ]
       },
       {
-        "matcher": "Edit|Write|MultiEdit|Bash",
+        "matcher": "Edit|Write|MultiEdit|Bash|Skill|Read",
         "hooks": [
           {
             "type": "command",

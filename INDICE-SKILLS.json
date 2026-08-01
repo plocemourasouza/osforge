@@ -221,8 +221,8 @@
   },
   {
     "name": "behavioral-modes",
-    "description": "AI operational modes (brainstorm, implement, debug, review, teach, ship, orchestrate). Use to adapt behavior based on task type.",
-    "category": "🔄 Workflow / Process",
+    "description": "Operational **modes** that reshape how the agent works for the task at hand. Use when: the user asks to \\\"switch to brainstorm mode\\\", \\\"just implement, no questions\\\", \\\"teach me this concept\\\", \\\"review only, don't change anything\\\", or the task type clearly calls for a different working posture. ",
+    "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -791,7 +791,7 @@
   },
   {
     "name": "imagegen-frontend-mobile",
-    "description": "Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Keywords - mobile UI design, iOS app design, Android app design, app mockups, mobile screens, app flow concepts. Designed for iOS, Android, and cross-platform mobile products. Prioritizes clean hierar",
+    "description": "Premium mobile app screen-concept IMAGE generation (iOS/Android, phone-mockup framing). Use when: \\\"generate the app screens\\\", \\\"mockup das telas do app\\\", \\\"design the mobile onboarding flow as images\\\", \\\"app screen concepts\\\" — image output only, no code. Keywords: mobile UI mockup, app screens,",
     "category": "⚛️ React / Frontend",
     "source": "skills",
     "source_emoji": "📦",
@@ -1251,8 +1251,8 @@
   },
   {
     "name": "epic-decomposer",
-    "description": "Decomposes specs, PRDs, or requirements into implementable epics and stories. Each story with testable ACs, tasks with file paths, and mapped dependencies.",
-    "category": "🧪 Testing",
+    "description": "Decomposes a spec, PRD or requirements doc into epics and stories ready for execution. Use when: \"break this spec into stories\", \"decompose the PRD\", \"create the epics\", \"quebra em stories\", or a plan needs story-level tasks with file paths before dispatch. Keywords: epic, stories, decompose, breakd",
+    "category": "📝 Documentation / Writing",
     "source": "skills",
     "source_emoji": "📦",
     "source_url": "",
@@ -1641,7 +1641,7 @@
   },
   {
     "name": "technical-design-doc-creator",
-    "description": "Creates comprehensive Technical Design Documents (TDD) following industry standards with mandatory sections, optional sections, and interactive gathering of missing information.",
+    "description": "Creates a Technical Design Document (TDD) with industry-standard sections, gathering missing information interactively. Use when: \\\"write the technical design doc\\\", \\\"preciso de um TDD\\\", \\\"document the design before we build\\\", \\\"design doc for this system\\\". Keywords: technical design document, T",
     "category": "🧪 Testing",
     "source": "skills",
     "source_emoji": "📦",
