@@ -254,3 +254,5 @@ Useful for projects with specific terminology that must be preserved literally.
 - `osforge-db` — cross-session persistence (recovery via `osforge-db resume`)
 - `project-context` — initial project context generation
 - `editorial-review` — post-summary cleanup if needed
+
+**Exhaustiveness bar** — a compaction is done when all 9 sections of the summary exist, each populated from THIS session (never template filler), and nothing in the protected classes (decisions, open questions, file paths, errors+fixes) was dropped. A compaction is judged by what it did not lose.

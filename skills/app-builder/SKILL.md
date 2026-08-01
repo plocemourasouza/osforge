@@ -83,3 +83,5 @@ App Builder Process:
 ## 📖 Full Documentation References
 
 For detailed information on each aspect, see the references folder.
+
+**Exhaustiveness bar** — reference, not steps: applied when the template was chosen from the full catalog (all 13 considered against the demand, not the first plausible one) and the Selective Reading Rule was obeyed — only the sections the chosen template needs, but ALL of those.

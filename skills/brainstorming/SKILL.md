@@ -177,3 +177,5 @@ Handoff: "Design approved. Ready to call `spec-builder` with this design as inpu
 - **Not documenting what was left OUT**: an explicit "out of scope" prevents scope creep in later phases. If it is not documented, the implementer will assume it is included.
 - **Infinite brainstorming**: if you reached phase 4 and the user still wants to explore more alternatives, it is a sign the problem is still not well defined. Go back to Phase 1 instead of adding more alternatives.
 - **Not calling spec-builder afterward**: the design document produced is input for spec-builder — it is not the final artifact. Without a technical spec, the design has no implementation.
+
+**Exhaustiveness bar** — done when at least approaches A and B exist with honest trade-offs (one option is a recommendation, not a brainstorm), every section of the chosen structure is filled, and the user picked — the skill never picks for them.

@@ -180,3 +180,5 @@ Before creating any UI component:
 - [ ] Heavy animation uses `next/dynamic` with `ssr: false`
 - [ ] Colors use theme CSS variables
 - [ ] Responsive tested (mobile-first)
+
+**Exhaustiveness bar** — a component decision is done when the source Priority Order was followed (shadcn checked FIRST, every time), the Decision Matrix names why any other source won, and the Pre-Flight Checklist is fully ticked before shipping.

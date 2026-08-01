@@ -1,6 +1,6 @@
 ---
 name: behavioral-modes
-description: AI operational modes (brainstorm, implement, debug, review, teach, ship, orchestrate). Use to adapt behavior based on task type.
+description: "Operational **modes** that reshape how the agent works for the task at hand. Use when: the user asks to \"switch to brainstorm mode\", \"just implement, no questions\", \"teach me this concept\", \"review only, don't change anything\", or the task type clearly calls for a different working posture. Keywords: mode, brainstorm mode, implement mode, review mode, teach mode, ship mode. Do NOT use for: choosing which agent persona routes the demand (orchestrator DETECT), or picking a model tier (smart-model-dispatch)."
 metadata:
   author: antigravity-kit (adapted)
   version: "1.0.0"
@@ -245,3 +245,5 @@ Users can explicitly request a mode:
 /debug why login fails
 /review this pull request
 ```
+
+**Exhaustiveness bar** — applied when ONE mode was explicitly selected via Mode Detection, its full behavior list is being followed, and mode switches are announced. Blending modes silently defeats the catalog: an unnamed mode is indistinguishable from no mode.

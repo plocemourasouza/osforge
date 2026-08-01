@@ -225,3 +225,5 @@ More than that indicates:
 - `osforge-db` — cross-session persistence
 - `verification-before-completion` — post-recovery gate
 - `predictive-failure` — anticipates getting stuck before it happens
+
+**Exhaustiveness bar** — a recovery is done when the 4 phases of the protocol ran in order, the Decision tree verdict is recorded, the user got the Communication message, and Post-recovery verification passed. Skipping phases is how the same stuck state returns in twenty minutes.

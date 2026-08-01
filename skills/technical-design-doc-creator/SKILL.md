@@ -1,5 +1,5 @@
 ---
-description: Creates comprehensive Technical Design Documents (TDD) following industry standards with mandatory sections, optional sections, and interactive gathering of missing information.
+description: "Creates a Technical Design Document (TDD) with industry-standard sections, gathering missing information interactively. Use when: \"write the technical design doc\", \"preciso de um TDD\", \"document the design before we build\", \"design doc for this system\". Keywords: technical design document, TDD doc, design doc, system design document, RFC. Do NOT use for: architecture DECISIONS and trade-offs (arch-builder ADRs), product requirements (prd-builder), or test-driven development — same acronym, different thing (tdd-workflow)."
 name: technical-design-doc-creator
 ---
 

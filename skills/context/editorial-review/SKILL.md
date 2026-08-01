@@ -70,3 +70,5 @@ Structural editor. Propose reorganization without rewriting.
 ## Fundamental Rule
 Do NOT rewrite the document — only list findings and suggestions.
 The user decides what to apply.
+
+**Exhaustiveness bar** — a review is done when BOTH operating modes' rule sets (Prose and Structure) were applied to every section of the document, each finding tied to its location. The Fundamental Rule binds every finding, not most.

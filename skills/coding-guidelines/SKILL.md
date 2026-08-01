@@ -116,3 +116,5 @@ For multi-step work (refactors, migrations, multi-file changes):
 - Surface every skipped record, rolled-back transaction, and constraint violation.
 - Never report "done" or "succeeded" when something was bypassed.
 - A migration that silently skips 14% of rows is a failure, not a success.
+
+**Exhaustiveness bar** — these 8 guidelines are a checklist, not a mood: work is compliant when each of the 8 was consciously applied or consciously ruled not-applicable to the change at hand. Unexamined is not compliant.

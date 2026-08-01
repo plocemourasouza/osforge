@@ -201,3 +201,5 @@ File to edit: UserService.ts
 > **VIOLATION:** Running script and ignoring output = FAILED task.
 > **VIOLATION:** Auto-fixing without asking = Not allowed.
 > **Rule:** Always READ output → SUMMARIZE → ASK → then fix.
+
+**Exhaustiveness bar** — a review under this skill is done when every rule section (Naming, Function, Structure, AI Coding Style, Anti-Patterns) was swept against the artifact and each violation carries file+line. Three sections checked reads exactly like six; the skipped one is where the debt lives.

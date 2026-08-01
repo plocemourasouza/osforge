@@ -154,3 +154,5 @@ The feature is complete and ready for review.
 "I've implemented the feature and it should work correctly.
 The tests should pass since the logic is straightforward."
 ```
+
+**Exhaustiveness bar** — the Gate Function is exhaustive by definition: EVERY claim in the completion message has fresh evidence per the Evidence Requirements, in the Correct Completion Format. One unverified claim poisons the whole report — that is the Iron Law, restated as the bar.

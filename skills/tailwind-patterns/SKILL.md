@@ -270,3 +270,5 @@ metadata:
 ---
 
 > **Remember:** Tailwind v4 is CSS-first. Embrace CSS variables, container queries, and native features. The config file is now optional.
+
+**Exhaustiveness bar** — applied when the sections relevant to the change were consulted and v4 idioms used throughout (CSS-based config, container queries, the modern color system) — never a v3 pattern pasted into a v4 project, which is this skill's whole reason to exist.

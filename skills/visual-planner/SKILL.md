@@ -267,3 +267,5 @@ Read these BEFORE writing any HTML:
 
 - **`references/design-system.md`** — Complete CSS custom properties, color palette, type scale, spacing, shadows, animations, navigation, module structure, responsive breakpoints.
 - **`references/interactive-elements.md`** — HTML/CSS/JS patterns for: expandable cards, flow diagrams, step cards, callout boxes, code blocks, stat badges, pattern cards, file trees, icon rows, architecture diagrams, comparison tables, review system.
+
+**Exhaustiveness bar** — a visual plan is done when every Mandatory Element is present in every section, the Review System pass ran, and the Content Philosophy was applied to each screen — not only the hero. The plan is judged by its weakest section.

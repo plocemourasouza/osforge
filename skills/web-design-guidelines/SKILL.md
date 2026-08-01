@@ -63,3 +63,5 @@ If no files specified, ask the user which files to review.
 3. AUDIT    → Run web-design-guidelines review ← YOU ARE HERE
 4. FIX      → Address findings from audit
 ```
+
+**Exhaustiveness bar** — a design review under this skill is done when the guidelines source was actually loaded (per Usage) and every guideline category it defines was applied to the artifact with findings located. Reviewing from memory of the guidelines is not applying them.

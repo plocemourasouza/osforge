@@ -465,3 +465,5 @@ export default function SearchBar() {
 ---
 
 > **Remember:** Design is THINKING, not copying. Every project deserves fresh consideration based on its unique context and users. **Avoid the Modern SaaS Safe Harbor!**
+
+**Exhaustiveness bar** — applied when Constraint Analysis ran FIRST (always), the ASK-BEFORE-ASSUMING questions were asked when the prompt was vague, and each principle family the deliverable touches (UX, Layout, Color, Typography, Effects) was consulted per the Selective Reading Rule — only the relevant families, but ALL of the relevant ones.

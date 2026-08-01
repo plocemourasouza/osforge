@@ -229,3 +229,5 @@ This keeps each agent fast and focused — no accumulated context degradation.
 - **Implicit dependency**: a "seed data task" looks independent but depends on completed migrations. Map dependencies before parallelizing — each wave must document dependencies explicitly.
 - **Not verifying integration after merge**: parallel agents can produce interfaces incompatible with one another. Always run `bun tsc --noEmit` and integration tests after merging the parallel tasks.
 - **Wave 1 with schema**: if Wave 1 has tasks in `prisma/schema.prisma`, each agent must work only on its own block of models without touching the others' blocks — or keep the schema always sequential.
+
+**Exhaustiveness bar** — a dispatch is done when every task in the wave carries the full Task Specification Format (context embedded, files, done criterion), the Decision Matrix justified parallelizing at all, and the merge strategy was chosen BEFORE dispatch — merging is decided when calm, not when conflicted.

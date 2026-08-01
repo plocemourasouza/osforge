@@ -243,3 +243,5 @@ Before declaring it done:
 - `security-best-practices` — defense in depth
 - `differential-review` — security in PRs (complements the runtime gate)
 - `insecure-defaults` — keeps dangerous defaults from reaching auto-mode
+
+**Exhaustiveness bar** — a classification is done when BOTH stages ran, the verdict traces to a rule in safety-rules.yaml (never to vibes), and prompt-injection defenses were applied to the input. An unclassifiable input fails CLOSED.

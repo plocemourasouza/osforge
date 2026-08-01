@@ -191,3 +191,5 @@ Read skills/llmfit-advisor/SKILL.md
 - **Do not escalate too early**: if Sonnet produced an unsatisfactory result, check whether the problem is prompt clarity before escalating to Opus. Vague prompts produce poor results at any tier.
 - **Do not downgrade on security**: security-auditor and threat modeling ALWAYS use Opus, no exception — security mistakes cost far more than the API cost.
 - **Batch Haiku tasks**: group all mechanical tasks (i18n + test stubs + docs + boilerplate) into a single Haiku subagent instead of N separate subagents.
+
+**Exhaustiveness bar** — a dispatch decision is done when every subtask carries an explicit tier chosen from the Model Tiers table with the Rules applied — no task inherits the parent model by omission, which is how everything silently runs on the most expensive tier.

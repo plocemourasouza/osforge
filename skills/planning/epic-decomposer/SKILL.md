@@ -1,8 +1,12 @@
 ---
 name: epic-decomposer
 description: >
-  Decomposes specs, PRDs, or requirements into implementable epics and stories.
-  Each story with testable ACs, tasks with file paths, and mapped dependencies.
+  Decomposes a spec, PRD or requirements doc into epics and stories ready for execution.
+  Use when: "break this spec into stories", "decompose the PRD", "create the epics",
+  "quebra em stories", or a plan needs story-level tasks with file paths before dispatch.
+  Keywords: epic, stories, decompose, breakdown, sprint planning, story mapping.
+  Do NOT use for: writing the PRD itself (prd-builder), atomic task manifests inside a
+  feature spec (/spec-tasks), or project-level phase planning (phase-discussion).
 trigger: epic|epics|stories|decompose|breakdown|create stories|sprint
 model-tier: sonnet
 ---

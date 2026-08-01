@@ -173,3 +173,5 @@ osforge-db set-resume <slug> "Next: <phase> via <skill>"
 - **Global vs local database**: for projects with sensitive data (Essent, Rede Essent Jus), use `--scope=local` — the database stays in the project and can be `.gitignore`d. The global database holds only non-sensitive state and decisions.
 - **set-resume is mandatory when ending**: without an updated `set-resume`, the next session won't know where you stopped. Treat it like a git commit — always run it before closing the editor.
 - **import-yaml is idempotent**: it can be run multiple times on the same project without duplicating phases (uses `ON CONFLICT DO NOTHING`).
+
+**Exhaustiveness bar** — a sync is done when every decision category that occurred this session is persisted via its command, and the session ends with set-resume. A category silently skipped is state the next session will not have.

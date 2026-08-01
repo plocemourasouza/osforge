@@ -233,3 +233,5 @@ See the `references/` directory for detailed content on each optimization catego
 **Date:** January 2026
 **Version:** 1.0.0
 **Total Rules:** 57 across 8 categories
+
+**Exhaustiveness bar** — a performance pass is done when the Quick Decision Tree routed the problem, the relevant sections per the Selective Reading Rule were read IN FULL, and every item of the Performance Review Checklist carries a verdict for the touched code.
