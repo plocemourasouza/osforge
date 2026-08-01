@@ -88,8 +88,15 @@ check_skill_resolved() {
     local rel="$2"
     [ -z "$rel" ] && return 1
 
-    grep -E '"name":"(Read|Glob|Grep|Bash)"' "$log_file" 2>/dev/null \
-        | grep -qF "skills/${rel}/SKILL.md" 2>/dev/null
+    if grep -E '"name":"(Read|Glob|Grep|Bash)"' "$log_file" 2>/dev/null \
+        | grep -qF "skills/${rel}/SKILL.md" 2>/dev/null; then return 0; fi
+    # Carga por procuração: despacho de subagente cujo prompt cita o SKILL.md
+    # ou o nome da skill. O r03 real despachou @security-auditor com a
+    # metodologia — a leitura acontece DENTRO do subagente, invisível no
+    # stream principal, e o despacho é o próprio ato de carregar.
+    local base="${rel##*/}"
+    grep -E '"name":"(Task|Agent)"' "$log_file" 2>/dev/null \
+        | grep -qE "skills/${rel}/SKILL\.md|\b${base}\b" 2>/dev/null
 }
 
 # ── Roteamento do orquestrador ──────────────────────────────────────────────

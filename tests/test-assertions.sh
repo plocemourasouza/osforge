@@ -95,6 +95,13 @@ check "só mencionar o path NÃO resolve" FAIL "$(verdict check_skill_resolved "
 check "path de outra skill não resolve" FAIL "$(verdict check_skill_resolved "$WORK/resolved.json" clean-code)"
 check "rel vazio não resolve"           FAIL "$(verdict check_skill_resolved "$WORK/resolved.json" '')"
 
+# carga por procuração: despacho de subagente citando a skill
+cat > "$WORK/proxied.json" <<'EOF'
+{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Task","input":{"subagent_type":"security-auditor","prompt":"read skills/security-threat-model/SKILL.md and apply it"}}]}}
+EOF
+check "despacho citando a skill resolve" PASS "$(verdict check_skill_resolved "$WORK/proxied.json" security-threat-model)"
+check "despacho de outra skill não"      FAIL "$(verdict check_skill_resolved "$WORK/proxied.json" brandkit)"
+
 # ── Mapa nome→path e classificação core ─────────────────────────────────────
 echo ""
 echo "skill_rel_path / is_core_skill:"
