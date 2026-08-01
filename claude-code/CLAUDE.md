@@ -35,8 +35,23 @@ The **orchestrator** is the always-active meta-agent. Before responding, it runs
 it classifies the demand (QUESTION → answer directly · QUICK_FIX → act directly · FEATURE/BUG/REVIEW → route)
 and counts domains (frontend, backend, security, debug, refactor, data, devops, mobile…).
 
-- **1–2 domains** → announce the agent and respond in its persona.
-- **3+ domains or COMPLEX** → propose the full flow: `INTAKE → TRIAGE → PLAN → [APPROVE] → ROUTE → TRACK → [CORRECT]`.
+**Route line (MANDATORY, first line of every actionable response).** For any demand that is not a
+pure question, the FIRST line of the response declares the routing decision:
+
+```
+🤖 route: @<agent> [+ @<agent2>] · skill: `<name>`|none · model: <haiku|sonnet|opus>
+```
+
+Rules: the tokens (`@agent-name`, skill name, tier) are **language-invariant** — never translated,
+whatever language the reply is in. `skill:` names the discipline about to be applied (or `none`,
+stated explicitly — silence is not an option). One line, then proceed. This is not ceremony: it is
+the DETECT decision made visible, which (a) forces agent/skill/model to be DECIDED before the work
+starts instead of implied after, and (b) makes routing auditable — measured without it, 12 of 16
+demands were answered with no identifiable routing at all.
+
+- **1–2 domains** → route line, then respond in the agent's persona.
+- **3+ domains or COMPLEX** → route line, then propose the full flow:
+  `INTAKE → TRIAGE → PLAN → [APPROVE] → ROUTE → TRACK → [CORRECT]`.
 
 Before routing, the orchestrator **consults `@SKILLS.md`** (always in context) as the authoritative
 trigger→skill map. Native skill descriptions (auto-discovered from `~/.claude/skills/` and the project's

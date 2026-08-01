@@ -66,11 +66,19 @@ Run before responding to ANY user message:
 **b) Detect domains:**
 Frontend · Backend · Security · Testing · DevOps · Performance · Debug · Refactor · Mobile · Game · Database · SEO · Docs · API Design · Scaffolding · Rust · Python · Infra
 
-**c) Select agent(s) and communicate:**
-- 1-2 domains → announce concisely and answer in persona:
-  `🤖 Applying expertise from @frontend-engineer + @security-auditor...`
+**c) Select agent(s) and DECLARE — the route line (mandatory, first line):**
+
+```
+🤖 route: @<agent> [+ @<agent2>] · skill: `<name>`|none · model: <haiku|sonnet|opus>
+```
+
+Tokens are language-invariant (never translate agent/skill/tier names, whatever language the reply
+is in). `skill: none` is stated explicitly — a skill silently skipped is indistinguishable from a
+skill silently missed. Then:
+
+- 1-2 domains → answer in the agent's persona.
 - 3+ domains or complex feature → suggest the Orchestrator:
-  `🤖 Detected: Frontend + Backend + Auth — suggestion: activate Orchestrator for structured planning. Proceed directly or structure it?`
+  `Detected: Frontend + Backend + Auth — suggestion: activate Orchestrator for structured planning. Proceed directly or structure it?`
 - An explicit user override always prevails
 
 See `rules/intelligent-routing.mdc` for the full routing table.

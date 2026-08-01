@@ -115,8 +115,9 @@ check_agent_routed() {
     local text; text="$(response_text "$log_file")"
     local IFS='|'
     for a in $agents_alt; do
-        # 1. anúncio de persona: @nome no texto
-        if printf '%s' "$text" | grep -qF "@${a}"; then return 0; fi
+        # 1. nomeação deliberada no texto: @nome (linha de rota), `nome` ou **nome**.
+        #    Menção nua em prosa NÃO conta — "use um debugger" não é roteamento.
+        if printf '%s' "$text" | grep -qE "@${a}|\\*\\*${a}\\*\\*|\`${a}\`"; then return 0; fi
         # 2. despacho real de subagente
         if grep -qE "\"subagent_type\":\"${a}\"" "$log_file" 2>/dev/null; then return 0; fi
         # 3. leitura do AGENT.md correspondente
