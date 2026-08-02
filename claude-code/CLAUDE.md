@@ -160,6 +160,22 @@ A session has **one** primary working directory. Mixing projects in a session po
 prompts, and degrades resume. The **hub** session (open the OSForge repo) plans/reviews the portfolio; each target
 project runs in its own **satellite** session in its own directory. Detail and example → `USAGE.md §Multi-project`.
 
+### Primary vs secondary source (inherit cheaply, verify what decides)
+A `resume`, a spec, a distillate, a handoff doc — all **secondary sources**: an account of the
+work, not the work. That is what makes them small enough to brief a fresh session, and also why
+they mislead: they record what the writing session BELIEVED, and whatever it left out or got wrong
+is invisible to the reader. The **primary source** is the code, the test, the actual error, the
+transcript.
+
+- Load the secondary source to orient — that is its job, and it is cheap.
+- **Before a claim from it decides anything** (an interface exists, a migration ran, a bug is
+  fixed, a file lives there), verify against the primary source. An agent that read a doc inherits
+  the doc's staleness; an agent that read the code is reading the current truth.
+- Reporting: never state as fact something you only read in a resume or a spec. Say where it came
+  from, or go check.
+
+_Vocabulary: primary/secondary source, handoff artifact — mattpocock/dictionary-of-ai-coding._
+
 ### osforge-db — persistent state
 - **Satellite session start:** the `session-resume` hook injects `osforge-db resume <slug>` + `board` (≈50 tokens).
 - **During:** `osforge-db set-phase / add-decision / add-task / set-task`.
@@ -220,7 +236,10 @@ After any significant feature/fix: record lessons in `tasks/lessons.md`
 - **GateGuard** (PreToolUse hook, Bash matcher) blocks only the irreversible/shared: `rm -rf`,
   `git push --force`, `reset --hard`, `clean -f`, SQL `DROP/TRUNCATE/DELETE`. Kill-switch `OSFORGE_GATEGUARD=off`.
 - **Structured logs** `{ action, tenantId, userId, duration, error }` — never log PII.
-- **Heavy context (>70%):** compress responses, show diffs not whole files, omit recaps.
+- **Smart zone:** the budget is TOKENS, not a share of the window — the dumb zone starts around
+  125–150k regardless of how much window is left. Past ~120k: compress responses, diffs not whole
+  files, no recaps. Past ~150k: stop and hand off. **One task per session** — unrelated work spends
+  the same budget.
 
 ---
 

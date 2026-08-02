@@ -401,7 +401,7 @@
   },
   {
     "name": "context-compact",
-    "description": "Structured conversation compaction when reaching ~70% of the context window. Use when: user says \"compress context\", \"compact\", \"summary\", \"near the limit\", \"context full\", \"save state\", \"/compact\", \"/clear\", or when the token counter passes 140k. Produces a 9-section summary with an analysis scratc",
+    "description": "Structured compaction before the session leaves the smart zone. Use when: user says \"compress context\", \"compact\", \"summary\", \"near the limit\", \"context full\", \"save state\", \"/compact\", \"/clear\", or when the token counter passes ~120k (the dumb zone begins around 125-150k, regardless of how much con",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",

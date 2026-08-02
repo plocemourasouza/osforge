@@ -114,16 +114,33 @@ No defaults for secrets; `.env` in `.gitignore`; no secrets in client-side code;
 
 ---
 
-## Context Budget (70% Rule)
+## Context Budget — the smart zone
 **Always active.**
 
-Above 70% of context window, the model silently degrades: ignores tools, hallucinates more, drops rules adherence, stops mid-task.
+Early in a session the agent is in the **smart zone**: sharp, good recall. As context grows it
+drifts into the **dumb zone** — sloppier, forgetful, more faithfulness hallucinations. Same model,
+same harness, just more context.
 
-**Saturation signs:** generic/repetitive responses, skipped verifications, abrupt stops, rules ignored.
+**The budget is tokens, not a percentage of the window.** The zones do not track the window limit:
+a session can be deep in the dumb zone with most of the window still free. The window is where the
+harness refuses to continue; quality falls off long before that. On frontier models the dumb zone
+commonly begins around **125–150k tokens**. Plan around the smart zone, not the window.
 
-**Mandatory action:** STOP current task → save state to STATE.md → compact or new session → resume with minimal context.
+**The decline is gradual, which is what makes it dangerous** — no error, no boundary. Signs: an
+instruction from twenty turns ago forgotten, a corrected mistake repeated, something asserted that
+the context contradicts. The instinct is to re-explain, which adds context and makes it worse.
 
-**Budget (200k window):** <80k (40%) comfortable | 80-120k (40-60%) caution | 120-140k (60-70%) save state | >140k (70%+) STOP NOW.
+**One task per session.** The smart zone is a budget and unrelated work spends it — a second task
+in the same session starts closer to the dumb zone. When one task is bigger than one smart zone,
+split it: hand off at a natural boundary and let a fresh session take the next piece.
+
+**Budget (200k window, ~60k of it spent before the first message):** <80k sharp | 80–120k fine |
+120–150k save state and finish the current step | >150k STOP — compact or hand off, do not push through.
+
+**Mandatory action:** STOP the current task → write the handoff artifact (`osforge-db set-resume`
+or a plan doc) → compact or new session → resume from the artifact.
+
+_Vocabulary: smart zone / dumb zone / attention degradation — mattpocock/dictionary-of-ai-coding._
 
 ---
 

@@ -12,6 +12,13 @@ Produce hyper-compressed documents (distillates) from sources,
 preserving every fact, decision, constraint, and relationship while eliminating
 overhead that humans need and LLMs don't.
 
+**A distillate is a SECONDARY SOURCE** — an account of the sources, not the sources. It records
+what this run believed mattered; whatever it filtered out is invisible to every reader downstream.
+So: state the sources in the frontmatter (already required) so a consumer can always go back, and
+tell consumers plainly that a claim which DECIDES something must be checked against the primary
+source. A distillate is for orientation and recall, never the last word on a fact that carries
+weight.
+
 ## Inputs
 - **source_paths** (required) — File/directory paths to distill
 - **downstream_consumer** (optional) — Skill that will consume it ("implementation", "architecture", "review")

@@ -159,7 +159,7 @@
 | **clean-code** | 📦 skills | Pragmatic clean-code standards: concise, direct, no over-engineering, and no unnecessary comments. Use when: code is over-engineered or has premature … | `skills/clean-code/` |
 | **coding-guidelines** | 📦 skills | Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code c… | `skills/coding-guidelines/` |
 | **config-critique** | 📦 skills | LLM-powered lint of user customizations in OSForge — validates new SKILL.md, .mdc rules, custom hooks, additional agents, and CLAUDE.md overrides acro… | `skills/config-critique/` |
-| **context-compact** | 📦 skills | Structured conversation compaction when reaching ~70% of the context window. Use when: user says "compress context", "compact", "summary", "near the l… | `skills/context-compact/` |
+| **context-compact** | 📦 skills | Structured compaction before the session leaves the smart zone. Use when: user says "compress context", "compact", "summary", "near the limit", "conte… | `skills/context-compact/` |
 | **context-distillator** | 📦 skills | Lossless compression of long documents for optimized LLM consumption, preserving 100% of the factual information and eliminating textual overhead. Use… | `skills/context/context-distillator/` |
 | **doc-shard** | 📦 skills | Split large markdown documents into smaller organized files with an index. Use when a document exceeds the context window or to organize extensive doc… | `skills/context/doc-shard/` |
 | **documentation-templates** | 📦 skills | Ready-made templates and structure guides for documentation: README, API docs, code comments, and AI-friendly docs. Use when: creating a README from s… | `skills/documentation-templates/` |

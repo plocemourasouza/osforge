@@ -1,10 +1,11 @@
 ---
 name: context-compact
 description: >
-  Structured conversation compaction when reaching ~70% of the context window.
+  Structured compaction before the session leaves the smart zone.
   Use when: user says "compress context", "compact", "summary", "near the
   limit", "context full", "save state", "/compact", "/clear", or when the
-  token counter passes 140k. Produces a 9-section summary with an analysis
+  token counter passes ~120k (the dumb zone begins around 125-150k,
+  regardless of how much context window remains). Produces a 9-section summary with an analysis
   scratchpad. Replaces destructive /clear with intelligent preservation.
 version: 1.0.0
 inspired_by: Leonxlnx/agentic-ai-prompt-research (Prompt 21 — Compact Service)
@@ -16,7 +17,7 @@ allowed-tools: Read
 
 # Context Compact — Conversation Summarization
 
-> When context > 70%, do NOT use `/clear` (destructive). Use this structured
+> Near the dumb zone, do NOT use `/clear` (destructive). Use this structured
 > 9-section protocol that preserves the essentials in ~5k tokens.
 
 ## Quick Start
@@ -38,8 +39,9 @@ allowed-tools: Read
 
 | Trigger | Action |
 |---|---|
-| Context > 70% (140k of 200k tokens) | Suggest compact to the user BEFORE it saturates |
-| Context > 85% (170k) | Compact mandatory — inform the user |
+| ~120k tokens — approaching the dumb zone | Suggest compact BEFORE quality slips; the window still being half free is NOT a reason to wait |
+| ~150k tokens — inside the dumb zone | Compact mandatory — inform the user. Signs it already started: an instruction from 20 turns ago forgotten, a corrected mistake repeated |
+| A second, unrelated task starting in this session | Offer a fresh session instead — the smart zone is a budget and unrelated work spends it |
 | User says "compress", "compact", "near the limit" | Immediate compact |
 | Big topic change mid-session | Offer "compact old context, keep recent" |
 
