@@ -1,0 +1,313 @@
+{
+ "schema_version": 1,
+ "diagram_type": "architecture",
+ "meta": {
+  "title": "OSForge v5.0 \u2014 system map",
+  "quality_profile": "showcase",
+  "viewBox": [
+   1120,
+   560
+  ],
+  "views": [
+   {
+    "id": "source-to-runtime",
+    "label": "Source of truth \u2192 runtime",
+    "focus": [
+     "repo",
+     "deploy",
+     "home",
+     "runtime",
+     "orchestrator",
+     "user"
+    ],
+    "note": "The repo is authoritative; deploy.sh pushes it out; the orchestrator is the language boundary."
+   },
+   {
+    "id": "quality-gates",
+    "label": "Quality gates & state",
+    "focus": [
+     "runtime",
+     "hooks",
+     "orchestrator",
+     "osforgedb",
+     "archify"
+    ],
+    "note": "Zero-token hooks, persistent state, and verified diagrams \u2014 facts before action, receipts before done."
+   }
+  ]
+ },
+ "components": [
+  {
+   "id": "repo",
+   "type": "backend",
+   "label": "OSForge repo",
+   "sublabel": "single source of truth",
+   "brand": "github",
+   "pos": [
+    38,
+    70
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "deploy",
+   "type": "backend",
+   "label": "deploy.sh",
+   "sublabel": "rsync \u00b7 pinned engines",
+   "pos": [
+    220,
+    70
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "home",
+   "type": "backend",
+   "label": "~/.claude \u00b7 ~/.cursor",
+   "sublabel": "47 core skills \u00b7 27 agents",
+   "pos": [
+    402,
+    70
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "runtime",
+   "type": "frontend",
+   "label": "Claude Code",
+   "sublabel": "or Cursor \u00b7 agent runtime",
+   "brand": "claude",
+   "pos": [
+    584,
+    70
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "orchestrator",
+   "type": "messagebus",
+   "label": "Orchestrator",
+   "sublabel": "DETECT \u2192 CORRECT",
+   "pos": [
+    766,
+    70
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "user",
+   "type": "external",
+   "label": "User",
+   "sublabel": "any language",
+   "pos": [
+    948,
+    70
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "mcp",
+   "type": "cloud",
+   "label": "MCP servers",
+   "sublabel": "8 servers \u00b7 scoped",
+   "pos": [
+    220,
+    270
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "archify",
+   "type": "backend",
+   "label": "Archify engine",
+   "sublabel": "skills/archify v2.16",
+   "pos": [
+    402,
+    270
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "hooks",
+   "type": "security",
+   "label": "Hooks (zero-token)",
+   "sublabel": "GateGuard \u00b7 route-guard",
+   "pos": [
+    584,
+    270
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "osforgedb",
+   "type": "database",
+   "label": "osforge-db",
+   "sublabel": "SQLite state \u00b7 waves",
+   "pos": [
+    766,
+    270
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "canvas",
+   "type": "backend",
+   "label": "OSForge Canvas",
+   "sublabel": "localhost:4242",
+   "pos": [
+    948,
+    270
+   ],
+   "size": [
+    138,
+    68
+   ]
+  },
+  {
+   "id": "qdrant",
+   "type": "database",
+   "label": "Qdrant (optional)",
+   "sublabel": "vector memory",
+   "pos": [
+    766,
+    450
+   ],
+   "size": [
+    138,
+    68
+   ]
+  }
+ ],
+ "connections": [
+  {
+   "id": "repo-deploy",
+   "from": "repo",
+   "to": "deploy",
+   "label": "commit",
+   "variant": "emphasis"
+  },
+  {
+   "id": "deploy-home",
+   "from": "deploy",
+   "to": "home",
+   "label": "sync",
+   "variant": "emphasis"
+  },
+  {
+   "id": "home-runtime",
+   "from": "home",
+   "to": "runtime",
+   "label": "config",
+   "variant": "emphasis"
+  },
+  {
+   "id": "runtime-orch",
+   "from": "runtime",
+   "to": "orchestrator",
+   "label": "meta-agent",
+   "variant": "emphasis",
+   "labelDy": -28
+  },
+  {
+   "id": "user-orch",
+   "from": "user",
+   "to": "orchestrator",
+   "label": "request \u00b7 reply",
+   "variant": "emphasis",
+   "labelDy": -28
+  },
+  {
+   "id": "deploy-mcp",
+   "from": "deploy",
+   "to": "mcp",
+   "label": "merges config",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "home-archify",
+   "from": "home",
+   "to": "archify",
+   "label": "pinned engine",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "archify-runtime",
+   "from": "runtime",
+   "to": "archify",
+   "label": "system-diagrams",
+   "fromSide": "left",
+   "toSide": "top"
+  },
+  {
+   "id": "runtime-hooks",
+   "from": "runtime",
+   "to": "hooks",
+   "label": "PreToolUse \u00b7 Stop",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "orch-db",
+   "from": "orchestrator",
+   "to": "osforgedb",
+   "label": "state",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "orch-canvas",
+   "from": "orchestrator",
+   "to": "canvas",
+   "label": "artifacts",
+   "fromSide": "right",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "db-qdrant",
+   "from": "osforgedb",
+   "to": "qdrant",
+   "label": "embeddings",
+   "variant": "dashed",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  }
+ ]
+}

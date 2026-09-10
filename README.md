@@ -43,6 +43,14 @@ AI coding agents are only as good as the context they receive. OSForge solves fi
 
 OSForge is **not an application** — it is a curated configuration that turns a stock AI coding agent into an orchestrated, stateful, quality-gated system. Four ideas hold it together: a **single source of truth** that deploys to your runtimes, an **orchestrator** that plans and delegates, a **language boundary** that keeps the internals English while you work in your own language, and a **local state layer** that remembers across sessions.
 
+### 0. The system map — a diagram with a receipt
+
+The repo ships its own architecture map, produced by the `system-diagrams` skill through the pinned Archify engine (dogfooding ADR-014): source `docs/architecture/osforge.architecture.json`, artifact `docs/architecture/osforge.html` (self-contained, interactive — open it in a browser: search, focus, route tracing, two guided views).
+
+![OSForge v5.0 — system map](docs/architecture/osforge.png)
+
+> **Receipt** — `architecture`, Archify v2.16.0, showcase profile, **9/9 checks · 0 errors · 0 warnings**; spec sha256 `bf48…37e1`, artifact sha256 `bcd4…077b`. Regenerate with `node ~/.claude/skills/archify/bin/archify.mjs deliver architecture docs/architecture/osforge.architecture.json docs/architecture/osforge.html --quality showcase --json`.
+
 ### 1. Source of truth → deploy → runtimes
 
 The repo is authoritative. Nothing is edited in `~/.claude/` directly (ADR-001); changes are committed here and pushed out by `./deploy.sh`.
