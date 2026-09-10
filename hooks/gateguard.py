@@ -66,9 +66,69 @@ STATE_DIR = Path(os.environ.get("OSFORGE_GATEGUARD_STATE_DIR", "") or
 
 # Regex applied to quote-stripped command text (case-insensitive).
 # High-signal only: patterns that irreversibly destroy data/history.
+
+# SQL destrutivo so conta quando o comando de fato INVOCA um cliente de banco.
+# Sem essa exigencia o verbo sozinho virava o sinal, e o verbo sozinho aparece em
+# todo lugar. Cinco falsos positivos medidos numa unica sessao, todos reais:
+#   grep -rn "DROP TABLE" prisma/migrations/
+#   grep -rn "truncate" src/components/       (classe utilitaria do Tailwind)
+#   cat src/utils/truncate-text.ts
+#   echo "rode DROP TABLE x;" >> PROGRESS.md  (documentar o comando era bloqueado)
+# Verbo em prosa nao e perigo. Verbo dentro de uma chamada a psql/mysql/prisma e.
+_SQL_CLIENT = re.compile(
+    r'(?:^|[\s;&|(`$])(?:'
+    r'psql|mysql|mysqladmin|mariadb|sqlite3|mongosh|mongo|pgcli|mycli'
+    r'|cockroach|clickhouse-client|duckdb|sqlcmd|dbmate|flyway|liquibase'
+    r')\b'
+    r'|\bprisma\s+(?:db\s+execute|db\s+push|migrate)\b',
+    re.IGNORECASE,
+)
+
+# Verbos que destroem esquema ou dados de forma irreversivel.
+# A lista antiga tinha so table/database/truncate/delete-from e deixava passar
+# cinco formas medidas, todas por psql, todas sem gate nenhum:
+#   ALTER TABLE x DROP CONSTRAINT y       (via docker exec ... psql <<SQL)
+#   DROP SCHEMA public CASCADE
+#   DROP ROLE mira_app
+#   ALTER TABLE t DROP COLUMN c
+#   DROP INDEX idx_x
+# A alternativa `alter table ... drop` cobre a forma implicita do Postgres, em
+# que a palavra COLUMN e opcional (ALTER TABLE x DROP c).
 _DESTRUCTIVE_SQL = re.compile(
-    r'\b(drop\s+table|drop\s+database|truncate\s+table|truncate\b|'
-    r'delete\s+from\b)',
+    r'\b(?:'
+    r'drop\s+(?:table|database|schema|role|user|index|materialized\s+view|view'
+    r'|sequence|constraint|column|type|domain|function|procedure|trigger'
+    r'|policy|extension|tablespace|publication|subscription)\b'
+    r'|alter\s+table\b[\s\S]{0,400}?\bdrop\b'
+    r'|truncate\b'
+    r'|delete\s+from\b'
+    r')',
+    re.IGNORECASE,
+)
+
+
+def _is_destructive_sql(cmd: str) -> bool:
+    """True so quando um verbo destrutivo aparece num comando que invoca um
+    cliente de banco. As duas condicoes sao necessarias: o verbo isolado gera
+    falso positivo em prosa e em busca de texto; o cliente isolado e rotina.
+
+    Checado no texto RAW, nao no _strip_quoted: SQL quase sempre vem citado
+    (psql -c "..."), e remover aspas apagaria exatamente o conteudo perigoso.
+
+    Limite conhecido e aceito: `psql -f arquivo.sql` nao e inspecionado -- o
+    verbo mora no arquivo, fora do alcance de um hook que so ve o comando.
+    """
+    return bool(_SQL_CLIENT.search(cmd) and _DESTRUCTIVE_SQL.search(cmd))
+
+
+# Ferramentas que apagam o banco inteiro sem que nenhum verbo SQL apareca no
+# comando. Achado NOVO, fora dos falsos positivos/negativos relatados: nenhum
+# padrao do guard cobria `prisma migrate reset`, que derruba e recria o schema.
+# Nao depende de _SQL_CLIENT porque o proprio subcomando ja e o sinal.
+_DESTRUCTIVE_TOOLING = re.compile(
+    r'\bprisma\s+migrate\s+reset\b'
+    r'|\bprisma\s+db\s+push\b[^\n]*--force-reset\b'
+    r'|\brun\s+db:reset\b',
     re.IGNORECASE,
 )
 
@@ -172,11 +232,12 @@ def is_destructive_bash(cmd: str) -> bool:
     """
     raw = cmd or ""
 
-    # SQL destrutivo é checado no comando RAW (não no _strip_quoted): SQL quase
-    # sempre vem citado (psql -c "DROP TABLE ...", mysql -e "..."), e o strip de
-    # aspas apagava exatamente o conteúdo perigoso. Keywords são distintivas o
-    # bastante para tolerar o raro falso-positivo neste tier catastrófico.
-    if _DESTRUCTIVE_SQL.search(raw):
+    # SQL destrutivo: exige verbo destrutivo E invocacao de cliente de banco.
+    # Ver _is_destructive_sql para os falsos positivos e negativos medidos que
+    # motivaram cada metade da condicao.
+    if _is_destructive_sql(raw):
+        return True
+    if _DESTRUCTIVE_TOOLING.search(raw):
         return True
     if _is_destructive_rm(raw):
         return True
