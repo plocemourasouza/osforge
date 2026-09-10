@@ -75,6 +75,7 @@ cargo install llmfit
 ./deploy.sh --dry-run       # Simulate without applying changes
 ./deploy.sh --with-qdrant   # Also provision vector memory (Qdrant via Docker, opt-in)
 ./deploy.sh --no-qdrant     # Skip Qdrant; keep SQLite vector backend (no prompt)
+./deploy.sh --no-archify    # Skip the pinned Archify install (system-diagrams falls back to Mermaid)
 ```
 
 ### What the deploy does
@@ -92,8 +93,11 @@ cargo install llmfit
 - Copies 13 rules (11 `.mdc` + 2 `.md`) to `~/.cursor/rules/`
 - Copies hook scripts
 
+**Archify (third-party, pinned)**
+- Downloads `tt-a1i/archify` at the tag in `ARCHIFY_VERSION` (top of `deploy.sh`) into `~/.claude/skills/archify` and `~/.cursor/skills/archify` (slim: no `test/`, no rendered example HTML), runs `doctor`. Idempotent; needs Node ≥ 18 and network. Skip with `--no-archify`; upgrade by editing the tag.
+
 **Dependency check**
-The script warns if `llmfit` is not installed and provides the install command.
+The script warns if `llmfit` or Archify is not installed and provides the install command.
 
 ### Manual deploy (without script)
 
@@ -131,6 +135,7 @@ Just describe what you need. Claude identifies and applies the skill automatical
 
 **Core**
 - `tdd-workflow` — Strict RED-GREEN-REFACTOR cycle
+- `system-diagrams` — Verified architecture/workflow/sequence/dataflow/lifecycle diagrams via Archify (`validate → deliver` receipt); wired into `/spec-design`, ADRs, TDDs, runbooks
 - `verification-before-completion` — Checklist before declaring a task done
 - `coding-guidelines` — Karpathy rules + stack conventions
 - `best-practices` — General quality standards
@@ -469,12 +474,25 @@ chmod +x ~/.claude/hooks/*
 - Bloqueia commits que contenham segredos/secrets antes de chegar ao `git push`
 - Varre por padrões: API keys, tokens, senhas em variáveis, credentials hardcoded
 
-**`gateguard.py`** (PreToolUse — Bash)
+**`gateguard.py`** (PreToolUse — Bash; UserPromptSubmit)
 - Fact-forcing: bloqueia **somente** o irreversível/compartilhado:
   `rm -rf`, `git push --force`, `git reset --hard`, `git clean -f`, SQL `DROP`/`TRUNCATE`/`DELETE`
+  (SQL só conta quando o comando invoca um cliente de banco: `psql`, `mysql`, `prisma db execute`…)
 - Matcher restrito a Bash — não gatea Edit/Write
+- **Liberação por confirmação do usuário** (hook UserPromptSubmit, mesmo script): quando você
+  responde com uma autorização explícita — "tem permissão", "pode executar/apagar", "autorizo",
+  "vai em frente", "go ahead", "you have my permission" — ou com uma afirmativa curta como
+  mensagem inteira ("sim", "pode", "ok", "vai", "yes"), o gate libera **até a sua próxima mensagem**
+  (teto de 15 min, `OSFORGE_GATEGUARD_GRANT_TTL` em segundos). O agente recebe um
+  `additionalContext` avisando que não precisa apresentar os fatos. Negações nunca liberam
+  ("não pode apagar", "don't do it"); um afirmativo perdido numa mensagem longa também não.
+  - `gateguard: sessão liberada` (ou `gateguard off`) → abre o gate até o fim da sessão
+  - `gateguard: ativa` / "revogo a permissão" → fecha na hora
+  - A liberação é por sessão (`session_id`): outra sessão continua gateada
 - Kill-switch: `OSFORGE_GATEGUARD=off` desativa para automações CI
-- Loga todas as negativas em `~/.osforge/gateguard/denials.log`
+- Loga negativas e liberações em `~/.osforge/gateguard/denials.log`
+  (`BASH-DESTRUCTIVE`, `GRANT-GRANT`/`GRANT-SESSION`/`GRANT-REVOKE`, `GRANT-ALLOW`)
+- Testes: `tests/test-gateguard-sql.sh` (detector SQL) e `tests/test-gateguard-grant.sh` (liberação)
 
 **`notify-done.sh`** (Stop)
 - Envia notificação macOS via AppleScript ao término da sessão

@@ -182,7 +182,7 @@ Full index with triggers in [claude-code/SKILLS.md](claude-code/SKILLS.md). Main
 - **Backend & Database** — Prisma Expert, PostgreSQL + Supabase, Auth (SSR), Stripe, API Patterns (REST/GraphQL/tRPC), Database Design, Node.js, Bun, Server Management.
 - **Security** — Red Team Tactics (MITRE ATT&CK), Vulnerability Scanner (OWASP), Insecure Defaults Detection, GDPR/LGPD, plus offensive-security skills (authorized testing only).
 - **Testing & Quality** — E2E Playwright, Testing Patterns, Adversarial Review, Code Review, Edge Case Hunter, UI Audit, Readiness Gate, Output Enforcement.
-- **Meta & Context** — Systematic Debugging, Performance Profiling, Smart Model Dispatch, llmfit Advisor, Context Distillator, osforge-db, OSForge Canvas, Stuck Recovery, Config Critique, Context Compact, Tool Safety Classifier, Evolve/Instinct.
+- **Meta & Context** — Systematic Debugging, Performance Profiling, Smart Model Dispatch, llmfit Advisor, Context Distillator, osforge-db, OSForge Canvas, System Diagrams (Archify), Stuck Recovery, Config Critique, Context Compact, Tool Safety Classifier, Evolve/Instinct.
 - **The Agency** — 121 AI specialists across 10 divisions + 32 marketing execution workflows.
 
 ### 14 always-on rules (Cursor)
@@ -197,7 +197,7 @@ TypeScript Strict, Code Style, Product Thinking (PDD), TDD Enforcement, Next.js 
 
 Run by the runtime — they consume no context tokens:
 
-- **GateGuard** (`gateguard.py`, PreToolUse Bash) — blocks only the irreversible/shared (`rm -rf`, `git push --force`, `reset --hard`, `clean -f`, SQL `DROP/TRUNCATE/DELETE`); kill-switch `OSFORGE_GATEGUARD=off`.
+- **GateGuard** (`gateguard.py`, PreToolUse Bash + UserPromptSubmit) — blocks only the irreversible/shared (`rm -rf`, `git push --force`, `reset --hard`, `clean -f`, SQL `DROP/TRUNCATE/DELETE`). An explicit confirmation from the user ("tem permissão", "pode executar", "go ahead", or a bare "sim"/"yes") opens the gate until the user's next message (15 min cap, `OSFORGE_GATEGUARD_GRANT_TTL`); `gateguard: sessão liberada` opens it for the whole session; negations never count. Kill-switch `OSFORGE_GATEGUARD=off`.
 - **scan-secrets** (`scan-secrets.sh`) — blocks secrets before they reach a commit.
 - **protect-tests** (`protect-tests.sh`) — warns when a test file is altered.
 - **observe → evolve** (`observe-capture.py`) — records session observations for `osforge-db evolve`.
@@ -230,6 +230,7 @@ New skills follow a single standard — [`docs/SKILL-STANDARD.md`](docs/SKILL-ST
 - **UI Design Intelligence** — adapted from [nextlevelbuilder/ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) (MIT): 161 industry reasoning rules, 161 palettes, 84 styles, 73 typographic pairs.
 - **The Agency** — 121 business specialists in 10 divisions + 32 marketing execution workflows. Architecture: Agent (persona — *who I am*) + Workflow (execution — *what I do*); 4 agents require mandatory human approval before any autonomous action.
 - **llmfit Advisor** — detects your hardware and recommends which local LLMs fit (quantization, speed, fit scoring across 497 models). Source: [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) (MIT).
+- **System Diagrams (Archify)** — verified architecture / workflow / sequence / data-flow / lifecycle diagrams as self-contained interactive HTML, accepted only with a `deliver` receipt (9/9 checks + SHA-256). The engine [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) is installed pinned by `deploy.sh` (`ARCHIFY_VERSION`, `--no-archify` to skip); the core skill `system-diagrams` wires it into `/spec-design`, ADRs, TDDs, and runbooks. Analysis: `docs/ANALISE-ARCHIFY.md`.
 
 ---
 
@@ -290,6 +291,7 @@ OSForge is a **curation**, not a fork. It distills **1100+ agent skills, command
 | [mattpocock/skills](https://github.com/mattpocock/skills) (MIT) | Skill-predictability theory feeding the OSForge skill standard |
 | The Agency · Marketing Skills | 121 business specialists + 32 marketing execution workflows |
 | [AlexsJones/llmfit](https://github.com/AlexsJones/llmfit) (MIT) | Local-LLM hardware fit advisor |
+| [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT) | Verified interactive system diagrams — engine behind `system-diagrams` (installed pinned, not vendored) |
 
 > The 13 vendored collections (`sources/01-anthropic` … `sources/13-claude-red`) are the raw curation base — disk-only, never deployed. Every architectural decision is recorded as an ADR in **[docs/DECISIONS.md](docs/DECISIONS.md)** (currently 11 ADRs).
 

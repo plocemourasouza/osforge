@@ -30,7 +30,7 @@ Read before executing:
 ## Architecture
 
 ### Data Flow
-[Text or Mermaid diagram showing how data flows]
+[One paragraph. The verified diagram lives under ## Diagrams — do not draw it here]
 
 ### Components Involved
 - **[Component/module]**: [responsibility in this feature]
@@ -88,12 +88,18 @@ type [Name] = {
 ## Constitution Check
 - [ ] Design respects [architectural principle from the constitution]
 - [ ] No undocumented exception to the defined standards
+
+## Diagrams
+[Receipt lines written by the `system-diagrams` skill — never a hand-drawn Mermaid block]
 ```
 
-4. **Confirm**: Present the design. For decisions with significant trade-offs, present the options explicitly and wait for confirmation before recording the decision in the file. Suggest next step: `/spec-tasks [feature-name]`.
+4. **Diagrams** (skill `system-diagrams`): deliver `.specs/features/[feature-name]/diagrams/[feature-name].architecture.json` + `.html`, and a `sequence` or `dataflow` when the feature has a non-trivial request/data path. Every node must trace to `design.md` or existing code. Paste the receipt lines (Archify version, spec/artifact sha256, checks) into `## Diagrams`; if the engine is unavailable, fall back to Mermaid labelled `unverified` and open a task to replace it.
+
+5. **Confirm**: Present the design together with the delivered diagram(s). For decisions with significant trade-offs, present the options explicitly and wait for confirmation before recording the decision in the file. Suggest next step: `/spec-tasks [feature-name]`.
 
 ## Rules
 - Every decision with non-trivial alternatives must be documented as an ADR (Architecture Decision Record)
 - Server Actions are the default; API Routes require explicit justification
 - RLS is mandatory for tables with multi-tenant data
 - Do not implement code in this phase — only contracts and types
+- A diagram without a `deliver` receipt is not a diagram (skill `system-diagrams`)

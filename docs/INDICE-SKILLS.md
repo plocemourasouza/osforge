@@ -1,6 +1,6 @@
 # 📚 Índice Completo de Agent Skills
 
-> **Total:** 176 skills indexadas de 1 repositórios
+> **Total:** 177 skills indexadas de 1 repositórios
 > **Pasta local:** `~/Development/osforge/sources/` (fontes) e `~/Development/osforge/skills/` (curadas)
 >
 > 💡 **Dica de busca:** Use `Ctrl+F` / `Cmd+F` para pesquisar por palavra-chave.
@@ -14,24 +14,24 @@
 
 | Categoria | Qtd | % |
 |-----------|-----|---|
-| 🔒 Security | 51 | 29.0% |
+| 🔒 Security | 51 | 28.8% |
 | ⚛️ React / Frontend | 27 | 15.3% |
-| 🤖 AI / ML / Agents | 26 | 14.8% |
-| 🔄 Workflow / Process | 23 | 13.1% |
+| 🤖 AI / ML / Agents | 26 | 14.7% |
+| 🔄 Workflow / Process | 23 | 13.0% |
 | 🧪 Testing | 18 | 10.2% |
-| 📝 Documentation / Writing | 10 | 5.7% |
-| 🏗️ Architecture | 6 | 3.4% |
+| 📝 Documentation / Writing | 10 | 5.6% |
+| 🏗️ Architecture | 7 | 4.0% |
 | ☁️ Infrastructure / DevOps | 5 | 2.8% |
 | 🗄️ Database / Backend | 5 | 2.8% |
 | 📱 Mobile | 3 | 1.7% |
 | 📦 General | 2 | 1.1% |
-| **TOTAL** | **176** | **100%** |
+| **TOTAL** | **177** | **100%** |
 
 ### Por Origem
 
 | Origem | Repo | Qtd |
 |--------|------|-----|
-| skills | — | 176 |
+| skills | — | 177 |
 
 ---
 
@@ -43,7 +43,7 @@
 - [🔄 Workflow / Process (23)](#)
 - [🧪 Testing (18)](#)
 - [📝 Documentation / Writing (10)](#)
-- [🏗️ Architecture (6)](#)
+- [🏗️ Architecture (7)](#)
 - [☁️ Infrastructure / DevOps (5)](#)
 - [🗄️ Database / Backend (5)](#)
 - [📱 Mobile (3)](#)
@@ -250,7 +250,7 @@
 
 ## 🏗️ Architecture
 
-**6 skills**
+**7 skills**
 
 | Skill | Origem | Descrição | Path Local |
 |-------|--------|-----------|-----------|
@@ -260,6 +260,7 @@
 | **multiplayer** | 📦 skills | Multiplayer game principles: network architecture (dedicated server, P2P, host-based), synchronization, lag compensation, anti-cheat, and matchmaking.… | `skills/game-development/multiplayer/` |
 | **osforge-evolve** | 📦 skills | Use when: evolve, /evolve, osforge evolve, analyze observations, propose skills, pattern clustering, instinct, promote instinct, continuous learning, … | `skills/evolve/` |
 | **powershell-windows** | 📦 skills | Critical PowerShell patterns and pitfalls on Windows: operator syntax, null checks, JSON, paths, and error handling. Use when: a PowerShell script fai… | `skills/powershell-windows/` |
+| **system-diagrams** | 📦 skills | Verified technical diagrams (leading word: **receipt**) — architecture, workflow, sequence, data-flow, lifecycle — delivered as self-contained interac… | `skills/system-diagrams/` |
 
 ## ☁️ Infrastructure / DevOps
 
@@ -501,6 +502,7 @@ Lista compacta para busca rápida com `Ctrl+F`:
 - `story-executor` — skills — `skills/planning/story-executor/`
 - `stripe-integration` — skills — `skills/stripe-integration/`
 - `stuck-recovery` — skills — `skills/stuck-recovery/`
+- `system-diagrams` — skills — `skills/system-diagrams/`
 - `systematic-debugging` — skills — `skills/systematic-debugging/`
 
 **T**

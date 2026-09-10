@@ -579,7 +579,7 @@ What might come later:
 
 **Architecture Diagram**:
 
-[Include Mermaid diagram, PlantUML, or link to diagram]
+[Link the HTML delivered by the `system-diagrams` skill (`architecture` + a `sequence` for the critical request) with its receipt line. A Mermaid block is allowed only as the labelled `unverified` fallback when the engine is unavailable — example shape below.]
 
 ```mermaid
 graph LR

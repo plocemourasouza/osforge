@@ -70,6 +70,7 @@ receiving-code-review
 smart-model-dispatch
 stuck-recovery
 systematic-debugging
+system-diagrams
 tailwind-patterns
 tdd-workflow
 tool-safety-classifier

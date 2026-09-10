@@ -104,6 +104,11 @@ When `tasks.md` carries `wave` + `depends_on`, dispatch by **waves**: group by `
 the wave (Agent tool, multiple calls in one message), and only advance to the next wave when the previous one closes.
 Skill `dispatching-parallel-agents`. `osforge-db` (tasks/board) is the wave tracker.
 
+**Diagrams are receipts, not drawings.** When a spec, ADR, TDD, runbook, or a new project/module structure
+needs its architecture, request path, data flow, or state machine made explicit, the `system-diagrams` skill
+authors typed JSON and delivers it through Archify (`~/.claude/skills/archify`, `validate → deliver`, 9/9 checks +
+SHA-256). Mermaid inline is fine for a ≤4-node sketch in a reply; anything that lands in `.specs/` gets a receipt.
+
 @SKILLS.md
 
 ---
@@ -235,6 +240,9 @@ After any significant feature/fix: record lessons in `tasks/lessons.md`
 - **Validate before, verify after with evidence** (skill `verification-before-completion`).
 - **GateGuard** (PreToolUse hook, Bash matcher) blocks only the irreversible/shared: `rm -rf`,
   `git push --force`, `reset --hard`, `clean -f`, SQL `DROP/TRUNCATE/DELETE`. Kill-switch `OSFORGE_GATEGUARD=off`.
+  If the gate denies a command the user already approved, do NOT rephrase the command — ask the
+  user for an explicit confirmation ("tem permissão", "pode executar", or just "sim"); the
+  UserPromptSubmit hook then opens the gate until the user's next message.
 - **Structured logs** `{ action, tenantId, userId, duration, error }` — never log PII.
 - **Smart zone:** the budget is TOKENS, not a share of the window — the dumb zone starts around
   125–150k regardless of how much window is left. Past ~120k: compress responses, diffs not whole

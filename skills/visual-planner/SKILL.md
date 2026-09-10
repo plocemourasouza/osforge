@@ -108,7 +108,7 @@ The point is that this is easier to follow than the raw document. Follow these r
 - A list of 3+ items → **pattern cards** with icons
 - A sequence of steps → **step cards** or a **flow diagram with arrows**
 - "Component A connects to Component B" → **flow diagram**
-- Architecture descriptions → **box-and-arrow layouts** with color-coded zones
+- Architecture descriptions → if the document carries a `## Diagrams` receipt (skill `system-diagrams`), **embed or link that HTML** (`<iframe>` / link card) — never redraw a verified map; otherwise **box-and-arrow layouts** with color-coded zones, labelled as illustrative
 - File/directory structures → **visual file tree**
 - Technical details that overwhelm → **expandable detail cards** (visible summary, details on click)
 - Key numbers → **stat badges**

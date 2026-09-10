@@ -13,6 +13,15 @@ DEPLOY_CURSOR=true
 DEPLOY_QDRANT_OVERRIDE=""   # "yes" | "no" | "" (interativo)
 DEPLOY_ALL_SKILLS=false     # false = só o core allowlist (Model A); true = todas as skills
 
+# Archify (tt-a1i/archify, MIT) — motor de diagramas verificados usado pela skill
+# core `system-diagrams`. É uma FERRAMENTA que executamos, não um padrão que
+# curamos: não vive no repo, é instalada pinada em ~/.claude/skills/archify e
+# ~/.cursor/skills/archify (precedente: llmfit). Upgrade = mudar a tag abaixo,
+# rodar ./deploy.sh e conferir o `doctor`. Ver docs/ANALISE-ARCHIFY.md §4.1.
+ARCHIFY_VERSION="2.16.0"    # tag upstream sem o "v"
+ARCHIFY_REPO="tt-a1i/archify"
+DEPLOY_ARCHIFY=true         # --no-archify desliga
+
 # ── Flags ──────────────────────────────────────────────────────────────
 for arg in "$@"; do
   case $arg in
@@ -22,12 +31,16 @@ for arg in "$@"; do
     --with-qdrant) DEPLOY_QDRANT_OVERRIDE="yes" ;;
     --no-qdrant)   DEPLOY_QDRANT_OVERRIDE="no"  ;;
     --all-skills)  DEPLOY_ALL_SKILLS=true ;;
+    --with-archify) DEPLOY_ARCHIFY=true ;;
+    --no-archify)   DEPLOY_ARCHIFY=false ;;
     --help)
-      echo "Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run | --with-qdrant | --no-qdrant | --all-skills]"
+      echo "Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run | --with-qdrant | --no-qdrant | --all-skills | --no-archify]"
       echo ""
       echo "  --with-qdrant   Sobe Qdrant via Docker sem prompt interativo"
       echo "  --no-qdrant     Pula Qdrant; configura SQLite como backend vetorial"
       echo "  --all-skills    Deploya TODAS as skills globalmente (default: só o core de claude-code/skills-core.txt)"
+      echo "  --with-archify  Instala/atualiza o Archify pinado (v$ARCHIFY_VERSION) em ~/.claude/skills e ~/.cursor/skills (default)"
+      echo "  --no-archify    Pula o Archify (a skill system-diagrams cai no fallback Mermaid)"
       exit 0 ;;
     *) echo "Flag desconhecida: $arg"; exit 1 ;;
   esac
@@ -234,7 +247,7 @@ deploy_skills() {
     # Buckets de ciclo de vida ficam de fora mesmo em --all-skills: uma skill
     # aposentada deployada volta a competir por gatilho, que é justamente o que
     # aposentá-la deveria impedir.
-    rsync -a --delete --exclude '_deprecated/' --exclude '_in-progress/' "$REPO/skills/" "$dst/"
+    rsync -a --delete --exclude '_deprecated/' --exclude '_in-progress/' --exclude 'archify/' "$REPO/skills/" "$dst/"
     ok "$(find "$dst" -name 'SKILL.md' | wc -l | tr -d ' ') skills sincronizadas (todas, exceto buckets _)"
     return
   fi
@@ -260,7 +273,9 @@ deploy_skills() {
     fi
     cp -a "$src" "$stage/$flat"
   done < "$manifest"
-  rsync -a --delete "$stage/" "$dst/"
+  # `archify/` é instalado por deploy_archify (terceiro, pinado) e não existe no
+  # repo — excluído para que o --delete não o apague a cada deploy.
+  rsync -a --delete --exclude 'archify/' "$stage/" "$dst/"
   rm -rf "$stage"
   ok "$(find "$dst" -name 'SKILL.md' | wc -l | tr -d ' ') skills core sincronizadas (demais via install-skill.sh)"
 }
@@ -561,6 +576,79 @@ PYEOF
   ok "Qdrant deploy completo"
 }
 
+# ── Deploy Archify (terceiro, pinado) ────────────────────────────────────
+# Instala o pacote da skill `archify/` do tarball da tag pinada em cada
+# <dst>/skills/archify. Slim: sem test/ (1,3 MB) e sem examples/*.html (3,6 MB);
+# os examples/*.json ficam porque a SKILL.md e o `doctor` os leem.
+# Idempotente: compara skill-release.json com ARCHIFY_VERSION.
+archify_installed_version() {
+  local rel="$1/skill-release.json"
+  [ -f "$rel" ] || { echo ""; return; }
+  sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$rel" | head -1
+}
+
+deploy_archify() {
+  $DEPLOY_ARCHIFY || { log "Archify: pulado (--no-archify)"; return 0; }
+
+  local targets=()
+  $DEPLOY_CLAUDE && targets+=("$CLAUDE/skills/archify")
+  $DEPLOY_CURSOR && targets+=("$CURSOR/skills/archify")
+
+  echo ""
+  echo "🗺️  Archify v$ARCHIFY_VERSION (github.com/$ARCHIFY_REPO, MIT)"
+
+  local pending=()
+  for dst in "${targets[@]}"; do
+    local have; have="$(archify_installed_version "$dst")"
+    if [ "$have" = "$ARCHIFY_VERSION" ]; then ok "já instalado em $dst"
+    else pending+=("$dst"); fi
+  done
+  [ ${#pending[@]} -eq 0 ] && return 0
+
+  if $DRY_RUN; then
+    for dst in "${pending[@]}"; do skip "baixar v$ARCHIFY_VERSION → $dst"; done
+    return 0
+  fi
+
+  if ! command -v node >/dev/null 2>&1; then
+    echo "  ⚠️  node não encontrado — Archify precisa de Node ≥ 18; pulando (system-diagrams usa o fallback Mermaid)"
+    return 0
+  fi
+  local node_major; node_major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
+  if [ "${node_major:-0}" -lt 18 ]; then
+    echo "  ⚠️  node $(node --version) < 18 — pulando Archify"
+    return 0
+  fi
+
+  local tmp; tmp="$(mktemp -d)"
+  local url="https://github.com/$ARCHIFY_REPO/archive/refs/tags/v$ARCHIFY_VERSION.tar.gz"
+  log "baixando $url"
+  if ! curl -fsSL --retry 2 -o "$tmp/archify.tgz" "$url"; then
+    echo "  ⚠️  download falhou — Archify não instalado (rode ./deploy.sh --with-archify depois)"
+    rm -rf "$tmp"; return 0
+  fi
+  if ! tar -xzf "$tmp/archify.tgz" -C "$tmp"; then
+    echo "  ⚠️  tarball inválido — Archify não instalado"; rm -rf "$tmp"; return 0
+  fi
+  local src; src="$(find "$tmp" -maxdepth 2 -type d -name archify | head -1)"
+  if [ -z "$src" ] || [ ! -f "$src/SKILL.md" ] || [ ! -f "$src/bin/archify.mjs" ]; then
+    echo "  ⚠️  layout inesperado no tarball (sem archify/SKILL.md) — não instalado"; rm -rf "$tmp"; return 0
+  fi
+  rm -rf "$src/test"
+  rm -f "$src"/examples/*.html
+
+  for dst in "${pending[@]}"; do
+    mkdir -p "$dst"
+    rsync -a --delete "$src/" "$dst/"
+    if node "$dst/bin/archify.mjs" doctor >/dev/null 2>&1; then
+      ok "v$ARCHIFY_VERSION → $dst ($(du -sh "$dst" | cut -f1), doctor ok)"
+    else
+      echo "  ⚠️  instalado em $dst mas \`node bin/archify.mjs doctor\` falhou — verifique manualmente"
+    fi
+  done
+  rm -rf "$tmp"
+}
+
 # ── Deploy Cursor ────────────────────────────────────────────────────────
 deploy_cursor() {
   echo ""
@@ -646,6 +734,7 @@ preflight_manifest
 
 $DEPLOY_CLAUDE && deploy_claude
 $DEPLOY_CURSOR && deploy_cursor
+deploy_archify || true  # terceiro, opcional; falha de rede não aborta o deploy
 deploy_osforge_db
 deploy_qdrant || true   # Qdrant é opt-in; falha (Docker ausente etc.) não aborta o deploy
 
@@ -657,6 +746,12 @@ echo "════════════════════════�
 # ── Verificar dependências opcionais ─────────────────────────────────────
 echo ''
 echo '🔍 Verificando dependências opcionais...'
+if $DEPLOY_ARCHIFY && [ -f "$CLAUDE/skills/archify/bin/archify.mjs" ]; then
+  echo "  ✅ archify: v$(archify_installed_version "$CLAUDE/skills/archify")"
+elif $DEPLOY_ARCHIFY; then
+  echo '  ⚠️  archify não instalado — skill system-diagrams usará o fallback Mermaid'
+  echo '     Instalar: ./deploy.sh --with-archify'
+fi
 if command -v llmfit &>/dev/null; then
   LLMFIT_VER=$(llmfit --version 2>/dev/null | head -1 || echo 'instalado')
   echo "  ✅ llmfit: $LLMFIT_VER"

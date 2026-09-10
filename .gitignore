@@ -47,3 +47,6 @@ outputs/canvas/
 *.key
 *.pem
 secrets.json
+
+# Files the Claude desktop app drops into a connected folder (session deliverables)
+Claude outputs/

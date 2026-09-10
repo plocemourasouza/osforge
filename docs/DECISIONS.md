@@ -215,3 +215,23 @@ A primeira escolha (`nomic-embed-text`, 768d) falhou em avaliação empírica co
 - Rule count rises 13 → 14.
 
 **Date:** 2026-06-25.
+
+## ADR-014: Verified system diagrams — Archify as a pinned engine, `system-diagrams` as the core discipline
+
+**Context.** Every place the OSForge flow asks for a picture of a system — `/spec-design` ("Text or Mermaid diagram"), `arch-builder` ("textual description of the main flow"), `technical-design-doc-creator` (Mermaid/PlantUML) — accepted an unvalidated drawing. That contradicts the repo's own rule for everything else: facts before an irreversible action (GateGuard), evidence before "done" (`verification-before-completion`). `tt-a1i/archify` (MIT) compiles typed JSON into self-contained interactive HTML and, more importantly, ships a deterministic `validate → deliver` loop with machine-readable diagnostics and a SHA-256 receipt. Measured end to end before deciding: `doctor` 15/15 with no install, a real 8-node diagram of the default stack reached `9/9 checks, 0 errors, 0 warnings` in 3 repair rounds. Full analysis in `docs/ANALISE-ARCHIFY.md`.
+
+**Decision.**
+1. **The engine is installed, not vendored.** `deploy.sh` downloads the tag pinned in `ARCHIFY_VERSION` into `~/.claude/skills/archify` and `~/.cursor/skills/archify` (slim: no `test/`, no rendered example HTML), verifies with `doctor`, and is idempotent. `--no-archify` skips it. Precedent: `llmfit` (`requires_binary`), not `sources/` — Archify is a tool we run, not a pattern we curate. `deploy_skills`' `rsync --delete` excludes `archify/` so the install survives every deploy.
+2. **What enters the core is a discipline, not the generator.** `skills/system-diagrams` (core allowlist, ~90-token description) decides *when* a diagram is due, *which* of the five types, *where* it lives (`.specs/…/diagrams/`), and *what counts as accepted* (the `deliver` receipt). Authoring detail stays in Archify's own `SKILL.md`, loaded only on trigger. This clears admission criteria 1 (fires unprompted: "define the structure" carries no word "diagram") and 3 (bootstrap to the engine).
+3. **The pipeline calls it in one step per moment:** `/spec-design` step 4 + a `## Diagrams` receipt block replacing the Mermaid placeholder; `architecture` and `arch-builder` point the ADR's context diagram at it (`compare` for topology replacements); `technical-design-doc-creator` links the delivered HTML; `visual-planner` embeds instead of redrawing. A global rule in `claude-code/CLAUDE.md`: *diagrams are receipts, not drawings*.
+4. **Iron Law of the skill:** a diagram exists only when `deliver` returns 9/9 checks and a SHA-256. Mermaid inline remains fine for a ≤4-node sketch in a reply; when the engine is missing, Mermaid is allowed only labelled `unverified`, with a task to replace it.
+
+**Deliberately not incorporated.** Archify's update-awareness notice (the pin decides), `preview` by default (Canvas is the review channel), viewer extras (motion, share cards, stories — already inside the HTML), DeepSeek/gallery/benchmarks (outside the skill package), and replacing every inline Mermaid.
+
+**Consequences.**
+- Permanent context cost ≈ 210 tokens/session (two descriptions); bodies load on trigger. Reversal is one line in `skills-core.txt` + `--no-archify`.
+- Upgrade path: edit `ARCHIFY_VERSION`, `./deploy.sh`, `doctor`; re-`validate` existing sources (schema migrations live in the engine).
+- Artifacts: the `.json` (2–6 KB) is always versioned; the `.html` (~800 KB) is reproducible and may be gitignored per project with the receipt line as proof.
+- Triggering cases added (3 naive pt-BR prompts) to `scripts/skill-triggering-cases.tsv`; indexes and manifest regenerated.
+
+**Date:** 2026-09-10.

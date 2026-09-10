@@ -99,7 +99,8 @@ depends_on: ["{prd-path}"]
 {external services and how they connect}
 
 ## Context Diagram
-{textual description of the main flow}
+{one paragraph — the verified map is delivered by the `system-diagrams` skill as
+`.specs/architecture/system-overview.architecture.json` + `.html`; paste its receipt line here}
 ```
 
 ### 5. CHECKPOINT

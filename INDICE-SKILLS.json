@@ -1600,6 +1600,16 @@
     "skill_dir": "stuck-recovery"
   },
   {
+    "name": "system-diagrams",
+    "description": "Verified technical diagrams (leading word: **receipt**) — architecture, workflow, sequence, data-flow, lifecycle — delivered as self-contained interactive artifacts through Archify's validate → deliver loop. Use when: defining the structure of a new project, module, or integration; a spec, ADR, desi",
+    "category": "🏗️ Architecture",
+    "source": "skills",
+    "source_emoji": "📦",
+    "source_url": "",
+    "local_path": "skills/system-diagrams",
+    "skill_dir": "system-diagrams"
+  },
+  {
     "name": "systematic-debugging",
     "description": "Diagnosis discipline anchored on the **feedback loop**: build a fast, deterministic pass/fail signal for the bug before touching any code. Use when: a bug is hard to reproduce, behavior is intermittent, a crash has no clear stacktrace, a regression has no obvious cause, or a performance problem need",
     "category": "🔄 Workflow / Process",
