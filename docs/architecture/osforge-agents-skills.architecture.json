@@ -1,0 +1,408 @@
+{
+ "schema_version": 1,
+ "diagram_type": "architecture",
+ "meta": {
+  "title": "OSForge v5.0 \u2014 agents & skills",
+  "quality_profile": "showcase",
+  "viewBox": [
+   1120,
+   640
+  ],
+  "views": [
+   {
+    "id": "routing",
+    "label": "Four routing layers",
+    "focus": [
+     "user",
+     "orchestrator",
+     "models",
+     "agents-plan",
+     "agents-eng",
+     "agents-quality",
+     "agents-knowledge"
+    ],
+    "note": "Model tier by complexity \u2192 agent selection \u2192 skill triggers \u2192 spec workflow with parallel waves."
+   },
+   {
+    "id": "skills",
+    "label": "Skill distribution (Model A)",
+    "focus": [
+     "core",
+     "ondemand",
+     "agency",
+     "rules"
+    ],
+    "note": "47 core skills are native in every session; the other 130 live in the MANIFEST and are installed per project."
+   },
+   {
+    "id": "gates",
+    "label": "Gates around every action",
+    "focus": [
+     "hooks",
+     "agents-eng",
+     "agents-quality"
+    ],
+    "note": "Zero-token hooks gate the agents' tools: GateGuard before irreversible Bash, scan-secrets before commits, route-guard on Stop."
+   }
+  ]
+ },
+ "components": [
+  {
+   "id": "user",
+   "type": "external",
+   "label": "User",
+   "sublabel": "any language \u00b7 /spec-*",
+   "pos": [
+    38,
+    60
+   ],
+   "size": [
+    160,
+    68
+   ]
+  },
+  {
+   "id": "orchestrator",
+   "type": "messagebus",
+   "label": "Orchestrator",
+   "sublabel": "intake \u00b7 triage \u00b7 route \u00b7 track",
+   "pos": [
+    300,
+    60
+   ],
+   "size": [
+    180,
+    68
+   ]
+  },
+  {
+   "id": "models",
+   "type": "cloud",
+   "label": "Model routing",
+   "sublabel": "opus \u00b7 sonnet \u00b7 haiku",
+   "brand": "anthropic",
+   "pos": [
+    640,
+    60
+   ],
+   "size": [
+    180,
+    68
+   ]
+  },
+  {
+   "id": "hooks",
+   "type": "security",
+   "label": "Hooks (zero-token)",
+   "sublabel": "GateGuard \u00b7 scan-secrets",
+   "pos": [
+    922,
+    60
+   ],
+   "size": [
+    160,
+    68
+   ]
+  },
+  {
+   "id": "agents-plan",
+   "type": "backend",
+   "label": "Planning & product",
+   "sublabel": "6 agents \u00b7 planner, architect",
+   "pos": [
+    38,
+    260
+   ],
+   "size": [
+    230,
+    68
+   ]
+  },
+  {
+   "id": "agents-eng",
+   "type": "backend",
+   "label": "Engineering",
+   "sublabel": "8 agents \u00b7 backend, frontend, data",
+   "pos": [
+    310,
+    260
+   ],
+   "size": [
+    230,
+    68
+   ]
+  },
+  {
+   "id": "agents-quality",
+   "type": "security",
+   "label": "Quality & security",
+   "sublabel": "7 agents \u00b7 review, debug, pentest",
+   "pos": [
+    582,
+    260
+   ],
+   "size": [
+    230,
+    68
+   ]
+  },
+  {
+   "id": "agents-knowledge",
+   "type": "external",
+   "label": "Knowledge & delivery",
+   "sublabel": "5 agents \u00b7 docs, git, seo, explorer",
+   "pos": [
+    854,
+    260
+   ],
+   "size": [
+    230,
+    68
+   ]
+  },
+  {
+   "id": "core",
+   "type": "frontend",
+   "label": "Core skills \u00b7 47",
+   "sublabel": "always-on in ~/.claude/skills",
+   "pos": [
+    38,
+    470
+   ],
+   "size": [
+    230,
+    68
+   ]
+  },
+  {
+   "id": "ondemand",
+   "type": "database",
+   "label": "On-demand skills \u00b7 130",
+   "sublabel": "MANIFEST \u2192 install-skill.sh",
+   "pos": [
+    310,
+    470
+   ],
+   "size": [
+    230,
+    68
+   ]
+  },
+  {
+   "id": "agency",
+   "type": "database",
+   "label": "The Agency \u00b7 121",
+   "sublabel": "10 divisions \u00b7 32 workflows",
+   "pos": [
+    582,
+    470
+   ],
+   "size": [
+    230,
+    68
+   ]
+  },
+  {
+   "id": "rules",
+   "type": "cloud",
+   "label": "Rules & commands",
+   "sublabel": "14 .mdc \u00b7 9 spec-* \u00b7 8 MCP",
+   "pos": [
+    854,
+    470
+   ],
+   "size": [
+    230,
+    68
+   ]
+  }
+ ],
+ "boundaries": [
+  {
+   "kind": "region",
+   "label": "27 agents \u2014 orchestrator + 26 specialists (agents/)",
+   "wraps": [
+    "agents-plan",
+    "agents-eng",
+    "agents-quality",
+    "agents-knowledge"
+   ]
+  },
+  {
+   "kind": "region",
+   "label": "177 skills \u2014 Model A distribution (skills/)",
+   "wraps": [
+    "core",
+    "ondemand",
+    "agency",
+    "rules"
+   ]
+  }
+ ],
+ "connections": [
+  {
+   "id": "user-orch",
+   "from": "user",
+   "to": "orchestrator",
+   "label": "request",
+   "variant": "emphasis"
+  },
+  {
+   "id": "orch-models",
+   "from": "orchestrator",
+   "to": "models",
+   "label": "tier by complexity",
+   "variant": "emphasis"
+  },
+  {
+   "id": "models-hooks",
+   "from": "models",
+   "to": "hooks",
+   "label": "every tool call",
+   "variant": "dashed"
+  },
+  {
+   "id": "orch-plan",
+   "from": "orchestrator",
+   "to": "agents-plan",
+   "label": "PLAN phase",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "variant": "emphasis",
+   "labelSegment": 2,
+   "labelDy": -8
+  },
+  {
+   "id": "orch-eng",
+   "from": "orchestrator",
+   "to": "agents-eng",
+   "label": "waves",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "variant": "emphasis",
+   "labelSegment": 2,
+   "labelDy": -8
+  },
+  {
+   "id": "orch-quality",
+   "from": "orchestrator",
+   "to": "agents-quality",
+   "label": "gates",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelSegment": 2,
+   "labelDy": -8
+  },
+  {
+   "id": "orch-knowledge",
+   "from": "orchestrator",
+   "to": "agents-knowledge",
+   "label": "finish",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelSegment": 2,
+   "labelDy": -8
+  },
+  {
+   "id": "plan-core",
+   "from": "agents-plan",
+   "to": "core",
+   "label": "grilling \u00b7 planning \u00b7 system-diagrams",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "eng-ondemand",
+   "from": "agents-eng",
+   "to": "ondemand",
+   "label": "stack skills per project",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "quality-agency",
+   "from": "agents-quality",
+   "to": "agency",
+   "label": "specialists",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "variant": "dashed",
+   "labelDy": 24
+  },
+  {
+   "id": "knowledge-rules",
+   "from": "agents-knowledge",
+   "to": "rules",
+   "label": "always-on rules",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "ondemand-agency",
+   "from": "ondemand",
+   "to": "agency",
+   "label": "includes",
+   "variant": "dashed",
+   "labelDy": -28
+  }
+ ],
+ "cards": [
+  {
+   "dot": "amber",
+   "title": "Planning & product (6)",
+   "items": [
+    "planner \u00b7 system-architect \u00b7 product-manager",
+    "product-owner \u00b7 project-planner \u00b7 product-strategy-advisor"
+   ]
+  },
+  {
+   "dot": "emerald",
+   "title": "Engineering (8)",
+   "items": [
+    "backend-engineer \u00b7 frontend-engineer \u00b7 database-architect",
+    "devops-engineer \u00b7 mobile-developer \u00b7 game-developer",
+    "code-refactorer \u00b7 performance-optimizer"
+   ]
+  },
+  {
+   "dot": "rose",
+   "title": "Quality & security (7)",
+   "items": [
+    "code-reviewer \u00b7 debugger \u00b7 validator",
+    "test-engineer \u00b7 qa-automation-engineer",
+    "security-auditor \u00b7 penetration-tester"
+   ]
+  },
+  {
+   "dot": "slate",
+   "title": "Knowledge & delivery (5)",
+   "items": [
+    "documentation-writer \u00b7 git-commit-helper",
+    "seo-specialist \u00b7 code-archaeologist \u00b7 explorer-agent"
+   ]
+  },
+  {
+   "dot": "cyan",
+   "title": "Core skills (47, always-on)",
+   "items": [
+    "disciplines: tdd-workflow \u00b7 verification-before-completion \u00b7 clean-code \u00b7 grilling \u00b7 system-diagrams",
+    "planning/: arch-builder \u00b7 prd-builder \u00b7 spec-builder \u00b7 epic-decomposer \u00b7 story-executor",
+    "quality/: adversarial-review \u00b7 code-review \u00b7 edge-case-hunter \u00b7 readiness-gate \u00b7 ui-audit",
+    "context/: project-context-generator \u00b7 context-distillator \u00b7 doc-shard \u00b7 db-state-sync"
+   ]
+  },
+  {
+   "dot": "violet",
+   "title": "On-demand skills (130, per project)",
+   "items": [
+    "stack: prisma-expert \u00b7 nextjs-supabase-auth \u00b7 stripe-integration \u00b7 better-auth \u00b7 asaas-integration",
+    "security: security-threat-model \u00b7 vulnerability-scanner \u00b7 27 offensive-* (authorized testing)",
+    "design: design-taste-frontend \u00b7 ui-design-intelligence \u00b7 brandkit \u00b7 imagegen-* \u00b7 stitch-*",
+    "meta: llmfit-advisor \u00b7 osforge-canvas \u00b7 smart-hooks \u00b7 autorefine-skill \u00b7 evolve"
+   ]
+  }
+ ]
+}

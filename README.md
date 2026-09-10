@@ -53,6 +53,12 @@ The repo ships its own architecture map, produced by the `system-diagrams` skill
 
 > **Receipt** — `architecture`, Archify v2.16.0, showcase profile, **9/9 checks · 0 errors · 0 warnings**; spec sha256 `bf48…37e1`, artifact sha256 `bcd4…077b`. Regenerate with `node ~/.claude/skills/archify/bin/archify.mjs deliver architecture docs/architecture/osforge.architecture.json docs/architecture/osforge.html --quality showcase --json`.
 
+The second map opens the two boxes the first one collapses — **agents** and **skills**: the four routing layers (orchestrator → model tier → agent group → skill), the 26 specialists in four groups inside the `27 agents` region, and the Model A distribution of the 177 skills (47 core always-on · 130 on-demand via the MANIFEST · The Agency's 121 · rules & commands). The full rosters are in the cards under the diagram: `docs/architecture/osforge-agents-skills.html`.
+
+![OSForge v5.0 — agents & skills](docs/architecture/osforge-agents-skills.png)
+
+> **Receipt** — `architecture`, Archify v2.16.0, showcase, **9/9 checks · 0 errors · 0 warnings**; spec sha256 `0e0c…3cda`, artifact sha256 `757b…4554`.
+
 ### 1. Source of truth → deploy → runtimes
 
 The repo is authoritative. Nothing is edited in `~/.claude/` directly (ADR-001); changes are committed here and pushed out by `./deploy.sh`.
