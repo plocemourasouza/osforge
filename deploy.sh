@@ -5,6 +5,7 @@
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")" && pwd)"
+OSFORGE_VERSION="$(tr -d "[:space:]" < "$REPO/VERSION" 2>/dev/null || echo "dev")"
 CLAUDE="$HOME/.claude"
 CURSOR="$HOME/.cursor"
 DRY_RUN=false
@@ -725,7 +726,7 @@ preflight_manifest() {
 
 # ── Main ─────────────────────────────────────────────────────────────────
 echo "═══════════════════════════════════════════════════"
-echo " Agent Skills Framework — Deploy"
+echo " OSForge v$OSFORGE_VERSION — Deploy"
 echo " Repo: $REPO"
 $DRY_RUN && echo " Modo: DRY RUN (sem alterações reais)"
 echo "═══════════════════════════════════════════════════"
