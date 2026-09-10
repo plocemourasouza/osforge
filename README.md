@@ -45,19 +45,29 @@ AI coding agents are only as good as the context they receive. OSForge solves fi
 
 OSForge is **not an application** — it is a curated configuration that turns a stock AI coding agent into an orchestrated, stateful, quality-gated system. Four ideas hold it together: a **single source of truth** that deploys to your runtimes, an **orchestrator** that plans and delegates, a **language boundary** that keeps the internals English while you work in your own language, and a **local state layer** that remembers across sessions.
 
-### 0. The system map — a diagram with a receipt
+### 0. The system maps — diagrams with receipts
 
-The repo ships its own architecture map, produced by the `system-diagrams` skill through the pinned Archify engine (dogfooding ADR-014): source `docs/architecture/osforge.architecture.json`, artifact `docs/architecture/osforge.html` (self-contained, interactive — open it in a browser: search, focus, route tracing, two guided views).
+The repo ships its own maps, produced by the `system-diagrams` skill through the pinned Archify engine (dogfooding ADR-014). Each one is a typed JSON source, a delivered self-contained interactive HTML (search, focus, route tracing, guided views, live theme/preset switch, PNG/SVG export) and a receipt. Sources and receipt copies live in `docs/architecture/`; the `*.presentation.html` siblings are derived variants (sans-serif, softer corners — `scripts/archify-presentation.py`) and are **not** receipts.
+
+**System map** — source of truth → deploy → runtime, the quality/state layer, the pinned engine.
 
 ![OSForge v5.0 — system map](docs/architecture/osforge.png)
 
-> **Receipt** — `architecture`, Archify v2.16.0, showcase profile, **9/9 checks · 0 errors · 0 warnings**; spec sha256 `bf48…37e1`, artifact sha256 `bcd4…077b`. Regenerate with `node ~/.claude/skills/archify/bin/archify.mjs deliver architecture docs/architecture/osforge.architecture.json docs/architecture/osforge.html --quality showcase --json`.
+> `architecture` · Archify v2.16.0 · signal-flow + trace · **9/9 checks · 0 errors · 0 warnings** · spec `1ddc…afa9` · artifact `8d69…aa97`
 
-The second map opens the two boxes the first one collapses — **agents** and **skills**: the four routing layers (orchestrator → model tier → agent group → skill), the 26 specialists in four groups inside the `27 agents` region, and the Model A distribution of the 177 skills (47 core always-on · 130 on-demand via the MANIFEST · The Agency's 121 · rules & commands). The full rosters are in the cards under the diagram: `docs/architecture/osforge-agents-skills.html`.
+**Agents & skills** — the four routing layers, the 26 specialists in four groups, the Model A distribution of the 177 skills; full rosters in the cards.
 
 ![OSForge v5.0 — agents & skills](docs/architecture/osforge-agents-skills.png)
 
-> **Receipt** — `architecture`, Archify v2.16.0, showcase, **9/9 checks · 0 errors · 0 warnings**; spec sha256 `0e0c…3cda`, artifact sha256 `757b…4554`.
+> `architecture` · Archify v2.16.0 · signal-flow + trace · **9/9 · 0 · 0** · spec `eb40…3c3f` · artifact `7e1f…359c`
+
+**The spec-\* cycle** — swim-lanes for User, Orchestrator, specialist agents (waves), gates/state/artifacts and the Stop & recover lane; six phases, the Canvas checkpoints, the Archify receipt inside `/spec-design`, GateGuard and the user-confirmation grant.
+
+![OSForge v5.0 — the spec-* cycle](docs/architecture/osforge-spec-cycle.png)
+
+> `workflow` (schema v2) · Archify v2.16.0 · signal-flow + trace · **9/9 · 0 · 0** · spec `3012…64f0` · artifact `11fc…e4d4`
+
+Regenerate any of them with `node ~/.claude/skills/archify/bin/archify.mjs deliver <type> docs/architecture/<name>.<type>.json docs/architecture/<name>.html --quality showcase --json`, then `python3 scripts/archify-presentation.py docs/architecture/<name>.html` for the presentation variant.
 
 ### 1. Source of truth → deploy → runtimes
 

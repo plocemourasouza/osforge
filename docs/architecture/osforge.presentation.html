@@ -4847,6 +4847,17 @@
       svg [data-node-id], svg [data-edge-from], svg [data-detail], svg [data-detail-anchor], svg [data-legend-hit], svg { transition: none !important; }
     }
   </style>
+
+<!-- OSForge presentation variant. Derived from a delivered Archify artifact
+     (sha256 8d6958ce486fc9f41bbcb18a220fc6ce69c2a1acfa22465e818ed77eb158aa97). This file is NOT the receipt copy: the verified artifact
+     is the sibling without the .presentation suffix. -->
+<style id="osforge-presentation-theme">
+  :root { --osf-font: 'Inter', 'SF Pro Text', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; }
+  body, svg, .card, .header, button, input { font-family: var(--osf-font) !important; letter-spacing: 0 !important; }
+  svg text { font-weight: 500; }
+  .card { border-radius: 16px; backdrop-filter: blur(10px); }
+  svg rect { rx: 14px; ry: 14px; }
+</style>
 </head>
 <body>
   <!-- Toolbar: theme, live visual style, trace motion, presentation stage, and export.

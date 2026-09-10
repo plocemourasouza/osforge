@@ -66,6 +66,15 @@ Types: `architecture` · `workflow` (use `schema_version: 2` for new sources) ·
 Fields come verbatim from the `deliver` JSON: `specification.sha256`, `artifact.sha256`,
 `validation.checksPassed`/`checkCount`. A line without these fields is a fallback, not a receipt.
 
+## Presentation variants
+
+```bash
+python3 scripts/archify-presentation.py docs/architecture/<name>.html            # → <name>.presentation.html
+python3 scripts/archify-presentation.py <name>.html --font "'Inter', system-ui, sans-serif"
+```
+Derived from the delivered artifact (sha256 stamped in an HTML comment); never referenced by a
+receipt line. Glow/motion belong in the JSON (`visual_preset`, `animation`), not here.
+
 ## Repo hygiene
 
 - Always version the `.json` (2–6 KB). The `.html` (~800 KB, self-contained viewer) is

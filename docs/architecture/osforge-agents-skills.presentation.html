@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="archify 2.16.0">
-  <title>OSForge v5.0 — system map Diagram</title>
+  <title>OSForge v5.0 — agents &amp; skills Diagram</title>
   <script>
     // Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
@@ -4847,6 +4847,17 @@
       svg [data-node-id], svg [data-edge-from], svg [data-detail], svg [data-detail-anchor], svg [data-legend-hit], svg { transition: none !important; }
     }
   </style>
+
+<!-- OSForge presentation variant. Derived from a delivered Archify artifact
+     (sha256 7e1f67bec9dc80c036f4fff3423df197384d4918e6a31bcabef52d58ec05359c). This file is NOT the receipt copy: the verified artifact
+     is the sibling without the .presentation suffix. -->
+<style id="osforge-presentation-theme">
+  :root { --osf-font: 'Inter', 'SF Pro Text', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; }
+  body, svg, .card, .header, button, input { font-family: var(--osf-font) !important; letter-spacing: 0 !important; }
+  svg text { font-weight: 500; }
+  .card { border-radius: 16px; backdrop-filter: blur(10px); }
+  svg rect { rx: 14px; ry: 14px; }
+</style>
 </head>
 <body>
   <!-- Toolbar: theme, live visual style, trace motion, presentation stage, and export.
@@ -4955,11 +4966,11 @@
            data-preset-badge-blueprint="BLUEPRINT / REV 01"
            data-preset-badge-editorial="EDITORIAL / FIELD NOTE">
         <div class="pulse-dot"></div>
-        <h1>OSForge v5.0 — system map</h1>
+        <h1>OSForge v5.0 — agents &amp; skills</h1>
       </div>
     </div>
 
-    <script id="archify-guided-views-data" type="application/json">[{"id":"source-to-runtime","label":"Source of truth → runtime","focus":["repo","deploy","home","runtime","orchestrator","user"],"note":"The repo is authoritative; deploy.sh pushes it out; the orchestrator is the language boundary."},{"id":"quality-gates","label":"Quality gates \u0026 state","focus":["runtime","hooks","orchestrator","osforgedb","archify"],"note":"Zero-token hooks, persistent state, and verified diagrams — facts before action, receipts before done."}]</script>
+    <script id="archify-guided-views-data" type="application/json">[{"id":"routing","label":"Four routing layers","focus":["user","orchestrator","models","agents-plan","agents-eng","agents-quality","agents-knowledge"],"note":"Model tier by complexity → agent selection → skill triggers → spec workflow with parallel waves."},{"id":"skills","label":"Skill distribution (Model A)","focus":["core","ondemand","agency","rules"],"note":"47 core skills are native in every session; the other 130 live in the MANIFEST and are installed per project."},{"id":"gates","label":"Gates around every action","focus":["hooks","agents-eng","agents-quality"],"note":"Zero-token hooks gate the agents' tools: GateGuard before irreversible Bash, scan-secrets before commits, route-guard on Stop."}]</script>
 
     <script id="archify-i18n-data" type="application/json">{"locale":"en","messages":{"viewer.kind.frontend":"Frontend","viewer.kind.backend":"Backend","viewer.kind.database":"Database","viewer.kind.cloud":"Cloud","viewer.kind.security":"Security","viewer.kind.messagebus":"Message bus","viewer.kind.external":"External","viewer.kind.neutral":"Neutral","viewer.kind.node":"Node","viewer.kind.start":"Start","viewer.kind.active":"Active","viewer.kind.waiting":"Waiting","viewer.kind.decision":"Decision","viewer.kind.success":"Success","viewer.kind.failure":"Failure","viewer.toolbar.actions":"Diagram actions","viewer.theme.toggle.title":"Toggle theme (T)","viewer.theme.toggle":"Toggle color theme","viewer.theme.dark":"Dark","viewer.theme.light":"Light","viewer.preset.choose.title":"Choose visual style (S cycles)","viewer.preset.choose":"Choose visual style","viewer.preset.style":"Style","viewer.preset.menu":"Visual style","viewer.preset.identity":"Visual identity","viewer.preset.cycles":"S cycles","viewer.preset.classic":"Classic","viewer.preset.classic.short":"Classic","viewer.preset.classic.hint":"Stable technical default","viewer.preset.flow":"Signal Flow","viewer.preset.flow.short":"Flow","viewer.preset.flow.hint":"Motion-forward presentation","viewer.preset.blueprint":"Blueprint","viewer.preset.blueprint.hint":"Engineering review","viewer.preset.editorial":"Editorial","viewer.preset.editorial.hint":"Publication and launch notes","viewer.preset.badge.signalFlow":"SIGNAL FLOW","viewer.preset.badge.blueprint":"BLUEPRINT / REV 01","viewer.preset.badge.editorial":"EDITORIAL / FIELD NOTE","viewer.preset.badge.editorialPlate":"ARCHIFY / PLATE 04","viewer.preset.current":"Visual style: {style}. Choose visual style","viewer.motion.live":"Live","viewer.motion.still":"Still","viewer.motion.pause":"Pause motion","viewer.motion.resume":"Resume motion","viewer.motion.reduced":"Motion paused by reduced-motion preference","viewer.motion.hidden":"Motion paused while this page is hidden","viewer.motion.yielding":"Pause motion; currently yielding to {owner}","viewer.motion.yielding.title":"Live preview enabled · yielding to {owner}","viewer.owner.story":"the guided story","viewer.owner.chapter":"the active chapter","viewer.owner.chapterPreview":"the chapter delta preview","viewer.owner.handoff":"the chapter handoff","viewer.owner.route":"Route Probe","viewer.owner.lens":"Semantic Lens","viewer.owner.relationship":"Relationship Preview","viewer.owner.intent":"Intent Trace","viewer.owner.focus":"semantic focus","viewer.owner.legend":"legend preview","viewer.owner.reader":"reader interaction","viewer.present.enter":"Enter presentation stage","viewer.present.enter.title":"Presentation stage (F)","viewer.present.exit":"Exit presentation stage","viewer.present.exit.title":"Exit presentation stage (F or Escape)","viewer.present.present":"Present","viewer.present.exit.label":"Exit","viewer.export.button":"Export","viewer.export.button.title":"Export diagram (E)","viewer.export.diagram":"Export diagram","viewer.export.menu":"Export","viewer.export.subtitle":"Portable, clean outputs","viewer.export.share":"Share","viewer.export.shareCard":"Share Card","viewer.export.routeShareCard":"Route Share Card","viewer.export.reachShareCard":"Reach Share Card","viewer.export.copyShareCard":"Copy Share Card","viewer.export.copyDiagram":"Copy diagram","viewer.export.clipboardPng":"PNG to clipboard","viewer.export.raster":"Raster images","viewer.export.image":"Image","viewer.export.lossless":"Lossless image","viewer.export.compact":"Compact image","viewer.export.modern":"Modern image","viewer.export.vectorMotion":"Vector and motion","viewer.export.vectorMotion.heading":"Vector \u0026 motion","viewer.export.editable":"Editable vector","viewer.export.motion6s":"6s motion","viewer.export.unsupported":"Not supported by this browser","viewer.export.clipboardUnsupported":"Clipboard image write not supported by this browser","viewer.export.clipboardUnsupported.period":"Clipboard image write not supported by this browser.","viewer.export.clipboardUnsupported.short":"Clipboard image write not supported in this browser.","viewer.export.motionUnavailable":"Motion capture unavailable in this browser","viewer.export.webmUnavailable":"WebM unavailable in this browser","viewer.export.failed":"Export failed: {message}","viewer.export.unknownVariant":"Unknown Share Card variant: {variant}","viewer.export.routeRequired":"Trace a route before exporting a Route Share Card","viewer.export.reachRequired":"Trace authored reach before exporting a Reach Share Card","viewer.export.unknown":"unknown","viewer.export.routeFailed":"Route Share Card export failed: {message}","viewer.export.reachFailed":"Reach Share Card export failed: {message}","viewer.export.copyFailed":"Copy failed: {message}","viewer.export.copiedPng":"Copied PNG to clipboard","viewer.export.copiedShare":"Copied Share Card","viewer.export.downloadedShare":"Downloaded Share Card","viewer.export.downloadedRoute":"Downloaded Route Share Card","viewer.export.downloadedReach":"Downloaded Reach Share Card","viewer.export.downloadedWebm":"Downloaded WebM","viewer.export.recording":"Recording 6 seconds of motion…","viewer.export.card.routeSummary.one":"Route: {source} → {target} · {count} directed hop","viewer.export.card.routeSummary.other":"Route: {source} → {target} · {count} directed hops","viewer.export.card.reachSummary":"Authored {direction} from {origin} · {nodes} · {links} · max {hops}","viewer.export.card.node.one":"{count} node","viewer.export.card.node.other":"{count} nodes","viewer.export.card.link.one":"{count} link","viewer.export.card.link.other":"{count} links","viewer.export.card.hop.one":"{count} hop","viewer.export.card.hop.other":"{count} hops","viewer.export.card.routeBadge":"ARCHIFY · ROUTE · {hops}","viewer.export.card.reachBadge":"ARCHIFY · {direction} REACH","viewer.export.card.defaultBadge":"ARCHIFY · {preset} · {theme}","viewer.export.direction.upstream":"Upstream","viewer.export.direction.downstream":"Downstream","viewer.export.error.canvasUnavailable":"Canvas unavailable for {label}","viewer.export.error.contextUnavailable":"2D canvas context unavailable for {label}","viewer.export.error.toBlobUnavailable":"canvas.toBlob unavailable for {label}","viewer.export.error.toBlobNull":"canvas.toBlob returned no data for {label}","viewer.export.error.variantsCombined":"Share Card variants cannot be combined","viewer.export.error.viewerState":"Share Card export could not remove temporary viewer state","viewer.export.error.routeState":"Route Card export could not preserve the resolved route safely","viewer.export.error.reachState":"Reach Card export could not preserve authored reach safely","viewer.export.error.webmRequirements":"WebM motion export requires a trace animation and browser MediaRecorder support","viewer.export.error.mediaRecorder":"MediaRecorder failed","viewer.export.error.emptyWebm":"MediaRecorder produced an empty WebM","viewer.export.error.webmBackground":"SVG background could not be loaded for WebM export","viewer.guided.region":"Guided diagram views","viewer.guided.previous":"Previous guided view","viewer.guided.previous.title":"Previous guided view ([)","viewer.guided.next":"Next guided view","viewer.guided.next.title":"Next guided view (])","viewer.guided.views":"Guided views","viewer.guided.explore":"Explore this system","viewer.guided.intro":"Step through curated paths without changing the source diagram.","viewer.guided.trail":"Story trail","viewer.guided.beat":"Beat","viewer.guided.nextBeat":"Next","viewer.guided.play":"Play guided story","viewer.guided.play.title":"Play guided story (P)","viewer.guided.pause":"Pause guided story","viewer.guided.pause.title":"Pause guided story (P)","viewer.guided.replay":"Replay guided story","viewer.guided.replay.title":"Replay guided story (P)","viewer.guided.playStory":"Play story","viewer.guided.pauseStory":"Pause","viewer.guided.replayStory":"Replay story","viewer.guided.motionUnavailable":"Story playback unavailable while motion is Still","viewer.guided.enableMotion":"Switch motion to Live to play the guided story","viewer.guided.selectBeatLink":"Select a Story Beat to copy its exact link","viewer.guided.copyMoment":"Copy moment","viewer.guided.momentCopied":"Moment link copied","viewer.guided.momentCopyFailed":"Could not copy story moment link","viewer.guided.copied":"Copied","viewer.guided.copyFailed":"Copy failed","viewer.guided.showAll":"Show all","viewer.guided.showAll.aria":"Show entire diagram","viewer.guided.chapters":"Story chapters","viewer.guided.storyTrail":"Story trail for {label}: {count} beats","viewer.guided.chapter.open":"Open chapter {index} of {total}: {label}, {count} stops","viewer.guided.chapter.current":"Current chapter {index} of {total}: {label}, {count} stops","viewer.guided.chapter.selectedNodes":"{count} selected nodes","viewer.guided.chapter.stops":"{count} stops","viewer.guided.chapter.stop.one":"{count} stop","viewer.guided.chapter.stop.other":"{count} stops","viewer.guided.chapter.current.title":"{label} — current chapter, {count} stops","viewer.guided.chapter.delta.expanded":"{stay} stay, {enter} enter, {leave} leave","viewer.guided.chapter.delta.aria":"Open chapter {index} of {total}: {label}. Chapter focus delta: {delta}","viewer.guided.chapter.delta.title":"{label} — {delta} chapter focus","viewer.guided.handoff":"{from} → {to} · via {label}","viewer.guided.share.chapter":"Chapter {index} / {total}","viewer.guided.share.initial":"Chapter 01 / 01","viewer.guided.share.default":"Guided chapter","viewer.guided.state.ready":"Ready","viewer.guided.state.playing":"Playing","viewer.guided.state.settled":"Settled","viewer.guided.state.paused":"Paused","viewer.guided.state.pinned":"Pinned","viewer.guided.state.still":"Still","viewer.guided.share.step":"Step {index} / {total} · {label}","viewer.guided.share.staticMoment":"{step} · Static moment","viewer.guided.share.complete":"{count} steps complete · {note}","viewer.guided.share.settled":"Path settled for reading.","viewer.guided.share.staticPath":"{count} steps · Static path","viewer.guided.share.ready":"{count} steps · Ready","viewer.guided.share.aria":"{state} chapter {index} of {total}: {label}. {beat}. {route}","viewer.guided.beat.start":"Beat {index} / {total} · {label} · starting point","viewer.guided.beat.forward":"Beat {index} / {total} · {from} → {to}","viewer.guided.beat.reverse":"Beat {index} / {total} · {from} → {to} · reverse authored link","viewer.guided.beat.multiple":"Beat {index} / {total} · {from} ⇄ {to} · {count} authored links","viewer.guided.beat.group":"Beat {index} / {total} · {from} · {to} · grouped · no direct link","viewer.guided.beat.aria.prefix":"Story beat {index} of {total}: {label}. ","viewer.guided.beat.aria.start":"Starting point.","viewer.guided.beat.aria.forward":"From {from} through one authored forward relationship.","viewer.guided.beat.aria.reverse":"From {from}; the authored relationship points from {to} to {from}.","viewer.guided.beat.aria.multiple":"From {from} through {count} authored relationships; shown without arbitrary motion.","viewer.guided.beat.aria.group":"Grouped from {from} with no direct authored relationship.","viewer.guided.caption.start":"Starting point","viewer.guided.caption.grouped":"Grouped transition · no direct authored link","viewer.guided.caption.more":" +{count} more","viewer.guided.caption.reverse":"Reverse authored relationship","viewer.guided.caption.relationships":"{count} authored relationships","viewer.guided.caption.relationship":"Authored relationship","viewer.guided.caption.direction":"authored direction: {from} → {to}","viewer.guided.caption.starting":"Authored starting point","viewer.guided.beatLink":"Copy link to current story moment: Beat {index} of {total}: {label}","viewer.guided.noStory":"This diagram has no authored guided story.","viewer.guide.eyebrow":"Diagram guide","viewer.guide.close":"Close diagram guide","viewer.guide.inspecting":"Inspecting compiled semantics","viewer.guide.actions":"Diagram exploration actions","viewer.guide.find":"Find any node","viewer.guide.find.hint":"Search labels, responsibilities, kinds, and stable IDs.","viewer.guide.route":"Trace a route","viewer.guide.route.aria":"Trace a directed route","viewer.guide.route.hint":"Ask how two semantic nodes connect in authored direction.","viewer.guide.map":"See the whole system","viewer.guide.map.hint":"Open Semantic Radar with a live viewport and stable nodes.","viewer.guide.lens":"Compare semantic kinds","viewer.guide.lens.hint":"Count roles, reveal their traffic, and compare direct authored links.","viewer.guide.story":"Play the guided story","viewer.guide.story.hint":"Walk the authored chapters and real relationships.","viewer.guide.present":"Enter Presentation Stage","viewer.guide.present.hint":"Give the live diagram the viewport without changing export.","viewer.guide.shortcuts":"Additional keyboard shortcuts","viewer.guide.shortcut.export":"Export","viewer.guide.shortcut.theme":"Theme","viewer.guide.shortcut.style":"Style","viewer.guide.shortcut.reset":"Reset","viewer.guide.shortcut.zoomIn":"Zoom in","viewer.guide.shortcut.zoomOut":"Zoom out","viewer.guide.shortcut.close":"Close","viewer.guide.facts":"{nodes} · {relationships} · {views}","viewer.guide.fact.node.one":"{count} semantic node","viewer.guide.fact.node.other":"{count} semantic nodes","viewer.guide.fact.relationship.one":"{count} relationship","viewer.guide.fact.relationship.other":"{count} relationships","viewer.guide.fact.view.one":"{count} guided view","viewer.guide.fact.view.other":"{count} guided views","viewer.guide.story.available.one":"Walk {count} authored chapter and its real relationships.","viewer.guide.story.available.other":"Walk {count} authored chapters and their real relationships.","viewer.guide.story.unavailable":"No authored guided story in this diagram.","viewer.guide.open":"Open diagram guide","viewer.guide.noStory":"This diagram has no authored guided story.","viewer.finder.title":"Find a node","viewer.finder.close":"Close node finder","viewer.finder.placeholder":"Search labels or IDs","viewer.finder.search":"Search diagram nodes","viewer.finder.results":"Diagram nodes","viewer.finder.empty":"No matching nodes","viewer.finder.result.focus":"Focus {label}","viewer.finder.result.routeStart":"Choose {label} as route start","viewer.finder.result.routeTarget":"Choose {label} as route destination, {links}","viewer.finder.status.empty":"No matching nodes","viewer.finder.status.count.one":"{count} matching node","viewer.finder.status.count.other":"{count} matching nodes","viewer.finder.noun.nodes":"nodes","viewer.finder.link.one":"{count} link","viewer.finder.link.other":"{count} links","viewer.finder.result.focus.one":"Focus {label}, {count} related connection","viewer.finder.result.focus.other":"Focus {label}, {count} related connections","viewer.finder.status.filtered":"{visible} of {available} {noun}","viewer.finder.status.all":"{available} {noun}","viewer.passport.eyebrow":"Semantic passport","viewer.passport.metadata":"Node metadata","viewer.passport.evidence":"Verified source evidence","viewer.passport.verified":"Verified source","viewer.passport.reach":"Authored reach","viewer.passport.reach.trace":"Trace authored reachability","viewer.passport.upstream":"Upstream","viewer.passport.downstream":"Downstream","viewer.passport.upstream.trace":"Trace upstream authored reachability","viewer.passport.downstream.trace":"Trace downstream authored reachability","viewer.passport.close":"Close semantic passport","viewer.passport.copy":"Copy link","viewer.passport.copy.focus":"Copy link to focused node","viewer.passport.relations":"Relations","viewer.passport.relations.show":"Show connected relationships","viewer.passport.relations.hide":"Hide connected relationships","viewer.passport.relations.list":"Connected relationships","viewer.passport.copyRelation":"Copy relation","viewer.passport.copyNode":"Copy node","viewer.passport.copyPinned":"Copy link to pinned relationship","viewer.passport.copySource":"Copy link to source node","viewer.passport.copy.focused.success":"Focused node link copied","viewer.passport.copy.pinned.success":"Pinned relationship link copied","viewer.passport.copy.focused.failed":"Could not copy focused node link","viewer.passport.copy.pinned.failed":"Could not copy pinned relationship link","viewer.passport.relationship.none":"No connected relationships","viewer.passport.relationship.count.one":"{count} relation","viewer.passport.relationship.count.other":"{count} relations","viewer.passport.relationship.show.one":"Show {count} connected relationship","viewer.passport.relationship.show.other":"Show {count} connected relationships","viewer.passport.relationship.summary":"{out} outgoing · {in} incoming{loops}","viewer.passport.relationship.loops":" · {count} loop","viewer.passport.relationship.explorer":"Direct relationship explorer","viewer.passport.relationship.help":"Use arrow keys to explore relationships. Press Enter or Space to pin details; Escape clears.","viewer.passport.relationship.loopsBack":"loops back","viewer.passport.relationship.connectsTo":"connects to","viewer.passport.relationship.connectsFrom":"connects from","viewer.passport.relationship.pinned":"Pinned relationship · {from} → {to} · {label}","viewer.passport.relationship.inspect":"Inspect relationship {index} of {total}: {from} to {to}, {label}. Press Enter for details.","viewer.passport.relationship.group.out":"Outgoing","viewer.passport.relationship.group.in":"Incoming","viewer.passport.relationship.group.loop":"Self loops","viewer.passport.relationship.row":"{group}: {relationship}, {neighbor}","viewer.passport.relationship.direction.out":"OUT →","viewer.passport.relationship.direction.in":"← IN","viewer.passport.relationship.direction.loop":"LOOP","viewer.passport.sourceCount.one":"{count} verified source reference","viewer.passport.sourceCount.other":"{count} verified source references","viewer.passport.sourceMarker":"SRC","viewer.passport.beacon.one":"{count} verified source; focus this node to inspect","viewer.passport.beacon.other":"{count} verified sources; focus this node to inspect","viewer.passport.repository.open":"Open verified repository revision {revision}","viewer.passport.source.open":"Open verified source {path} at revision {revision}","viewer.passport.source.openLink":"Open ↗","viewer.passport.reach.upstream.one":"Trace {count} upstream authored node","viewer.passport.reach.upstream.other":"Trace {count} upstream authored nodes","viewer.passport.reach.downstream.one":"Trace {count} downstream authored node","viewer.passport.reach.downstream.other":"Trace {count} downstream authored nodes","viewer.passport.reach.noUpstream":"No upstream authored nodes","viewer.passport.reach.noDownstream":"No downstream authored nodes","viewer.passport.reach.status":"{direction} · {nodes} nodes · {links} links · max {hops} hops","viewer.route.eyebrow":"Route probe","viewer.route.start":"Choose a start node","viewer.route.start.find":"Find start","viewer.route.start.find.aria":"Find a route start","viewer.route.copy":"Copy link","viewer.route.copy.aria":"Copy link to traced route","viewer.route.clear":"Clear","viewer.route.clear.aria":"Clear route probe","viewer.route.traced":"Traced route","viewer.route.pickTwo":"Pick two semantic nodes on the diagram","viewer.route.pickOne":"Pick a semantic node on the diagram","viewer.route.controls":"Route journey controls","viewer.route.previous":"Previous route position","viewer.route.play":"Play route journey","viewer.route.pause":"Pause route journey","viewer.route.replay":"Replay route journey","viewer.route.next":"Next route position","viewer.route.journey":"Journey","viewer.route.pause.label":"Pause","viewer.route.replay.label":"Replay","viewer.route.overview":"Overview","viewer.route.overview.aria":"Show complete route overview","viewer.route.instructions":"Choose the source, then the destination. Direction matters.","viewer.route.destination":"Choose a destination from {label}","viewer.route.destination.find":"Find target","viewer.route.destination.find.aria":"Find a reachable route destination","viewer.route.differentDestination":"Choose a different destination","viewer.route.distinct":"A route needs two distinct semantic nodes.","viewer.route.unreachable":"No directed route to {label}","viewer.route.unreachable.detail":"{target} is not reachable from {source}. Pick a highlighted destination.","viewer.route.start.instructions":"Select the source. The next step will reveal only directed destinations.","viewer.route.copy.success":"Traced route link copied","viewer.route.copy.failed":"Could not copy traced route link","viewer.route.position":"Route position {index} of {total}: {label}","viewer.route.step":"Step {index} of {total} · {phase} · {label}","viewer.route.motionRequired":"Automatic journey requires Live motion","viewer.route.trigger.clear":"Clear traced route","viewer.route.overview.status":"{nodes} · {hops} · shortest authored route","viewer.route.overview.node.one":"{count} node","viewer.route.overview.node.other":"{count} nodes","viewer.route.overview.hop.one":"{count} directed hop","viewer.route.overview.hop.other":"{count} directed hops","viewer.route.phase.playing":"Playing","viewer.route.phase.complete":"Complete","viewer.route.phase.inspecting":"Inspecting","viewer.route.destination.count.one":"{count} directed destination available. Pick a highlighted node.","viewer.route.destination.count.other":"{count} directed destinations available. Pick a highlighted node.","viewer.route.noOutgoing":"No outgoing route starts here. Clear and choose another source.","viewer.route.result.title":"{source} to {target}","viewer.route.finder.source.title":"Choose route start","viewer.route.finder.source.placeholder":"Search route sources","viewer.route.finder.source.empty":"No matching route sources","viewer.route.finder.source.results":"Nodes that can start a route","viewer.route.finder.source.noun":"route sources","viewer.route.finder.source.badge":"start","viewer.route.finder.target.title":"Destination from {label}","viewer.route.finder.target.placeholder":"Search reachable destinations","viewer.route.finder.target.empty":"No matching reachable destinations","viewer.route.finder.target.results":"Reachable route destinations","viewer.route.finder.target.noun":"reachable destinations","viewer.route.hop.one":"{count} hop","viewer.route.hop.other":"{count} hops","viewer.lens.eyebrow":"Semantic lens","viewer.lens.title":"Compare system roles","viewer.lens.close":"Close semantic lens","viewer.lens.instruction":"Choose up to two semantic kinds. One reveals its real traffic; two compare only direct authored relationships.","viewer.lens.kinds":"Semantic kinds","viewer.lens.choose":"Choose a kind to inspect its nodes and touching relationships.","viewer.lens.copy":"Copy link to semantic lens","viewer.lens.clear":"Clear semantic lens","viewer.lens.open":"Open semantic lens","viewer.lens.openActive":"Open active semantic lens","viewer.lens.legend":"Semantic legend","viewer.lens.legend.inspect.one":"Inspect {label}, {count} node","viewer.lens.legend.inspect.other":"Inspect {label}, {count} nodes","viewer.lens.kind.count.one":"{label}, {count} node","viewer.lens.kind.count.other":"{label}, {count} nodes","viewer.lens.compare.one":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationship","viewer.lens.compare.other":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationships","viewer.lens.single":"{nodes} · {relationships} · connected peers remain visible","viewer.lens.node.one":"{count} {label} node","viewer.lens.node.other":"{count} {label} nodes","viewer.lens.relationship.one":"{count} touching relationship","viewer.lens.relationship.other":"{count} touching relationships","viewer.radar.title":"Semantic radar","viewer.radar.building":"Building overview","viewer.radar.openFull":"Open full semantic radar","viewer.radar.open":"Open radar","viewer.radar.close":"Close semantic radar","viewer.radar.surface":"Diagram overview. Click a node to focus it, or use arrow keys to pan.","viewer.radar.click":"Click node","viewer.radar.drag":"Drag to pan","viewer.radar.space":"Semantic radar needs more MAP space.","viewer.radar.nodes":"Semantic diagram radar nodes","viewer.radar.focus":"Focus {label} from Semantic Radar","viewer.radar.status":"{count} nodes · {viewport}","viewer.radar.fullMap":"{count} nodes · full map","viewer.radar.compacted":"Radar compacted to avoid covering the Semantic Passport or MAP controls.","viewer.radar.cancelWaiting":"Cancel semantic radar waiting for more MAP space","viewer.radar.needsSpace":"Semantic radar needs more visible MAP space","viewer.radar.viewport.full":"full map","viewer.radar.viewport.width":"{percent}% width","viewer.radar.viewport.scale":"{percent}% viewport","viewer.nav.controls":"Diagram view controls","viewer.nav.route":"Trace a directed route","viewer.nav.route.title":"Trace route (R)","viewer.nav.route.short":"PATH","viewer.nav.radar":"Open semantic radar","viewer.nav.radar.title":"Semantic radar (M)","viewer.nav.radar.short":"MAP","viewer.nav.lens":"Open semantic lens","viewer.nav.lens.title":"Semantic lens (L)","viewer.nav.lens.short":"LENS","viewer.nav.find":"Find a node","viewer.nav.find.title":"Find a node (/)","viewer.nav.guide":"Open diagram guide","viewer.nav.guide.title":"Diagram guide (?)","viewer.nav.zoomOut":"Zoom out","viewer.nav.zoomOut.title":"Zoom out (-)","viewer.nav.reset":"Reset diagram view","viewer.nav.reset.title":"Reset view (0)","viewer.nav.read":"READ","viewer.nav.zoomIn":"Zoom in","viewer.nav.zoomIn.title":"Zoom in (+)","viewer.nav.camera":"{hint}. Reset diagram view","viewer.nav.camera.title":"{semantic}{hint} · reset view (0)","viewer.nav.camera.semantic":"Semantic camera active · ","viewer.nav.level.map":"MAP","viewer.nav.level.read":"READ","viewer.nav.level.full":"FULL","viewer.nav.level.auto":"AUTO","viewer.nav.detail.map":"Zoom in to reveal relationship labels and node context","viewer.nav.detail.read":"Zoom in again to reveal tags and annotations","viewer.nav.detail.full":"Full diagram detail","viewer.intent.summary":"{label}. {out} outgoing, {in} incoming{loops}. {total} connections. Press Enter for details.","viewer.intent.loops":", {count} self loop","viewer.common.copied":"Copied","viewer.common.copyFailed":"Copy failed","viewer.common.copyLink":"Copy link","viewer.common.clear":"Clear","viewer.common.close":"Close"}}</script>
     <div class="guided-views no-print" id="guided-views" hidden aria-label="Guided diagram views">
@@ -5004,8 +5015,8 @@
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / PLATE 04">
-      <svg viewBox="0 0 1120 560" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="signal-flow" data-quality-profile="showcase">
-        <title id="archify-diagram-title">OSForge v5.0 — system map</title>
+      <svg viewBox="0 0 1120 640" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="signal-flow" data-quality-profile="showcase">
+        <title id="archify-diagram-title">OSForge v5.0 — agents &amp; skills</title>
         <desc id="archify-diagram-description">An architecture diagram generated by Archify.</desc>
         <!-- Definitions -->
         <defs>
@@ -5030,230 +5041,267 @@
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- Boundaries (behind everything) -->
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" data-composition-frame-label="27 agents — orchestrator + 26 specialists (agents/)" x="8" y="230" width="1106" height="118" rx="12" class="c-region" stroke-width="1"/>
 
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="1" data-composition-frame-label="177 skills — Model A distribution (skills/)" x="8" y="440" width="1106" height="118" rx="12" class="c-region" stroke-width="1"/>
 
         <!-- Connection paths (before components for correct z-order) -->
-        <path data-edge-from="repo" data-edge-to="deploy" data-edge-label="commit" data-edge-key="0" data-edge-id="repo-deploy" data-composition-points="176,104;220,104" d="M 176 104 L 220 104" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="deploy" data-edge-to="home" data-edge-label="sync" data-edge-key="1" data-edge-id="deploy-home" data-composition-points="358,104;402,104" d="M 358 104 L 402 104" class="a-emphasis" data-animate="edge" style="--step:1" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="home" data-edge-to="runtime" data-edge-label="config" data-edge-key="2" data-edge-id="home-runtime" data-composition-points="540,97;584,97" d="M 540 97 L 584 97" class="a-emphasis" data-animate="edge" style="--step:2" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="runtime" data-edge-to="orchestrator" data-edge-label="meta-agent" data-edge-key="3" data-edge-id="runtime-orch" data-composition-points="722,104;766,104" d="M 722 104 L 766 104" class="a-emphasis" data-animate="edge" style="--step:3" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="user" data-edge-to="orchestrator" data-edge-label="request · reply" data-edge-key="4" data-edge-id="user-orch" data-composition-points="948,97;904,97" d="M 948 97 L 904 97" class="a-emphasis" data-animate="edge" style="--step:4" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="deploy" data-edge-to="mcp" data-edge-label="merges config" data-edge-key="5" data-edge-id="deploy-mcp" data-composition-points="289,138;289,270" d="M 289 138 L 289 270" class="a-default" data-animate="edge" style="--step:5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="home" data-edge-to="archify" data-edge-label="pinned engine" data-edge-key="6" data-edge-id="home-archify" data-composition-points="464,138;464,270" d="M 464 138 L 464 270" class="a-default" data-animate="edge" style="--step:6" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="runtime" data-edge-to="archify" data-edge-label="system-diagrams" data-edge-key="7" data-edge-id="archify-runtime" data-composition-points="584,111;560,111;560,246;478,246;478,270" d="M 584 111 L 568 111 Q 560 111 560 119 L 560 238 Q 560 246 552 246 L 486 246 Q 478 246 478 254 L 478 270" class="a-default" data-animate="edge" style="--step:7" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="runtime" data-edge-to="hooks" data-edge-label="PreToolUse · Stop" data-edge-key="8" data-edge-id="runtime-hooks" data-composition-points="653,138;653,270" d="M 653 138 L 653 270" class="a-default" data-animate="edge" style="--step:8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="orchestrator" data-edge-to="osforgedb" data-edge-label="state" data-edge-key="9" data-edge-id="orch-db" data-composition-points="835,138;835,270" d="M 835 138 L 835 270" class="a-default" data-animate="edge" style="--step:9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="orchestrator" data-edge-to="canvas" data-edge-label="artifacts" data-edge-key="10" data-edge-id="orch-canvas" data-composition-points="904,111;928,111;928,246;1017,246;1017,270" d="M 904 111 L 920 111 Q 928 111 928 119 L 928 238 Q 928 246 936 246 L 1009 246 Q 1017 246 1017 254 L 1017 270" class="a-default" data-animate="edge" style="--step:10" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="osforgedb" data-edge-to="qdrant" data-edge-label="embeddings" data-edge-key="11" data-edge-id="db-qdrant" data-composition-points="835,338;835,450" d="M 835 338 L 835 450" class="a-dashed" data-animate="edge" style="--step:11" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="user" data-edge-to="orchestrator" data-edge-label="request" data-edge-key="0" data-edge-id="user-orch" data-composition-points="198,94;300,94" d="M 198 94 L 300 94" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="orchestrator" data-edge-to="models" data-edge-label="tier by complexity" data-edge-key="1" data-edge-id="orch-models" data-composition-points="480,94;640,94" d="M 480 94 L 640 94" class="a-emphasis" data-animate="edge" style="--step:1" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="models" data-edge-to="hooks" data-edge-label="every tool call" data-edge-key="2" data-edge-id="models-hooks" data-composition-points="820,94;922,94" d="M 820 94 L 922 94" class="a-dashed" data-animate="edge" style="--step:2" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="orchestrator" data-edge-to="agents-plan" data-edge-label="PLAN phase" data-edge-key="3" data-edge-id="orch-plan" data-composition-points="369,128;369,194;153,194;153,260" d="M 369 128 L 369 186 Q 369 194 361 194 L 161 194 Q 153 194 153 202 L 153 260" class="a-emphasis" data-animate="edge" style="--step:3" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="orchestrator" data-edge-to="agents-eng" data-edge-label="waves" data-edge-key="4" data-edge-id="orch-eng" data-composition-points="383,128;383,194;425,194;425,260" d="M 383 128 L 383 186 Q 383 194 391 194 L 417 194 Q 425 194 425 202 L 425 260" class="a-emphasis" data-animate="edge" style="--step:4" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="orchestrator" data-edge-to="agents-quality" data-edge-label="gates" data-edge-key="5" data-edge-id="orch-quality" data-composition-points="397,128;397,194;697,194;697,260" d="M 397 128 L 397 186 Q 397 194 405 194 L 689 194 Q 697 194 697 202 L 697 260" class="a-default" data-animate="edge" style="--step:5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="orchestrator" data-edge-to="agents-knowledge" data-edge-label="finish" data-edge-key="6" data-edge-id="orch-knowledge" data-composition-points="411,128;411,194;969,194;969,260" d="M 411 128 L 411 186 Q 411 194 419 194 L 961 194 Q 969 194 969 202 L 969 260" class="a-default" data-animate="edge" style="--step:6" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="agents-plan" data-edge-to="core" data-edge-label="grilling · planning · system-diagrams" data-edge-key="7" data-edge-id="plan-core" data-composition-points="153,328;153,470" d="M 153 328 L 153 470" class="a-default" data-animate="edge" style="--step:7" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="agents-eng" data-edge-to="ondemand" data-edge-label="stack skills per project" data-edge-key="8" data-edge-id="eng-ondemand" data-composition-points="425,328;425,470" d="M 425 328 L 425 470" class="a-default" data-animate="edge" style="--step:8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="agents-quality" data-edge-to="agency" data-edge-label="specialists" data-edge-key="9" data-edge-id="quality-agency" data-composition-points="697,328;697,470" d="M 697 328 L 697 470" class="a-dashed" data-animate="edge" style="--step:9" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="agents-knowledge" data-edge-to="rules" data-edge-label="always-on rules" data-edge-key="10" data-edge-id="knowledge-rules" data-composition-points="969,328;969,470" d="M 969 328 L 969 470" class="a-default" data-animate="edge" style="--step:10" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="ondemand" data-edge-to="agency" data-edge-label="includes" data-edge-key="11" data-edge-id="ondemand-agency" data-composition-points="540,504;582,504" d="M 540 504 L 582 504" class="a-dashed" data-animate="edge" style="--step:11" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
 
         <!-- Components -->
-        <g id="node-repo" data-node-id="repo" data-node-label="OSForge repo" tabindex="0" role="button" aria-label="Focus OSForge repo, single source of truth, Architecture component, GitHub" aria-pressed="false" data-node-kind="backend" data-node-sublabel="single source of truth" data-node-context="Architecture component" data-node-brand="GitHub" data-node-brand-id="github" data-node-brand-status="preset" data-node-brand-source="https://github.com/logos">
-          <title>OSForge repo · single source of truth · Architecture component · GitHub</title>
-          <rect x="38" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="38" y="70" width="138" height="68" rx="6" class="c-backend" data-animate="node" style="--step:0" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(44 76) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+        <g id="node-user" data-node-id="user" data-node-label="User" tabindex="0" role="button" aria-label="Focus User, any language · /spec-*, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="any language · /spec-*" data-node-context="Architecture component">
+          <title>User · any language · /spec-* · Architecture component</title>
+          <rect x="38" y="60" width="160" height="68" rx="6" class="c-mask"/>
+          <rect x="38" y="60" width="160" height="68" rx="6" class="c-external" data-animate="node" style="--step:0" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(44 66) scale(0.6875)">
+            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
+            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <g aria-hidden="true" data-brand-mark="github" data-brand-title="GitHub" data-brand-status="preset" data-brand-source="https://github.com/logos" class="brand-mark" transform="translate(154 76)">
-            <rect width="16" height="16" rx="4" class="brand-mark-badge"/>
-            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" transform="translate(3 3) scale(0.4166666666666667)" fill="#181717"/>
-            <rect width="16" height="16" rx="4" class="brand-mark-frame"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="107" y="102" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">OSForge repo</text>
-        <text data-detail="context" x="107" y="118" class="t-muted" font-size="9" text-anchor="middle">single source of truth</text>
+          <text data-node-label="" data-detail-anchor="" x="118" y="92" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">User</text>
+        <text data-detail="context" x="118" y="108" class="t-muted" font-size="9" text-anchor="middle">any language · /spec-*</text>
         </g>
 
-        <g id="node-deploy" data-node-id="deploy" data-node-label="deploy.sh" tabindex="0" role="button" aria-label="Focus deploy.sh, rsync · pinned engines, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="rsync · pinned engines" data-node-context="Architecture component">
-          <title>deploy.sh · rsync · pinned engines · Architecture component</title>
-          <rect x="220" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="220" y="70" width="138" height="68" rx="6" class="c-backend" data-animate="node" style="--step:1" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(226 76) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="289" y="102" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">deploy.sh</text>
-        <text data-detail="context" x="289" y="118" class="t-muted" font-size="9" text-anchor="middle">rsync · pinned engines</text>
-        </g>
-
-        <g id="node-home" data-node-id="home" data-node-label="~/.claude · ~/.cursor" tabindex="0" role="button" aria-label="Focus ~/.claude · ~/.cursor, 47 core skills · 27 agents, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="47 core skills · 27 agents" data-node-context="Architecture component">
-          <title>~/.claude · ~/.cursor · 47 core skills · 27 agents · Architecture component</title>
-          <rect x="402" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="402" y="70" width="138" height="68" rx="6" class="c-backend" data-animate="node" style="--step:2" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(408 76) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="471" y="102" class="t-primary" font-size="10.3" font-weight="600" text-anchor="middle">~/.claude · ~/.cursor</text>
-        <text data-detail="context" x="471" y="118" class="t-muted" font-size="8.3" text-anchor="middle">47 core skills · 27 agents</text>
-        </g>
-
-        <g id="node-runtime" data-node-id="runtime" data-node-label="Claude Code" tabindex="0" role="button" aria-label="Focus Claude Code, or Cursor · agent runtime, Architecture component, Claude" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="or Cursor · agent runtime" data-node-context="Architecture component" data-node-brand="Claude" data-node-brand-id="claude" data-node-brand-status="preset" data-node-brand-source="https://claude.ai">
-          <title>Claude Code · or Cursor · agent runtime · Architecture component · Claude</title>
-          <rect x="584" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="584" y="70" width="138" height="68" rx="6" class="c-frontend" data-animate="node" style="--step:3" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(590 76) scale(0.6875)">
-            <rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
-          </g>
-          <g aria-hidden="true" data-brand-mark="claude" data-brand-title="Claude" data-brand-status="preset" data-brand-source="https://claude.ai" class="brand-mark" transform="translate(700 76)">
-            <rect width="16" height="16" rx="4" class="brand-mark-badge"/>
-            <path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z" transform="translate(3 3) scale(0.4166666666666667)" fill="#D97757"/>
-            <rect width="16" height="16" rx="4" class="brand-mark-frame"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="653" y="102" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Claude Code</text>
-        <text data-detail="context" x="653" y="118" class="t-muted" font-size="8.6" text-anchor="middle">or Cursor · agent runtime</text>
-        </g>
-
-        <g id="node-orchestrator" data-node-id="orchestrator" data-node-label="Orchestrator" tabindex="0" role="button" aria-label="Focus Orchestrator, DETECT → CORRECT, Architecture component" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="DETECT → CORRECT" data-node-context="Architecture component">
-          <title>Orchestrator · DETECT → CORRECT · Architecture component</title>
-          <rect x="766" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="766" y="70" width="138" height="68" rx="6" class="c-messagebus" data-animate="node" style="--step:4" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="messagebus" class="semantic-sigil s-messagebus" transform="translate(772 76) scale(0.6875)">
+        <g id="node-orchestrator" data-node-id="orchestrator" data-node-label="Orchestrator" tabindex="0" role="button" aria-label="Focus Orchestrator, intake · triage · route · track, Architecture component" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="intake · triage · route · track" data-node-context="Architecture component">
+          <title>Orchestrator · intake · triage · route · track · Architecture component</title>
+          <rect x="300" y="60" width="180" height="68" rx="6" class="c-mask"/>
+          <rect x="300" y="60" width="180" height="68" rx="6" class="c-messagebus" data-animate="node" style="--step:1" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="messagebus" class="semantic-sigil s-messagebus" transform="translate(306 66) scale(0.6875)">
             <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/>
             <circle cx="5" cy="4.5" r="1" class="sigil-fill"/>
             <circle cx="10.5" cy="8" r="1" class="sigil-fill"/>
             <circle cx="7" cy="11.5" r="1" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="835" y="102" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Orchestrator</text>
-        <text data-detail="context" x="835" y="118" class="t-muted" font-size="9" text-anchor="middle">DETECT → CORRECT</text>
+          <text data-node-label="" data-detail-anchor="" x="390" y="92" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Orchestrator</text>
+        <text data-detail="context" x="390" y="108" class="t-muted" font-size="9" text-anchor="middle">intake · triage · route · track</text>
         </g>
 
-        <g id="node-user" data-node-id="user" data-node-label="User" tabindex="0" role="button" aria-label="Focus User, any language, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="any language" data-node-context="Architecture component">
-          <title>User · any language · Architecture component</title>
-          <rect x="948" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="948" y="70" width="138" height="68" rx="6" class="c-external" data-animate="node" style="--step:4" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(954 76) scale(0.6875)">
-            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
-            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="1017" y="102" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">User</text>
-        <text data-detail="context" x="1017" y="118" class="t-muted" font-size="9" text-anchor="middle">any language</text>
-        </g>
-
-        <g id="node-mcp" data-node-id="mcp" data-node-label="MCP servers" tabindex="0" role="button" aria-label="Focus MCP servers, 8 servers · scoped, Architecture component" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="8 servers · scoped" data-node-context="Architecture component">
-          <title>MCP servers · 8 servers · scoped · Architecture component</title>
-          <rect x="220" y="270" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="220" y="270" width="138" height="68" rx="6" class="c-cloud" data-animate="node" style="--step:6" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(226 276) scale(0.6875)">
+        <g id="node-models" data-node-id="models" data-node-label="Model routing" tabindex="0" role="button" aria-label="Focus Model routing, opus · sonnet · haiku, Architecture component, Anthropic" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="opus · sonnet · haiku" data-node-context="Architecture component" data-node-brand="Anthropic" data-node-brand-id="anthropic" data-node-brand-status="preset" data-node-brand-source="https://www.anthropic.com">
+          <title>Model routing · opus · sonnet · haiku · Architecture component · Anthropic</title>
+          <rect x="640" y="60" width="180" height="68" rx="6" class="c-mask"/>
+          <rect x="640" y="60" width="180" height="68" rx="6" class="c-cloud" data-animate="node" style="--step:2" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(646 66) scale(0.6875)">
             <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="289" y="302" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">MCP servers</text>
-        <text data-detail="context" x="289" y="318" class="t-muted" font-size="9" text-anchor="middle">8 servers · scoped</text>
-        </g>
-
-        <g id="node-archify" data-node-id="archify" data-node-label="Archify engine" tabindex="0" role="button" aria-label="Focus Archify engine, skills/archify v2.16, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="skills/archify v2.16" data-node-context="Architecture component">
-          <title>Archify engine · skills/archify v2.16 · Architecture component</title>
-          <rect x="402" y="270" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="402" y="270" width="138" height="68" rx="6" class="c-backend" data-animate="node" style="--step:7" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(408 276) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          <g aria-hidden="true" data-brand-mark="anthropic" data-brand-title="Anthropic" data-brand-status="preset" data-brand-source="https://www.anthropic.com" class="brand-mark" transform="translate(798 66)">
+            <rect width="16" height="16" rx="4" class="brand-mark-badge"/>
+            <path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z" transform="translate(3 3) scale(0.4166666666666667)" fill="#191919"/>
+            <rect width="16" height="16" rx="4" class="brand-mark-frame"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="471" y="302" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Archify engine</text>
-        <text data-detail="context" x="471" y="318" class="t-muted" font-size="9" text-anchor="middle">skills/archify v2.16</text>
+          <text data-node-label="" data-detail-anchor="" x="730" y="92" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Model routing</text>
+        <text data-detail="context" x="730" y="108" class="t-muted" font-size="9" text-anchor="middle">opus · sonnet · haiku</text>
         </g>
 
-        <g id="node-hooks" data-node-id="hooks" data-node-label="Hooks (zero-token)" tabindex="0" role="button" aria-label="Focus Hooks (zero-token), GateGuard · route-guard, Architecture component" aria-pressed="false" data-node-kind="security" data-node-sublabel="GateGuard · route-guard" data-node-context="Architecture component">
-          <title>Hooks (zero-token) · GateGuard · route-guard · Architecture component</title>
-          <rect x="584" y="270" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="584" y="270" width="138" height="68" rx="6" class="c-security" data-animate="node" style="--step:9" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(590 276) scale(0.6875)">
+        <g id="node-hooks" data-node-id="hooks" data-node-label="Hooks (zero-token)" tabindex="0" role="button" aria-label="Focus Hooks (zero-token), GateGuard · scan-secrets, Architecture component" aria-pressed="false" data-node-kind="security" data-node-sublabel="GateGuard · scan-secrets" data-node-context="Architecture component">
+          <title>Hooks (zero-token) · GateGuard · scan-secrets · Architecture component</title>
+          <rect x="922" y="60" width="160" height="68" rx="6" class="c-mask"/>
+          <rect x="922" y="60" width="160" height="68" rx="6" class="c-security" data-animate="node" style="--step:3" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(928 66) scale(0.6875)">
             <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
             <path d="m5.8 8 1.5 1.5 3-3"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="653" y="302" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Hooks (zero-token)</text>
-        <text data-detail="context" x="653" y="318" class="t-muted" font-size="9" text-anchor="middle">GateGuard · route-guard</text>
+          <text data-node-label="" data-detail-anchor="" x="1002" y="92" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Hooks (zero-token)</text>
+        <text data-detail="context" x="1002" y="108" class="t-muted" font-size="9" text-anchor="middle">GateGuard · scan-secrets</text>
         </g>
 
-        <g id="node-osforgedb" data-node-id="osforgedb" data-node-label="osforge-db" tabindex="0" role="button" aria-label="Focus osforge-db, SQLite state · waves, Architecture component" aria-pressed="false" data-node-kind="database" data-node-sublabel="SQLite state · waves" data-node-context="Architecture component">
-          <title>osforge-db · SQLite state · waves · Architecture component</title>
-          <rect x="766" y="270" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="766" y="270" width="138" height="68" rx="6" class="c-database" data-animate="node" style="--step:10" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(772 276) scale(0.6875)">
-            <ellipse cx="8" cy="4" rx="5" ry="2"/>
-            <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="835" y="302" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">osforge-db</text>
-        <text data-detail="context" x="835" y="318" class="t-muted" font-size="9" text-anchor="middle">SQLite state · waves</text>
-        </g>
-
-        <g id="node-canvas" data-node-id="canvas" data-node-label="OSForge Canvas" tabindex="0" role="button" aria-label="Focus OSForge Canvas, localhost:4242, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="localhost:4242" data-node-context="Architecture component">
-          <title>OSForge Canvas · localhost:4242 · Architecture component</title>
-          <rect x="948" y="270" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="948" y="270" width="138" height="68" rx="6" class="c-backend" data-animate="node" style="--step:11" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(954 276) scale(0.6875)">
+        <g id="node-agents-plan" data-node-id="agents-plan" data-node-label="Planning &amp; product" tabindex="0" role="button" aria-label="Focus Planning &amp; product, 6 agents · planner, architect, 27 agents — orchestrator + 26 specialists (agents/)" aria-pressed="false" data-node-kind="backend" data-node-sublabel="6 agents · planner, architect" data-node-context="27 agents — orchestrator + 26 specialists (agents/)">
+          <title>Planning &amp; product · 6 agents · planner, architect · 27 agents — orchestrator + 26 specialists (agents/)</title>
+          <rect x="38" y="260" width="230" height="68" rx="6" class="c-mask"/>
+          <rect x="38" y="260" width="230" height="68" rx="6" class="c-backend" data-animate="node" style="--step:4" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(44 266) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="1017" y="302" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">OSForge Canvas</text>
-        <text data-detail="context" x="1017" y="318" class="t-muted" font-size="9" text-anchor="middle">localhost:4242</text>
+          <text data-node-label="" data-detail-anchor="" x="153" y="292" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Planning &amp; product</text>
+        <text data-detail="context" x="153" y="308" class="t-muted" font-size="9" text-anchor="middle">6 agents · planner, architect</text>
         </g>
 
-        <g id="node-qdrant" data-node-id="qdrant" data-node-label="Qdrant (optional)" tabindex="0" role="button" aria-label="Focus Qdrant (optional), vector memory, Architecture component" aria-pressed="false" data-node-kind="database" data-node-sublabel="vector memory" data-node-context="Architecture component">
-          <title>Qdrant (optional) · vector memory · Architecture component</title>
-          <rect x="766" y="450" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="766" y="450" width="138" height="68" rx="6" class="c-database" data-animate="node" style="--step:12" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(772 456) scale(0.6875)">
+        <g id="node-agents-eng" data-node-id="agents-eng" data-node-label="Engineering" tabindex="0" role="button" aria-label="Focus Engineering, 8 agents · backend, frontend, data, 27 agents — orchestrator + 26 specialists (agents/)" aria-pressed="false" data-node-kind="backend" data-node-sublabel="8 agents · backend, frontend, data" data-node-context="27 agents — orchestrator + 26 specialists (agents/)">
+          <title>Engineering · 8 agents · backend, frontend, data · 27 agents — orchestrator + 26 specialists (agents/)</title>
+          <rect x="310" y="260" width="230" height="68" rx="6" class="c-mask"/>
+          <rect x="310" y="260" width="230" height="68" rx="6" class="c-backend" data-animate="node" style="--step:5" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(316 266) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="425" y="292" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Engineering</text>
+        <text data-detail="context" x="425" y="308" class="t-muted" font-size="9" text-anchor="middle">8 agents · backend, frontend, data</text>
+        </g>
+
+        <g id="node-agents-quality" data-node-id="agents-quality" data-node-label="Quality &amp; security" tabindex="0" role="button" aria-label="Focus Quality &amp; security, 7 agents · review, debug, pentest, 27 agents — orchestrator + 26 specialists (agents/)" aria-pressed="false" data-node-kind="security" data-node-sublabel="7 agents · review, debug, pentest" data-node-context="27 agents — orchestrator + 26 specialists (agents/)">
+          <title>Quality &amp; security · 7 agents · review, debug, pentest · 27 agents — orchestrator + 26 specialists (agents/)</title>
+          <rect x="582" y="260" width="230" height="68" rx="6" class="c-mask"/>
+          <rect x="582" y="260" width="230" height="68" rx="6" class="c-security" data-animate="node" style="--step:6" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(588 266) scale(0.6875)">
+            <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
+            <path d="m5.8 8 1.5 1.5 3-3"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="697" y="292" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Quality &amp; security</text>
+        <text data-detail="context" x="697" y="308" class="t-muted" font-size="9" text-anchor="middle">7 agents · review, debug, pentest</text>
+        </g>
+
+        <g id="node-agents-knowledge" data-node-id="agents-knowledge" data-node-label="Knowledge &amp; delivery" tabindex="0" role="button" aria-label="Focus Knowledge &amp; delivery, 5 agents · docs, git, seo, explorer, 27 agents — orchestrator + 26 specialists (agents/)" aria-pressed="false" data-node-kind="external" data-node-sublabel="5 agents · docs, git, seo, explorer" data-node-context="27 agents — orchestrator + 26 specialists (agents/)">
+          <title>Knowledge &amp; delivery · 5 agents · docs, git, seo, explorer · 27 agents — orchestrator + 26 specialists (agents/)</title>
+          <rect x="854" y="260" width="230" height="68" rx="6" class="c-mask"/>
+          <rect x="854" y="260" width="230" height="68" rx="6" class="c-external" data-animate="node" style="--step:7" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(860 266) scale(0.6875)">
+            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
+            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="969" y="292" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Knowledge &amp; delivery</text>
+        <text data-detail="context" x="969" y="308" class="t-muted" font-size="9" text-anchor="middle">5 agents · docs, git, seo, explorer</text>
+        </g>
+
+        <g id="node-core" data-node-id="core" data-node-label="Core skills · 47" tabindex="0" role="button" aria-label="Focus Core skills · 47, always-on in ~/.claude/skills, 177 skills — Model A distribution (skills/)" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="always-on in ~/.claude/skills" data-node-context="177 skills — Model A distribution (skills/)">
+          <title>Core skills · 47 · always-on in ~/.claude/skills · 177 skills — Model A distribution (skills/)</title>
+          <rect x="38" y="470" width="230" height="68" rx="6" class="c-mask"/>
+          <rect x="38" y="470" width="230" height="68" rx="6" class="c-frontend" data-animate="node" style="--step:8" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(44 476) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="153" y="502" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Core skills · 47</text>
+        <text data-detail="context" x="153" y="518" class="t-muted" font-size="9" text-anchor="middle">always-on in ~/.claude/skills</text>
+        </g>
+
+        <g id="node-ondemand" data-node-id="ondemand" data-node-label="On-demand skills · 130" tabindex="0" role="button" aria-label="Focus On-demand skills · 130, MANIFEST → install-skill.sh, 177 skills — Model A distribution (skills/)" aria-pressed="false" data-node-kind="database" data-node-sublabel="MANIFEST → install-skill.sh" data-node-context="177 skills — Model A distribution (skills/)">
+          <title>On-demand skills · 130 · MANIFEST → install-skill.sh · 177 skills — Model A distribution (skills/)</title>
+          <rect x="310" y="470" width="230" height="68" rx="6" class="c-mask"/>
+          <rect x="310" y="470" width="230" height="68" rx="6" class="c-database" data-animate="node" style="--step:9" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(316 476) scale(0.6875)">
             <ellipse cx="8" cy="4" rx="5" ry="2"/>
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="835" y="482" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Qdrant (optional)</text>
-        <text data-detail="context" x="835" y="498" class="t-muted" font-size="9" text-anchor="middle">vector memory</text>
+          <text data-node-label="" data-detail-anchor="" x="425" y="502" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">On-demand skills · 130</text>
+        <text data-detail="context" x="425" y="518" class="t-muted" font-size="9" text-anchor="middle">MANIFEST → install-skill.sh</text>
+        </g>
+
+        <g id="node-agency" data-node-id="agency" data-node-label="The Agency · 121" tabindex="0" role="button" aria-label="Focus The Agency · 121, 10 divisions · 32 workflows, 177 skills — Model A distribution (skills/)" aria-pressed="false" data-node-kind="database" data-node-sublabel="10 divisions · 32 workflows" data-node-context="177 skills — Model A distribution (skills/)">
+          <title>The Agency · 121 · 10 divisions · 32 workflows · 177 skills — Model A distribution (skills/)</title>
+          <rect x="582" y="470" width="230" height="68" rx="6" class="c-mask"/>
+          <rect x="582" y="470" width="230" height="68" rx="6" class="c-database" data-animate="node" style="--step:10" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(588 476) scale(0.6875)">
+            <ellipse cx="8" cy="4" rx="5" ry="2"/>
+            <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="697" y="502" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">The Agency · 121</text>
+        <text data-detail="context" x="697" y="518" class="t-muted" font-size="9" text-anchor="middle">10 divisions · 32 workflows</text>
+        </g>
+
+        <g id="node-rules" data-node-id="rules" data-node-label="Rules &amp; commands" tabindex="0" role="button" aria-label="Focus Rules &amp; commands, 14 .mdc · 9 spec-* · 8 MCP, 177 skills — Model A distribution (skills/)" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="14 .mdc · 9 spec-* · 8 MCP" data-node-context="177 skills — Model A distribution (skills/)">
+          <title>Rules &amp; commands · 14 .mdc · 9 spec-* · 8 MCP · 177 skills — Model A distribution (skills/)</title>
+          <rect x="854" y="470" width="230" height="68" rx="6" class="c-mask"/>
+          <rect x="854" y="470" width="230" height="68" rx="6" class="c-cloud" data-animate="node" style="--step:11" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(860 476) scale(0.6875)">
+            <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="969" y="502" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Rules &amp; commands</text>
+        <text data-detail="context" x="969" y="518" class="t-muted" font-size="9" text-anchor="middle">14 .mdc · 9 spec-* · 8 MCP</text>
         </g>
 
         <!-- Connection labels -->
-        <g data-detail="context" data-edge-from="repo" data-edge-to="deploy" data-edge-label="commit" data-edge-key="0" data-edge-id="repo-deploy">
-          <rect x="178.6" y="84" width="38.8" height="14" rx="3" class="c-mask"/>
-          <text x="198" y="94" class="t-backend" font-size="8" text-anchor="middle">commit</text>
+        <g data-detail="context" data-edge-from="user" data-edge-to="orchestrator" data-edge-label="request" data-edge-key="0" data-edge-id="user-orch">
+          <rect x="227.2" y="74" width="43.6" height="14" rx="3" class="c-mask"/>
+          <text x="249" y="84" class="t-backend" font-size="8" text-anchor="middle">request</text>
         </g>
-        <g data-detail="context" data-edge-from="deploy" data-edge-to="home" data-edge-label="sync" data-edge-key="1" data-edge-id="deploy-home">
-          <rect x="365" y="84" width="30" height="14" rx="3" class="c-mask"/>
-          <text x="380" y="94" class="t-backend" font-size="8" text-anchor="middle">sync</text>
+        <g data-detail="context" data-edge-from="orchestrator" data-edge-to="models" data-edge-label="tier by complexity" data-edge-key="1" data-edge-id="orch-models">
+          <rect x="511.8" y="74" width="96.39999999999999" height="14" rx="3" class="c-mask"/>
+          <text x="560" y="84" class="t-backend" font-size="8" text-anchor="middle">tier by complexity</text>
         </g>
-        <g data-detail="context" data-edge-from="home" data-edge-to="runtime" data-edge-label="config" data-edge-key="2" data-edge-id="home-runtime">
-          <rect x="542.6" y="77" width="38.8" height="14" rx="3" class="c-mask"/>
-          <text x="562" y="87" class="t-backend" font-size="8" text-anchor="middle">config</text>
+        <g data-detail="context" data-edge-from="models" data-edge-to="hooks" data-edge-label="every tool call" data-edge-key="2" data-edge-id="models-hooks">
+          <rect x="830" y="74" width="82" height="14" rx="3" class="c-mask"/>
+          <text x="871" y="84" class="t-messagebus" font-size="8" text-anchor="middle">every tool call</text>
         </g>
-        <g data-detail="context" data-edge-from="runtime" data-edge-to="orchestrator" data-edge-label="meta-agent" data-edge-key="3" data-edge-id="runtime-orch">
-          <rect x="715" y="56" width="58" height="14" rx="3" class="c-mask"/>
-          <text x="744" y="66" class="t-backend" font-size="8" text-anchor="middle">meta-agent</text>
+        <g data-detail="context" data-edge-from="orchestrator" data-edge-to="agents-plan" data-edge-label="PLAN phase" data-edge-key="3" data-edge-id="orch-plan">
+          <rect x="124" y="199" width="58" height="14" rx="3" class="c-mask"/>
+          <text x="153" y="209" class="t-backend" font-size="8" text-anchor="middle">PLAN phase</text>
         </g>
-        <g data-detail="context" data-edge-from="user" data-edge-to="orchestrator" data-edge-label="request · reply" data-edge-key="4" data-edge-id="user-orch">
-          <rect x="885" y="49" width="82" height="14" rx="3" class="c-mask"/>
-          <text x="926" y="59" class="t-backend" font-size="8" text-anchor="middle">request · reply</text>
+        <g data-detail="context" data-edge-from="orchestrator" data-edge-to="agents-eng" data-edge-label="waves" data-edge-key="4" data-edge-id="orch-eng">
+          <rect x="408" y="199" width="34" height="14" rx="3" class="c-mask"/>
+          <text x="425" y="209" class="t-backend" font-size="8" text-anchor="middle">waves</text>
         </g>
-        <g data-detail="context" data-edge-from="deploy" data-edge-to="mcp" data-edge-label="merges config" data-edge-key="5" data-edge-id="deploy-mcp">
-          <rect x="252.8" y="142" width="72.4" height="14" rx="3" class="c-mask"/>
-          <text x="289" y="152" class="t-muted" font-size="8" text-anchor="middle">merges config</text>
+        <g data-detail="context" data-edge-from="orchestrator" data-edge-to="agents-quality" data-edge-label="gates" data-edge-key="5" data-edge-id="orch-quality">
+          <rect x="680" y="199" width="34" height="14" rx="3" class="c-mask"/>
+          <text x="697" y="209" class="t-muted" font-size="8" text-anchor="middle">gates</text>
         </g>
-        <g data-detail="context" data-edge-from="home" data-edge-to="archify" data-edge-label="pinned engine" data-edge-key="6" data-edge-id="home-archify">
-          <rect x="427.8" y="142" width="72.4" height="14" rx="3" class="c-mask"/>
-          <text x="464" y="152" class="t-muted" font-size="8" text-anchor="middle">pinned engine</text>
+        <g data-detail="context" data-edge-from="orchestrator" data-edge-to="agents-knowledge" data-edge-label="finish" data-edge-key="6" data-edge-id="orch-knowledge">
+          <rect x="949.6" y="199" width="38.8" height="14" rx="3" class="c-mask"/>
+          <text x="969" y="209" class="t-muted" font-size="8" text-anchor="middle">finish</text>
         </g>
-        <g data-detail="context" data-edge-from="runtime" data-edge-to="archify" data-edge-label="system-diagrams" data-edge-key="7" data-edge-id="archify-runtime">
-          <rect x="519" y="158.5" width="82" height="14" rx="3" class="c-mask"/>
-          <text x="560" y="168.5" class="t-muted" font-size="8" text-anchor="middle">system-diagrams</text>
+        <g data-detail="context" data-edge-from="agents-plan" data-edge-to="core" data-edge-label="grilling · planning · system-diagrams" data-edge-key="7" data-edge-id="plan-core">
+          <rect x="59.2" y="332" width="187.6" height="14" rx="3" class="c-mask"/>
+          <text x="153" y="342" class="t-muted" font-size="8" text-anchor="middle">grilling · planning · system-diagrams</text>
         </g>
-        <g data-detail="context" data-edge-from="runtime" data-edge-to="hooks" data-edge-label="PreToolUse · Stop" data-edge-key="8" data-edge-id="runtime-hooks">
-          <rect x="607.2" y="142" width="91.6" height="14" rx="3" class="c-mask"/>
-          <text x="653" y="152" class="t-muted" font-size="8" text-anchor="middle">PreToolUse · Stop</text>
+        <g data-detail="context" data-edge-from="agents-eng" data-edge-to="ondemand" data-edge-label="stack skills per project" data-edge-key="8" data-edge-id="eng-ondemand">
+          <rect x="362.4" y="332" width="125.19999999999999" height="14" rx="3" class="c-mask"/>
+          <text x="425" y="342" class="t-muted" font-size="8" text-anchor="middle">stack skills per project</text>
         </g>
-        <g data-detail="context" data-edge-from="orchestrator" data-edge-to="osforgedb" data-edge-label="state" data-edge-key="9" data-edge-id="orch-db">
-          <rect x="818" y="142" width="34" height="14" rx="3" class="c-mask"/>
-          <text x="835" y="152" class="t-muted" font-size="8" text-anchor="middle">state</text>
+        <g data-detail="context" data-edge-from="agents-quality" data-edge-to="agency" data-edge-label="specialists" data-edge-key="9" data-edge-id="quality-agency">
+          <rect x="665.6" y="332" width="62.8" height="14" rx="3" class="c-mask"/>
+          <text x="697" y="342" class="t-messagebus" font-size="8" text-anchor="middle">specialists</text>
         </g>
-        <g data-detail="context" data-edge-from="orchestrator" data-edge-to="canvas" data-edge-label="artifacts" data-edge-key="10" data-edge-id="orch-canvas">
-          <rect x="901.4" y="182.5" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
-          <text x="928" y="192.5" class="t-muted" font-size="8" text-anchor="middle">artifacts</text>
+        <g data-detail="context" data-edge-from="agents-knowledge" data-edge-to="rules" data-edge-label="always-on rules" data-edge-key="10" data-edge-id="knowledge-rules">
+          <rect x="928" y="332" width="82" height="14" rx="3" class="c-mask"/>
+          <text x="969" y="342" class="t-muted" font-size="8" text-anchor="middle">always-on rules</text>
         </g>
-        <g data-detail="context" data-edge-from="osforgedb" data-edge-to="qdrant" data-edge-label="embeddings" data-edge-key="11" data-edge-id="db-qdrant">
-          <rect x="806" y="342" width="58" height="14" rx="3" class="c-mask"/>
-          <text x="835" y="352" class="t-messagebus" font-size="8" text-anchor="middle">embeddings</text>
+        <g data-detail="context" data-edge-from="ondemand" data-edge-to="agency" data-edge-label="includes" data-edge-key="11" data-edge-id="ondemand-agency">
+          <rect x="536.8" y="456" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="561" y="466" class="t-messagebus" font-size="8" text-anchor="middle">includes</text>
         </g>
 
         <!-- Boundary labels (foreground masks keep routes out of titles) -->
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="0" data-composition-frame-kind="region" data-composition-frame-label="27 agents — orchestrator + 26 specialists (agents/)">
+          <rect data-graph-role="structural-frame-label-mask" x="12" y="240" width="285.4" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="16" y="253" class="t-cloud" font-size="9" font-weight="600">27 agents — orchestrator + 26 specialists (agents/)</text>
+        </g>
 
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="1" data-composition-frame-kind="region" data-composition-frame-label="177 skills — Model A distribution (skills/)">
+          <rect data-graph-role="structural-frame-label-mask" x="12" y="450" width="242.2" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="16" y="463" class="t-cloud" font-size="9" font-weight="600">177 skills — Model A distribution (skills/)</text>
+        </g>
 
         <!-- Legend -->
-
+        <g data-legend="" data-legend-bridge="">
+          <text x="40" y="604" class="t-primary" font-size="12" font-weight="650">Legend</text>
+          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="Frontend" data-legend-x="40" data-legend-baseline="624" data-legend-width="83">
+            <rect x="40" y="615" width="16" height="10" rx="2.5" class="c-frontend" stroke-width="1"/>
+            <text x="62" y="624" class="t-muted" font-size="10" font-weight="500">Frontend</text>
+          </g>
+          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Backend" data-legend-x="145" data-legend-baseline="624" data-legend-width="78">
+            <rect x="145" y="615" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
+            <text x="167" y="624" class="t-muted" font-size="10" font-weight="500">Backend</text>
+          </g>
+          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="Database" data-legend-x="245" data-legend-baseline="624" data-legend-width="83">
+            <rect x="245" y="615" width="16" height="10" rx="2.5" class="c-database" stroke-width="1"/>
+            <text x="267" y="624" class="t-muted" font-size="10" font-weight="500">Database</text>
+          </g>
+          <g data-legend-semantic-kind="cloud" data-legend-kind="cloud" data-legend-label="Cloud" data-legend-x="350" data-legend-baseline="624" data-legend-width="68">
+            <rect x="350" y="615" width="16" height="10" rx="2.5" class="c-cloud" stroke-width="1"/>
+            <text x="372" y="624" class="t-muted" font-size="10" font-weight="500">Cloud</text>
+          </g>
+          <g data-legend-semantic-kind="security" data-legend-kind="security" data-legend-label="Security" data-legend-x="440" data-legend-baseline="624" data-legend-width="83">
+            <rect x="440" y="615" width="16" height="10" rx="2.5" class="c-security" stroke-width="1"/>
+            <text x="462" y="624" class="t-muted" font-size="10" font-weight="500">Security</text>
+          </g>
+          <g data-legend-semantic-kind="messagebus" data-legend-kind="messagebus" data-legend-label="Message bus" data-legend-x="545" data-legend-baseline="624" data-legend-width="98">
+            <rect x="545" y="615" width="16" height="10" rx="2.5" class="c-messagebus" stroke-width="1"/>
+            <text x="567" y="624" class="t-muted" font-size="10" font-weight="500">Message bus</text>
+          </g>
+          <g data-legend-semantic-kind="external" data-legend-kind="external" data-legend-label="External" data-legend-x="665" data-legend-baseline="624" data-legend-width="83">
+            <rect x="665" y="615" width="16" height="10" rx="2.5" class="c-external" stroke-width="1"/>
+            <text x="687" y="624" class="t-muted" font-size="10" font-weight="500">External</text>
+          </g>
+        </g>
       </svg>
       <p class="intent-trace-status no-print" id="intent-trace-status" role="status" aria-live="polite" aria-atomic="true"></p>
       <div class="share-chapter-cue no-print" id="share-chapter-cue" hidden role="status" aria-live="polite">
@@ -5440,7 +5488,77 @@
 
     <!-- Info Cards -->
     <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>Planning &amp; product (6)</h3>
+        </div>
+        <ul>
+          <li>&bull; planner · system-architect · product-manager</li>
+          <li>&bull; product-owner · project-planner · product-strategy-advisor</li>
+        </ul>
+      </div>
 
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>Engineering (8)</h3>
+        </div>
+        <ul>
+          <li>&bull; backend-engineer · frontend-engineer · database-architect</li>
+          <li>&bull; devops-engineer · mobile-developer · game-developer</li>
+          <li>&bull; code-refactorer · performance-optimizer</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>Quality &amp; security (7)</h3>
+        </div>
+        <ul>
+          <li>&bull; code-reviewer · debugger · validator</li>
+          <li>&bull; test-engineer · qa-automation-engineer</li>
+          <li>&bull; security-auditor · penetration-tester</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot slate"></div>
+          <h3>Knowledge &amp; delivery (5)</h3>
+        </div>
+        <ul>
+          <li>&bull; documentation-writer · git-commit-helper</li>
+          <li>&bull; seo-specialist · code-archaeologist · explorer-agent</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot cyan"></div>
+          <h3>Core skills (47, always-on)</h3>
+        </div>
+        <ul>
+          <li>&bull; disciplines: tdd-workflow · verification-before-completion · clean-code · grilling · system-diagrams</li>
+          <li>&bull; planning/: arch-builder · prd-builder · spec-builder · epic-decomposer · story-executor</li>
+          <li>&bull; quality/: adversarial-review · code-review · edge-case-hunter · readiness-gate · ui-audit</li>
+          <li>&bull; context/: project-context-generator · context-distillator · doc-shard · db-state-sync</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot violet"></div>
+          <h3>On-demand skills (130, per project)</h3>
+        </div>
+        <ul>
+          <li>&bull; stack: prisma-expert · nextjs-supabase-auth · stripe-integration · better-auth · asaas-integration</li>
+          <li>&bull; security: security-threat-model · vulnerability-scanner · 27 offensive-* (authorized testing)</li>
+          <li>&bull; design: design-taste-frontend · ui-design-intelligence · brandkit · imagegen-* · stitch-*</li>
+          <li>&bull; meta: llmfit-advisor · osforge-canvas · smart-hooks · autorefine-skill · evolve</li>
+        </ul>
+      </div>
     </div>
 
   </div>

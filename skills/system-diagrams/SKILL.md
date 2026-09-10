@@ -118,6 +118,15 @@ user asks for a live authoring loop.
 **Done when:** the HTML exists at the target path, the receipt line is in the source document, and
 the JSON is versioned.
 
+Presentation is a separate, explicit choice — never a reason to touch the receipt copy:
+- Glow, translucency and motion are the engine's own: `meta.visual_preset: "signal-flow"` (or
+  `blueprint` / `editorial`) and `meta.animation: "trace"` in the JSON, then re-`deliver`. The
+  viewer also switches preset and theme at runtime on every artifact.
+- A friendlier typeface (sans-serif) is not an engine option. When the user asks for it, run
+  `python3 scripts/archify-presentation.py <delivered>.html` → `<name>.presentation.html`, a
+  derived sibling stamped with the sha256 it came from. It is a presentation copy, not a receipt;
+  the receipt line always points at the delivered HTML.
+
 ### 5. Fallback when the engine is unavailable
 
 If `node ~/.claude/skills/archify/bin/archify.mjs doctor` fails or the directory is missing: say so

@@ -1,0 +1,401 @@
+{
+ "schema_version": 2,
+ "diagram_type": "workflow",
+ "meta": {
+  "title": "OSForge v5.0 \u2014 the spec-* cycle",
+  "quality_profile": "showcase",
+  "views": [
+   {
+    "id": "main",
+    "label": "Discover \u2192 measure",
+    "focus": [
+     "request",
+     "discover",
+     "specify",
+     "design",
+     "tasks",
+     "implement",
+     "review",
+     "measure",
+     "reply"
+    ],
+    "note": "One feature through the six phases; nothing advances without an approval checkpoint."
+   },
+   {
+    "id": "artifacts",
+    "label": "Artifacts with receipts",
+    "focus": [
+     "specify",
+     "canvas",
+     "design",
+     "diagrams",
+     "tasks",
+     "db"
+    ],
+    "note": "spec.md and design.md are reviewed in the Canvas; the design ships a verified Archify diagram; tasks land on the osforge-db board."
+   },
+   {
+    "id": "gates",
+    "label": "Gates during implementation",
+    "focus": [
+     "implement",
+     "gateguard",
+     "review",
+     "grant"
+    ],
+    "note": "GateGuard forces facts before irreversible Bash \u2014 or accepts the user's explicit confirmation; quality gates send work back until green."
+   }
+  ],
+  "visual_preset": "signal-flow",
+  "animation": "trace"
+ },
+ "lanes": [
+  {
+   "id": "user",
+   "label": "User (any language)"
+  },
+  {
+   "id": "orch",
+   "label": "Orchestrator"
+  },
+  {
+   "id": "agents",
+   "label": "Specialist agents \u00b7 waves"
+  },
+  {
+   "id": "gates",
+   "label": "Gates \u00b7 state \u00b7 artifacts"
+  },
+  {
+   "id": "policy",
+   "label": "Stop & recover",
+   "variant": "exception"
+  }
+ ],
+ "phases": [
+  {
+   "id": "p1",
+   "label": "Discover",
+   "fromCol": 0,
+   "toCol": 0
+  },
+  {
+   "id": "p2",
+   "label": "Specify + design",
+   "fromCol": 1,
+   "toCol": 2,
+   "variant": "emphasis"
+  },
+  {
+   "id": "p3",
+   "label": "Tasks",
+   "fromCol": 3,
+   "toCol": 3
+  },
+  {
+   "id": "p4",
+   "label": "Implement + measure",
+   "fromCol": 4,
+   "toCol": 5,
+   "variant": "dashed"
+  }
+ ],
+ "groups": [
+  {
+   "id": "waves",
+   "label": "Parallel waves \u00b7 TDD",
+   "lane": "agents",
+   "fromCol": 4,
+   "toCol": 5,
+   "variant": "dashed"
+  },
+  {
+   "id": "stop",
+   "label": "Fact-forcing gate",
+   "lane": "policy",
+   "fromCol": 4,
+   "toCol": 5,
+   "variant": "security"
+  }
+ ],
+ "mainPath": [
+  "request",
+  "discover",
+  "specify",
+  "design",
+  "tasks",
+  "implement",
+  "review",
+  "measure",
+  "reply"
+ ],
+ "nodes": [
+  {
+   "id": "request",
+   "lane": "user",
+   "col": 0,
+   "type": "external",
+   "label": "Request",
+   "sublabel": "feature, in pt-BR",
+   "width": 136
+  },
+  {
+   "id": "reply",
+   "lane": "user",
+   "col": 5,
+   "type": "external",
+   "label": "Reply",
+   "sublabel": "in the user's language",
+   "width": 136
+  },
+  {
+   "id": "discover",
+   "lane": "orch",
+   "col": 0,
+   "type": "messagebus",
+   "label": "/spec-discover",
+   "sublabel": "grilling \u00b7 triage",
+   "tag": "1 question at a time",
+   "width": 136
+  },
+  {
+   "id": "tasks",
+   "lane": "orch",
+   "col": 3,
+   "type": "messagebus",
+   "label": "/spec-tasks",
+   "sublabel": "waves \u00b7 depends_on",
+   "width": 136
+  },
+  {
+   "id": "measure",
+   "lane": "orch",
+   "col": 5,
+   "type": "messagebus",
+   "label": "/spec-measure",
+   "sublabel": "evidence \u00b7 retro",
+   "width": 136
+  },
+  {
+   "id": "specify",
+   "lane": "agents",
+   "col": 1,
+   "type": "backend",
+   "label": "/spec-specify",
+   "sublabel": "spec.md \u00b7 acceptance",
+   "tag": "planner",
+   "width": 136
+  },
+  {
+   "id": "design",
+   "lane": "agents",
+   "col": 2,
+   "type": "backend",
+   "label": "/spec-design",
+   "sublabel": "design.md \u00b7 ADRs",
+   "tag": "system-architect",
+   "width": 136
+  },
+  {
+   "id": "implement",
+   "lane": "agents",
+   "col": 4,
+   "type": "backend",
+   "label": "/spec-implement",
+   "sublabel": "workers per wave",
+   "width": 136
+  },
+  {
+   "id": "review",
+   "lane": "agents",
+   "col": 5,
+   "type": "security",
+   "label": "Quality gates",
+   "sublabel": "code-review \u00b7 readiness",
+   "tag": "validator",
+   "width": 136
+  },
+  {
+   "id": "canvas",
+   "lane": "gates",
+   "col": 1,
+   "type": "frontend",
+   "label": "OSForge Canvas",
+   "sublabel": "approve \u00b7 edit \u00b7 reject",
+   "width": 136
+  },
+  {
+   "id": "diagrams",
+   "lane": "gates",
+   "col": 2,
+   "type": "backend",
+   "label": "system-diagrams",
+   "sublabel": "deliver \u2192 receipt 9/9",
+   "tag": "new in v5",
+   "width": 136
+  },
+  {
+   "id": "db",
+   "lane": "gates",
+   "col": 3,
+   "type": "database",
+   "label": "osforge-db",
+   "sublabel": "add-task \u00b7 waves \u00b7 blockers",
+   "width": 136
+  },
+  {
+   "id": "gateguard",
+   "lane": "policy",
+   "col": 4,
+   "type": "security",
+   "label": "GateGuard",
+   "sublabel": "rm -rf \u00b7 DROP \u00b7 --force",
+   "width": 136
+  },
+  {
+   "id": "grant",
+   "lane": "policy",
+   "col": 5,
+   "type": "external",
+   "label": "User confirms",
+   "sublabel": "\"tem permiss\u00e3o\" \u2192 grant",
+   "width": 136
+  }
+ ],
+ "edges": [
+  {
+   "id": "e1",
+   "from": "request",
+   "to": "discover",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e2",
+   "from": "discover",
+   "to": "specify",
+   "label": "PLAN approved",
+   "variant": "emphasis",
+   "toSide": "left"
+  },
+  {
+   "id": "e3",
+   "from": "specify",
+   "to": "design",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e4",
+   "from": "design",
+   "to": "tasks",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e5",
+   "from": "tasks",
+   "to": "implement",
+   "label": "wave 1..n",
+   "variant": "emphasis",
+   "toSide": "left"
+  },
+  {
+   "id": "e6",
+   "from": "implement",
+   "to": "review",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e7",
+   "from": "review",
+   "to": "measure",
+   "label": "green",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e8",
+   "from": "measure",
+   "to": "reply",
+   "variant": "emphasis"
+  },
+  {
+   "id": "b1",
+   "from": "specify",
+   "to": "canvas",
+   "variant": "default",
+   "role": "branch"
+  },
+  {
+   "id": "b2",
+   "from": "design",
+   "to": "diagrams",
+   "variant": "default",
+   "role": "branch"
+  },
+  {
+   "id": "b3",
+   "from": "tasks",
+   "to": "db",
+   "variant": "dashed",
+   "role": "async",
+   "route": "drop"
+  },
+  {
+   "id": "b4",
+   "from": "implement",
+   "to": "gateguard",
+   "variant": "security",
+   "role": "error"
+  },
+  {
+   "id": "b5",
+   "from": "gateguard",
+   "to": "grant",
+   "label": "facts or confirmation",
+   "variant": "security"
+  },
+  {
+   "id": "b6",
+   "from": "review",
+   "to": "implement",
+   "label": "red \u2192 fix",
+   "variant": "dashed",
+   "role": "return"
+  }
+ ],
+ "cards": [
+  {
+   "dot": "amber",
+   "title": "Six phases, six commands",
+   "items": [
+    "/spec-discover \u00b7 /spec-specify \u00b7 /spec-design \u00b7 /spec-tasks \u00b7 /spec-implement \u00b7 /spec-measure",
+    "supporting: /spec-clarify \u00b7 /spec-constitution \u00b7 /spec-checklist"
+   ]
+  },
+  {
+   "dot": "cyan",
+   "title": "Checkpoints",
+   "items": [
+    "PLAN approval before any agent is dispatched",
+    "spec.md and design.md reviewed in the Canvas",
+    "checkpoint per wave by default (opt-in full auto-run)"
+   ]
+  },
+  {
+   "dot": "emerald",
+   "title": "Artifacts",
+   "items": [
+    ".specs/features/<f>/spec.md \u00b7 design.md \u00b7 tasks.md",
+    ".specs/features/<f>/diagrams/*.json + *.html (Archify receipt)",
+    "osforge-db: tasks with wave \u00b7 depends_on \u00b7 blockers"
+   ]
+  },
+  {
+   "dot": "rose",
+   "title": "Gates",
+   "items": [
+    "GateGuard: facts (targets, rollback, instruction) or the user's explicit confirmation",
+    "scan-secrets before commits \u00b7 protect-tests on edits \u00b7 route-guard on Stop",
+    "quality gates: code-review \u00b7 adversarial-review \u00b7 readiness-gate \u00b7 verification-before-completion"
+   ]
+  }
+ ]
+}

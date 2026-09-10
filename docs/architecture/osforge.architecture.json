@@ -34,7 +34,9 @@
     ],
     "note": "Zero-token hooks, persistent state, and verified diagrams \u2014 facts before action, receipts before done."
    }
-  ]
+  ],
+  "visual_preset": "signal-flow",
+  "animation": "trace"
  },
  "components": [
   {

@@ -44,7 +44,9 @@
     ],
     "note": "Zero-token hooks gate the agents' tools: GateGuard before irreversible Bash, scan-secrets before commits, route-guard on Stop."
    }
-  ]
+  ],
+  "visual_preset": "signal-flow",
+  "animation": "trace"
  },
  "components": [
   {

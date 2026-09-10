@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="archify 2.16.0">
-  <title>OSForge v5.0 — system map Diagram</title>
+  <title>OSForge v5.0 — the spec-* cycle Diagram</title>
   <script>
     // Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
@@ -4847,6 +4847,17 @@
       svg [data-node-id], svg [data-edge-from], svg [data-detail], svg [data-detail-anchor], svg [data-legend-hit], svg { transition: none !important; }
     }
   </style>
+
+<!-- OSForge presentation variant. Derived from a delivered Archify artifact
+     (sha256 11fc4ab8abe1a989088ab29b55143e1e87b3113461592215cd2fb4c29a55e4d4). This file is NOT the receipt copy: the verified artifact
+     is the sibling without the .presentation suffix. -->
+<style id="osforge-presentation-theme">
+  :root { --osf-font: 'Inter', 'SF Pro Text', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; }
+  body, svg, .card, .header, button, input { font-family: var(--osf-font) !important; letter-spacing: 0 !important; }
+  svg text { font-weight: 500; }
+  .card { border-radius: 16px; backdrop-filter: blur(10px); }
+  svg rect { rx: 14px; ry: 14px; }
+</style>
 </head>
 <body>
   <!-- Toolbar: theme, live visual style, trace motion, presentation stage, and export.
@@ -4955,11 +4966,11 @@
            data-preset-badge-blueprint="BLUEPRINT / REV 01"
            data-preset-badge-editorial="EDITORIAL / FIELD NOTE">
         <div class="pulse-dot"></div>
-        <h1>OSForge v5.0 — system map</h1>
+        <h1>OSForge v5.0 — the spec-* cycle</h1>
       </div>
     </div>
 
-    <script id="archify-guided-views-data" type="application/json">[{"id":"source-to-runtime","label":"Source of truth → runtime","focus":["repo","deploy","home","runtime","orchestrator","user"],"note":"The repo is authoritative; deploy.sh pushes it out; the orchestrator is the language boundary."},{"id":"quality-gates","label":"Quality gates \u0026 state","focus":["runtime","hooks","orchestrator","osforgedb","archify"],"note":"Zero-token hooks, persistent state, and verified diagrams — facts before action, receipts before done."}]</script>
+    <script id="archify-guided-views-data" type="application/json">[{"id":"main","label":"Discover → measure","focus":["request","discover","specify","design","tasks","implement","review","measure","reply"],"note":"One feature through the six phases; nothing advances without an approval checkpoint."},{"id":"artifacts","label":"Artifacts with receipts","focus":["specify","canvas","design","diagrams","tasks","db"],"note":"spec.md and design.md are reviewed in the Canvas; the design ships a verified Archify diagram; tasks land on the osforge-db board."},{"id":"gates","label":"Gates during implementation","focus":["implement","gateguard","review","grant"],"note":"GateGuard forces facts before irreversible Bash — or accepts the user's explicit confirmation; quality gates send work back until green."}]</script>
 
     <script id="archify-i18n-data" type="application/json">{"locale":"en","messages":{"viewer.kind.frontend":"Frontend","viewer.kind.backend":"Backend","viewer.kind.database":"Database","viewer.kind.cloud":"Cloud","viewer.kind.security":"Security","viewer.kind.messagebus":"Message bus","viewer.kind.external":"External","viewer.kind.neutral":"Neutral","viewer.kind.node":"Node","viewer.kind.start":"Start","viewer.kind.active":"Active","viewer.kind.waiting":"Waiting","viewer.kind.decision":"Decision","viewer.kind.success":"Success","viewer.kind.failure":"Failure","viewer.toolbar.actions":"Diagram actions","viewer.theme.toggle.title":"Toggle theme (T)","viewer.theme.toggle":"Toggle color theme","viewer.theme.dark":"Dark","viewer.theme.light":"Light","viewer.preset.choose.title":"Choose visual style (S cycles)","viewer.preset.choose":"Choose visual style","viewer.preset.style":"Style","viewer.preset.menu":"Visual style","viewer.preset.identity":"Visual identity","viewer.preset.cycles":"S cycles","viewer.preset.classic":"Classic","viewer.preset.classic.short":"Classic","viewer.preset.classic.hint":"Stable technical default","viewer.preset.flow":"Signal Flow","viewer.preset.flow.short":"Flow","viewer.preset.flow.hint":"Motion-forward presentation","viewer.preset.blueprint":"Blueprint","viewer.preset.blueprint.hint":"Engineering review","viewer.preset.editorial":"Editorial","viewer.preset.editorial.hint":"Publication and launch notes","viewer.preset.badge.signalFlow":"SIGNAL FLOW","viewer.preset.badge.blueprint":"BLUEPRINT / REV 01","viewer.preset.badge.editorial":"EDITORIAL / FIELD NOTE","viewer.preset.badge.editorialPlate":"ARCHIFY / PLATE 04","viewer.preset.current":"Visual style: {style}. Choose visual style","viewer.motion.live":"Live","viewer.motion.still":"Still","viewer.motion.pause":"Pause motion","viewer.motion.resume":"Resume motion","viewer.motion.reduced":"Motion paused by reduced-motion preference","viewer.motion.hidden":"Motion paused while this page is hidden","viewer.motion.yielding":"Pause motion; currently yielding to {owner}","viewer.motion.yielding.title":"Live preview enabled · yielding to {owner}","viewer.owner.story":"the guided story","viewer.owner.chapter":"the active chapter","viewer.owner.chapterPreview":"the chapter delta preview","viewer.owner.handoff":"the chapter handoff","viewer.owner.route":"Route Probe","viewer.owner.lens":"Semantic Lens","viewer.owner.relationship":"Relationship Preview","viewer.owner.intent":"Intent Trace","viewer.owner.focus":"semantic focus","viewer.owner.legend":"legend preview","viewer.owner.reader":"reader interaction","viewer.present.enter":"Enter presentation stage","viewer.present.enter.title":"Presentation stage (F)","viewer.present.exit":"Exit presentation stage","viewer.present.exit.title":"Exit presentation stage (F or Escape)","viewer.present.present":"Present","viewer.present.exit.label":"Exit","viewer.export.button":"Export","viewer.export.button.title":"Export diagram (E)","viewer.export.diagram":"Export diagram","viewer.export.menu":"Export","viewer.export.subtitle":"Portable, clean outputs","viewer.export.share":"Share","viewer.export.shareCard":"Share Card","viewer.export.routeShareCard":"Route Share Card","viewer.export.reachShareCard":"Reach Share Card","viewer.export.copyShareCard":"Copy Share Card","viewer.export.copyDiagram":"Copy diagram","viewer.export.clipboardPng":"PNG to clipboard","viewer.export.raster":"Raster images","viewer.export.image":"Image","viewer.export.lossless":"Lossless image","viewer.export.compact":"Compact image","viewer.export.modern":"Modern image","viewer.export.vectorMotion":"Vector and motion","viewer.export.vectorMotion.heading":"Vector \u0026 motion","viewer.export.editable":"Editable vector","viewer.export.motion6s":"6s motion","viewer.export.unsupported":"Not supported by this browser","viewer.export.clipboardUnsupported":"Clipboard image write not supported by this browser","viewer.export.clipboardUnsupported.period":"Clipboard image write not supported by this browser.","viewer.export.clipboardUnsupported.short":"Clipboard image write not supported in this browser.","viewer.export.motionUnavailable":"Motion capture unavailable in this browser","viewer.export.webmUnavailable":"WebM unavailable in this browser","viewer.export.failed":"Export failed: {message}","viewer.export.unknownVariant":"Unknown Share Card variant: {variant}","viewer.export.routeRequired":"Trace a route before exporting a Route Share Card","viewer.export.reachRequired":"Trace authored reach before exporting a Reach Share Card","viewer.export.unknown":"unknown","viewer.export.routeFailed":"Route Share Card export failed: {message}","viewer.export.reachFailed":"Reach Share Card export failed: {message}","viewer.export.copyFailed":"Copy failed: {message}","viewer.export.copiedPng":"Copied PNG to clipboard","viewer.export.copiedShare":"Copied Share Card","viewer.export.downloadedShare":"Downloaded Share Card","viewer.export.downloadedRoute":"Downloaded Route Share Card","viewer.export.downloadedReach":"Downloaded Reach Share Card","viewer.export.downloadedWebm":"Downloaded WebM","viewer.export.recording":"Recording 6 seconds of motion…","viewer.export.card.routeSummary.one":"Route: {source} → {target} · {count} directed hop","viewer.export.card.routeSummary.other":"Route: {source} → {target} · {count} directed hops","viewer.export.card.reachSummary":"Authored {direction} from {origin} · {nodes} · {links} · max {hops}","viewer.export.card.node.one":"{count} node","viewer.export.card.node.other":"{count} nodes","viewer.export.card.link.one":"{count} link","viewer.export.card.link.other":"{count} links","viewer.export.card.hop.one":"{count} hop","viewer.export.card.hop.other":"{count} hops","viewer.export.card.routeBadge":"ARCHIFY · ROUTE · {hops}","viewer.export.card.reachBadge":"ARCHIFY · {direction} REACH","viewer.export.card.defaultBadge":"ARCHIFY · {preset} · {theme}","viewer.export.direction.upstream":"Upstream","viewer.export.direction.downstream":"Downstream","viewer.export.error.canvasUnavailable":"Canvas unavailable for {label}","viewer.export.error.contextUnavailable":"2D canvas context unavailable for {label}","viewer.export.error.toBlobUnavailable":"canvas.toBlob unavailable for {label}","viewer.export.error.toBlobNull":"canvas.toBlob returned no data for {label}","viewer.export.error.variantsCombined":"Share Card variants cannot be combined","viewer.export.error.viewerState":"Share Card export could not remove temporary viewer state","viewer.export.error.routeState":"Route Card export could not preserve the resolved route safely","viewer.export.error.reachState":"Reach Card export could not preserve authored reach safely","viewer.export.error.webmRequirements":"WebM motion export requires a trace animation and browser MediaRecorder support","viewer.export.error.mediaRecorder":"MediaRecorder failed","viewer.export.error.emptyWebm":"MediaRecorder produced an empty WebM","viewer.export.error.webmBackground":"SVG background could not be loaded for WebM export","viewer.guided.region":"Guided diagram views","viewer.guided.previous":"Previous guided view","viewer.guided.previous.title":"Previous guided view ([)","viewer.guided.next":"Next guided view","viewer.guided.next.title":"Next guided view (])","viewer.guided.views":"Guided views","viewer.guided.explore":"Explore this system","viewer.guided.intro":"Step through curated paths without changing the source diagram.","viewer.guided.trail":"Story trail","viewer.guided.beat":"Beat","viewer.guided.nextBeat":"Next","viewer.guided.play":"Play guided story","viewer.guided.play.title":"Play guided story (P)","viewer.guided.pause":"Pause guided story","viewer.guided.pause.title":"Pause guided story (P)","viewer.guided.replay":"Replay guided story","viewer.guided.replay.title":"Replay guided story (P)","viewer.guided.playStory":"Play story","viewer.guided.pauseStory":"Pause","viewer.guided.replayStory":"Replay story","viewer.guided.motionUnavailable":"Story playback unavailable while motion is Still","viewer.guided.enableMotion":"Switch motion to Live to play the guided story","viewer.guided.selectBeatLink":"Select a Story Beat to copy its exact link","viewer.guided.copyMoment":"Copy moment","viewer.guided.momentCopied":"Moment link copied","viewer.guided.momentCopyFailed":"Could not copy story moment link","viewer.guided.copied":"Copied","viewer.guided.copyFailed":"Copy failed","viewer.guided.showAll":"Show all","viewer.guided.showAll.aria":"Show entire diagram","viewer.guided.chapters":"Story chapters","viewer.guided.storyTrail":"Story trail for {label}: {count} beats","viewer.guided.chapter.open":"Open chapter {index} of {total}: {label}, {count} stops","viewer.guided.chapter.current":"Current chapter {index} of {total}: {label}, {count} stops","viewer.guided.chapter.selectedNodes":"{count} selected nodes","viewer.guided.chapter.stops":"{count} stops","viewer.guided.chapter.stop.one":"{count} stop","viewer.guided.chapter.stop.other":"{count} stops","viewer.guided.chapter.current.title":"{label} — current chapter, {count} stops","viewer.guided.chapter.delta.expanded":"{stay} stay, {enter} enter, {leave} leave","viewer.guided.chapter.delta.aria":"Open chapter {index} of {total}: {label}. Chapter focus delta: {delta}","viewer.guided.chapter.delta.title":"{label} — {delta} chapter focus","viewer.guided.handoff":"{from} → {to} · via {label}","viewer.guided.share.chapter":"Chapter {index} / {total}","viewer.guided.share.initial":"Chapter 01 / 01","viewer.guided.share.default":"Guided chapter","viewer.guided.state.ready":"Ready","viewer.guided.state.playing":"Playing","viewer.guided.state.settled":"Settled","viewer.guided.state.paused":"Paused","viewer.guided.state.pinned":"Pinned","viewer.guided.state.still":"Still","viewer.guided.share.step":"Step {index} / {total} · {label}","viewer.guided.share.staticMoment":"{step} · Static moment","viewer.guided.share.complete":"{count} steps complete · {note}","viewer.guided.share.settled":"Path settled for reading.","viewer.guided.share.staticPath":"{count} steps · Static path","viewer.guided.share.ready":"{count} steps · Ready","viewer.guided.share.aria":"{state} chapter {index} of {total}: {label}. {beat}. {route}","viewer.guided.beat.start":"Beat {index} / {total} · {label} · starting point","viewer.guided.beat.forward":"Beat {index} / {total} · {from} → {to}","viewer.guided.beat.reverse":"Beat {index} / {total} · {from} → {to} · reverse authored link","viewer.guided.beat.multiple":"Beat {index} / {total} · {from} ⇄ {to} · {count} authored links","viewer.guided.beat.group":"Beat {index} / {total} · {from} · {to} · grouped · no direct link","viewer.guided.beat.aria.prefix":"Story beat {index} of {total}: {label}. ","viewer.guided.beat.aria.start":"Starting point.","viewer.guided.beat.aria.forward":"From {from} through one authored forward relationship.","viewer.guided.beat.aria.reverse":"From {from}; the authored relationship points from {to} to {from}.","viewer.guided.beat.aria.multiple":"From {from} through {count} authored relationships; shown without arbitrary motion.","viewer.guided.beat.aria.group":"Grouped from {from} with no direct authored relationship.","viewer.guided.caption.start":"Starting point","viewer.guided.caption.grouped":"Grouped transition · no direct authored link","viewer.guided.caption.more":" +{count} more","viewer.guided.caption.reverse":"Reverse authored relationship","viewer.guided.caption.relationships":"{count} authored relationships","viewer.guided.caption.relationship":"Authored relationship","viewer.guided.caption.direction":"authored direction: {from} → {to}","viewer.guided.caption.starting":"Authored starting point","viewer.guided.beatLink":"Copy link to current story moment: Beat {index} of {total}: {label}","viewer.guided.noStory":"This diagram has no authored guided story.","viewer.guide.eyebrow":"Diagram guide","viewer.guide.close":"Close diagram guide","viewer.guide.inspecting":"Inspecting compiled semantics","viewer.guide.actions":"Diagram exploration actions","viewer.guide.find":"Find any node","viewer.guide.find.hint":"Search labels, responsibilities, kinds, and stable IDs.","viewer.guide.route":"Trace a route","viewer.guide.route.aria":"Trace a directed route","viewer.guide.route.hint":"Ask how two semantic nodes connect in authored direction.","viewer.guide.map":"See the whole system","viewer.guide.map.hint":"Open Semantic Radar with a live viewport and stable nodes.","viewer.guide.lens":"Compare semantic kinds","viewer.guide.lens.hint":"Count roles, reveal their traffic, and compare direct authored links.","viewer.guide.story":"Play the guided story","viewer.guide.story.hint":"Walk the authored chapters and real relationships.","viewer.guide.present":"Enter Presentation Stage","viewer.guide.present.hint":"Give the live diagram the viewport without changing export.","viewer.guide.shortcuts":"Additional keyboard shortcuts","viewer.guide.shortcut.export":"Export","viewer.guide.shortcut.theme":"Theme","viewer.guide.shortcut.style":"Style","viewer.guide.shortcut.reset":"Reset","viewer.guide.shortcut.zoomIn":"Zoom in","viewer.guide.shortcut.zoomOut":"Zoom out","viewer.guide.shortcut.close":"Close","viewer.guide.facts":"{nodes} · {relationships} · {views}","viewer.guide.fact.node.one":"{count} semantic node","viewer.guide.fact.node.other":"{count} semantic nodes","viewer.guide.fact.relationship.one":"{count} relationship","viewer.guide.fact.relationship.other":"{count} relationships","viewer.guide.fact.view.one":"{count} guided view","viewer.guide.fact.view.other":"{count} guided views","viewer.guide.story.available.one":"Walk {count} authored chapter and its real relationships.","viewer.guide.story.available.other":"Walk {count} authored chapters and their real relationships.","viewer.guide.story.unavailable":"No authored guided story in this diagram.","viewer.guide.open":"Open diagram guide","viewer.guide.noStory":"This diagram has no authored guided story.","viewer.finder.title":"Find a node","viewer.finder.close":"Close node finder","viewer.finder.placeholder":"Search labels or IDs","viewer.finder.search":"Search diagram nodes","viewer.finder.results":"Diagram nodes","viewer.finder.empty":"No matching nodes","viewer.finder.result.focus":"Focus {label}","viewer.finder.result.routeStart":"Choose {label} as route start","viewer.finder.result.routeTarget":"Choose {label} as route destination, {links}","viewer.finder.status.empty":"No matching nodes","viewer.finder.status.count.one":"{count} matching node","viewer.finder.status.count.other":"{count} matching nodes","viewer.finder.noun.nodes":"nodes","viewer.finder.link.one":"{count} link","viewer.finder.link.other":"{count} links","viewer.finder.result.focus.one":"Focus {label}, {count} related connection","viewer.finder.result.focus.other":"Focus {label}, {count} related connections","viewer.finder.status.filtered":"{visible} of {available} {noun}","viewer.finder.status.all":"{available} {noun}","viewer.passport.eyebrow":"Semantic passport","viewer.passport.metadata":"Node metadata","viewer.passport.evidence":"Verified source evidence","viewer.passport.verified":"Verified source","viewer.passport.reach":"Authored reach","viewer.passport.reach.trace":"Trace authored reachability","viewer.passport.upstream":"Upstream","viewer.passport.downstream":"Downstream","viewer.passport.upstream.trace":"Trace upstream authored reachability","viewer.passport.downstream.trace":"Trace downstream authored reachability","viewer.passport.close":"Close semantic passport","viewer.passport.copy":"Copy link","viewer.passport.copy.focus":"Copy link to focused node","viewer.passport.relations":"Relations","viewer.passport.relations.show":"Show connected relationships","viewer.passport.relations.hide":"Hide connected relationships","viewer.passport.relations.list":"Connected relationships","viewer.passport.copyRelation":"Copy relation","viewer.passport.copyNode":"Copy node","viewer.passport.copyPinned":"Copy link to pinned relationship","viewer.passport.copySource":"Copy link to source node","viewer.passport.copy.focused.success":"Focused node link copied","viewer.passport.copy.pinned.success":"Pinned relationship link copied","viewer.passport.copy.focused.failed":"Could not copy focused node link","viewer.passport.copy.pinned.failed":"Could not copy pinned relationship link","viewer.passport.relationship.none":"No connected relationships","viewer.passport.relationship.count.one":"{count} relation","viewer.passport.relationship.count.other":"{count} relations","viewer.passport.relationship.show.one":"Show {count} connected relationship","viewer.passport.relationship.show.other":"Show {count} connected relationships","viewer.passport.relationship.summary":"{out} outgoing · {in} incoming{loops}","viewer.passport.relationship.loops":" · {count} loop","viewer.passport.relationship.explorer":"Direct relationship explorer","viewer.passport.relationship.help":"Use arrow keys to explore relationships. Press Enter or Space to pin details; Escape clears.","viewer.passport.relationship.loopsBack":"loops back","viewer.passport.relationship.connectsTo":"connects to","viewer.passport.relationship.connectsFrom":"connects from","viewer.passport.relationship.pinned":"Pinned relationship · {from} → {to} · {label}","viewer.passport.relationship.inspect":"Inspect relationship {index} of {total}: {from} to {to}, {label}. Press Enter for details.","viewer.passport.relationship.group.out":"Outgoing","viewer.passport.relationship.group.in":"Incoming","viewer.passport.relationship.group.loop":"Self loops","viewer.passport.relationship.row":"{group}: {relationship}, {neighbor}","viewer.passport.relationship.direction.out":"OUT →","viewer.passport.relationship.direction.in":"← IN","viewer.passport.relationship.direction.loop":"LOOP","viewer.passport.sourceCount.one":"{count} verified source reference","viewer.passport.sourceCount.other":"{count} verified source references","viewer.passport.sourceMarker":"SRC","viewer.passport.beacon.one":"{count} verified source; focus this node to inspect","viewer.passport.beacon.other":"{count} verified sources; focus this node to inspect","viewer.passport.repository.open":"Open verified repository revision {revision}","viewer.passport.source.open":"Open verified source {path} at revision {revision}","viewer.passport.source.openLink":"Open ↗","viewer.passport.reach.upstream.one":"Trace {count} upstream authored node","viewer.passport.reach.upstream.other":"Trace {count} upstream authored nodes","viewer.passport.reach.downstream.one":"Trace {count} downstream authored node","viewer.passport.reach.downstream.other":"Trace {count} downstream authored nodes","viewer.passport.reach.noUpstream":"No upstream authored nodes","viewer.passport.reach.noDownstream":"No downstream authored nodes","viewer.passport.reach.status":"{direction} · {nodes} nodes · {links} links · max {hops} hops","viewer.route.eyebrow":"Route probe","viewer.route.start":"Choose a start node","viewer.route.start.find":"Find start","viewer.route.start.find.aria":"Find a route start","viewer.route.copy":"Copy link","viewer.route.copy.aria":"Copy link to traced route","viewer.route.clear":"Clear","viewer.route.clear.aria":"Clear route probe","viewer.route.traced":"Traced route","viewer.route.pickTwo":"Pick two semantic nodes on the diagram","viewer.route.pickOne":"Pick a semantic node on the diagram","viewer.route.controls":"Route journey controls","viewer.route.previous":"Previous route position","viewer.route.play":"Play route journey","viewer.route.pause":"Pause route journey","viewer.route.replay":"Replay route journey","viewer.route.next":"Next route position","viewer.route.journey":"Journey","viewer.route.pause.label":"Pause","viewer.route.replay.label":"Replay","viewer.route.overview":"Overview","viewer.route.overview.aria":"Show complete route overview","viewer.route.instructions":"Choose the source, then the destination. Direction matters.","viewer.route.destination":"Choose a destination from {label}","viewer.route.destination.find":"Find target","viewer.route.destination.find.aria":"Find a reachable route destination","viewer.route.differentDestination":"Choose a different destination","viewer.route.distinct":"A route needs two distinct semantic nodes.","viewer.route.unreachable":"No directed route to {label}","viewer.route.unreachable.detail":"{target} is not reachable from {source}. Pick a highlighted destination.","viewer.route.start.instructions":"Select the source. The next step will reveal only directed destinations.","viewer.route.copy.success":"Traced route link copied","viewer.route.copy.failed":"Could not copy traced route link","viewer.route.position":"Route position {index} of {total}: {label}","viewer.route.step":"Step {index} of {total} · {phase} · {label}","viewer.route.motionRequired":"Automatic journey requires Live motion","viewer.route.trigger.clear":"Clear traced route","viewer.route.overview.status":"{nodes} · {hops} · shortest authored route","viewer.route.overview.node.one":"{count} node","viewer.route.overview.node.other":"{count} nodes","viewer.route.overview.hop.one":"{count} directed hop","viewer.route.overview.hop.other":"{count} directed hops","viewer.route.phase.playing":"Playing","viewer.route.phase.complete":"Complete","viewer.route.phase.inspecting":"Inspecting","viewer.route.destination.count.one":"{count} directed destination available. Pick a highlighted node.","viewer.route.destination.count.other":"{count} directed destinations available. Pick a highlighted node.","viewer.route.noOutgoing":"No outgoing route starts here. Clear and choose another source.","viewer.route.result.title":"{source} to {target}","viewer.route.finder.source.title":"Choose route start","viewer.route.finder.source.placeholder":"Search route sources","viewer.route.finder.source.empty":"No matching route sources","viewer.route.finder.source.results":"Nodes that can start a route","viewer.route.finder.source.noun":"route sources","viewer.route.finder.source.badge":"start","viewer.route.finder.target.title":"Destination from {label}","viewer.route.finder.target.placeholder":"Search reachable destinations","viewer.route.finder.target.empty":"No matching reachable destinations","viewer.route.finder.target.results":"Reachable route destinations","viewer.route.finder.target.noun":"reachable destinations","viewer.route.hop.one":"{count} hop","viewer.route.hop.other":"{count} hops","viewer.lens.eyebrow":"Semantic lens","viewer.lens.title":"Compare system roles","viewer.lens.close":"Close semantic lens","viewer.lens.instruction":"Choose up to two semantic kinds. One reveals its real traffic; two compare only direct authored relationships.","viewer.lens.kinds":"Semantic kinds","viewer.lens.choose":"Choose a kind to inspect its nodes and touching relationships.","viewer.lens.copy":"Copy link to semantic lens","viewer.lens.clear":"Clear semantic lens","viewer.lens.open":"Open semantic lens","viewer.lens.openActive":"Open active semantic lens","viewer.lens.legend":"Semantic legend","viewer.lens.legend.inspect.one":"Inspect {label}, {count} node","viewer.lens.legend.inspect.other":"Inspect {label}, {count} nodes","viewer.lens.kind.count.one":"{label}, {count} node","viewer.lens.kind.count.other":"{label}, {count} nodes","viewer.lens.compare.one":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationship","viewer.lens.compare.other":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationships","viewer.lens.single":"{nodes} · {relationships} · connected peers remain visible","viewer.lens.node.one":"{count} {label} node","viewer.lens.node.other":"{count} {label} nodes","viewer.lens.relationship.one":"{count} touching relationship","viewer.lens.relationship.other":"{count} touching relationships","viewer.radar.title":"Semantic radar","viewer.radar.building":"Building overview","viewer.radar.openFull":"Open full semantic radar","viewer.radar.open":"Open radar","viewer.radar.close":"Close semantic radar","viewer.radar.surface":"Diagram overview. Click a node to focus it, or use arrow keys to pan.","viewer.radar.click":"Click node","viewer.radar.drag":"Drag to pan","viewer.radar.space":"Semantic radar needs more MAP space.","viewer.radar.nodes":"Semantic diagram radar nodes","viewer.radar.focus":"Focus {label} from Semantic Radar","viewer.radar.status":"{count} nodes · {viewport}","viewer.radar.fullMap":"{count} nodes · full map","viewer.radar.compacted":"Radar compacted to avoid covering the Semantic Passport or MAP controls.","viewer.radar.cancelWaiting":"Cancel semantic radar waiting for more MAP space","viewer.radar.needsSpace":"Semantic radar needs more visible MAP space","viewer.radar.viewport.full":"full map","viewer.radar.viewport.width":"{percent}% width","viewer.radar.viewport.scale":"{percent}% viewport","viewer.nav.controls":"Diagram view controls","viewer.nav.route":"Trace a directed route","viewer.nav.route.title":"Trace route (R)","viewer.nav.route.short":"PATH","viewer.nav.radar":"Open semantic radar","viewer.nav.radar.title":"Semantic radar (M)","viewer.nav.radar.short":"MAP","viewer.nav.lens":"Open semantic lens","viewer.nav.lens.title":"Semantic lens (L)","viewer.nav.lens.short":"LENS","viewer.nav.find":"Find a node","viewer.nav.find.title":"Find a node (/)","viewer.nav.guide":"Open diagram guide","viewer.nav.guide.title":"Diagram guide (?)","viewer.nav.zoomOut":"Zoom out","viewer.nav.zoomOut.title":"Zoom out (-)","viewer.nav.reset":"Reset diagram view","viewer.nav.reset.title":"Reset view (0)","viewer.nav.read":"READ","viewer.nav.zoomIn":"Zoom in","viewer.nav.zoomIn.title":"Zoom in (+)","viewer.nav.camera":"{hint}. Reset diagram view","viewer.nav.camera.title":"{semantic}{hint} · reset view (0)","viewer.nav.camera.semantic":"Semantic camera active · ","viewer.nav.level.map":"MAP","viewer.nav.level.read":"READ","viewer.nav.level.full":"FULL","viewer.nav.level.auto":"AUTO","viewer.nav.detail.map":"Zoom in to reveal relationship labels and node context","viewer.nav.detail.read":"Zoom in again to reveal tags and annotations","viewer.nav.detail.full":"Full diagram detail","viewer.intent.summary":"{label}. {out} outgoing, {in} incoming{loops}. {total} connections. Press Enter for details.","viewer.intent.loops":", {count} self loop","viewer.common.copied":"Copied","viewer.common.copyFailed":"Copy failed","viewer.common.copyLink":"Copy link","viewer.common.clear":"Clear","viewer.common.close":"Close"}}</script>
     <div class="guided-views no-print" id="guided-views" hidden aria-label="Guided diagram views">
@@ -5004,9 +5015,9 @@
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / PLATE 04">
-      <svg viewBox="0 0 1120 560" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="signal-flow" data-quality-profile="showcase">
-        <title id="archify-diagram-title">OSForge v5.0 — system map</title>
-        <desc id="archify-diagram-description">An architecture diagram generated by Archify.</desc>
+      <svg viewBox="0 0 1035 792" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="signal-flow" data-quality-profile="showcase">
+        <title id="archify-diagram-title">OSForge v5.0 — the spec-* cycle</title>
+        <desc id="archify-diagram-description">A workflow diagram generated by Archify.</desc>
         <!-- Definitions -->
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -5029,231 +5040,296 @@
         <!-- Background Grid -->
         <rect width="100%" height="100%" fill="url(#grid)" />
 
-        <!-- Boundaries (behind everything) -->
+        <!-- Swimlanes -->
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-0" x="40" y="52" width="959" height="106" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="74" class="t-dim" font-size="10" font-weight="600">01 / User (any language)</text>
 
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-1" x="40" y="178" width="959" height="106" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="200" class="t-dim" font-size="10" font-weight="600">02 / Orchestrator</text>
 
-        <!-- Connection paths (before components for correct z-order) -->
-        <path data-edge-from="repo" data-edge-to="deploy" data-edge-label="commit" data-edge-key="0" data-edge-id="repo-deploy" data-composition-points="176,104;220,104" d="M 176 104 L 220 104" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="deploy" data-edge-to="home" data-edge-label="sync" data-edge-key="1" data-edge-id="deploy-home" data-composition-points="358,104;402,104" d="M 358 104 L 402 104" class="a-emphasis" data-animate="edge" style="--step:1" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="home" data-edge-to="runtime" data-edge-label="config" data-edge-key="2" data-edge-id="home-runtime" data-composition-points="540,97;584,97" d="M 540 97 L 584 97" class="a-emphasis" data-animate="edge" style="--step:2" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="runtime" data-edge-to="orchestrator" data-edge-label="meta-agent" data-edge-key="3" data-edge-id="runtime-orch" data-composition-points="722,104;766,104" d="M 722 104 L 766 104" class="a-emphasis" data-animate="edge" style="--step:3" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="user" data-edge-to="orchestrator" data-edge-label="request · reply" data-edge-key="4" data-edge-id="user-orch" data-composition-points="948,97;904,97" d="M 948 97 L 904 97" class="a-emphasis" data-animate="edge" style="--step:4" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="deploy" data-edge-to="mcp" data-edge-label="merges config" data-edge-key="5" data-edge-id="deploy-mcp" data-composition-points="289,138;289,270" d="M 289 138 L 289 270" class="a-default" data-animate="edge" style="--step:5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="home" data-edge-to="archify" data-edge-label="pinned engine" data-edge-key="6" data-edge-id="home-archify" data-composition-points="464,138;464,270" d="M 464 138 L 464 270" class="a-default" data-animate="edge" style="--step:6" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="runtime" data-edge-to="archify" data-edge-label="system-diagrams" data-edge-key="7" data-edge-id="archify-runtime" data-composition-points="584,111;560,111;560,246;478,246;478,270" d="M 584 111 L 568 111 Q 560 111 560 119 L 560 238 Q 560 246 552 246 L 486 246 Q 478 246 478 254 L 478 270" class="a-default" data-animate="edge" style="--step:7" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="runtime" data-edge-to="hooks" data-edge-label="PreToolUse · Stop" data-edge-key="8" data-edge-id="runtime-hooks" data-composition-points="653,138;653,270" d="M 653 138 L 653 270" class="a-default" data-animate="edge" style="--step:8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="orchestrator" data-edge-to="osforgedb" data-edge-label="state" data-edge-key="9" data-edge-id="orch-db" data-composition-points="835,138;835,270" d="M 835 138 L 835 270" class="a-default" data-animate="edge" style="--step:9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="orchestrator" data-edge-to="canvas" data-edge-label="artifacts" data-edge-key="10" data-edge-id="orch-canvas" data-composition-points="904,111;928,111;928,246;1017,246;1017,270" d="M 904 111 L 920 111 Q 928 111 928 119 L 928 238 Q 928 246 936 246 L 1009 246 Q 1017 246 1017 254 L 1017 270" class="a-default" data-animate="edge" style="--step:10" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="osforgedb" data-edge-to="qdrant" data-edge-label="embeddings" data-edge-key="11" data-edge-id="db-qdrant" data-composition-points="835,338;835,450" d="M 835 338 L 835 450" class="a-dashed" data-animate="edge" style="--step:11" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-2" x="40" y="304" width="959" height="112" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="326" class="t-dim" font-size="10" font-weight="600">03 / Specialist agents · waves</text>
 
-        <!-- Components -->
-        <g id="node-repo" data-node-id="repo" data-node-label="OSForge repo" tabindex="0" role="button" aria-label="Focus OSForge repo, single source of truth, Architecture component, GitHub" aria-pressed="false" data-node-kind="backend" data-node-sublabel="single source of truth" data-node-context="Architecture component" data-node-brand="GitHub" data-node-brand-id="github" data-node-brand-status="preset" data-node-brand-source="https://github.com/logos">
-          <title>OSForge repo · single source of truth · Architecture component · GitHub</title>
-          <rect x="38" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="38" y="70" width="138" height="68" rx="6" class="c-backend" data-animate="node" style="--step:0" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(44 76) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-3" x="40" y="436" width="959" height="106" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="458" class="t-dim" font-size="10" font-weight="600">04 / Gates · state · artifacts</text>
+
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-4" x="40" y="562" width="959" height="106" rx="10" class="c-lane" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="exception-lane" data-composition-frame-id="lane-4-exception" x="46" y="568" width="947" height="94" rx="8" class="c-security-group" stroke-width="1"/>
+        <text x="54" y="584" class="t-security" font-size="10" font-weight="600">EX / Stop &amp; recover</text>
+
+        <!-- Phase headers -->
+        <line x1="70" y1="35" x2="162" y2="35" class="a-default" stroke-width="1.1"/>
+        <rect x="70" y="27" width="92" height="16" rx="4" class="c-mask"/>
+        <text x="116" y="39" class="t-muted" font-size="8" font-weight="600" text-anchor="middle">Discover</text>
+        <line x1="190" y1="35" x2="446" y2="35" class="a-emphasis" stroke-width="1.1"/>
+        <rect x="190" y="27" width="256" height="16" rx="4" class="c-mask"/>
+        <text x="318" y="39" class="t-backend" font-size="8" font-weight="600" text-anchor="middle">Specify + design</text>
+        <line x1="498" y1="35" x2="590" y2="35" class="a-default" stroke-width="1.1"/>
+        <rect x="498" y="27" width="92" height="16" rx="4" class="c-mask"/>
+        <text x="544" y="39" class="t-muted" font-size="8" font-weight="600" text-anchor="middle">Tasks</text>
+        <line x1="618" y1="35" x2="964.8" y2="35" class="a-dashed" stroke-width="1.1"/>
+        <rect x="618" y="27" width="346.79999999999995" height="16" rx="4" class="c-mask"/>
+        <text x="791.4" y="39" class="t-messagebus" font-size="8" font-weight="600" text-anchor="middle">Implement + measure</text>
+
+        <!-- Workflow groups -->
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="group" data-composition-frame-id="group-0" x="592" y="342" width="398.79999999999995" height="70" rx="9" class="c-lane" stroke-width="1"/>
+        <text x="602" y="340" class="t-messagebus" font-size="7" font-weight="600">Parallel waves · TDD</text>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="group" data-composition-frame-id="group-1" x="592" y="600" width="398.79999999999995" height="64" rx="9" class="c-security-group" stroke-width="1"/>
+        <text x="602" y="598" class="t-security" font-size="7" font-weight="600">Fact-forcing gate</text>
+
+        <!-- Edge paths -->
+        <path data-edge-from="specify" data-edge-to="canvas" data-edge-key="0" data-edge-id="b1" data-composition-points="304,384;320,384;320,504;304,504" d="M 304 384 L 320 384 L 320 504 L 304 504" class="a-default" data-animate="edge" style="--step:9" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="design" data-edge-to="diagrams" data-edge-key="1" data-edge-id="b2" data-composition-points="400,411;400,470" d="M 400 411 L 400 470" class="a-default" data-animate="edge" style="--step:10" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="tasks" data-edge-to="db" data-edge-key="2" data-edge-id="b3" data-composition-points="544,272;544,478" d="M 544 272 L 544 478" class="a-dashed" data-animate="edge" style="--step:11" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="implement" data-edge-to="gateguard" data-edge-key="3" data-edge-id="b4" data-composition-points="732,387;748,387;748,623;732,623" d="M 732 387 L 748 387 L 748 623 L 732 623" class="a-security" data-animate="edge" style="--step:12" stroke-width="1.4" marker-end="url(#arrowhead-security)"/>
+        <path data-edge-from="gateguard" data-edge-to="grant" data-edge-label="facts or confirmation" data-edge-key="4" data-edge-id="b5" data-composition-points="664,656;664,672;918.8,672;918.8,656" d="M 664 656 L 664 672 L 918.8 672 L 918.8 656" class="a-security" data-animate="edge" style="--step:12" stroke-width="1.4" marker-end="url(#arrowhead-security)"/>
+        <path data-edge-from="review" data-edge-to="implement" data-edge-label="red → fix" data-edge-key="5" data-edge-id="b6" data-composition-points="918.8,411;918.8,432;664,432;664,403" d="M 918.8 411 L 918.8 432 L 664 432 L 664 403" class="a-dashed" data-animate="edge" style="--step:12" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="request" data-edge-to="discover" data-edge-key="6" data-edge-id="e1" data-composition-points="184,120;200,120;200,246;184,246" d="M 184 120 L 200 120 L 200 246 L 184 246" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="discover" data-edge-to="specify" data-edge-label="PLAN approved" data-edge-key="7" data-edge-id="e2" data-composition-points="48,246;32,246;32,432;152,432;152,377;168,377" d="M 48 246 L 32 246 L 32 432 L 152 432 L 152 377 L 168 377" class="a-emphasis" data-animate="edge" style="--step:1" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="specify" data-edge-to="design" data-edge-key="8" data-edge-id="e3" data-composition-points="236,411;236,427;400,427;400,411" d="M 236 411 L 236 427 L 400 427 L 400 411" class="a-emphasis" data-animate="edge" style="--step:2" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="design" data-edge-to="tasks" data-edge-key="9" data-edge-id="e4" data-composition-points="468,377;544,377;544,272" d="M 468 377 L 544 377 L 544 272" class="a-emphasis" data-animate="edge" style="--step:3" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="tasks" data-edge-to="implement" data-edge-label="wave 1..n" data-edge-key="10" data-edge-id="e5" data-composition-points="612,246;628,246;628,294;580,294;580,377;596,377" d="M 612 246 L 628 246 L 628 294 L 580 294 L 580 377 L 596 377" class="a-emphasis" data-animate="edge" style="--step:4" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="implement" data-edge-to="review" data-edge-key="11" data-edge-id="e6" data-composition-points="732,377;825.4,377;825.4,327;918.8,327;918.8,343" d="M 732 377 L 825.4 377 L 825.4 327 L 918.8 327 L 918.8 343" class="a-emphasis" data-animate="edge" style="--step:5" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="review" data-edge-to="measure" data-edge-label="green" data-edge-key="12" data-edge-id="e7" data-composition-points="986.8,377;1016.8,377;1016.8,246;986.8,246" d="M 986.8 377 L 1016.8 377 L 1016.8 246 L 986.8 246" class="a-emphasis" data-animate="edge" style="--step:6" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="measure" data-edge-to="reply" data-edge-key="13" data-edge-id="e8" data-composition-points="918.8,220;918.8,146" d="M 918.8 220 L 918.8 146" class="a-emphasis" data-animate="edge" style="--step:7" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+
+        <!-- Nodes -->
+        <g id="node-request" data-node-id="request" data-node-label="Request" tabindex="0" role="button" aria-label="Focus Request, feature, in pt-BR, User (any language) › Discover" aria-pressed="false" data-node-kind="external" data-node-sublabel="feature, in pt-BR" data-node-context="User (any language) › Discover">
+          <title>Request · feature, in pt-BR · User (any language) › Discover</title>
+          <rect x="48" y="94" width="136" height="52" rx="6" class="c-mask"/>
+          <rect x="48" y="94" width="136" height="52" rx="6" class="c-external" data-animate="node" style="--step:0" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(54 100) scale(0.6875)">
+            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
+            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <g aria-hidden="true" data-brand-mark="github" data-brand-title="GitHub" data-brand-status="preset" data-brand-source="https://github.com/logos" class="brand-mark" transform="translate(154 76)">
-            <rect width="16" height="16" rx="4" class="brand-mark-badge"/>
-            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" transform="translate(3 3) scale(0.4166666666666667)" fill="#181717"/>
-            <rect width="16" height="16" rx="4" class="brand-mark-frame"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="107" y="102" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">OSForge repo</text>
-        <text data-detail="context" x="107" y="118" class="t-muted" font-size="9" text-anchor="middle">single source of truth</text>
+          <text data-node-label="" data-detail-anchor="" x="116" y="115" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Request</text>
+          <text data-detail="context" x="116" y="132" class="t-muted" font-size="8" text-anchor="middle">feature, in pt-BR</text>
         </g>
 
-        <g id="node-deploy" data-node-id="deploy" data-node-label="deploy.sh" tabindex="0" role="button" aria-label="Focus deploy.sh, rsync · pinned engines, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="rsync · pinned engines" data-node-context="Architecture component">
-          <title>deploy.sh · rsync · pinned engines · Architecture component</title>
-          <rect x="220" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="220" y="70" width="138" height="68" rx="6" class="c-backend" data-animate="node" style="--step:1" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(226 76) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+        <g id="node-reply" data-node-id="reply" data-node-label="Reply" tabindex="0" role="button" aria-label="Focus Reply, in the user&#39;s language, User (any language) › Implement + measure" aria-pressed="false" data-node-kind="external" data-node-sublabel="in the user&#39;s language" data-node-context="User (any language) › Implement + measure">
+          <title>Reply · in the user&#39;s language · User (any language) › Implement + measure</title>
+          <rect x="850.8" y="94" width="136" height="52" rx="6" class="c-mask"/>
+          <rect x="850.8" y="94" width="136" height="52" rx="6" class="c-external" data-animate="node" style="--step:8" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(856.8 100) scale(0.6875)">
+            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
+            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="289" y="102" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">deploy.sh</text>
-        <text data-detail="context" x="289" y="118" class="t-muted" font-size="9" text-anchor="middle">rsync · pinned engines</text>
+          <text data-node-label="" data-detail-anchor="" x="918.8" y="115" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Reply</text>
+          <text data-detail="context" x="918.8" y="132" class="t-muted" font-size="8" text-anchor="middle">in the user&#39;s language</text>
         </g>
 
-        <g id="node-home" data-node-id="home" data-node-label="~/.claude · ~/.cursor" tabindex="0" role="button" aria-label="Focus ~/.claude · ~/.cursor, 47 core skills · 27 agents, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="47 core skills · 27 agents" data-node-context="Architecture component">
-          <title>~/.claude · ~/.cursor · 47 core skills · 27 agents · Architecture component</title>
-          <rect x="402" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="402" y="70" width="138" height="68" rx="6" class="c-backend" data-animate="node" style="--step:2" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(408 76) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="471" y="102" class="t-primary" font-size="10.3" font-weight="600" text-anchor="middle">~/.claude · ~/.cursor</text>
-        <text data-detail="context" x="471" y="118" class="t-muted" font-size="8.3" text-anchor="middle">47 core skills · 27 agents</text>
-        </g>
-
-        <g id="node-runtime" data-node-id="runtime" data-node-label="Claude Code" tabindex="0" role="button" aria-label="Focus Claude Code, or Cursor · agent runtime, Architecture component, Claude" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="or Cursor · agent runtime" data-node-context="Architecture component" data-node-brand="Claude" data-node-brand-id="claude" data-node-brand-status="preset" data-node-brand-source="https://claude.ai">
-          <title>Claude Code · or Cursor · agent runtime · Architecture component · Claude</title>
-          <rect x="584" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="584" y="70" width="138" height="68" rx="6" class="c-frontend" data-animate="node" style="--step:3" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(590 76) scale(0.6875)">
-            <rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
-          </g>
-          <g aria-hidden="true" data-brand-mark="claude" data-brand-title="Claude" data-brand-status="preset" data-brand-source="https://claude.ai" class="brand-mark" transform="translate(700 76)">
-            <rect width="16" height="16" rx="4" class="brand-mark-badge"/>
-            <path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z" transform="translate(3 3) scale(0.4166666666666667)" fill="#D97757"/>
-            <rect width="16" height="16" rx="4" class="brand-mark-frame"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="653" y="102" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Claude Code</text>
-        <text data-detail="context" x="653" y="118" class="t-muted" font-size="8.6" text-anchor="middle">or Cursor · agent runtime</text>
-        </g>
-
-        <g id="node-orchestrator" data-node-id="orchestrator" data-node-label="Orchestrator" tabindex="0" role="button" aria-label="Focus Orchestrator, DETECT → CORRECT, Architecture component" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="DETECT → CORRECT" data-node-context="Architecture component">
-          <title>Orchestrator · DETECT → CORRECT · Architecture component</title>
-          <rect x="766" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="766" y="70" width="138" height="68" rx="6" class="c-messagebus" data-animate="node" style="--step:4" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="messagebus" class="semantic-sigil s-messagebus" transform="translate(772 76) scale(0.6875)">
+        <g id="node-discover" data-node-id="discover" data-node-label="/spec-discover" tabindex="0" role="button" aria-label="Focus /spec-discover, grilling · triage, Orchestrator › Discover" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="grilling · triage" data-node-tag="1 question at a time" data-node-context="Orchestrator › Discover">
+          <title>/spec-discover · grilling · triage · Orchestrator › Discover · 1 question at a time</title>
+          <rect x="48" y="212" width="136" height="68" rx="6" class="c-mask"/>
+          <rect x="48" y="212" width="136" height="68" rx="6" class="c-messagebus" data-animate="node" style="--step:1" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="messagebus" class="semantic-sigil s-messagebus" transform="translate(54 218) scale(0.6875)">
             <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/>
             <circle cx="5" cy="4.5" r="1" class="sigil-fill"/>
             <circle cx="10.5" cy="8" r="1" class="sigil-fill"/>
             <circle cx="7" cy="11.5" r="1" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="835" y="102" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Orchestrator</text>
-        <text data-detail="context" x="835" y="118" class="t-muted" font-size="9" text-anchor="middle">DETECT → CORRECT</text>
+          <text data-node-label="" data-detail-anchor="" x="116" y="233" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">/spec-discover</text>
+          <text data-detail="context" x="116" y="250" class="t-muted" font-size="8" text-anchor="middle">grilling · triage</text>
+        <text data-detail="fine" x="116" y="268" class="t-messagebus" font-size="7" text-anchor="middle">1 question at a time</text>
         </g>
 
-        <g id="node-user" data-node-id="user" data-node-label="User" tabindex="0" role="button" aria-label="Focus User, any language, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="any language" data-node-context="Architecture component">
-          <title>User · any language · Architecture component</title>
-          <rect x="948" y="70" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="948" y="70" width="138" height="68" rx="6" class="c-external" data-animate="node" style="--step:4" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(954 76) scale(0.6875)">
-            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
-            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
+        <g id="node-tasks" data-node-id="tasks" data-node-label="/spec-tasks" tabindex="0" role="button" aria-label="Focus /spec-tasks, waves · depends_on, Orchestrator › Tasks" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="waves · depends_on" data-node-context="Orchestrator › Tasks">
+          <title>/spec-tasks · waves · depends_on · Orchestrator › Tasks</title>
+          <rect x="476" y="220" width="136" height="52" rx="6" class="c-mask"/>
+          <rect x="476" y="220" width="136" height="52" rx="6" class="c-messagebus" data-animate="node" style="--step:4" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="messagebus" class="semantic-sigil s-messagebus" transform="translate(482 226) scale(0.6875)">
+            <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/>
+            <circle cx="5" cy="4.5" r="1" class="sigil-fill"/>
+            <circle cx="10.5" cy="8" r="1" class="sigil-fill"/>
+            <circle cx="7" cy="11.5" r="1" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="1017" y="102" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">User</text>
-        <text data-detail="context" x="1017" y="118" class="t-muted" font-size="9" text-anchor="middle">any language</text>
+          <text data-node-label="" data-detail-anchor="" x="544" y="241" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">/spec-tasks</text>
+          <text data-detail="context" x="544" y="258" class="t-muted" font-size="8" text-anchor="middle">waves · depends_on</text>
         </g>
 
-        <g id="node-mcp" data-node-id="mcp" data-node-label="MCP servers" tabindex="0" role="button" aria-label="Focus MCP servers, 8 servers · scoped, Architecture component" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="8 servers · scoped" data-node-context="Architecture component">
-          <title>MCP servers · 8 servers · scoped · Architecture component</title>
-          <rect x="220" y="270" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="220" y="270" width="138" height="68" rx="6" class="c-cloud" data-animate="node" style="--step:6" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(226 276) scale(0.6875)">
-            <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
+        <g id="node-measure" data-node-id="measure" data-node-label="/spec-measure" tabindex="0" role="button" aria-label="Focus /spec-measure, evidence · retro, Orchestrator › Implement + measure" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="evidence · retro" data-node-context="Orchestrator › Implement + measure">
+          <title>/spec-measure · evidence · retro · Orchestrator › Implement + measure</title>
+          <rect x="850.8" y="220" width="136" height="52" rx="6" class="c-mask"/>
+          <rect x="850.8" y="220" width="136" height="52" rx="6" class="c-messagebus" data-animate="node" style="--step:7" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="messagebus" class="semantic-sigil s-messagebus" transform="translate(856.8 226) scale(0.6875)">
+            <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/>
+            <circle cx="5" cy="4.5" r="1" class="sigil-fill"/>
+            <circle cx="10.5" cy="8" r="1" class="sigil-fill"/>
+            <circle cx="7" cy="11.5" r="1" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="289" y="302" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">MCP servers</text>
-        <text data-detail="context" x="289" y="318" class="t-muted" font-size="9" text-anchor="middle">8 servers · scoped</text>
+          <text data-node-label="" data-detail-anchor="" x="918.8" y="241" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">/spec-measure</text>
+          <text data-detail="context" x="918.8" y="258" class="t-muted" font-size="8" text-anchor="middle">evidence · retro</text>
         </g>
 
-        <g id="node-archify" data-node-id="archify" data-node-label="Archify engine" tabindex="0" role="button" aria-label="Focus Archify engine, skills/archify v2.16, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="skills/archify v2.16" data-node-context="Architecture component">
-          <title>Archify engine · skills/archify v2.16 · Architecture component</title>
-          <rect x="402" y="270" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="402" y="270" width="138" height="68" rx="6" class="c-backend" data-animate="node" style="--step:7" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(408 276) scale(0.6875)">
+        <g id="node-specify" data-node-id="specify" data-node-label="/spec-specify" tabindex="0" role="button" aria-label="Focus /spec-specify, spec.md · acceptance, Specialist agents · waves › Specify + design" aria-pressed="false" data-node-kind="backend" data-node-sublabel="spec.md · acceptance" data-node-tag="planner" data-node-context="Specialist agents · waves › Specify + design">
+          <title>/spec-specify · spec.md · acceptance · Specialist agents · waves › Specify + design · planner</title>
+          <rect x="168" y="343" width="136" height="68" rx="6" class="c-mask"/>
+          <rect x="168" y="343" width="136" height="68" rx="6" class="c-backend" data-animate="node" style="--step:2" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(174 349) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="471" y="302" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Archify engine</text>
-        <text data-detail="context" x="471" y="318" class="t-muted" font-size="9" text-anchor="middle">skills/archify v2.16</text>
+          <text data-node-label="" data-detail-anchor="" x="236" y="364" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">/spec-specify</text>
+          <text data-detail="context" x="236" y="381" class="t-muted" font-size="8" text-anchor="middle">spec.md · acceptance</text>
+        <text data-detail="fine" x="236" y="399" class="t-backend" font-size="7" text-anchor="middle">planner</text>
         </g>
 
-        <g id="node-hooks" data-node-id="hooks" data-node-label="Hooks (zero-token)" tabindex="0" role="button" aria-label="Focus Hooks (zero-token), GateGuard · route-guard, Architecture component" aria-pressed="false" data-node-kind="security" data-node-sublabel="GateGuard · route-guard" data-node-context="Architecture component">
-          <title>Hooks (zero-token) · GateGuard · route-guard · Architecture component</title>
-          <rect x="584" y="270" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="584" y="270" width="138" height="68" rx="6" class="c-security" data-animate="node" style="--step:9" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(590 276) scale(0.6875)">
+        <g id="node-design" data-node-id="design" data-node-label="/spec-design" tabindex="0" role="button" aria-label="Focus /spec-design, design.md · ADRs, Specialist agents · waves › Specify + design" aria-pressed="false" data-node-kind="backend" data-node-sublabel="design.md · ADRs" data-node-tag="system-architect" data-node-context="Specialist agents · waves › Specify + design">
+          <title>/spec-design · design.md · ADRs · Specialist agents · waves › Specify + design · system-architect</title>
+          <rect x="332" y="343" width="136" height="68" rx="6" class="c-mask"/>
+          <rect x="332" y="343" width="136" height="68" rx="6" class="c-backend" data-animate="node" style="--step:3" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(338 349) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="400" y="364" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">/spec-design</text>
+          <text data-detail="context" x="400" y="381" class="t-muted" font-size="8" text-anchor="middle">design.md · ADRs</text>
+        <text data-detail="fine" x="400" y="399" class="t-backend" font-size="7" text-anchor="middle">system-architect</text>
+        </g>
+
+        <g id="node-implement" data-node-id="implement" data-node-label="/spec-implement" tabindex="0" role="button" aria-label="Focus /spec-implement, workers per wave, Specialist agents · waves › Parallel waves · TDD › Implement + measure" aria-pressed="false" data-node-kind="backend" data-node-sublabel="workers per wave" data-node-context="Specialist agents · waves › Parallel waves · TDD › Implement + measure">
+          <title>/spec-implement · workers per wave · Specialist agents · waves › Parallel waves · TDD › Implement + measure</title>
+          <rect x="596" y="351" width="136" height="52" rx="6" class="c-mask"/>
+          <rect x="596" y="351" width="136" height="52" rx="6" class="c-backend" data-animate="node" style="--step:5" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(602 357) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="664" y="372" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">/spec-implement</text>
+          <text data-detail="context" x="664" y="389" class="t-muted" font-size="8" text-anchor="middle">workers per wave</text>
+        </g>
+
+        <g id="node-review" data-node-id="review" data-node-label="Quality gates" tabindex="0" role="button" aria-label="Focus Quality gates, code-review · readiness, Specialist agents · waves › Parallel waves · TDD › Implement + measure" aria-pressed="false" data-node-kind="security" data-node-sublabel="code-review · readiness" data-node-tag="validator" data-node-context="Specialist agents · waves › Parallel waves · TDD › Implement + measure">
+          <title>Quality gates · code-review · readiness · Specialist agents · waves › Parallel waves · TDD › Implement + measure · validator</title>
+          <rect x="850.8" y="343" width="136" height="68" rx="6" class="c-mask"/>
+          <rect x="850.8" y="343" width="136" height="68" rx="6" class="c-security" data-animate="node" style="--step:6" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(856.8 349) scale(0.6875)">
             <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
             <path d="m5.8 8 1.5 1.5 3-3"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="653" y="302" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Hooks (zero-token)</text>
-        <text data-detail="context" x="653" y="318" class="t-muted" font-size="9" text-anchor="middle">GateGuard · route-guard</text>
+          <text data-node-label="" data-detail-anchor="" x="918.8" y="364" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Quality gates</text>
+          <text data-detail="context" x="918.8" y="381" class="t-muted" font-size="8" text-anchor="middle">code-review · readiness</text>
+        <text data-detail="fine" x="918.8" y="399" class="t-security" font-size="7" text-anchor="middle">validator</text>
         </g>
 
-        <g id="node-osforgedb" data-node-id="osforgedb" data-node-label="osforge-db" tabindex="0" role="button" aria-label="Focus osforge-db, SQLite state · waves, Architecture component" aria-pressed="false" data-node-kind="database" data-node-sublabel="SQLite state · waves" data-node-context="Architecture component">
-          <title>osforge-db · SQLite state · waves · Architecture component</title>
-          <rect x="766" y="270" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="766" y="270" width="138" height="68" rx="6" class="c-database" data-animate="node" style="--step:10" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(772 276) scale(0.6875)">
-            <ellipse cx="8" cy="4" rx="5" ry="2"/>
-            <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
+        <g id="node-canvas" data-node-id="canvas" data-node-label="OSForge Canvas" tabindex="0" role="button" aria-label="Focus OSForge Canvas, approve · edit · reject, Gates · state · artifacts › Specify + design" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="approve · edit · reject" data-node-context="Gates · state · artifacts › Specify + design">
+          <title>OSForge Canvas · approve · edit · reject · Gates · state · artifacts › Specify + design</title>
+          <rect x="168" y="478" width="136" height="52" rx="6" class="c-mask"/>
+          <rect x="168" y="478" width="136" height="52" rx="6" class="c-frontend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(174 484) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="835" y="302" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">osforge-db</text>
-        <text data-detail="context" x="835" y="318" class="t-muted" font-size="9" text-anchor="middle">SQLite state · waves</text>
+          <text data-node-label="" data-detail-anchor="" x="236" y="499" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">OSForge Canvas</text>
+          <text data-detail="context" x="236" y="516" class="t-muted" font-size="8" text-anchor="middle">approve · edit · reject</text>
         </g>
 
-        <g id="node-canvas" data-node-id="canvas" data-node-label="OSForge Canvas" tabindex="0" role="button" aria-label="Focus OSForge Canvas, localhost:4242, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="localhost:4242" data-node-context="Architecture component">
-          <title>OSForge Canvas · localhost:4242 · Architecture component</title>
-          <rect x="948" y="270" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="948" y="270" width="138" height="68" rx="6" class="c-backend" data-animate="node" style="--step:11" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(954 276) scale(0.6875)">
+        <g id="node-diagrams" data-node-id="diagrams" data-node-label="system-diagrams" tabindex="0" role="button" aria-label="Focus system-diagrams, deliver → receipt 9/9, Gates · state · artifacts › Specify + design" aria-pressed="false" data-node-kind="backend" data-node-sublabel="deliver → receipt 9/9" data-node-tag="new in v5" data-node-context="Gates · state · artifacts › Specify + design">
+          <title>system-diagrams · deliver → receipt 9/9 · Gates · state · artifacts › Specify + design · new in v5</title>
+          <rect x="332" y="470" width="136" height="68" rx="6" class="c-mask"/>
+          <rect x="332" y="470" width="136" height="68" rx="6" class="c-backend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(338 476) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="1017" y="302" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">OSForge Canvas</text>
-        <text data-detail="context" x="1017" y="318" class="t-muted" font-size="9" text-anchor="middle">localhost:4242</text>
+          <text data-node-label="" data-detail-anchor="" x="400" y="491" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">system-diagrams</text>
+          <text data-detail="context" x="400" y="508" class="t-muted" font-size="8" text-anchor="middle">deliver → receipt 9/9</text>
+        <text data-detail="fine" x="400" y="526" class="t-backend" font-size="7" text-anchor="middle">new in v5</text>
         </g>
 
-        <g id="node-qdrant" data-node-id="qdrant" data-node-label="Qdrant (optional)" tabindex="0" role="button" aria-label="Focus Qdrant (optional), vector memory, Architecture component" aria-pressed="false" data-node-kind="database" data-node-sublabel="vector memory" data-node-context="Architecture component">
-          <title>Qdrant (optional) · vector memory · Architecture component</title>
-          <rect x="766" y="450" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="766" y="450" width="138" height="68" rx="6" class="c-database" data-animate="node" style="--step:12" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(772 456) scale(0.6875)">
+        <g id="node-db" data-node-id="db" data-node-label="osforge-db" tabindex="0" role="button" aria-label="Focus osforge-db, add-task · waves · blockers, Gates · state · artifacts › Tasks" aria-pressed="false" data-node-kind="database" data-node-sublabel="add-task · waves · blockers" data-node-context="Gates · state · artifacts › Tasks">
+          <title>osforge-db · add-task · waves · blockers · Gates · state · artifacts › Tasks</title>
+          <rect x="476" y="478" width="136" height="52" rx="6" class="c-mask"/>
+          <rect x="476" y="478" width="136" height="52" rx="6" class="c-database" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(482 484) scale(0.6875)">
             <ellipse cx="8" cy="4" rx="5" ry="2"/>
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="835" y="482" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Qdrant (optional)</text>
-        <text data-detail="context" x="835" y="498" class="t-muted" font-size="9" text-anchor="middle">vector memory</text>
+          <text data-node-label="" data-detail-anchor="" x="544" y="499" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">osforge-db</text>
+          <text data-detail="context" x="544" y="516" class="t-muted" font-size="7.9" text-anchor="middle">add-task · waves · blockers</text>
         </g>
 
-        <!-- Connection labels -->
-        <g data-detail="context" data-edge-from="repo" data-edge-to="deploy" data-edge-label="commit" data-edge-key="0" data-edge-id="repo-deploy">
-          <rect x="178.6" y="84" width="38.8" height="14" rx="3" class="c-mask"/>
-          <text x="198" y="94" class="t-backend" font-size="8" text-anchor="middle">commit</text>
-        </g>
-        <g data-detail="context" data-edge-from="deploy" data-edge-to="home" data-edge-label="sync" data-edge-key="1" data-edge-id="deploy-home">
-          <rect x="365" y="84" width="30" height="14" rx="3" class="c-mask"/>
-          <text x="380" y="94" class="t-backend" font-size="8" text-anchor="middle">sync</text>
-        </g>
-        <g data-detail="context" data-edge-from="home" data-edge-to="runtime" data-edge-label="config" data-edge-key="2" data-edge-id="home-runtime">
-          <rect x="542.6" y="77" width="38.8" height="14" rx="3" class="c-mask"/>
-          <text x="562" y="87" class="t-backend" font-size="8" text-anchor="middle">config</text>
-        </g>
-        <g data-detail="context" data-edge-from="runtime" data-edge-to="orchestrator" data-edge-label="meta-agent" data-edge-key="3" data-edge-id="runtime-orch">
-          <rect x="715" y="56" width="58" height="14" rx="3" class="c-mask"/>
-          <text x="744" y="66" class="t-backend" font-size="8" text-anchor="middle">meta-agent</text>
-        </g>
-        <g data-detail="context" data-edge-from="user" data-edge-to="orchestrator" data-edge-label="request · reply" data-edge-key="4" data-edge-id="user-orch">
-          <rect x="885" y="49" width="82" height="14" rx="3" class="c-mask"/>
-          <text x="926" y="59" class="t-backend" font-size="8" text-anchor="middle">request · reply</text>
-        </g>
-        <g data-detail="context" data-edge-from="deploy" data-edge-to="mcp" data-edge-label="merges config" data-edge-key="5" data-edge-id="deploy-mcp">
-          <rect x="252.8" y="142" width="72.4" height="14" rx="3" class="c-mask"/>
-          <text x="289" y="152" class="t-muted" font-size="8" text-anchor="middle">merges config</text>
-        </g>
-        <g data-detail="context" data-edge-from="home" data-edge-to="archify" data-edge-label="pinned engine" data-edge-key="6" data-edge-id="home-archify">
-          <rect x="427.8" y="142" width="72.4" height="14" rx="3" class="c-mask"/>
-          <text x="464" y="152" class="t-muted" font-size="8" text-anchor="middle">pinned engine</text>
-        </g>
-        <g data-detail="context" data-edge-from="runtime" data-edge-to="archify" data-edge-label="system-diagrams" data-edge-key="7" data-edge-id="archify-runtime">
-          <rect x="519" y="158.5" width="82" height="14" rx="3" class="c-mask"/>
-          <text x="560" y="168.5" class="t-muted" font-size="8" text-anchor="middle">system-diagrams</text>
-        </g>
-        <g data-detail="context" data-edge-from="runtime" data-edge-to="hooks" data-edge-label="PreToolUse · Stop" data-edge-key="8" data-edge-id="runtime-hooks">
-          <rect x="607.2" y="142" width="91.6" height="14" rx="3" class="c-mask"/>
-          <text x="653" y="152" class="t-muted" font-size="8" text-anchor="middle">PreToolUse · Stop</text>
-        </g>
-        <g data-detail="context" data-edge-from="orchestrator" data-edge-to="osforgedb" data-edge-label="state" data-edge-key="9" data-edge-id="orch-db">
-          <rect x="818" y="142" width="34" height="14" rx="3" class="c-mask"/>
-          <text x="835" y="152" class="t-muted" font-size="8" text-anchor="middle">state</text>
-        </g>
-        <g data-detail="context" data-edge-from="orchestrator" data-edge-to="canvas" data-edge-label="artifacts" data-edge-key="10" data-edge-id="orch-canvas">
-          <rect x="901.4" y="182.5" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
-          <text x="928" y="192.5" class="t-muted" font-size="8" text-anchor="middle">artifacts</text>
-        </g>
-        <g data-detail="context" data-edge-from="osforgedb" data-edge-to="qdrant" data-edge-label="embeddings" data-edge-key="11" data-edge-id="db-qdrant">
-          <rect x="806" y="342" width="58" height="14" rx="3" class="c-mask"/>
-          <text x="835" y="352" class="t-messagebus" font-size="8" text-anchor="middle">embeddings</text>
+        <g id="node-gateguard" data-node-id="gateguard" data-node-label="GateGuard" tabindex="0" role="button" aria-label="Focus GateGuard, rm -rf · DROP · --force, Stop &amp; recover › Fact-forcing gate › Implement + measure" aria-pressed="false" data-node-kind="security" data-node-sublabel="rm -rf · DROP · --force" data-node-context="Stop &amp; recover › Fact-forcing gate › Implement + measure">
+          <title>GateGuard · rm -rf · DROP · --force · Stop &amp; recover › Fact-forcing gate › Implement + measure</title>
+          <rect x="596" y="604" width="136" height="52" rx="6" class="c-mask"/>
+          <rect x="596" y="604" width="136" height="52" rx="6" class="c-security" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(602 610) scale(0.6875)">
+            <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
+            <path d="m5.8 8 1.5 1.5 3-3"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="664" y="625" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">GateGuard</text>
+          <text data-detail="context" x="664" y="642" class="t-muted" font-size="8" text-anchor="middle">rm -rf · DROP · --force</text>
         </g>
 
-        <!-- Boundary labels (foreground masks keep routes out of titles) -->
+        <g id="node-grant" data-node-id="grant" data-node-label="User confirms" tabindex="0" role="button" aria-label="Focus User confirms, &quot;tem permissão&quot; → grant, Stop &amp; recover › Fact-forcing gate › Implement + measure" aria-pressed="false" data-node-kind="external" data-node-sublabel="&quot;tem permissão&quot; → grant" data-node-context="Stop &amp; recover › Fact-forcing gate › Implement + measure">
+          <title>User confirms · &quot;tem permissão&quot; → grant · Stop &amp; recover › Fact-forcing gate › Implement + measure</title>
+          <rect x="850.8" y="604" width="136" height="52" rx="6" class="c-mask"/>
+          <rect x="850.8" y="604" width="136" height="52" rx="6" class="c-external" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(856.8 610) scale(0.6875)">
+            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
+            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="918.8" y="625" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">User confirms</text>
+          <text data-detail="context" x="918.8" y="642" class="t-muted" font-size="8" text-anchor="middle">&quot;tem permissão&quot; → grant</text>
+        </g>
+
+        <!-- Edge labels -->
+
+
+
+
+        <g data-detail="context" data-edge-from="gateguard" data-edge-to="grant" data-edge-label="facts or confirmation" data-edge-key="4" data-edge-id="b5">
+          <rect x="736" y="652" width="110.8" height="14" rx="3" class="c-mask"/>
+          <text x="791.4" y="662" class="t-security" font-size="8" text-anchor="middle">facts or confirmation</text>
+        </g>
+        <g data-detail="context" data-edge-from="review" data-edge-to="implement" data-edge-label="red → fix" data-edge-key="5" data-edge-id="b6">
+          <rect x="764.8" y="412" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
+          <text x="791.4" y="422" class="t-database" font-size="8" text-anchor="middle">red → fix</text>
+        </g>
+
+        <g data-detail="context" data-edge-from="discover" data-edge-to="specify" data-edge-label="PLAN approved" data-edge-key="7" data-edge-id="e2">
+          <rect x="55.8" y="412" width="72.4" height="14" rx="3" class="c-mask"/>
+          <text x="92" y="422" class="t-backend" font-size="8" text-anchor="middle">PLAN approved</text>
+        </g>
+
+
+        <g data-detail="context" data-edge-from="tasks" data-edge-to="implement" data-edge-label="wave 1..n" data-edge-key="10" data-edge-id="e5">
+          <rect x="577.4" y="274" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
+          <text x="604" y="284" class="t-backend" font-size="8" text-anchor="middle">wave 1..n</text>
+        </g>
+
+        <g data-detail="context" data-edge-from="review" data-edge-to="measure" data-edge-label="green" data-edge-key="12" data-edge-id="e7">
+          <rect x="984.8" y="357" width="34" height="14" rx="3" class="c-mask"/>
+          <text x="1001.8" y="367" class="t-backend" font-size="8" text-anchor="middle">green</text>
+        </g>
 
 
         <!-- Legend -->
-
+        <g data-legend="" data-legend-bridge="">
+          <text x="20" y="692" class="t-primary" font-size="12" font-weight="650">Legend</text>
+          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="User UI" data-legend-x="20" data-legend-baseline="712" data-legend-width="74">
+            <rect x="20" y="704" width="14" height="9" rx="2" class="c-frontend" stroke-width="1"/>
+            <text x="42" y="712" class="t-muted" font-size="7.5" font-weight="500">User UI</text>
+          </g>
+          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Agent logic" data-legend-x="101" data-legend-baseline="712" data-legend-width="91">
+            <rect x="101" y="704" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
+            <text x="123" y="712" class="t-muted" font-size="7.5" font-weight="500">Agent logic</text>
+          </g>
+          <g data-legend-semantic-kind="security" data-legend-kind="security" data-legend-label="Policy" data-legend-x="199" data-legend-baseline="712" data-legend-width="70">
+            <rect x="199" y="704" width="14" height="9" rx="2" class="c-security" stroke-width="1"/>
+            <text x="221" y="712" class="t-muted" font-size="7.5" font-weight="500">Policy</text>
+          </g>
+          <g data-legend-semantic-kind="messagebus" data-legend-kind="messagebus" data-legend-label="Tool action" data-legend-x="276" data-legend-baseline="712" data-legend-width="91">
+            <rect x="276" y="704" width="14" height="9" rx="2" class="c-messagebus" stroke-width="1"/>
+            <text x="298" y="712" class="t-muted" font-size="7.5" font-weight="500">Tool action</text>
+          </g>
+          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="Context / trace" data-legend-x="374" data-legend-baseline="712" data-legend-width="109">
+            <rect x="374" y="704" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
+            <text x="396" y="712" class="t-muted" font-size="7.5" font-weight="500">Context / trace</text>
+          </g>
+          <g data-legend-semantic-kind="external" data-legend-kind="external" data-legend-label="External system" data-legend-x="490" data-legend-baseline="712" data-legend-width="109">
+            <rect x="490" y="704" width="14" height="9" rx="2" class="c-external" stroke-width="1"/>
+            <text x="512" y="712" class="t-muted" font-size="7.5" font-weight="500">External system</text>
+          </g>
+        </g>
       </svg>
       <p class="intent-trace-status no-print" id="intent-trace-status" role="status" aria-live="polite" aria-atomic="true"></p>
       <div class="share-chapter-cue no-print" id="share-chapter-cue" hidden role="status" aria-live="polite">
@@ -5440,7 +5516,52 @@
 
     <!-- Info Cards -->
     <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>Six phases, six commands</h3>
+        </div>
+        <ul>
+          <li>&bull; /spec-discover · /spec-specify · /spec-design · /spec-tasks · /spec-implement · /spec-measure</li>
+          <li>&bull; supporting: /spec-clarify · /spec-constitution · /spec-checklist</li>
+        </ul>
+      </div>
 
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot cyan"></div>
+          <h3>Checkpoints</h3>
+        </div>
+        <ul>
+          <li>&bull; PLAN approval before any agent is dispatched</li>
+          <li>&bull; spec.md and design.md reviewed in the Canvas</li>
+          <li>&bull; checkpoint per wave by default (opt-in full auto-run)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>Artifacts</h3>
+        </div>
+        <ul>
+          <li>&bull; .specs/features/&lt;f&gt;/spec.md · design.md · tasks.md</li>
+          <li>&bull; .specs/features/&lt;f&gt;/diagrams/*.json + *.html (Archify receipt)</li>
+          <li>&bull; osforge-db: tasks with wave · depends_on · blockers</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>Gates</h3>
+        </div>
+        <ul>
+          <li>&bull; GateGuard: facts (targets, rollback, instruction) or the user&#39;s explicit confirmation</li>
+          <li>&bull; scan-secrets before commits · protect-tests on edits · route-guard on Stop</li>
+          <li>&bull; quality gates: code-review · adversarial-review · readiness-gate · verification-before-completion</li>
+        </ul>
+      </div>
     </div>
 
   </div>
