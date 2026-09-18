@@ -1047,6 +1047,13 @@ grava o resultado em `docs/evals/` com SHA, modelo, comando, tokens e tempo
 A lógica de veredito roda offline em `./tests/test-assertions.sh` (60 casos, custo zero):
 é lá que se pega regressão de asserção sem depender de o modelo se comportar.
 
+**Os helpers que rodam na sua máquina** (`install-skill`, `install-mcp`, em `~/.local/bin`)
+têm a sua própria suíte, `./tests/test-installers.sh` (22 verificações), que inclui rodá-los
+num shell **sem os builtins do bash 4** — o `/bin/bash` do macOS é 3.2, e foi exatamente
+assim que um `mapfile` deixou o `install-skill` quebrado sem nenhum gate perceber (`bash -n`
+só faz o parse). `python3 scripts/check-portability.py`, no preflight do deploy e no CI,
+impede a classe inteira.
+
 ---
 
 *Questions or contributions: open an issue at [github.com/plocemourasouza/osforge](https://github.com/plocemourasouza/osforge)*

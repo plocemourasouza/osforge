@@ -29,10 +29,16 @@ Aberto, e por quê:
 - **E-A08** (ligar o gate de Edit/Write do GateGuard) e **R-09** (laço de instincts) — presos
   a E6 e E5, pela mesma razão: ninguém mediu o ganho ainda.
 
-Tudo que foi fechado tem teste que falha sem a correção. As nove suítes offline somam
-**416 verificações** (assertions 60 · contratos de hook 59 · gateguard-grant 84 · deploy
+Tudo que foi fechado tem teste que falha sem a correção. As dez suítes offline somam
+**438 verificações** (assertions 60 · contratos de hook 59 · gateguard-grant 84 · deploy
 lifecycle 61 · continuidade 35 · canvas 34 · scan-secrets 33 · contexto/tokens 27 ·
-gateguard-sql 23) e nenhuma toca o `~/.claude` de ninguém.
+gateguard-sql 23 · installers 22) e nenhuma toca o `~/.claude` de ninguém.
+
+Fora do backlog, uma coisa que a auditoria não tinha visto: `scripts/install-skill.sh` —
+deployado em `~/.local/bin` e metade do Model A — usava `mapfile`, que **não existe no
+/bin/bash 3.2 do macOS**. `bash -n` só faz o parse e nunca ia pegar. Corrigido, com
+`tests/test-installers.sh` (22 verificações, incluindo um shell sem os builtins do bash 4)
+e `scripts/check-portability.py` no preflight e no CI para impedir a classe inteira.
 
 ## Etapa 0 — Correções imediatas
 
@@ -94,7 +100,7 @@ gateguard-sql 23) e nenhuma toca o `~/.claude` de ninguém.
 - **Decisão embutida:** `protect-tests.sh` passa a emitir `additionalContext` ("arquivo de teste alterado: …") ou sai do JSON de hooks. Não fica como está.
 - **Esforço:** P.
 
-### B-008 · CI mínimo + checagem de contagens — ✅ feito (CI ainda não executado no GitHub)
+### B-008 · CI mínimo + checagem de contagens — ✅ feito (CI executa no primeiro push da branch)
 - **Recomendação / evidência:** R-13 · §4.4
 - **Arquivos (NOVOS):** `.github/workflows/ci.yml`, `scripts/check-counts.py`.
 - **Conteúdo do job** (ubuntu + macos): `bash -n` em `*.sh`; `python3 -m py_compile` em `*.py`; parse dos JSON; `_generate_manifest.py --check`; regenerar índices + `git diff --exit-code`; `tests/*.sh`; `tests/hooks/run-contracts.sh`; `HOME=$(mktemp -d) ./deploy.sh --dry-run`; `scripts/check-counts.py`.

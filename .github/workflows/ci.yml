@@ -22,7 +22,11 @@ jobs:
           set -e
           for f in $(git ls-files '*.sh'); do bash -n "$f"; done
           for f in $(git ls-files '*.py'); do python3 -m py_compile "$f"; done
-          for f in $(git ls-files '*.json'); do python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; done
+          # tests/hooks/fixtures/ fica de fora: há payloads malformados DE PROPÓSITO lá
+          # (payload-garbage.json), que é justamente o que run-contracts.sh usa para provar
+          # que os hooks falham abertos. Validá-los reprovaria o que deve ser inválido.
+          for f in $(git ls-files '*.json' | grep -v '^tests/hooks/fixtures/'); do \
+            python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; done
       - name: Manifest and indexes are fresh
         run: |
           set -e
@@ -36,6 +40,7 @@ jobs:
           python3 scripts/check-agents.py
           python3 scripts/check-counts.py
           python3 scripts/check-unicode.py
+          python3 scripts/check-portability.py
       - name: Offline tests
         run: |
           set -e
@@ -47,6 +52,7 @@ jobs:
           ./tests/test-session-continuity.sh
           ./tests/test-canvas-feedback.sh
           ./tests/test-context-usage.sh
+          ./tests/test-installers.sh
       - name: Dry-run deploy on an empty HOME creates nothing
         run: |
           set -e

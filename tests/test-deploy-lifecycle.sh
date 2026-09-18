@@ -32,12 +32,13 @@ bad()  { FAIL=$((FAIL+1)); echo "  ❌ $1"; }
 check(){ if eval "$2"; then ok "$1"; else bad "$1"; fi; }   # check "label" "bash condition"
 section(){ echo ""; echo "── $1"; }
 
-# rsync não é usado no caminho com estado; se faltar no PATH, um stub que FALHA
-# satisfaz o preflight e ao mesmo tempo prova que o caminho novo não o chama.
+# rsync não é usado no caminho com estado. O stub é criado SEMPRE, sombreando um rsync
+# real se houver: numa máquina com rsync instalado (todo runner de CI tem) a asserção
+# "não foi chamado" passaria de graça, provando nada. Com o stub que falha, qualquer
+# chamada aparece no output e derruba o deploy.
 mkdir -p "$WORK/bin"
-if ! command -v rsync >/dev/null 2>&1; then
-  printf '#!/bin/sh\necho "rsync chamado pelo caminho com estado" >&2; exit 97\n' > "$WORK/bin/rsync"; chmod +x "$WORK/bin/rsync"
-fi
+printf '#!/bin/sh\necho "rsync chamado pelo caminho com estado" >&2; exit 97\n' > "$WORK/bin/rsync"
+chmod +x "$WORK/bin/rsync"
 export PATH="$WORK/bin:$PATH"
 export OSFORGE_SKIP_PREFLIGHT_TESTS=1     # o preflight roda ESTA suíte; evita recursão
 

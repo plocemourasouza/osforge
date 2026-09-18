@@ -210,6 +210,36 @@ All notable changes to OSForge are recorded here. The format follows
   mock that hits once in three, report contents, and case-file validation. CI dry-runs the
   three suites.
 
+### Fixed (outside the backlog — found while preparing the first CI run)
+- **CI would have failed on its first run**, on a file that is *supposed* to be invalid: the
+  syntax step validated every `*.json`, including `tests/hooks/fixtures/claude-code/payload-garbage.json`,
+  the deliberately malformed payload `run-contracts.sh` uses to prove the hooks fail open.
+  The fixtures directory is now excluded, with the reason in the workflow.
+- **The deploy no longer demands `rsync`** (B-003 added the check; B-014 removed the need).
+  Nothing on the state path calls it any more — only the legacy path and the third-party
+  Archify install do. A machine without `rsync` was refused even for `--dry-run`, which would
+  not have written anything. Now: `python3` is required, `rsync` only under
+  `OSFORGE_DEPLOY_LEGACY=1`, and its absence just skips Archify with a warning. Verified by
+  running a real deploy with no `rsync` at all: 160 files, 47 core skills.
+  `tests/test-deploy-lifecycle.sh` now always shadows `rsync` with a stub that fails, so the
+  "was not called" assertion means something on a machine that has it (every CI runner does).
+- **`install-skill` was broken on macOS** and nothing could have caught it: the script is
+  deployed to `~/.local/bin` and is the on-demand half of Model A, but it used `mapfile`,
+  a bash 4+ builtin that does not exist in the `/bin/bash` 3.2 shipped by macOS. `bash -n`
+  only parses, so the CI syntax step, the deploy preflight and every existing test passed.
+  Replaced with a portable read loop; `--list` also stopped creating an empty
+  `.claude/skills` in whatever directory it was called from (a query should not write).
+- **`scripts/check-portability.py`** (deploy preflight + CI) fails on bash 4+ builtins
+  (`mapfile`, `readarray`, `declare -A`, `${v,,}`, case fallthrough) and GNU-only flags
+  (`grep -P`, `stat -c`, `sed -i` without a suffix, `date -d`, `readlink -f`, `sha256sum`,
+  `timeout`) in anything that runs on the user's machine, unless the line already degrades
+  (`|| …`, `command -v`, `2>/dev/null`) or carries an explicit `# portable-ok: <reason>`.
+- **`tests/test-installers.sh`** (22 checks): the two installers against temp projects —
+  search, install in cwd / `--target` / `--global`, ambiguous and unknown terms, running
+  from `~/.local/bin` via the `~/.osforge/repo-path` anchor, `OSFORGE_REPO` precedence, the
+  `.mcp.json` merge preserving your own servers, and both scripts in a shell with the bash-4
+  builtins disabled. Reintroducing the `mapfile` turns 3 of them red.
+
 ### Still open from the audit
 - **B-013 (E1, stability)** is ready to run and waits only on cost authorisation: pilot 6 API
   calls, routing 48, trigger `eval` split 180 (commands in `docs/BACKLOG-EVOLUCAO.md`).

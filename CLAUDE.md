@@ -28,7 +28,7 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Suítes offline (416 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
+# Suítes offline (438 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
 ./tests/test-assertions.sh              # Lógica de veredito dos harnesses de eval (60)
 ./tests/hooks/run-contracts.sh          # Contratos de hook: comandos reais × fixtures, dois harnesses (59; gate do deploy)
 ./tests/test-gateguard-grant.sh         # Ciclo de vida do grant do GateGuard + atenuação de negações (84)
@@ -38,12 +38,14 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-scan-secrets.sh            # scan-secrets nos dois formatos de payload, repo git temporário (33)
 ./tests/test-context-usage.sh           # Aviso de contexto pelo uso real + tokens por sessão/projeto (27)
 ./tests/test-gateguard-sql.sh           # Detector de SQL destrutivo do GateGuard (23)
+./tests/test-installers.sh              # install-skill/install-mcp: os helpers que rodam na SUA máquina (22)
 
 # Gates estáticos (rodam no preflight do deploy e no CI):
 python3 scripts/_generate_manifest.py --check   # MANIFEST de claude-code/SKILLS.md em dia
 python3 scripts/check-agents.py         # Frontmatter dos agentes: tools escalar, model no enum, papéis read-only
 python3 scripts/check-counts.py         # Números citados em README/CLAUDE.md/USAGE batem com a árvore
 python3 scripts/check-unicode.py        # Unicode invisível/bidi/tag no que chega ao contexto (--sources, --fix)
+python3 scripts/check-portability.py    # bash 4+ / GNU-only no que é deployado — `bash -n` não pega isso
 
 # Evals (consomem API; --dry lista e valida sem chamar modelo — é o que o CI roda):
 ./scripts/run-trigger-eval.sh --dry [--split eval]  # 15 skills × (5 positivas + 5 negativas)
@@ -61,7 +63,7 @@ Deploy behavior worth knowing:
 - Removing a skill dir here removes it from `~/.claude/skills/` and `~/.cursor/skills/` on the next deploy — **only if the installed copy is still byte-identical to what the deploy wrote**. Your own skills, and anything installed with `install-skill --global`, are never deleted (there is no `rsync --delete` on this path any more).
 - Hooks (`hooks/hooks-claude-code.json` → `~/.claude/settings.json`) merge **by id** (`event|matcher|script`), three-way: a managed entry still equal to what was recorded is replaced, one **you edited** aborts the deploy with both versions (`--force-hooks`), an event the repo dropped disappears, and your own entries — including under `~/.claude/hooks/` — are never touched. MCPs (`mcp/claude-code.json` → `~/.claude.json`) merge non-destructively (union). Deploy reports MCP drift between repo and live config.
 - Backups go to `~/.claude_backups/<run_id>/<path relative to HOME>`, and only when something is actually overwritten or kept — an idempotent second run writes nothing and creates no backup. `./deploy.sh --restore=<run_id>` puts a run's backups back.
-- Pre-flight gates (abort the deploy): manifest drift, `tests/hooks/run-contracts.sh`, `scripts/check-agents.py`, `scripts/check-counts.py`, `scripts/check-unicode.py`. CI (`.github/workflows/ci.yml`) runs the same set plus `bash -n`/`py_compile`, a dry-run deploy in an empty HOME and `tests/test-deploy-lifecycle.sh`.
+- Pre-flight gates (abort the deploy): manifest drift, `tests/hooks/run-contracts.sh`, `scripts/check-agents.py`, `scripts/check-counts.py`, `scripts/check-unicode.py`, `scripts/check-portability.py`. CI (`.github/workflows/ci.yml`) runs the same set plus `bash -n`/`py_compile`, a dry-run deploy in an empty HOME and `tests/test-deploy-lifecycle.sh`.
 - Evals: `--model` é obrigatório fora de `--dry`, cada caso roda `--runs` vezes (padrão 3) e o relatório vai para `docs/evals/` (`docs/evals/README.md` explica o formato e lista o que ainda é narrativa). PASS é `k = N`; `0 < k < N` é FLAKY e reprova.
 - The deploy keeps state (`scripts/osforge-state.py`, `~/.osforge/install-state.json`): it never overwrites a file you edited, never deletes a skill/hook of yours, and can `--doctor`/`--uninstall`/`--restore`. `OSFORGE_DEPLOY_LEGACY=1` = old path, one release.
 

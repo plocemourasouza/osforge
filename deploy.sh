@@ -79,11 +79,19 @@ for arg in "$@"; do
 done
 
 # ── Pré-requisitos (B-003): falhar cedo, antes de tocar qualquer destino ─────
-for bin in rsync python3; do
-  if ! command -v "$bin" >/dev/null 2>&1; then
-    echo "❌ $bin não encontrado no PATH — necessário para o deploy" >&2; exit 1
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "❌ python3 não encontrado no PATH — necessário para o deploy" >&2; exit 1
+fi
+# rsync deixou de ser necessário no caminho com estado (B-014): só o caminho legado
+# e a instalação do Archify (terceiro) ainda o usam. Exigi-lo de todo mundo recusava
+# um `--dry-run` que não escreveria nada e não chamaria rsync nenhum.
+if ! command -v rsync >/dev/null 2>&1; then
+  if [ "$LEGACY_DEPLOY" = "1" ]; then
+    echo "❌ rsync não encontrado no PATH — necessário com OSFORGE_DEPLOY_LEGACY=1" >&2; exit 1
   fi
-done
+  echo "  ⚠️  rsync ausente — Archify não será instalado (o resto do deploy não usa rsync)" >&2
+  DEPLOY_ARCHIFY=false
+fi
 
 # ── Helpers ─────────────────────────────────────────────────────────────
 log()  { echo "  $1"; }
@@ -964,7 +972,7 @@ preflight_manifest() {
 # OSFORGE_SKIP_PREFLIGHT_TESTS=1 pula (use só para diagnosticar o próprio preflight).
 preflight_tests() {
   echo ""
-  echo "🔍 Pre-flight: contratos de hook · agentes · contagens · unicode"
+  echo "🔍 Pre-flight: contratos de hook · agentes · contagens · unicode · portabilidade"
   if [ "${OSFORGE_SKIP_PREFLIGHT_TESTS:-}" = "1" ]; then echo "  ⟳  pulado (OSFORGE_SKIP_PREFLIGHT_TESTS=1)"; return 0; fi
   local failed=0 log; log="$(mktemp)"
   if "$REPO/tests/hooks/run-contracts.sh" >"$log" 2>&1; then ok "hooks: $(tail -1 "$log")"; rm -f "$log"
@@ -974,6 +982,11 @@ preflight_tests() {
   local ulog; ulog="$(mktemp)"                                       # R-16: unicode invisível no que vai para o contexto
   if (cd "$REPO" && python3 scripts/check-unicode.py >"$ulog" 2>&1); then ok "$(tail -1 "$ulog")"; rm -f "$ulog"
   else cat "$ulog"; rm -f "$ulog"; failed=1; fi
+  # O que é deployado roda na MÁQUINA do usuário: bash 3.2 no macOS, userland BSD.
+  # `bash -n` só faz o parse e não pega um `mapfile` — pegou install-skill quebrado.
+  local plog; plog="$(mktemp)"
+  if (cd "$REPO" && python3 scripts/check-portability.py >"$plog" 2>&1); then ok "$(tail -1 "$plog")"; rm -f "$plog"
+  else cat "$plog"; rm -f "$plog"; failed=1; fi
   if [ "$failed" != "0" ]; then
     echo ""
     echo "  ❌ Pre-flight reprovou. Nada foi deployado. Corrija e rode de novo."
