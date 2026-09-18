@@ -34,6 +34,19 @@ import os
 import sys
 import subprocess
 
+# Bibliotecas partilhadas dos hooks (deployadas em ~/.claude/hooks/lib/): identidade
+# única de projeto (B-018) e limpeza de segredos (B-019). Sem elas o hook continua,
+# com fallback local — nunca bloqueia o Claude Code.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib"))
+try:
+    from project_id import resolve as _resolve_project, fallback_slug as _fallback_slug, find_db_cmd as _find_db_cmd
+    from scrub import scrub as _scrub
+except Exception:                                   # pragma: no cover
+    _resolve_project = None
+    _fallback_slug = lambda: (os.path.basename(os.getcwd()).lower().replace("_", "-") or "unknown")
+    _find_db_cmd = lambda: []
+    _scrub = lambda t: t
+
 # ──────────────────────────────────────────────
 # Guard: desativar se OSFORGE_OBSERVE_CAPTURE=0
 # ──────────────────────────────────────────────
@@ -102,9 +115,9 @@ def _build_trigger(name: str, inp: dict) -> str:
 
 
 def _build_context(name: str, inp: dict, result: dict) -> str:
-    """Contexto curto: primeiros 120 chars do comando ou caminho."""
+    """Contexto curto: primeiros 120 chars do comando ou caminho, SEM segredos (E-A14)."""
     if name == "Bash":
-        return str(inp.get("command", ""))[:120]
+        return _scrub(str(inp.get("command", "")))[:120]
     if name in ("Edit", "Write"):
         return str(inp.get("file_path", inp.get("path", "")))[:120]
     return ""
@@ -116,35 +129,19 @@ context_text = _build_context(tool_name, tool_input, tool_result)
 # ──────────────────────────────────────────────
 # Detectar projeto: env var ou basename do cwd
 # ──────────────────────────────────────────────
-project_slug = os.environ.get("OSFORGE_PROJECT", "")
-if not project_slug:
-    # Fallback: basename do diretório de trabalho atual
-    cwd = os.environ.get("PWD", os.getcwd())
-    project_slug = os.path.basename(cwd) or "unknown"
+# Identidade única (B-018): OSFORGE_PROJECT → root_path → remote_hash → basename
+# normalizado — a mesma regra de session-save/session-resume, então observação e
+# resume caem na mesma chave (E-A20). Projeto não registrado: basename normalizado.
+db_cmd = _find_db_cmd()
+if not db_cmd:
+    sys.exit(0)  # osforge-db indisponível — observação descartada silenciosamente
+_res = _resolve_project(db_cmd=db_cmd) if _resolve_project else None
+project_slug = _res["slug"] if _res else _fallback_slug()
 
 # ──────────────────────────────────────────────
 # Chamar osforge-db add-observation
 # ──────────────────────────────────────────────
-osforge_db_bin = os.path.expanduser("~/.local/bin/osforge-db")
-if not os.path.isfile(osforge_db_bin):
-    # Fallback: âncora escrita pelo deploy (~/.osforge/repo-path) — funciona em
-    # qualquer clone, ao contrário do antigo ~/Development/osforge fixo. Sem
-    # resolução por PATH, que seria suscetível a hijack.
-    _anchor = os.path.expanduser("~/.osforge/repo-path")
-    _dev = ""
-    if os.path.isfile(_anchor):
-        try:
-            with open(_anchor) as _f:
-                _dev = os.path.join(_f.read().strip(), "scripts", "osforge-db.py")
-        except OSError:
-            _dev = ""
-    if _dev and os.path.isfile(_dev):
-        osforge_db_bin = _dev
-    else:
-        sys.exit(0)  # osforge-db indisponível — observação descartada silenciosamente
-
-cmd = [
-    "python3", osforge_db_bin,
+cmd = db_cmd + [
     "add-observation",
     project_slug,
     trigger_text,

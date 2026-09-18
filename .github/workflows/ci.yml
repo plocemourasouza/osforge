@@ -43,6 +43,7 @@ jobs:
           ./tests/test-gateguard-sql.sh
           ./tests/test-scan-secrets.sh
           ./tests/hooks/run-contracts.sh
+          ./tests/test-session-continuity.sh
       - name: Dry-run deploy on an empty HOME creates nothing
         run: |
           set -e

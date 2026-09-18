@@ -29,11 +29,17 @@ Rules that every hook follows, and that `tests/hooks/run-contracts.sh` enforces:
    neither the agent nor the user gets stuck behind a false positive.
 6. **Fail open, except for the irreversible.** GateGuard denies a destructive Bash command
    when it cannot persist state; everything else allows and warns on stderr.
+7. **One project identity, no secrets in or out** (B-018/B-019). A hook that needs the
+   project slug calls `hooks/lib/project_id.py` (`OSFORGE_PROJECT` → registered git root →
+   remote hash → normalised basename) — never `basename(pwd)` on its own. Anything a hook
+   persists (command context, user message, resume) or re-injects goes through
+   `hooks/lib/scrub.py`, and what comes back from the database is wrapped as *data*, capped,
+   and scoped to the current project. `tests/test-session-continuity.sh` enforces this.
 
 ## Adding or changing a hook
 
 1. Wire it in `hooks/hooks-claude-code.json` (and `hooks/hooks.json` if Cursor should run
-   it). The deploy copies `hooks/*.sh` and `hooks/*.py` to both harnesses.
+   it). The deploy copies `hooks/*.sh`, `hooks/*.py` and `hooks/lib/` to both harnesses.
 2. Add at least three lines to `tests/hooks/cases.tsv`: the positive verdict, the negative
    verdict, and a malformed payload. Add fixtures under `tests/hooks/fixtures/`; use
    `__HOME__` and `__FIXTURES__` tokens for paths.

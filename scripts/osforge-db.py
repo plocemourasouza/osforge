@@ -3,14 +3,18 @@
 osforge-db — SQLite state manager para o OSForge
 Uso: osforge-db <comando> [args] [--scope=local|global] [--json]
 
-Escopo global:  ~/.osforge/osforge.db  (padrão — cross-project)
+Escopo global:  ~/.osforge/osforge.db  (padrão — cross-project; OSFORGE_DB=<path> sobrepõe)
 Escopo local:   .osforge/osforge.db    (por projeto — via --scope=local)
 
 Comandos:
   init                              Cria banco e schema
   status <slug>                     Estado atual do projeto (para INTAKE)
   resume <slug>                     Resume point compacto (para shell injection)
-  upsert-project <slug> <desc> <triage> <status>
+  upsert-project <slug> <desc> <triage> <status> [--root=DIR|.] [--remote=URL|auto]
+  bind-project <slug> [--root=DIR|.] [--remote=URL|auto]
+                                    Amarra o projeto à raiz git e/ou ao remote; é assim que
+                                    os hooks reconhecem subdiretórios, worktrees e pastas
+                                    homônimas (hooks/lib/project_id.py)
   set-phase <slug> <phase> <status> [skill] [artifact]
   set-resume <slug> <resume_point>
   add-decision <slug> <content> [--category=arch|product|ux|data|security]
@@ -85,6 +89,9 @@ except ImportError:
 def db_path(scope="global"):
     if scope == "local":
         return Path(".osforge/osforge.db")
+    override = os.environ.get("OSFORGE_DB", "").strip()      # documentado desde sempre, lido só agora (E-A26)
+    if override:
+        return Path(override).expanduser()
     return Path.home() / ".osforge" / "osforge.db"
 
 def get_conn(scope="global"):
@@ -593,9 +600,20 @@ def cmd_search_hybrid(conn, query, top=5, project_slug=None):
         cmd_search(conn, query, project_slug, top)
         return
 
-    vec_results = vstore_search(conn, q_vec, top * 3)
+    vec_results = vstore_search(conn, q_vec, top * (10 if project_slug else 3))
     vec_ranked = [sid for _, sid, _c, _s in
-                  sorted(vec_results, key=lambda x: x[3], reverse=True)[:top * 3]]
+                  sorted(vec_results, key=lambda x: x[3], reverse=True)]
+    if project_slug:
+        # A lista vetorial não sabe de projeto (E-A24): filtra pelo banco antes do RRF.
+        ids = [int(sid) for sid in vec_ranked if str(sid).isdigit()]
+        allowed = set()
+        if ids:
+            ph = ",".join("?" * len(ids))
+            allowed = {str(r[0]) for r in conn.execute(
+                f"SELECT d.id FROM decisions d JOIN projects p ON p.id=d.project_id "
+                f"WHERE p.slug=? AND d.id IN ({ph})", [project_slug] + ids).fetchall()}
+        vec_ranked = [sid for sid in vec_ranked if str(sid) in allowed]
+    vec_ranked = vec_ranked[:top * 3]
 
     # RRF
     merged = _rrf_merge(fts_ranked, vec_ranked, k=60)[:top]
@@ -867,9 +885,24 @@ CREATE TRIGGER IF NOT EXISTS decisions_ad AFTER DELETE ON decisions BEGIN
 END;
 """
 
+# Colunas acrescentadas depois do schema inicial: ALTER idempotente (B-018).
+_MIGRATIONS = [
+    ("projects", "root_path",   "TEXT"),
+    ("projects", "remote_hash", "TEXT"),
+]
+
+def migrate(conn):
+    for table, col, typ in _MIGRATIONS:
+        cols = {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
+        if col not in cols:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {typ}")
+    conn.commit()
+
+
 def cmd_init(conn, args):
     conn.executescript(SCHEMA)
     conn.executescript(TRIGGERS)
+    migrate(conn)
     conn.commit()
     _ok("Schema criado/verificado com sucesso")
     _ok(f"Banco: {db_path(_scope(args))}")
@@ -923,6 +956,58 @@ def cmd_upsert_project(conn, slug, desc, triage="standard", status="active"):
     """, (pid,))
     conn.commit()
     _ok(f"Projeto '{slug}' ({triage}/{status}) salvo")
+
+def _git_out(args, cwd):
+    import subprocess
+    try:
+        r = subprocess.run(["git", "-C", cwd] + args, capture_output=True, text=True, timeout=3, check=False)
+        return r.stdout.strip() if r.returncode == 0 else ""
+    except (OSError, subprocess.SubprocessError):
+        return ""
+
+def _normalize_remote(url):
+    """Mesmo algoritmo de hooks/lib/project_id.py (mantido em sincronia; testado)."""
+    import re
+    u = (url or "").strip()
+    if not u:
+        return ""
+    u = re.sub(r"^[a-z+]+://", "", u)
+    u = re.sub(r"^[^@/]+@", "", u)
+    u = u.replace(":", "/", 1) if re.match(r"^[^/]+:[^/]", u) else u
+    return re.sub(r"\.git/?$", "", u).rstrip("/").lower()
+
+def _remote_hash(url):
+    n = _normalize_remote(url)
+    return hashlib.sha256(n.encode("utf-8")).hexdigest()[:16] if n else ""
+
+def _resolve_root(root_arg):
+    """--root=. → raiz git do cwd (repo principal no caso de worktree); caminho → realpath."""
+    if not root_arg:
+        return None
+    cwd = os.getcwd() if root_arg == "." else os.path.expanduser(root_arg)
+    top = _git_out(["rev-parse", "--show-toplevel"], cwd)
+    if top:
+        common = _git_out(["rev-parse", "--path-format=absolute", "--git-common-dir"], cwd)
+        if common and os.path.basename(common) == ".git":
+            return os.path.realpath(os.path.dirname(common))
+        return os.path.realpath(top)
+    return os.path.realpath(cwd)
+
+def cmd_bind_project(conn, slug, root_arg=None, remote_arg=None):
+    p = _get_project(conn, slug)
+    root = _resolve_root(root_arg)
+    rh = None
+    if remote_arg:
+        url = _git_out(["config", "--get", "remote.origin.url"], root or os.getcwd()) if remote_arg == "auto" else remote_arg
+        rh = _remote_hash(url) or None
+    if root is None and rh is None:
+        _err("Uso: bind-project <slug> [--root=DIR|.] [--remote=URL|auto]")
+    if root is not None:
+        conn.execute("UPDATE projects SET root_path=?, updated_at=datetime('now','utc') WHERE id=?", (root, p["id"]))
+    if rh is not None:
+        conn.execute("UPDATE projects SET remote_hash=?, updated_at=datetime('now','utc') WHERE id=?", (rh, p["id"]))
+    conn.commit()
+    _ok(f"Projeto '{slug}' amarrado: root={root or '(mantido)'} remote_hash={rh or '(mantido)'}")
 
 def cmd_set_phase(conn, slug, phase_name, status,
                   skill_path=None, artifact_path=None):
@@ -1259,7 +1344,7 @@ def cmd_search(conn, query, project_slug=None, limit=5):
         _out(f"[{r['slug']}][{r['category']}] {short}")
 
 def cmd_list_projects(conn, status="active"):
-    q = "SELECT slug, triage, status, description FROM projects"
+    q = "SELECT slug, triage, status, description, root_path, remote_hash FROM projects"
     if status != "all":
         q += " WHERE status=?"
         rows = conn.execute(q, (status,)).fetchall()
@@ -1569,6 +1654,8 @@ def main():
     scope_arg    = next((a for a in args if a.startswith("--scope=")), None)
     top_arg      = next((a for a in args if a.startswith("--top=")), None)
     source_arg   = next((a for a in args if a.startswith("--source=")), None)
+    root_arg     = next((a for a in args if a.startswith("--root=")), None)
+    remote_arg   = next((a for a in args if a.startswith("--remote=")), None)
     category   = cat_arg.split("=",1)[1]      if cat_arg      else None
     waiting    = wait_arg.split("=",1)[1]     if wait_arg      else None
     proj_flt   = proj_arg.split("=",1)[1]     if proj_arg      else None
@@ -1585,6 +1672,8 @@ def main():
     scope_flt  = scope_arg.split("=",1)[1]    if scope_arg     else None
     top_flt    = int(top_arg.split("=",1)[1])  if top_arg       else 5
     source_flt = source_arg.split("=",1)[1]   if source_arg    else "decisions"
+    root_flt   = root_arg.split("=",1)[1]     if root_arg      else None
+    remote_flt = remote_arg.split("=",1)[1]   if remote_arg    else None
     args = [a for a in args if not a.startswith("--")]
 
     if not args:
@@ -1598,6 +1687,7 @@ def main():
     # Auto-init sempre
     conn.executescript(SCHEMA)
     conn.executescript(TRIGGERS)
+    migrate(conn)
 
     if cmd == "init":
         cmd_init(conn, sys.argv[1:])
@@ -1607,6 +1697,12 @@ def main():
         cmd_upsert_project(conn, rest[0], rest[1],
                            rest[2] if len(rest)>2 else "standard",
                            rest[3] if len(rest)>3 else "active")
+        if root_flt or remote_flt:
+            cmd_bind_project(conn, rest[0], root_flt, remote_flt)
+    elif cmd == "bind-project":
+        if not rest:
+            _err("Uso: bind-project <slug> [--root=DIR|.] [--remote=URL|auto]")
+        cmd_bind_project(conn, rest[0], root_flt, remote_flt)
     elif cmd == "set-phase":
         if len(rest) < 3:
             _err("Uso: set-phase <slug> <phase> <status> [skill] [artifact]")

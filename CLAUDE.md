@@ -35,6 +35,7 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-scan-secrets.sh            # scan-secrets, both payload shapes, temp git repo (offline)
 python3 scripts/check-agents.py         # Agent frontmatter: tools scalar, model enum, read-only roles (deploy gate)
 ./tests/test-deploy-lifecycle.sh        # Deploy with state: user files/hooks/skills survive, idempotent, doctor/uninstall/restore (offline, ~1 min; CI)
+./tests/test-session-continuity.sh      # One project identity for all hooks; resume as scoped, capped, scrubbed data (offline)
 python3 scripts/check-counts.py         # Numbers quoted in README/CLAUDE.md/USAGE match the tree (deploy gate)
 ./scripts/test-skill-triggering.sh --generated --sample 20   # Real triggering run (consumes API)
 

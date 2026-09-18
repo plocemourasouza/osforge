@@ -167,7 +167,7 @@ enqueue_tree() {
   while IFS= read -r f; do
     local rel="${f#$src_root/}"
     enqueue "$f" "$dst_root/$rel" false false "${origin_root:+$origin_root/$rel}"
-  done < <(find "$src_root" -type f | sort)
+  done < <(find "$src_root" -type f -not -path '*/__pycache__/*' -not -name '*.pyc' -not -name '.DS_Store' | sort)
 }
 
 state_apply() {
@@ -478,6 +478,10 @@ deploy_claude() {
     chmod +x "$CLAUDE/hooks/$(basename $f)"
     ok "$(basename $f)"
   done
+  # hooks/lib/: identidade de projeto e limpeza de segredos partilhadas (B-018/B-019)
+  if [ "$LEGACY_DEPLOY" != "1" ]; then enqueue_tree "$REPO/hooks/lib" "$CLAUDE/hooks/lib" "hooks/lib"
+  elif $DRY_RUN; then skip "cp -R hooks/lib → $CLAUDE/hooks/lib"
+  else mkdir -p "$CLAUDE/hooks/lib"; cp "$REPO/hooks/lib/"*.py "$CLAUDE/hooks/lib/"; ok "hooks/lib"; fi
 
   echo ""
   if [ "$LEGACY_DEPLOY" = "1" ]; then
@@ -890,6 +894,10 @@ deploy_cursor() {
     chmod +x "$CURSOR/hooks/$(basename $f)"
     ok "$(basename $f)"
   done
+  # hooks/lib/: identidade de projeto e limpeza de segredos partilhadas (B-018/B-019)
+  if [ "$LEGACY_DEPLOY" != "1" ]; then enqueue_tree "$REPO/hooks/lib" "$CURSOR/hooks/lib" "hooks/lib"
+  elif $DRY_RUN; then skip "cp -R hooks/lib → $CURSOR/hooks/lib"
+  else mkdir -p "$CURSOR/hooks/lib"; cp "$REPO/hooks/lib/"*.py "$CURSOR/hooks/lib/"; ok "hooks/lib"; fi
 
   echo ""
   log "hooks.json (paths absolutos):"

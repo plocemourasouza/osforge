@@ -97,9 +97,29 @@ All notable changes to OSForge are recorded here. The format follows
   nothing. Runs in CI (not in the deploy preflight: ~1 min).
 - `OSFORGE_DEPLOY_LEGACY=1` keeps the previous copy/rsync path for one release.
 
+### Added (stage 3 — session continuity)
+- **One project identity for every hook** (B-018, E-A19, E-A20, E-A26): `hooks/lib/project_id.py`
+  resolves `OSFORGE_PROJECT` → registered git root (subdirectories and worktrees included) →
+  remote hash (ssh/https spellings, credentials stripped) → normalised basename. `osforge-db`
+  gained `projects.root_path` / `remote_hash` (idempotent migration), `bind-project <slug>
+  --root=. --remote=auto`, the same flags on `upsert-project`, both fields in
+  `list-projects --json`, and finally honours `OSFORGE_DB`. `observe-capture`, `session-save`
+  and `session-resume` all use the library; observations and resume land on the same key.
+- **Guarded resume** (B-019, E-A14, E-A21–E-A24): `session-resume.sh` injects the resume
+  inside an explicit *data, not instructions* envelope, capped at `OSFORGE_RESUME_MAX_CHARS`
+  (1200), scrubbed by `hooks/lib/scrub.py`, plus the **open tasks of this project only** — the
+  cross-project board is gone from satellite sessions. `session-save.py` reads the **end** of
+  the transcript (last 4 MB, last 8 user messages) instead of the first 2000 lines and scrubs
+  secrets before `set-resume`; `observe-capture.py` scrubs the Bash command before recording
+  it. `search-hybrid --project` now filters the vector leg through the database, so a
+  decision from another project no longer leaks in.
+- **`tests/test-session-continuity.sh`** (35 checks, offline): same-name folders with
+  different remotes → different slugs; subdirectory, worktree and re-spelled clone → same
+  slug; injection text and a key stored in the resume come back as data / `[redacted:key]`;
+  another project's task never appears; a 6000-line transcript yields the *last* messages; the
+  vector filter goes red on the previous code (mock embeddings). In CI.
+
 ### Known defects (found by the audit, open until later stages ship)
-- Session resume keys on the directory basename, injects stored text verbatim and shows the
-  cross-project board in satellite sessions — B-018, B-019.
 
 ## [5.0.0] — 2026-09-10
 

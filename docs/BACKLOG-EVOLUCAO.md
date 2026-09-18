@@ -134,18 +134,19 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 - **Esforço:** P–M.
 - **Resultado:** 61 checagens, ~50 s, offline; roda o `deploy.sh` real 15× num HOME semeado (hook seu, skill sua, skill `--global`, `CLAUDE.md` seu, `settings.json` com `theme`/`env`/hooks seus, `~/.claude.json` com MCP seu, hook do OSForge de uma revisão antiga = instalação legada). Adicionado ao CI; não entra no preflight do deploy por custo (~1 min).
 
-### B-018 · Identidade de projeto única
+### B-018 · Identidade de projeto única — ✅ feito
 - **Recomendação / evidência:** R-04 · E-A19, E-A20, E-A26; origem E-B08
 - **Arquivos:** **(NOVO)** `hooks/lib/project_id.py`; `hooks/observe-capture.py` L117-121; `hooks/session-save.py` L60-82; `hooks/session-resume.sh` L36-56; `scripts/osforge-db.py` (esquema `projects`, `cmd_upsert_project`, migração).
 - **Mudança:** ordem de resolução `OSFORGE_PROJECT` → raiz do git casada com `projects.root_path` → `projects.remote_hash` (sha256 do remote normalizado, sem credenciais) → basename normalizado; `ALTER TABLE projects ADD COLUMN root_path/remote_hash`; honrar de fato a variável `OSFORGE_DB`.
 - **Aceite:** pastas homônimas com remotes diferentes → slugs diferentes; subdiretório e worktree → mesmo projeto; projetos já registrados continuam resolvendo.
 - **Esforço:** M.
 
-### B-019 · Retomada com guarda, teto, escopo e limpeza
+### B-019 · Retomada com guarda, teto, escopo e limpeza — ✅ feito
 - **Recomendação / evidência:** R-04 · E-A21 a E-A24, E-A14; origem E-B07
 - **Arquivos:** `hooks/session-resume.sh` L59-94; `hooks/session-save.py` L106-109, L138-195; `hooks/observe-capture.py` L102-108; `scripts/osforge-db.py` L382-404, L596-601, L1555/L1569; **(NOVO)** `hooks/lib/scrub.py`.
 - **Aceite:** os seis casos de R-04 no relatório §5.3, como casos de `tests/hooks/` e de banco temporário.
 - **Esforço:** M. **Dependências:** B-018, B-006.
+- **Resultado:** `tests/test-session-continuity.sh` (35 checagens, offline): hooks reais + `osforge-db` real em banco temporário (`OSFORGE_DB`) e repositórios git temporários. Cobre E-A14, E-A19 a E-A24 e E-A26 por execução; o filtro vetorial de E-A24 foi verificado ficando vermelho no código anterior (provider `mock`).
 
 ### B-020 · Dreno do feedback do Canvas + validação no servidor
 - **Recomendação / evidência:** R-05 · E-A43, E-A44; origem E-B06

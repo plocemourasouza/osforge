@@ -490,8 +490,11 @@ chmod +x ~/.claude/hooks/*
 - Permite que Claude escreva artefatos JSON e o viewer os renderize em tempo real via SSE
 
 **`session-resume.sh`** (SessionStart)
-- Detecta se o `cwd` é um projeto registrado no `osforge-db`
-- Injeta automaticamente `osforge-db resume <slug>` + `board` no início da sessão (~50 tokens)
+- Resolve o projeto com `hooks/lib/project_id.py`: `OSFORGE_PROJECT` → raiz git registrada
+  (`bind-project --root=.`; vale para subdiretórios e worktrees) → hash do remote → basename
+- Injeta o `resume` e as tarefas abertas **deste** projeto, num envelope explícito de dados
+  (não instruções), com teto (`OSFORGE_RESUME_MAX_CHARS`, 1200) e sem segredos (`hooks/lib/scrub.py`).
+  O board cross-project não é mais injetado (B-019)
 
 **`protect-tests.sh`** (PostToolUse — Write | Edit | MultiEdit)
 - No Claude Code, injeta `additionalContext` quando um arquivo de teste é alterado, lembrando a
@@ -539,8 +542,9 @@ chmod +x ~/.claude/hooks/*
   a versão anterior tinha a lógica invertida — B-007); silencioso fora do macOS; log em `~/.osforge/logs/hooks.log`
 
 **`session-save.py`** (Stop)
-- Parseia o transcript da sessão e grava `set-resume` automático no `osforge-db`
-- Garante que o contexto da sessão não se perde entre janelas
+- Lê o **fim** do transcript (últimos 4 MB) e grava `set-resume` com as últimas 8 mensagens,
+  arquivos editados e ferramentas — segredos removidos antes de gravar (B-019)
+- Mesma identidade de projeto do `session-resume` (B-018); só grava em projeto registrado
 
 ---
 
@@ -550,7 +554,18 @@ Persistent state management for OSForge projects via SQLite local database. No s
 
 ### How it works
 
-After deploy, `osforge-db` is available at `~/.local/bin/osforge-db`. The global database lives at `~/.osforge/osforge.db` and accumulates state across all projects on your machine.
+After deploy, `osforge-db` is available at `~/.local/bin/osforge-db`. The global database lives at `~/.osforge/osforge.db` (`OSFORGE_DB=<path>` overrides it — used by the tests) and accumulates state across all projects on your machine.
+
+**Bind a project to its folder once**, so every hook recognises it from any subdirectory,
+worktree or clone — and two folders with the same name never share state:
+```bash
+cd ~/Development/my-project
+osforge-db upsert-project my-project "Descrição" standard active --root=. --remote=auto
+# ou, para um projeto já registrado:
+osforge-db bind-project my-project --root=. --remote=auto
+```
+Projects registered before this still resolve by folder name; binding is what makes
+`My_Proj` ≠ `my_proj-clone` and `src/deep/` = the project root.
 
 ```bash
 # Add to ~/.zshrc or ~/.bashrc if not already there:
