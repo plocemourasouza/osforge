@@ -30,6 +30,9 @@ Comandos:
   list-projects [--status=active|all]
   import-yaml <yaml_path> <slug>    Migra status.yaml existente
   stats                             Resumo geral do banco
+  add-usage <slug> --session=ID --model=M --input=N --output=N [--cache-read=N] [--cache-create=N] [--turns=N]
+                                    Tokens de uma sessão (upsert por projeto+sessão+modelo; B-022)
+  usage <slug>                      Tokens por sessão e modelo do projeto; totais no `board` e no `stats`
 
   add-observation <project> <trigger_text> [--context=<ctx>] [--tool=<tool>]
                                     Grava uma observação de sessão no banco
@@ -856,6 +859,20 @@ CREATE TABLE IF NOT EXISTS instincts (
     updated_at  TEXT    NOT NULL DEFAULT (datetime('now','utc'))
 );
 
+CREATE TABLE IF NOT EXISTS usage (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id    INTEGER NOT NULL REFERENCES projects(id),
+    session_id    TEXT    NOT NULL,
+    model         TEXT    NOT NULL,
+    input_tokens  INTEGER NOT NULL DEFAULT 0,
+    output_tokens INTEGER NOT NULL DEFAULT 0,
+    cache_read    INTEGER NOT NULL DEFAULT 0,
+    cache_create  INTEGER NOT NULL DEFAULT 0,
+    turns         INTEGER NOT NULL DEFAULT 0,
+    updated_at    TEXT    NOT NULL DEFAULT (datetime('now','utc')),
+    UNIQUE(project_id, session_id, model)
+);
+
 CREATE TABLE IF NOT EXISTS vec_memory (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     source_table TEXT    NOT NULL,
@@ -1280,7 +1297,7 @@ def cmd_board(conn, status="active"):
                 "SELECT id, status, priority, wave, depends_on, title "
                 "FROM tasks WHERE project_id=? ORDER BY id",
                 (proj["id"],)).fetchall()
-            out[proj["slug"]] = [dict(t) for t in tasks]
+            out[proj["slug"]] = {"tasks": [dict(t) for t in tasks], "usage": _usage_totals(conn, proj["id"])}
         print(json.dumps(out, ensure_ascii=False))
         return
 
@@ -1293,13 +1310,15 @@ def cmd_board(conn, status="active"):
             "SELECT id, status, priority, wave, title "
             "FROM tasks WHERE project_id=? ORDER BY id",
             (proj["id"],)).fetchall()
+        tot = _usage_totals(conn, proj["id"])
+        usage_note = f"  ({tot['total']:,} tokens em {tot['sessions']} sessão(ões))" if tot["sessions"] else ""
         if not tasks:
-            _out(f"{proj['slug']}: sem tasks")
+            _out(f"{proj['slug']}: sem tasks{usage_note}")
             continue
         by_status = {s: [] for s in _BOARD_ORDER}
         for t in tasks:
             by_status.setdefault(t["status"], []).append(t)
-        _out(f"{proj['slug']}:")
+        _out(f"{proj['slug']}:{usage_note}")
         for s in _BOARD_ORDER:
             group = by_status.get(s) or []
             if s == "done":
@@ -1368,6 +1387,45 @@ def cmd_stats(conn):
     _out(f"Fases:    {phases} total / {done} completas")
     _out(f"Decisões: {decs}")
     _out(f"Blockers: {blk} ativos")
+    u = conn.execute("SELECT COALESCE(SUM(input_tokens+output_tokens+cache_read+cache_create),0), COUNT(DISTINCT session_id) FROM usage").fetchone()
+    _out(f"Tokens: {u[0]:,} em {u[1]} sessão(ões) registradas")
+
+def cmd_add_usage(conn, slug, session_id, model, inp, out, cread, ccreate, turns):
+    """Upsert (não soma): o Stop hook recomputa a sessão inteira a cada chamada (B-022)."""
+    p = _get_project(conn, slug)
+    conn.execute("""
+        INSERT INTO usage (project_id, session_id, model, input_tokens, output_tokens, cache_read, cache_create, turns)
+        VALUES (?,?,?,?,?,?,?,?)
+        ON CONFLICT(project_id, session_id, model) DO UPDATE SET
+            input_tokens=excluded.input_tokens, output_tokens=excluded.output_tokens,
+            cache_read=excluded.cache_read, cache_create=excluded.cache_create,
+            turns=excluded.turns, updated_at=datetime('now','utc')
+    """, (p["id"], session_id, model, int(inp), int(out), int(cread), int(ccreate), int(turns)))
+    conn.commit()
+    _ok(f"usage '{slug}' sessão {session_id[:12]} {model}: in={inp} out={out} cache_read={cread} cache_create={ccreate}")
+
+def _usage_totals(conn, project_id):
+    r = conn.execute("""SELECT COALESCE(SUM(input_tokens),0) i, COALESCE(SUM(output_tokens),0) o,
+                        COALESCE(SUM(cache_read),0) cr, COALESCE(SUM(cache_create),0) cc,
+                        COUNT(DISTINCT session_id) s FROM usage WHERE project_id=?""", (project_id,)).fetchone()
+    return {"input": r["i"], "output": r["o"], "cache_read": r["cr"], "cache_create": r["cc"], "sessions": r["s"],
+            "total": r["i"] + r["o"] + r["cr"] + r["cc"]}
+
+def cmd_usage(conn, slug):
+    p = _get_project(conn, slug)
+    rows = conn.execute("""SELECT session_id, model, input_tokens, output_tokens, cache_read, cache_create, turns, updated_at
+                           FROM usage WHERE project_id=? ORDER BY updated_at""", (p["id"],)).fetchall()
+    tot = _usage_totals(conn, p["id"])
+    if _json_mode:
+        print(json.dumps({"sessions": [dict(r) for r in rows], "totals": tot}, ensure_ascii=False))
+        return
+    if not rows:
+        _out("Sem uso registrado"); return
+    for r in rows:
+        _out(f"  {r['updated_at']}  {r['session_id'][:12]:12}  {r['model']:28} in={r['input_tokens']:>8} out={r['output_tokens']:>7} "
+             f"cache_read={r['cache_read']:>9} cache_create={r['cache_create']:>8} turns={r['turns']}")
+    _out(f"  total: {tot['total']:,} tokens em {tot['sessions']} sessão(ões) "
+         f"(in {tot['input']:,} · out {tot['output']:,} · cache_read {tot['cache_read']:,} · cache_create {tot['cache_create']:,})")
 
 def cmd_add_observation(conn, project, trigger_text, context="", tool=""):
     """Grava uma observação de sessão para posterior clusterização via evolve."""
@@ -1655,6 +1713,15 @@ def main():
     top_arg      = next((a for a in args if a.startswith("--top=")), None)
     source_arg   = next((a for a in args if a.startswith("--source=")), None)
     root_arg     = next((a for a in args if a.startswith("--root=")), None)
+    _flags = [x for x in args if x.startswith("--")]      # capturado agora: `args` é filtrado adiante
+    def _intflag(name, default=0):
+        a = next((x for x in _flags if x.startswith(f"--{name}=")), None)
+        try:
+            return int(a.split("=", 1)[1]) if a else default
+        except ValueError:
+            return default
+    session_arg  = next((a for a in args if a.startswith("--session=")), None)
+    model_arg    = next((a for a in args if a.startswith("--model=")), None)
     remote_arg   = next((a for a in args if a.startswith("--remote=")), None)
     category   = cat_arg.split("=",1)[1]      if cat_arg      else None
     waiting    = wait_arg.split("=",1)[1]     if wait_arg      else None
@@ -1673,6 +1740,8 @@ def main():
     top_flt    = int(top_arg.split("=",1)[1])  if top_arg       else 5
     source_flt = source_arg.split("=",1)[1]   if source_arg    else "decisions"
     root_flt   = root_arg.split("=",1)[1]     if root_arg      else None
+    session_flt = session_arg.split("=",1)[1] if session_arg   else None
+    model_flt  = model_arg.split("=",1)[1]    if model_arg     else None
     remote_flt = remote_arg.split("=",1)[1]   if remote_arg    else None
     args = [a for a in args if not a.startswith("--")]
 
@@ -1766,6 +1835,15 @@ def main():
         cmd_list_projects(conn, st_filter)
     elif cmd == "stats":
         cmd_stats(conn)
+    elif cmd == "add-usage":
+        if not rest or not session_flt or not model_flt:
+            _err("Uso: add-usage <slug> --session=ID --model=M --input=N --output=N [--cache-read=N] [--cache-create=N] [--turns=N]")
+        cmd_add_usage(conn, rest[0], session_flt, model_flt, _intflag("input"), _intflag("output"),
+                      _intflag("cache-read"), _intflag("cache-create"), _intflag("turns"))
+    elif cmd == "usage":
+        if not rest:
+            _err("Uso: usage <slug>")
+        cmd_usage(conn, rest[0])
     elif cmd == "import-yaml":
         if len(rest) < 2:
             _err("Uso: import-yaml <yaml_path> <slug>")

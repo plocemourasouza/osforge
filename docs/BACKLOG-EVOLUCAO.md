@@ -157,11 +157,11 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 
 ## Etapa 4 — Conforme os experimentos
 
-### B-021 · Aviso de contexto pelo uso real
-- **Recomendação / evidência:** R-06 · E-B19. **Arquivos:** **(NOVO)** `hooks/context-threshold.py`; `hooks/hooks-claude-code.json`; espinha de `claude-code/SKILLS.md` L117-146. **Aceite:** transcripts sintéticos de 100k/125k/155k → 0/1/2 avisos, um por faixa por sessão; < 40 ms por chamada. **Esforço:** P.
+### B-021 · Aviso de contexto pelo uso real — ✅ feito
+- **Recomendação / evidência:** R-06 · E-B19. **Arquivos:** **(NOVO)** `hooks/context-threshold.py`; `hooks/hooks-claude-code.json`; espinha de `claude-code/SKILLS.md` L117-146. **Aceite:** transcripts sintéticos de 100k/125k/155k → 0/1/2 avisos, um por faixa por sessão; < 40 ms por chamada. **Esforço:** P. **Resultado:** `tests/test-context-usage.sh`: 0/1/2 confirmados; transcript de 30 MB lido em ~1 ms (só o fim). Feito antes de E1 por ser P e não depender do experimento (a faixa é a do SKILLS.md; ajustável por `OSFORGE_CONTEXT_BANDS`).
 
-### B-022 · Tokens por sessão e por projeto
-- **Recomendação / evidência:** R-10 · E-B27. **Arquivos:** `hooks/session-save.py`; `scripts/osforge-db.py` (tabela `usage`, `cmd_board`). **Aceite:** transcript com a mesma `message.id` em duas linhas conta uma vez; tokens separados por modelo; `board` mostra o total do projeto. **Esforço:** P. **Dependências:** B-018.
+### B-022 · Tokens por sessão e por projeto — ✅ feito
+- **Recomendação / evidência:** R-10 · E-B27. **Arquivos:** `hooks/session-save.py`; `scripts/osforge-db.py` (tabela `usage`, `cmd_board`). **Aceite:** transcript com a mesma `message.id` em duas linhas conta uma vez; tokens separados por modelo; `board` mostra o total do projeto. **Esforço:** P. **Dependências:** B-018. **Resultado:** tabela `usage` (upsert por projeto+sessão+modelo), `add-usage`/`usage`, totais no `board` (texto e `--json`) e no `stats`; `session-save.py` computa por `message.id`. Coberto em `tests/test-context-usage.sh`.
 
 ### B-023 · Plano proporcional e arquivos do orquestrador
 - **Recomendação / evidência:** R-14 · E-A38, E-A40, E-A28. **Arquivos:** `claude-code/CLAUDE.md` L126, L140; `agents/orchestrator/AGENT.md` L126-137, L432-437; `deploy.sh` `copy_dir` (ou embutir `triage-rules.md`); `scripts/routing-cases.tsv` (casos de piso). **Aceite:** depois do experimento E3; `~/.claude/agents/orchestrator/` contém os arquivos citados ou o `AGENT.md` não os cita mais. **Esforço:** P.

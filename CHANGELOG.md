@@ -139,6 +139,21 @@ All notable changes to OSForge are recorded here. The format follows
   and the real hook against it. Contract cases CC-49/CC-50; the contract runner now points the
   hook at a dead port and a sandbox DB so it never touches a live Canvas.
 
+### Added (stage 4 — measured context and tokens)
+- **Context Budget warning from real usage** (B-021, R-06): `hooks/context-threshold.py`
+  (UserPromptSubmit) reads `message.usage` of the last assistant turn (input + cache_read +
+  cache_creation) from the transcript tail and injects one warning per band per session —
+  ≥120k "save state, finish the step", ≥150k "STOP, hand off, compact". ~1 ms on a 30 MB
+  transcript. `OSFORGE_CONTEXT_BANDS`, `OSFORGE_CONTEXT_THRESHOLD=off`. The SKILLS.md
+  "Context Budget" section now points at the hook instead of asking the model to guess. 11 hooks.
+- **Tokens per session and project** (B-022, R-10): `osforge-db` table `usage` (upsert by
+  project + session + model), `add-usage`, `usage <slug>`; totals in `board` (text and
+  `--json`, whose per-project value is now `{tasks, usage}`) and `stats`. `session-save.py`
+  computes them at Stop, once per `message.id` (the JSONL repeats a message per content block).
+- **`tests/test-context-usage.sh`** (27 checks): 100k/125k/155k → 0/1/2 warnings, no repeat
+  within a band, new session warns again, timing, guards; usage dedup by id, per-model split,
+  upsert on repeated Stop, totals in board/stats. Contract case CC-14. In CI.
+
 ### Known defects (found by the audit, open until later stages ship)
 
 ## [5.0.0] — 2026-09-10

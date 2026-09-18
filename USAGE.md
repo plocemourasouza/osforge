@@ -115,7 +115,7 @@ selects the old copy/rsync path for one release.
 - Copies `CLAUDE.md` and `SKILLS.md`
 - Syncs 27 agents (orchestrator + 26 specialists) to `~/.claude/agents/`
 - Copies 9 `spec-*` commands to `~/.claude/commands/`
-- Installs 10 hooks to `~/.claude/hooks/` (plus the shared `hooks/lib/`)
+- Installs 11 hooks to `~/.claude/hooks/` (plus the shared `hooks/lib/`)
 - Merges the managed hook entries into `~/.claude/settings.json` by id (yours are preserved) and the MCP servers into `~/.claude.json` (non-destructive)
 
 **Cursor (`~/.cursor/`)**
@@ -483,7 +483,7 @@ cp hooks/*.py hooks/*.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*
 ```
 
-### What each hook does (10 hooks)
+### What each hook does (11 hooks)
 
 **`canvas-autostart.sh`** (SessionStart)
 - Inicia o OSForge Canvas em `localhost:4242` se ainda não estiver rodando
@@ -541,6 +541,12 @@ chmod +x ~/.claude/hooks/*
 - Envia notificação macOS via AppleScript quando o agente para normalmente (`stop_hook_active=false`;
   a versão anterior tinha a lógica invertida — B-007); silencioso fora do macOS; log em `~/.osforge/logs/hooks.log`
 
+**`context-threshold.py`** (UserPromptSubmit)
+- Lê o `message.usage` da última resposta no transcript (input + cache_read + cache_creation = o
+  contexto real enviado ao modelo) e injeta o aviso do Context Budget **uma vez por faixa por
+  sessão**: ≥120k "salve estado e termine o passo", ≥150k "PARE, handoff, compacte". Lê só o fim
+  do transcript (~1 ms). `OSFORGE_CONTEXT_BANDS=120000,150000`; kill-switch `OSFORGE_CONTEXT_THRESHOLD=off` (B-021)
+
 **`canvas-feedback.py`** (Stop)
 - Se o usuário enviou feedback no Canvas para um artefato **deste projeto** (id prefixado com o
   slug) que o agente ainda não leu, bloqueia o Stop **uma vez** com o conteúdo (decisões,
@@ -552,6 +558,8 @@ chmod +x ~/.claude/hooks/*
 - Lê o **fim** do transcript (últimos 4 MB) e grava `set-resume` com as últimas 8 mensagens,
   arquivos editados e ferramentas — segredos removidos antes de gravar (B-019)
 - Mesma identidade de projeto do `session-resume` (B-018); só grava em projeto registrado
+- Grava também os tokens da sessão por modelo (`osforge-db add-usage`, uma vez por `message.id`);
+  `osforge-db usage <slug>`, `board` e `stats` mostram o total do projeto (B-022)
 
 ---
 

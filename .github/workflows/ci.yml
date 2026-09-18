@@ -45,6 +45,7 @@ jobs:
           ./tests/hooks/run-contracts.sh
           ./tests/test-session-continuity.sh
           ./tests/test-canvas-feedback.sh
+          ./tests/test-context-usage.sh
       - name: Dry-run deploy on an empty HOME creates nothing
         run: |
           set -e

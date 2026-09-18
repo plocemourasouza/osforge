@@ -190,6 +190,64 @@ def _extract_summary(transcript_path: str) -> str | None:
         return None
 
 
+# ── Tokens por sessão e por modelo (B-022) ────────────────────────────────────
+
+MAX_USAGE_BYTES = 64 * 1024 * 1024   # transcript maior que isso: uso não computado (nunca trava o Stop)
+
+
+def _extract_usage(transcript_path: str) -> dict:
+    """{model: {input, output, cache_read, cache_create, turns}} somando `message.usage` de cada
+    mensagem do assistente UMA vez por `message.id` (o JSONL repete a mesma mensagem em várias
+    linhas quando ela tem vários blocos de conteúdo)."""
+    totals: dict = {}
+    seen: set = set()
+    try:
+        p = Path(transcript_path)
+        if p.stat().st_size > MAX_USAGE_BYTES:
+            _log("[session-save] transcript grande demais para computar uso")
+            return {}
+        with open(p, encoding="utf-8", errors="replace") as f:
+            for line in f:
+                if '"usage"' not in line:
+                    continue
+                try:
+                    e = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                msg = e.get("message") if isinstance(e, dict) else None
+                if not isinstance(msg, dict) or msg.get("role") != "assistant":
+                    continue
+                u = msg.get("usage")
+                if not isinstance(u, dict):
+                    continue
+                mid = msg.get("id") or e.get("uuid")
+                if mid in seen:
+                    continue
+                seen.add(mid)
+                model = str(msg.get("model") or "unknown")
+                t = totals.setdefault(model, {"input": 0, "output": 0, "cache_read": 0, "cache_create": 0, "turns": 0})
+                for key, field in (("input", "input_tokens"), ("output", "output_tokens"),
+                                   ("cache_read", "cache_read_input_tokens"), ("cache_create", "cache_creation_input_tokens")):
+                    v = u.get(field)
+                    if isinstance(v, (int, float)):
+                        t[key] += int(v)
+                t["turns"] += 1
+    except Exception as exc:
+        _log(f"[session-save] erro ao computar uso: {exc}")
+    return totals
+
+
+def _save_usage(db_cmd: list[str], slug: str, session_id: str, totals: dict) -> None:
+    for model, t in totals.items():
+        try:
+            subprocess.run(db_cmd + ["add-usage", slug, f"--session={session_id}", f"--model={model}",
+                                     f"--input={t['input']}", f"--output={t['output']}", f"--cache-read={t['cache_read']}",
+                                     f"--cache-create={t['cache_create']}", f"--turns={t['turns']}"],
+                           capture_output=True, text=True, timeout=10)
+        except Exception as exc:
+            _log(f"[session-save] add-usage error: {exc}")
+
+
 # ── Persiste o resumo ─────────────────────────────────────────────────────────
 
 def _save_resume(db_cmd: list[str], slug: str, summary: str) -> None:
@@ -215,11 +273,17 @@ def main() -> None:
     stdin_data = sys.stdin.read(MAX_STDIN)
 
     transcript_path: str | None = None
+    session_id = ""
     try:
         hook_input = json.loads(stdin_data)
+        if not isinstance(hook_input, dict):
+            hook_input = {}
         tp = hook_input.get("transcript_path")
         if isinstance(tp, str) and tp:
             transcript_path = tp
+        sid = hook_input.get("session_id")
+        if isinstance(sid, str):
+            session_id = sid
     except Exception:
         pass  # stdin ausente ou malformado — continua sem transcript
 
@@ -251,6 +315,10 @@ def main() -> None:
     if not transcript_path:
         _log("[session-save] transcript_path ausente — nada a fazer")
         return
+
+    usage = _extract_usage(transcript_path)
+    if usage:
+        _save_usage(db_cmd, slug, session_id or Path(transcript_path).stem, usage)
 
     summary = _extract_summary(transcript_path)
     if not summary:

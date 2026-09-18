@@ -26,7 +26,7 @@ Rules that every hook follows, and that `tests/hooks/run-contracts.sh` enforces:
    is the reference).
 5. **Every block message names the hook and its kill-switch** (`OSFORGE_GATEGUARD=off`,
    `OSFORGE_SCAN_SECRETS=off`, `OSFORGE_ROUTEGUARD=off`, `OSFORGE_OBSERVE_CAPTURE=0`,
-   `OSFORGE_CANVAS_FEEDBACK=off`), so
+   `OSFORGE_CANVAS_FEEDBACK=off`, `OSFORGE_CONTEXT_THRESHOLD=off`), so
    neither the agent nor the user gets stuck behind a false positive.
 6. **Fail open, except for the irreversible.** GateGuard denies a destructive Bash command
    when it cannot persist state; everything else allows and warns on stderr.
