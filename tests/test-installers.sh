@@ -103,8 +103,8 @@ SH
 chmod +x "$WORK/bash32-ish"
 P5="$WORK/proj5"; mkdir -p "$P5"
 OUT="$(cd "$P5" && bash "$WORK/bash32-ish" "$SKILL" "$PICK" 2>&1)"; RC=$?
-check "instala mesmo sem mapfile/readarray disponíveis" '[ $RC -eq 0 ] && [ -f "$P5/.claude/skills/$PICK/SKILL.md" ]'
-check "e não reclama de comando não encontrado" '! grep -qiE "mapfile|readarray" <<<"$OUT"'
+check "instala mesmo sem os builtins do bash 4 disponíveis" '[ $RC -eq 0 ] && [ -f "$P5/.claude/skills/$PICK/SKILL.md" ]'   # portable-ok: é o nome do caso, não uma chamada
+check "e não reclama de comando não encontrado" '! grep -qiE "mapfile|readarray" <<<"$OUT"'   # portable-ok: procura o sintoma na saída
 
 section "install-mcp"
 STACK="$(ls -1 "$REPO/mcp/stacks" | head -1 | sed 's/\.mcp\.json$//')"
