@@ -44,8 +44,10 @@ if os.environ.get("OSFORGE_OBSERVE_CAPTURE", "1") == "0":
 # Leitura segura do payload stdin
 # ──────────────────────────────────────────────
 try:
-    raw = sys.stdin.read()
+    raw = sys.stdin.read(1024 * 1024)
     payload = json.loads(raw) if raw.strip() else {}
+    if not isinstance(payload, dict):   # B-007: lista/escalar não é payload de hook
+        payload = {}
 except Exception:
     payload = {}
 

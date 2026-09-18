@@ -8,7 +8,7 @@ Regras:
 - Python stdlib exclusivamente (json, sys, subprocess, pathlib, os).
 - Silencioso e exit 0 se projeto não registrado, transcript ausente ou qualquer erro.
 - Caminhos absolutos.
-- Log de diagnóstico em /tmp/osforge-session-save.log (opcional, não bloqueia).
+- Log de diagnóstico em ~/.osforge/logs/session-save.log (OSFORGE_HOOK_DEBUG=1; nunca em /tmp).
 """
 
 import json
@@ -23,7 +23,7 @@ MAX_STDIN     = 1024 * 1024  # 1 MB
 MAX_LINES     = 2000          # linhas máximas do transcript a processar
 MAX_USR_MSGS  = 8             # últimas mensagens do usuário a incluir
 MAX_FILES     = 20            # arquivos modificados a incluir
-LOG_FILE      = "/tmp/osforge-session-save.log"
+LOG_FILE      = os.path.join(os.environ.get("OSFORGE_LOG_DIR", os.path.expanduser("~/.osforge/logs")), "session-save.log")
 ENABLE_LOG    = os.environ.get("OSFORGE_HOOK_DEBUG", "") == "1"
 
 
@@ -31,6 +31,7 @@ def _log(msg: str) -> None:
     if not ENABLE_LOG:
         return
     try:
+        os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
         with open(LOG_FILE, "a", encoding="utf-8") as f:
             f.write(f"{msg}\n")
     except Exception:

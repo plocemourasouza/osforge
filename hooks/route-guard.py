@@ -34,7 +34,7 @@ from pathlib import Path
 MAX_STDIN = 1024 * 1024
 MAX_LINES = 4000
 MIN_ACTIONABLE_CHARS = 700   # resposta menor e sem tools = conversa/QUESTION
-LOG = "/tmp/osforge-route-guard.log"
+LOG = os.path.join(os.environ.get("OSFORGE_LOG_DIR", os.path.expanduser("~/.osforge/logs")), "route-guard.log")
 DEBUG = os.environ.get("OSFORGE_HOOK_DEBUG", "") == "1"
 
 ROUTE_RE = re.compile(r"🤖\s*route:", re.I)
@@ -44,6 +44,7 @@ SKILL_DECL_RE = re.compile(r"skill:\s*((?:`[^`]+`|\S+)(?:\s*\+\s*`[^`]+`)*)", re
 def log(msg):
     if DEBUG:
         try:
+            os.makedirs(os.path.dirname(LOG), exist_ok=True)
             with open(LOG, "a") as f:
                 f.write(msg + "\n")
         except OSError:
@@ -65,6 +66,8 @@ def main():
     try:
         payload = json.loads(sys.stdin.read(MAX_STDIN))
     except Exception:
+        allow()
+    if not isinstance(payload, dict):   # B-007: payload que não é objeto → fail-open, sem traceback
         allow()
 
     # Nunca bloquear duas vezes — evita loop de Stop hook.
@@ -112,10 +115,21 @@ def main():
                         m = re.search(r'"skill":\s*"([^"]+)"', inp)
                         if m:
                             skills_invoked.add(m.group(1).split(":")[-1])
-                    for m in re.finditer(r"skills/([a-zA-Z0-9_/-]+)/SKILL\.md", inp):
-                        skills_invoked.add(m.group(1).split("/")[-1])
+                    # B-007 (E-A11): um caminho de SKILL.md só conta como carga quando a
+                    # ferramenta realmente LÊ o arquivo (Read/Glob/Grep, Bash com um
+                    # leitor, ou o prompt de um subagente despachado). `echo skills/x/SKILL.md`
+                    # num Bash não é carga.
+                    counts_as_load = name in ("Read", "Glob", "Grep", "Task", "Agent") or (
+                        name == "Bash" and re.match(r'^\s*"?(cat|sed|head|tail|less|bat|awk|grep)\b',
+                                                    str((c.get("input") or {}).get("command", "")))
+                    )
+                    if counts_as_load:
+                        for m in re.finditer(r"skills/([a-zA-Z0-9_/-]+)/SKILL\.md", inp):
+                            skills_invoked.add(m.group(1).split("/")[-1])
                     if name in ("Task", "Agent"):
-                        files_touched.append(inp)  # despacho conta como carga por procuração
+                        # despacho conta como carga por procuração — mas só pelo CAMINHO da
+                        # skill no prompt, não por uma menção solta ao nome
+                        files_touched.append(" ".join(re.findall(r"skills/[a-zA-Z0-9_/-]+/SKILL\.md", inp)))
 
     if not last_user_seen and not texts:
         allow()

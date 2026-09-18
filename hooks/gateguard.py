@@ -757,11 +757,15 @@ def main():
 
     # Read hook input from stdin.
     try:
-        raw = sys.stdin.read()
+        raw = sys.stdin.read(1024 * 1024)
         data = json.loads(raw)
     except (json.JSONDecodeError, ValueError):
         # FAIL-OPEN: if we can't parse the input, allow (don't permanently block).
         _warn_stderr("could not parse hook input (fail-open); allowing.")
+        _allow()
+    if not isinstance(data, dict):
+        # B-007: a JSON list/scalar is not a hook payload — fail-open instead of a traceback.
+        _warn_stderr("hook input is not an object (fail-open); allowing.")
         _allow()
 
     # ── UserPromptSubmit: classificar confirmação do usuário ──────────────────
