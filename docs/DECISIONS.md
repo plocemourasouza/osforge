@@ -235,3 +235,58 @@ A primeira escolha (`nomic-embed-text`, 768d) falhou em avaliação empírica co
 - Triggering cases added (3 naive pt-BR prompts) to `scripts/skill-triggering-cases.tsv`; indexes and manifest regenerated.
 
 **Date:** 2026-09-10.
+
+## ADR-015: Evolution programme from the ECC audit — import mechanisms, not content; measure before adopting
+
+**Context.** A comparative audit against `affaan-m/ECC` (`dd6ee538aee0f548d4a6b520118f875431fd749e`),
+run on isolated checkouts of both repositories at fixed SHAs (`docs/ANALISE-COMPARATIVA-ECC.md`,
+evidence table in `docs/ANALISE-COMPARATIVA-ECC-EVIDENCIAS.md`), reproduced by execution several
+defects in OSForge v5.0.0: `scan-secrets.sh` reads the Cursor payload shape and is inert under
+Claude Code (E-A01); a bare "ok" with no pending denial opens GateGuard for destructive Bash
+(E-A05); `deploy.sh` unregisters user hooks stored in `~/.claude/hooks/`, overwrites same-name
+agents without backup, deletes user skills and clobbers its own `settings.json` backup
+(E-A27–E-A30) and fails on a fresh HOME (E-A31); session resume keys on the directory basename,
+injects stored text verbatim and leaks the cross-project board into satellite sessions
+(E-A19–E-A24); the `instincts` table has readers and no writer (E-A16). The same audit found that
+ECC's catalog, learning loop and eval harness are largely inert, while its hook contract tests,
+id-keyed hook merge, install-state, guarded resume and canvas-feedback drain are real and tested.
+
+**Decision.**
+1. **Import mechanisms, never content.** Nothing from ECC's catalog enters `skills/`, `rules/` or
+   `commands/`. Five mechanisms are re-implemented in bash/Python inside `deploy.sh`, `hooks/` and
+   `tests/`, keeping Model A, SQLite and the existing ADRs untouched: hook contract tests (R-01),
+   state-aware deploy (R-03), session continuity (R-04), canvas-feedback drain (R-05), real-usage
+   context threshold (R-06). Rejections are recorded in `.out-of-scope/ecc-imports.md`.
+2. **Order is fixed by dependency, not by appeal:** stage 0 corrections (C-01–C-03) → stage 1
+   safety net (contract tests, minimal CI, agent frontmatter validation) → stage 2 evals made
+   reliable (model pinned, ≥3 runs, versioned results in `docs/evals/`) → stage 3 consolidation
+   (R-03, R-04, R-05) → stage 4 items only as experiments E1–E7 justify them. The executable list
+   is `docs/BACKLOG-EVOLUCAO.md`.
+3. **Nothing that adds autonomy or always-on context is adopted without a paired experiment**
+   (A current vs A + one change, same model, repetitions, held-out cases). This applies to
+   completing the instinct loop (E5), wiring the Edit/Write gate already present in
+   `hooks/gateguard.py` (E6) and any new core skill.
+4. **Numbers quoted in always-loaded files must be generated or checked.** Counts (skills, core,
+   agents, rules, hooks, MCPs) and eval results (`30/30`, `15/16`) move from prose to
+   `scripts/check-counts.py` and `docs/evals/`; until then they are treated as narrative.
+5. **Provenance.** Mechanisms adapted from ECC (MIT, © 2026 Affaan Mustafa) are clean-room
+   re-implementations recorded with `inspired_by`; the two textual adoptions (reviewer pre-report
+   gate, invisible-unicode code-point ranges) carry the MIT notice in `THIRD_PARTY_NOTICES`. The
+   existing GateGuard derivation (`hooks/gateguard.py:9`) gets the same treatment, including the
+   upstream credit ECC itself gives to `zunoworks/gateguard`.
+
+**Consequences.**
+- `deploy.sh` gains a state file (`~/.osforge/install-state.json`), `--doctor`, `--uninstall` and
+  `--restore`; `rsync --delete` is replaced by state-based pruning. First run adopts matching files
+  and never deletes.
+- `hooks/` gains a shared project resolver and secret scrubber; `projects` gains `root_path` and
+  `remote_hash`; resume output is capped and wrapped in a "historical, not instructions" guard.
+- `tests/hooks/` and `tests/test-deploy-lifecycle.sh` become the deploy gate together with the
+  manifest preflight; `.github/workflows/ci.yml` runs them on ubuntu and macos.
+- Prompt-cache note: edits to `claude-code/CLAUDE.md` are batched (B-005, B-023) because each one
+  invalidates every session's cache.
+- Reversal: each stage-3 change ships with an environment kill-switch for one release
+  (`OSFORGE_DEPLOY_LEGACY`, `OSFORGE_GATEGUARD_LEGACY_GRANT`); rejected imports can be reopened
+  only through the conditions in `.out-of-scope/ecc-imports.md`.
+
+**Date:** 2026-09-18.

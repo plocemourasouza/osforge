@@ -8,7 +8,7 @@
 
 > *"Forging the development environment for AI-powered teams."*
 
-📖 **[Usage guide → USAGE.md](USAGE.md)** · 🗒️ **[Changelog → CHANGELOG.md](CHANGELOG.md)** · 💡 **[Examples → docs/EXAMPLES.md](docs/EXAMPLES.md)** · 🧭 **[Skill standard → docs/SKILL-STANDARD.md](docs/SKILL-STANDARD.md)** · 🗺️ **[Decisions → docs/DECISIONS.md](docs/DECISIONS.md)**
+🔍 **[ECC audit & evolution backlog → docs/ANALISE-COMPARATIVA-ECC.md](docs/ANALISE-COMPARATIVA-ECC.md)** · 📖 **[Usage guide → USAGE.md](USAGE.md)** · 🗒️ **[Changelog → CHANGELOG.md](CHANGELOG.md)** · 💡 **[Examples → docs/EXAMPLES.md](docs/EXAMPLES.md)** · 🧭 **[Skill standard → docs/SKILL-STANDARD.md](docs/SKILL-STANDARD.md)** · 🗺️ **[Decisions → docs/DECISIONS.md](docs/DECISIONS.md)**
 
 ---
 

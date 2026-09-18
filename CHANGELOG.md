@@ -8,6 +8,24 @@ All notable changes to OSForge are recorded here. The format follows
 `VERSION` holds the current version; `deploy.sh` prints it. Releases are annotated git tags
 (`vX.Y.Z`) with a GitHub Release carrying the matching section of this file.
 
+## [Unreleased]
+
+### Added
+- **ECC comparative audit (rev. 3)** — `docs/ANALISE-COMPARATIVA-ECC.md` with the evidence table
+  `docs/ANALISE-COMPARATIVA-ECC-EVIDENCIAS.md` (78 permalinked findings, both repos at fixed SHAs)
+  and the executable programme `docs/BACKLOG-EVOLUCAO.md` (24 items, 5 stages, 7 experiments).
+- **ADR-015** — evolution programme: import mechanisms, not content; measure before adopting.
+- `.out-of-scope/ecc-imports.md` — what was rejected from ECC and why.
+
+### Known defects (found by the audit, open until stage 0 of the backlog ships)
+- `scan-secrets.sh` is inert under Claude Code (reads the Cursor payload shape) — B-002.
+- GateGuard grants on a bare "ok"/"proceed" with no pending denial — B-001.
+- `deploy.sh` unregisters user hooks under `~/.claude/hooks/`, overwrites same-name agents
+  without backup, deletes user skills, clobbers its own `settings.json` backup and fails on a
+  fresh HOME — B-003, B-014–B-016.
+- Session resume keys on the directory basename, injects stored text verbatim and shows the
+  cross-project board in satellite sessions — B-018, B-019.
+
 ## [5.0.0] — 2026-09-10
 
 First tagged release. Everything since v4.0 (2026-03-18, 126 commits). **Major** because four
