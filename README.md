@@ -223,8 +223,8 @@ TypeScript Strict, Code Style, Product Thinking (PDD), TDD Enforcement, Next.js 
 
 Run by the runtime — they consume no context tokens:
 
-- **GateGuard** (`gateguard.py`, PreToolUse Bash + UserPromptSubmit) — blocks only the irreversible/shared (`rm -rf`, `git push --force`, `reset --hard`, `clean -f`, SQL `DROP/TRUNCATE/DELETE`). An explicit confirmation from the user ("tem permissão", "pode executar", "go ahead", or a bare "sim"/"yes") opens the gate until the user's next message (15 min cap, `OSFORGE_GATEGUARD_GRANT_TTL`); `gateguard: sessão liberada` opens it for the whole session; negations never count. Kill-switch `OSFORGE_GATEGUARD=off`.
-- **scan-secrets** (`scan-secrets.sh`) — blocks secrets before they reach a commit.
+- **GateGuard** (`gateguard.py`, PreToolUse Bash + UserPromptSubmit) — blocks only the irreversible/shared (`rm -rf`, `git push --force`, `reset --hard`, `clean -f`, SQL `DROP/TRUNCATE/DELETE`). An explicit confirmation from the user ("tem permissão", "pode executar", "go ahead", or a bare "sim"/"yes") opens the gate until the user's next message (15 min cap, `OSFORGE_GATEGUARD_GRANT_TTL`); `gateguard: sessão liberada` opens it for the whole session; negations never count. Kill-switch `OSFORGE_GATEGUARD=off`. A turn grant is only accepted as an answer to a denial in the last 10 min; a bare "ok" with nothing denied does not open the gate.
+- **scan-secrets** (`scan-secrets.sh` → `scan-secrets.py`) — blocks a commit/push whose staged diff adds a credential-looking line, and `rm -rf` aimed at `/`, `~` or a parent directory; reads both the Claude Code and the Cursor payload shapes.
 - **protect-tests** (`protect-tests.sh`) — warns when a test file is altered.
 - **observe → evolve** (`observe-capture.py`) — records session observations for `osforge-db evolve`.
 - **Auto-resume** (`session-resume.sh` / `session-save.py`) — SessionStart injects `osforge-db resume`; Stop writes `set-resume` automatically.

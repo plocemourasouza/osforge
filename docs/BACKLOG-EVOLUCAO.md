@@ -7,7 +7,7 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 
 ## Etapa 0 — Correções imediatas
 
-### B-001 · Grant do GateGuard exige negação pendente
+### B-001 · Grant do GateGuard exige negação pendente — ✅ feito
 - **Recomendação / evidência:** C-01 · E-A05, E-A06, E-A07
 - **Objetivo:** um "ok" ou "proceed" só libera um comando destrutivo que acabou de ser negado, e só aquele.
 - **Arquivos:** `hooks/gateguard.py` (`apply_prompt_to_state`, `_active_grant`, ramo `Bash` de `main`, `_AUTH_PHRASES` L325-329); `tests/test-gateguard-grant.sh`.
@@ -17,7 +17,7 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 - **Verificação:** `./tests/test-gateguard-grant.sh`
 - **Esforço:** P. **Risco:** um passo extra quando o usuário autoriza de antemão. **Reversão:** `OSFORGE_GATEGUARD_LEGACY_GRANT=1` por uma versão.
 
-### B-002 · `scan-secrets` funciona no Claude Code
+### B-002 · `scan-secrets` funciona no Claude Code — ✅ feito
 - **Recomendação / evidência:** C-02 · E-A01, E-A03, E-A04
 - **Objetivo:** bloquear commit com segredo e `rm -rf` de raiz nos dois harnesses.
 - **Arquivos:** `hooks/scan-secrets.sh` (ou reescrever como `hooks/scan-secrets.py` **(NOVO)**, mantendo o nome antigo como wrapper); `hooks/hooks-claude-code.json` e `hooks/hooks.json` se o nome mudar.
@@ -27,7 +27,7 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 - **Verificação:** `echo '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rm -rf ~"}}' | bash hooks/scan-secrets.sh` deve conter `"deny"`.
 - **Esforço:** P. **Risco:** falso positivo em fixtures com chaves falsas → permitir `# osforge:allow-secret` na linha.
 
-### B-003 · Deploy funciona em HOME novo; dry-run é inerte
+### B-003 · Deploy funciona em HOME novo; dry-run é inerte — ✅ feito
 - **Recomendação / evidência:** C-03 · E-A31, E-A33
 - **Arquivos:** `deploy.sh` (`sync_mcps_claude` L196-233, bloco L357-373, `copy_dir` L87-94, L308, L322, L346, `merge_settings_claude` L158-167, topo do script).
 - **Mudança:** tratar `~/.claude.json` ausente como `{}`; pôr a checagem de drift de MCP atrás de `$DRY_RUN`; `command -v rsync` no início com mensagem clara; nenhum `mkdir`/`rm` em dry-run; remover toda chave iniciada por `_` de `settings-base.json` antes do merge.

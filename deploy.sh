@@ -47,6 +47,13 @@ for arg in "$@"; do
   esac
 done
 
+# ── Pré-requisitos (B-003): falhar cedo, antes de tocar qualquer destino ─────
+for bin in rsync python3; do
+  if ! command -v "$bin" >/dev/null 2>&1; then
+    echo "❌ $bin não encontrado no PATH — necessário para o deploy" >&2; exit 1
+  fi
+done
+
 # ── Helpers ─────────────────────────────────────────────────────────────
 log()  { echo "  $1"; }
 ok()   { echo "  ✅ $1"; }
@@ -86,7 +93,7 @@ copy_skills_md() {
 
 copy_dir() {
   local src_dir="$1" dst_dir="$2"
-  mkdir -p "$dst_dir"
+  $DRY_RUN || mkdir -p "$dst_dir"
   for f in "$src_dir"/*; do
     [ -f "$f" ] || continue
     copy_file "$f" "$dst_dir/$(basename $f)"
@@ -159,6 +166,9 @@ base_src = os.environ['BASE_SRC']; settings = os.environ['SETTINGS']
 with open(base_src) as f: base = json.load(f)
 base.pop('_comment', None)
 base.pop('_unset_rationale', None)
+# Toda chave `_…` é documentação do repo, nunca configuração viva (E-A33).
+for k in [k for k in list(base) if k.startswith('_') and k != '_unset']:
+    base.pop(k, None)
 # _unset: caminhos "a.b" que o OSForge quer REMOVER da settings viva. Sem isso o
 # merge só sabe adicionar, e uma configuração empurrada por engano fica presa
 # para sempre em ~/.claude/settings.json. Mesma classe de problema que o merge
@@ -208,8 +218,13 @@ with open(mcp_src) as f:
     src = json.load(f)
 new_mcps = src.get('mcpServers', {})
 
-with open(claude_json) as f:
-    current = json.load(f)
+try:
+    with open(claude_json) as f:
+        current = json.load(f)
+except FileNotFoundError:
+    current = {}   # máquina nova: ~/.claude.json ainda não existe (B-003, E-A31)
+except json.JSONDecodeError as exc:
+    raise SystemExit(f"  ❌ ~/.claude.json inválido, não vou sobrescrever: {exc}")
 cur_mcps = current.setdefault('mcpServers', {})
 
 added = []
@@ -305,7 +320,7 @@ deploy_claude() {
   echo ""
   log "Commands spec-* (9):"
   # Remover legados com ':' no nome (pré-ADR-008, ilegal em NTFS/Windows)
-  rm -f "$CLAUDE/commands/spec:"*.md 2>/dev/null || true
+  $DRY_RUN || rm -f "$CLAUDE/commands/spec:"*.md 2>/dev/null || true
   copy_dir "$REPO/commands" "$CLAUDE/commands"
 
   echo ""
@@ -319,7 +334,7 @@ deploy_claude() {
 
   echo ""
   log "Hook scripts e Python hooks:"
-  mkdir -p "$CLAUDE/hooks"
+  $DRY_RUN || mkdir -p "$CLAUDE/hooks"
   for f in "$REPO/hooks/"*.sh "$REPO/hooks/"*.py; do
     [ -f "$f" ] || continue
     if $DRY_RUN; then skip "cp $(basename $f) + chmod +x"; continue; fi
@@ -343,7 +358,7 @@ deploy_claude() {
   copy_file "$REPO/claude-code/CONTEXT.md" "$CLAUDE/CONTEXT.md"
 
   log "Authoring templates/standards → docs/:"
-  mkdir -p "$CLAUDE/docs"
+  $DRY_RUN || mkdir -p "$CLAUDE/docs"
   copy_file "$REPO/docs/PLAN.template.md"   "$CLAUDE/docs/PLAN.template.md"
   copy_file "$REPO/docs/SKILL.template.md"  "$CLAUDE/docs/SKILL.template.md"
   copy_file "$REPO/docs/SKILL-STANDARD.md"  "$CLAUDE/docs/SKILL-STANDARD.md"
@@ -356,12 +371,16 @@ deploy_claude() {
   echo ""
   log "Verificar drift MCPs:"
   # REPO via env: hardcoding ~/Development/osforge broke any clone living elsewhere.
+  if $DRY_RUN; then skip "drift MCPs (lê ~/.claude.json)"; else
   MCP_SRC="$REPO/mcp/claude-code.json" python3 - <<'PYEOF'
 import json, os
 with open(os.environ["MCP_SRC"]) as f:
     repo_mcps = set(json.load(f).get("mcpServers", {}).keys())
-with open(os.path.expanduser("~/.claude.json")) as f:
-    live_mcps = set(json.load(f).get("mcpServers", {}).keys())
+try:
+    with open(os.path.expanduser("~/.claude.json")) as f:
+        live_mcps = set(json.load(f).get("mcpServers", {}).keys())
+except (FileNotFoundError, json.JSONDecodeError):
+    live_mcps = set()
 extra = live_mcps - repo_mcps
 missing = repo_mcps - live_mcps
 if extra:
@@ -371,6 +390,7 @@ if missing:
 if not extra and not missing:
     print("  ✅ MCPs em paridade")
 PYEOF
+  fi
 
   echo ""
   ok "Claude Code deploy completo"
@@ -676,8 +696,9 @@ deploy_cursor() {
 
   echo ""
   log "Hook scripts:"
-  mkdir -p "$CURSOR/hooks"
-  for f in "$REPO/hooks/"*.sh; do
+  $DRY_RUN || mkdir -p "$CURSOR/hooks"
+  for f in "$REPO/hooks/"*.sh "$REPO/hooks/"*.py; do
+    [ -f "$f" ] || continue
     if $DRY_RUN; then skip "cp $(basename $f) + chmod +x"; continue; fi
     cp "$f" "$CURSOR/hooks/"
     chmod +x "$CURSOR/hooks/$(basename $f)"
@@ -694,7 +715,7 @@ deploy_cursor() {
   copy_file "$REPO/claude-code/CONTEXT.md" "$CURSOR/CONTEXT.md"
 
   log "Authoring templates/standards → docs/:"
-  mkdir -p "$CURSOR/docs"
+  $DRY_RUN || mkdir -p "$CURSOR/docs"
   copy_file "$REPO/docs/PLAN.template.md"   "$CURSOR/docs/PLAN.template.md"
   copy_file "$REPO/docs/SKILL.template.md"  "$CURSOR/docs/SKILL.template.md"
   copy_file "$REPO/docs/SKILL-STANDARD.md"  "$CURSOR/docs/SKILL-STANDARD.md"

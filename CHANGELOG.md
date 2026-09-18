@@ -17,12 +17,26 @@ All notable changes to OSForge are recorded here. The format follows
 - **ADR-015** — evolution programme: import mechanisms, not content; measure before adopting.
 - `.out-of-scope/ecc-imports.md` — what was rejected from ECC and why.
 
-### Known defects (found by the audit, open until stage 0 of the backlog ships)
-- `scan-secrets.sh` is inert under Claude Code (reads the Cursor payload shape) — B-002.
-- GateGuard grants on a bare "ok"/"proceed" with no pending denial — B-001.
+### Fixed (stage 0 of `docs/BACKLOG-EVOLUCAO.md`)
+- **GateGuard grant requires a pending denial** (B-001, E-A05): a turn grant ("ok", "sim",
+  "proceed", "tem permissão") is accepted only within 10 min of a denial in the same session;
+  otherwise it is logged as `GRANT-IGNORED-NO-PENDING-DENIAL` and nothing opens. Session grants
+  stay explicit. `OSFORGE_GATEGUARD_LEGACY_GRANT=1` restores the old behaviour for one release.
+  `tests/test-gateguard-grant.sh`: 67 → 79 cases.
+- **`scan-secrets` works under Claude Code** (B-002, E-A01): rewritten as `hooks/scan-secrets.py`
+  (the `.sh` is a wrapper); reads `tool_input.command` or `command`, answers in each harness's
+  contract, scans the **staged diff content** with bounded patterns (`sk-`, `ghp_`, `AKIA`, Slack,
+  URL credentials, PEM, `password =`), blocks root `rm -rf`; `osforge:allow-secret` for fixtures;
+  `OSFORGE_SCAN_SECRETS=off`. New offline test `tests/test-scan-secrets.sh` (33 cases).
+  `deploy_cursor` now copies `.py` hooks too.
+- **`deploy.sh` on a fresh HOME** (B-003, E-A31, E-A33): tolerates a missing `~/.claude.json`,
+  refuses to overwrite an invalid one, checks `rsync`/`python3` up front, gates the MCP drift
+  check and every `mkdir`/`rm` behind `--dry-run` (dry-run now creates nothing), and drops every
+  `_`-prefixed documentation key from `settings-base.json` before merging.
+
+### Known defects (found by the audit, open until later stages ship)
 - `deploy.sh` unregisters user hooks under `~/.claude/hooks/`, overwrites same-name agents
-  without backup, deletes user skills, clobbers its own `settings.json` backup and fails on a
-  fresh HOME — B-003, B-014–B-016.
+  without backup, deletes user skills and clobbers its own `settings.json` backup — B-014–B-016.
 - Session resume keys on the directory basename, injects stored text verbatim and shows the
   cross-project board in satellite sessions — B-018, B-019.
 

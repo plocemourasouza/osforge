@@ -470,9 +470,13 @@ chmod +x ~/.claude/hooks/*
 - Grava observações de comportamento do Claude para alimentar o ciclo `evolve`
 - Permite que padrões de sessão virem skills automaticamente
 
-**`scan-secrets.sh`** (PreToolUse — Bash)
-- Bloqueia commits que contenham segredos/secrets antes de chegar ao `git push`
-- Varre por padrões: API keys, tokens, senhas em variáveis, credentials hardcoded
+**`scan-secrets.sh` → `scan-secrets.py`** (PreToolUse — Bash; Cursor `beforeShellExecution`)
+- Bloqueia `git commit`/`git push` quando o **diff staged** adiciona algo com cara de credencial
+  (`sk-…`, `ghp_…`, `AKIA…`, token Slack, credencial em URL, bloco PEM, `password = …`), e
+  `rm -rf` apontado para `/`, `~`, `$HOME` ou diretório pai
+- Lê o payload dos dois harnesses (`tool_input.command` no Claude Code, `command` no Cursor) e
+  responde no contrato de cada um. Fixture com chave falsa: `osforge:allow-secret` na linha.
+  Kill-switch: `OSFORGE_SCAN_SECRETS=off`. Teste offline: `tests/test-scan-secrets.sh`
 
 **`gateguard.py`** (PreToolUse — Bash; UserPromptSubmit)
 - Fact-forcing: bloqueia **somente** o irreversível/compartilhado:
@@ -483,7 +487,11 @@ chmod +x ~/.claude/hooks/*
   responde com uma autorização explícita — "tem permissão", "pode executar/apagar", "autorizo",
   "vai em frente", "go ahead", "you have my permission" — ou com uma afirmativa curta como
   mensagem inteira ("sim", "pode", "ok", "vai", "yes"), o gate libera **até a sua próxima mensagem**
-  (teto de 15 min, `OSFORGE_GATEGUARD_GRANT_TTL` em segundos). O agente recebe um
+  (teto de 15 min, `OSFORGE_GATEGUARD_GRANT_TTL` em segundos). **A liberação só vale como
+  resposta a uma negação**: sem nada negado nos últimos 10 min na sessão, "ok"/"sim"/"proceed"
+  são conversa e não abrem o gate (B-001; `OSFORGE_GATEGUARD_LEGACY_GRANT=1` restaura o
+  comportamento antigo por uma versão). `gateguard: sessão liberada` continua explícito e não
+  precisa de negação. O agente recebe um
   `additionalContext` avisando que não precisa apresentar os fatos. Negações nunca liberam
   ("não pode apagar", "don't do it"); um afirmativo perdido numa mensagem longa também não.
   - `gateguard: sessão liberada` (ou `gateguard off`) → abre o gate até o fim da sessão
