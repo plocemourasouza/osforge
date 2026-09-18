@@ -1,6 +1,10 @@
 # routing-cases.tsv — eval de roteamento do orquestrador (DETECT → agente/skill/tier)
 # Formato (TAB): id	expected_agents	expected_skill	expected_tier	prompt
 #   expected_agents: alternativas com | (qualquer uma passa). "-" = não asserta.
+#                    Com `!` na frente, SÓ despacho real de subagente conta (B-010):
+#                    é o contrato das skills pesadas (offensive-*, imagegen-*, agency/*),
+#                    que o CLAUDE.md manda carregar DENTRO de um subagente. Anunciar
+#                    `@penetration-tester` e responder sozinho não cumpre esse contrato.
 #   expected_skill : nome da skill cuja evidência (invocação nativa OU leitura do
 #                    SKILL.md) deve aparecer. Alternativas com |. "-" = não asserta.
 #   expected_tier  : palavra de tier esperada na resposta (Roster/manifesto de plano).
@@ -19,7 +23,7 @@ r08	game-developer	game-development|web-games|2d-games|brainstorming	-	Quero faz
 r09	seo-specialist	seo-fundamentals|genai-optimization	-	Nosso blog não aparece nem no Google nem nas respostas do ChatGPT. O que fazer?
 r10	performance-optimizer	performance-profiling|react-performance|nextjs-react-expert|core-web-vitals	-	O LCP da home passa de 4s no mobile. Preciso baixar isso.
 r11	code-refactorer|code-archaeologist	clean-code|codebase-design|plan-writing	-	Monta o plano de refatoração segura, passo a passo, para um módulo legado de milhares de linhas sem testes — aplicando a disciplina da casa.
-r12	penetration-tester	offensive-jwt|offensive-idor	-	Teste a autenticação da minha API atrás de bypass: JWT fraco, IDOR, esse tipo de coisa.
+r12	!penetration-tester	offensive-jwt|offensive-idor	-	Teste a autenticação da minha API atrás de bypass: JWT fraco, IDOR, esse tipo de coisa.
 r13	product-manager|product-owner	prd-builder|requirements-clarify|brainstorming	-	Tenho uma ideia de feature de assinaturas mas os requisitos estão vagos. Me ajuda a estruturar?
 r14	planner|system-architect|orchestrator	plan-writing|osforge-canvas	sonnet|opus|fable	Feature completa: painel de admin com login, permissões por papel, CRUD de usuários e auditoria de ações. Monta o plano.
 r15	git-commit-helper	-	-	Corrigi um bug de null no cálculo de frete e aproveitei para renomear duas funções. Como estruturo isso em commits convencionais bem formatados?

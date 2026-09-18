@@ -1,0 +1,76 @@
+{
+  "$schema": "osforge/trigger-eval/v1",
+  "skill": "requirements-clarify",
+  "rel": "planning/requirements-clarify",
+  "core": true,
+  "note": "Resolver ambiguidade de um pedido antes de agir.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "query": "Melhora a performance do sistema."
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "query": "Deixa o app mais rápido e mais bonito."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "query": "Arruma o problema do relatório."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "query": "Quero integrar com o ERP deles."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "query": "Faz o sistema ficar seguro."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "query": "Troca o texto do botão de 'Enviar' para 'Confirmar'."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "query": "Roda a migration pendente no banco de staging."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "query": "Qual versão do Node o projeto usa?"
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "query": "Adiciona o campo created_at na tabela orders, tipo timestamptz, default now()."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "query": "Faz commit do que está staged com a mensagem 'fix: corrige máscara de CPF'."
+    }
+  ]
+}

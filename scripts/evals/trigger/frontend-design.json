@@ -1,0 +1,76 @@
+{
+  "$schema": "osforge/trigger-eval/v1",
+  "skill": "frontend-design",
+  "rel": "frontend-design",
+  "core": true,
+  "note": "Decisões visuais e de interface de alto nível.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "query": "Essa tela está feia e eu não sei dizer por quê."
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "query": "Quero que a landing pareça profissional, hoje parece template genérico."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "query": "O dashboard tem informação demais e ninguém acha o que importa."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "query": "Preciso definir a cara do produto antes de sair montando componente."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "query": "A hierarquia visual dessa página está confusa para o usuário novo."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "query": "Por que o useEffect está rodando duas vezes?"
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "query": "Configura o Tailwind com o preset da empresa."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "query": "Escreve o texto do e-mail de boas-vindas."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "query": "Otimiza as imagens do diretório public."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "query": "Corrige o erro de hidratação no Next."
+    }
+  ]
+}

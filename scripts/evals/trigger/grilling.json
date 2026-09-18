@@ -1,0 +1,76 @@
+{
+  "$schema": "osforge/trigger-eval/v1",
+  "skill": "grilling",
+  "rel": "grilling",
+  "core": true,
+  "note": "Entrevista impiedosa sobre um plano até fechar todos os ramos.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "query": "Terminei o plano da migração de banco. Quero que você me interrogue antes de eu aprovar."
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "query": "Esse plano parece bom demais. Ataca ele com perguntas difíceis."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "query": "Antes de eu mandar isso para o time, encontra os buracos no meu raciocínio."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "query": "Me faz as perguntas que o meu tech lead faria nesse desenho."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "query": "Quero fechar todas as decisões em aberto desse plano antes de começar."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "query": "Escreve o plano de migração do banco para mim."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "query": "Roda o lint e arruma o que der."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "query": "Explica como funciona o índice B-tree do Postgres."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "query": "Gera os testes e2e do fluxo de login."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "query": "Resume essa thread de e-mail em três linhas."
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "$schema": "osforge/trigger-eval/v1",
+  "skill": "code-review",
+  "rel": "quality/code-review",
+  "core": true,
+  "note": "Revisão estruturada de mudanças de código.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "query": "Terminei a feature de cupom. Dá uma olhada antes de eu abrir o PR?"
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "query": "Revisa esse diff com olhar crítico, principalmente a parte de permissão."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "query": "Quero uma segunda opinião nessas mudanças antes do merge."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "query": "O PR do estagiário está aberto há dois dias. Consegue revisar?"
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "query": "Olha esse commit e me diz o que você mudaria."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "query": "Escreve a feature de cupom para mim."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "query": "Faz o merge da branch na main."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "query": "Qual a convenção de commit que a gente usa mesmo?"
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "query": "Gera o changelog da versão 2.1."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "query": "Roda o prettier em tudo."
+    }
+  ]
+}

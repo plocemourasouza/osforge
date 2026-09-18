@@ -1,0 +1,76 @@
+{
+  "$schema": "osforge/trigger-eval/v1",
+  "skill": "osforge-canvas",
+  "rel": "osforge-canvas",
+  "core": true,
+  "note": "Apresentar plano/spec como artefato visual revisável.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "query": "Quero revisar o plano de implementação antes de codar. Tem como ver tudo organizado?"
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "query": "Me mostra a proposta de um jeito que eu consiga aprovar ponto a ponto."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "query": "Prefiro olhar isso numa tela e ir marcando o que aprovo e o que não."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "query": "Monta uma visão do escopo para eu comentar em cima, item por item."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "query": "Quero dar feedback estruturado nesse desenho, não responder num parágrafo."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "query": "Me manda o plano em markdown mesmo, num arquivo."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "query": "Sobe o servidor local do projeto na porta 3000."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "query": "Faz um diagrama de arquitetura dos serviços."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "query": "Quais componentes do shadcn eu já uso no projeto?"
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "query": "Corrige o CSS do header que quebrou no mobile."
+    }
+  ]
+}

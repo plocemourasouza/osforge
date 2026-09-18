@@ -47,11 +47,13 @@ whatever language the reply is in. `skill:` names the discipline about to be app
 stated explicitly — silence is not an option). One line, then proceed. This is not ceremony: it is
 the DETECT decision made visible, which (a) forces agent/skill/model to be DECIDED before the work
 starts instead of implied after, and (b) makes routing auditable — measured without it, 12 of 16
-demands were answered with no identifiable routing at all.
+demands were answered with no identifiable routing at all (medição de 2026-08, anterior ao formato
+versionado; refazer com `./scripts/test-orchestrator-routing.sh --report` → `docs/evals/`).
 
 **Declaring a skill OBLIGES loading it** before the work: a core skill by invoking it (Skill tool),
 a manifest skill by reading its `SKILL.md`, a heavy one by dispatching the subagent that reads it.
-Measured: 5 of 7 routing failures were the right skill DECLARED on the route line and then never
+Measured (mesma rodada de 2026-08, ainda não versionada — ver `docs/evals/README.md`):
+5 of 7 routing failures were the right skill DECLARED on the route line and then never
 opened — the discipline never actually informed the answer. A declaration without the load is the
 exact failure the route line exists to expose; if you will not load it, write `skill: none` and own
 the choice.
@@ -81,8 +83,9 @@ Skills reach you through two channels, and confusing them is how a capability go
 **Resolution protocol** — runs in TWO situations, and the second is the one skipped in practice:
 (a) a capability seems missing; (b) **you are about to produce a multi-step deliverable you feel
 able to write unaided** — a review, an audit, a flow, a plan. Feeling able is not the test
-(measured: "create a customer service flow" and "check for SQL injection/XSS" were both answered
-competently with the matching skill never consulted). Scan the manifest before starting, then:
+(medido em 2026-08, pendente de versionamento em `docs/evals/`: "create a customer service flow"
+and "check for SQL injection/XSS" were both answered competently with the matching skill never
+consulted). Scan the manifest before starting, then:
 1. **Lexical** — a manifest trigger matches → `Read` the skill's `SKILL.md` and follow it.
 2. **Semantic** — no trigger matches but the intent is clear → `osforge-db search-semantic "<intent>"`,
    then `buscar-skill.py <term>`. Cross-lingual: the user prompts in pt-BR, descriptions are English.

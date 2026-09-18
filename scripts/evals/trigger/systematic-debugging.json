@@ -1,0 +1,76 @@
+{
+  "$schema": "osforge/trigger-eval/v1",
+  "skill": "systematic-debugging",
+  "rel": "systematic-debugging",
+  "core": true,
+  "note": "Loop de feedback determinístico antes de mexer no código.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "query": "Minha API devolve 500 em produção mas funciona local. Como investigo isso sem chutar?"
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "query": "O teste passa sozinho e falha quando roda a suíte inteira. Não faço ideia do porquê."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "query": "O upload falha de vez em quando, uma vez a cada vinte. Já mexi em três lugares e piorou."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "query": "Tem um vazamento de memória no worker e eu não consigo reproduzir na minha máquina."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "query": "Depois do deploy de ontem os webhooks pararam. Preciso achar a causa, não remendar."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "query": "Escreve um teste unitário para essa função de formatação de data."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "query": "Como configuro o debugger do VS Code para Next.js?"
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "query": "Refatora esse componente em dois menores."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "query": "Qual a diferença entre erro 502 e 504?"
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "query": "Adiciona um log de auditoria quando o usuário troca a senha."
+    }
+  ]
+}

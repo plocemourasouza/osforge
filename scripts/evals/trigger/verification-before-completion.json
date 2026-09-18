@@ -1,0 +1,76 @@
+{
+  "$schema": "osforge/trigger-eval/v1",
+  "skill": "verification-before-completion",
+  "rel": "verification-before-completion",
+  "core": true,
+  "note": "Provar que terminou, em vez de declarar.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "query": "Acabei de corrigir o bug do formulário. Posso considerar resolvido?"
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "query": "Terminei a implementação. Falta alguma coisa antes de eu fechar a task?"
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "query": "Acho que está pronto para produção. Como confirmo isso?"
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "query": "Já testei na minha máquina e funcionou. É suficiente?"
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "query": "Vou marcar como concluído. Tem algum passo que eu costumo esquecer?"
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "query": "Começa a implementar a feature de cupom."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "query": "Por que o build está falhando?"
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "query": "Escreve o plano da próxima sprint."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "query": "Explica o que é integração contínua."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "query": "Abre um PR com as mudanças atuais."
+    }
+  ]
+}

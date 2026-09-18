@@ -39,6 +39,11 @@ python3 scripts/check-unicode.py        # Invisible/bidi/tag code points in ever
 ./tests/test-session-continuity.sh      # One project identity for all hooks; resume as scoped, capped, scrubbed data (offline)
 ./tests/test-canvas-feedback.sh         # Canvas feedback drain (Stop) + server-side validation against the artifact (offline; bun for the server part)
 ./tests/test-context-usage.sh           # Context-threshold warning from real usage + per-session/project tokens (offline)
+
+# Evals (consomem API; --dry lista e valida sem chamar modelo — é o que o CI roda):
+./scripts/test-skill-triggering.sh --dry            # ou --model <id> --runs 3 --report docs/evals/<data>-<modelo>-skills.md
+./scripts/test-orchestrator-routing.sh --dry        # ou --model <id> --runs 3 [--home DIR] --report …-routing.md
+./scripts/run-trigger-eval.sh --dry [--split eval]  # ou --model <id> --runs 3 --report …-trigger.md
 python3 scripts/check-counts.py         # Numbers quoted in README/CLAUDE.md/USAGE match the tree (deploy gate)
 ./scripts/test-skill-triggering.sh --generated --sample 20   # Real triggering run (consumes API)
 
@@ -52,6 +57,7 @@ Deploy behavior worth knowing:
 - Hooks (`hooks/hooks-claude-code.json` → `~/.claude/settings.json`) merge **reconciling**: OSForge-managed hooks (command under `.claude/hooks/`) are authoritative — matcher/command changes propagate and removed hooks vanish; the user's own hooks are preserved. MCPs (`mcp/claude-code.json` → `~/.claude.json`) merge non-destructively (union). Deploy reports MCP drift between repo and live config.
 - Critical files are backed up to `~/.claude_backups/` before overwrite.
 - Pre-flight gates (abort the deploy): manifest drift, `tests/hooks/run-contracts.sh`, `scripts/check-agents.py`, `scripts/check-counts.py`, `scripts/check-unicode.py`. CI (`.github/workflows/ci.yml`) runs the same set plus `bash -n`/`py_compile`, a dry-run deploy in an empty HOME and `tests/test-deploy-lifecycle.sh`.
+- Evals: `--model` é obrigatório fora de `--dry`, cada caso roda `--runs` vezes (padrão 3) e o relatório vai para `docs/evals/` (`docs/evals/README.md` explica o formato e lista o que ainda é narrativa). PASS é `k = N`; `0 < k < N` é FLAKY e reprova.
 - The deploy keeps state (`scripts/osforge-state.py`, `~/.osforge/install-state.json`): it never overwrites a file you edited, never deletes a skill/hook of yours, and can `--doctor`/`--uninstall`/`--restore`. `OSFORGE_DEPLOY_LEGACY=1` = old path, one release.
 
 ## Architecture

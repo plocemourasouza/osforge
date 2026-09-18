@@ -3,9 +3,11 @@
 route-guard.py — Stop hook
 
 Enforcement DETERMINÍSTICO do contrato de roteamento (CLAUDE.md §route line),
-no espírito do GateGuard: prosa pede, hook garante. Medido antes dele existir:
-a linha de rota disparava em 14/16 demandas e a skill declarada era carregada
-em ~metade — prompt-only chega nesse teto e para.
+no espírito do GateGuard: prosa pede, hook garante. Medido antes dele existir
+(rodada de 2026-08, anterior ao formato versionado — refazer com
+`scripts/test-orchestrator-routing.sh --report docs/evals/<data>-<modelo>-routing.md`,
+ver docs/evals/README.md): a linha de rota disparava em 14/16 demandas e a skill
+declarada era carregada em ~metade — prompt-only chega nesse teto e para.
 
 Verifica, na última resposta do assistant:
   1. Demanda acionável sem linha de rota  → bloqueia 1x pedindo a linha.

@@ -1,0 +1,76 @@
+{
+  "$schema": "osforge/trigger-eval/v1",
+  "skill": "edge-case-hunter",
+  "rel": "quality/edge-case-hunter",
+  "core": true,
+  "note": "Enumeração sistemática de casos de borda.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "query": "O que pode dar errado nesse fluxo de pagamento que eu não pensei?"
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "query": "Lista as situações limite dessa função de parcelamento."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "query": "Usuário sem e-mail, sem CPF, com nome vazio — o que mais pode acontecer aqui?"
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "query": "Quero mapear todos os caminhos infelizes antes de escrever os testes."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "query": "Essa API assume que o array nunca vem vazio. O que mais ela assume?"
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "query": "Escreve os testes de unidade dessa função."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "query": "Por que esse teste está flaky?"
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "query": "Explica o que é property-based testing."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "query": "Aumenta o timeout do teste e2e."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "query": "Configura o coverage no CI."
+    }
+  ]
+}

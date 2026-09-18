@@ -17,6 +17,12 @@
 # Requer definidos pelo chamador:
 #   REPO_ROOT     raiz do repo OSForge
 #   OUTPUT_BASE   diretório de trabalho (para o mapa de skills)
+#
+# O VEREDITO em si mora em lib/stream_assert.py (B-010): uma linha do stream é uma
+# MENSAGEM com vários blocos, e o grep por linha deixava passar "texto que cita o
+# caminho + tool_use de outro arquivo" como se a skill tivesse sido lida. O par
+# (ferramenta, caminho) é conferido dentro do MESMO bloco tool_use. As funções abaixo
+# são a interface bash desse motor e mantêm a assinatura antiga.
 # =============================================================================
 
 # Extrai skills acionadas do log (nome do campo "skill" nos eventos)
@@ -28,17 +34,17 @@ extract_triggered_skills() {
 
 # ── Invocação nativa ────────────────────────────────────────────────────────
 # Evento da ferramenta Skill com o nome esperado (aceita namespace "ns:nome").
-check_skill_triggered() {
-    local log_file="$1"
-    local skill_name="$2"
 
-    local skill_pattern='"skill":"([^"]*:)?'"${skill_name}"'"'
-
-    if grep -q '"name":"Skill"' "$log_file" 2>/dev/null && \
-       grep -qE "$skill_pattern" "$log_file" 2>/dev/null; then
-        return 0
+STREAM_ASSERT="${STREAM_ASSERT:-}"
+_stream_assert() {
+    if [ -z "$STREAM_ASSERT" ]; then
+        STREAM_ASSERT="${REPO_ROOT}/scripts/lib/stream_assert.py"
     fi
-    return 1
+    python3 "$STREAM_ASSERT" "$@"
+}
+
+check_skill_triggered() {
+    _stream_assert skill-triggered "$1" "$2"
 }
 
 # ── Resolução via manifesto (Model A) ───────────────────────────────────────
@@ -81,22 +87,12 @@ is_core_skill() {
 }
 
 # PASS por resolução: o stream mostra uma LEITURA do SKILL.md da skill esperada.
-# Nome da ferramenta e caminho têm de estar no MESMO evento — só citar o caminho
-# em prosa não conta como ter alcançado a skill.
+# Nome da ferramenta e caminho têm de estar no MESMO BLOCO tool_use — citar o caminho
+# num bloco de texto da mesma mensagem não conta como ter alcançado a skill.
+# Carga por procuração: despacho de subagente cujo prompt cita o SKILL.md ou o nome da
+# skill — a leitura acontece DENTRO do subagente, invisível no stream principal.
 check_skill_resolved() {
-    local log_file="$1"
-    local rel="$2"
-    [ -z "$rel" ] && return 1
-
-    if grep -E '"name":"(Read|Glob|Grep|Bash)"' "$log_file" 2>/dev/null \
-        | grep -qF "skills/${rel}/SKILL.md" 2>/dev/null; then return 0; fi
-    # Carga por procuração: despacho de subagente cujo prompt cita o SKILL.md
-    # ou o nome da skill. O r03 real despachou @security-auditor com a
-    # metodologia — a leitura acontece DENTRO do subagente, invisível no
-    # stream principal, e o despacho é o próprio ato de carregar.
-    local base="${rel##*/}"
-    grep -E '"name":"(Task|Agent)"' "$log_file" 2>/dev/null \
-        | grep -qE "skills/${rel}/SKILL\.md|\b${base}\b" 2>/dev/null
+    _stream_assert skill-resolved "$1" "$2"
 }
 
 # ── Roteamento do orquestrador ──────────────────────────────────────────────
@@ -106,41 +102,55 @@ check_skill_resolved() {
 
 # Texto do assistant concatenado (para asserções de prosa: @agent, tier).
 response_text() {
-    local log_file="$1"
-    if command -v jq &>/dev/null; then
-        grep '"type":"assistant"' "$log_file" 2>/dev/null \
-            | jq -r '[.message.content[]? | select(.type=="text") | .text] | join("\n")' 2>/dev/null
-    else
-        grep -o '"text":"[^"]*"' "$log_file" 2>/dev/null | sed 's/"text":"//;s/"$//'
-    fi
+    _stream_assert text "$1"
 }
 
 # Agente esperado alcançado? Aceita lista separada por | (alternativas válidas).
+# Evidências: anúncio deliberado (@nome, `nome`, **nome**), despacho real, leitura do AGENT.md.
 check_agent_routed() {
-    local log_file="$1"
-    local agents_alt="$2"   # ex.: "debugger|backend-engineer"
-    local text; text="$(response_text "$log_file")"
-    local IFS='|'
-    for a in $agents_alt; do
-        # 1. nomeação deliberada no texto: @nome (linha de rota), `nome` ou **nome**.
-        #    Menção nua em prosa NÃO conta — "use um debugger" não é roteamento.
-        if printf '%s' "$text" | grep -qE "@${a}|\\*\\*${a}\\*\\*|\`${a}\`"; then return 0; fi
-        # 2. despacho real de subagente
-        if grep -qE "\"subagent_type\":\"${a}\"" "$log_file" 2>/dev/null; then return 0; fi
-        # 3. leitura do AGENT.md correspondente
-        if grep -E '"name":"(Read|Bash)"' "$log_file" 2>/dev/null | grep -q "agents/${a}"; then return 0; fi
-    done
-    return 1
+    _stream_assert agent-routed "$1" "$2"
+}
+
+# Delegação DE VERDADE: só despacho de subagente conta (B-010). Casos cujo contrato é
+# "isto tem de virar subagente" usam esta asserção — anunciar `@security-auditor` e
+# responder sozinho satisfazia a asserção antiga e não é delegar.
+check_agent_dispatched() {
+    _stream_assert agent-dispatched "$1" "$2"
 }
 
 # Tier de modelo citado na resposta (Roster do plano / manifesto de tasks).
 check_tier_mentioned() {
-    local log_file="$1"
-    local tier="$2"         # sonnet | opus | haiku (aceita alternativas com |)
-    local text; text="$(response_text "$log_file")"
-    local IFS='|'
-    for t in $tier; do
-        if printf '%s' "$text" | grep -qiE "\b${t}\b"; then return 0; fi
-    done
-    return 1
+    _stream_assert tier "$1" "$2"
+}
+
+# ── Relatório versionável (B-012) ───────────────────────────────────────────
+# emit_eval_report <suite> <arquivo_md> <casos.jsonl> <epoch_inicio> <comando> [logs...]
+# Junta metadados (SHA, versão, modelo, HOME, tempo) + tokens somados dos streams e
+# chama lib/eval_report.py. Sem isto, um número de eval em prosa não diz de quando é.
+emit_eval_report() {
+    local suite="$1" out="$2" cases="$3" started="$4" cmd="$5"; shift 5
+    local toks; toks="$(python3 "${REPO_ROOT}/scripts/lib/stream_assert.py" tokens "$@" 2>/dev/null || echo '0 0 0 0')"
+    local sha dirty version
+    sha="$(git -C "$REPO_ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+    dirty="$(git -C "$REPO_ROOT" status --porcelain 2>/dev/null | head -1)"
+    version="$(tr -d '[:space:]' < "$REPO_ROOT/VERSION" 2>/dev/null || echo dev)"
+    python3 - "$suite" "$cases" "$started" "$cmd" "$sha" "$version" "$dirty" \
+              "${MODEL:-?}" "${RUNS:-1}" "${HOME_OVERRIDE:-$HOME}" "$toks" "$out" \
+              "${REPO_ROOT}/scripts/lib/eval_report.py" <<'PY' >/dev/null
+import json, subprocess, sys, time, os
+suite, cases, started, cmd, sha, version, dirty, model, runs, home, toks, out, gen = sys.argv[1:14]
+rows = [json.loads(l) for l in open(cases, encoding="utf-8") if l.strip()]
+i, o, cr, cc = (int(x) for x in toks.split())
+payload = {
+    "suite": suite, "model": model, "runs": int(runs), "command": cmd.strip(),
+    "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(int(started))),
+    "duration_s": int(time.time()) - int(started),
+    "repo_sha": sha, "repo_version": version, "dirty": bool(dirty), "home": home,
+    "tokens": {"input": i, "output": o, "cache_read": cr, "cache_create": cc},
+    "cases": rows,
+}
+p = subprocess.run([sys.executable, gen, out], input=json.dumps(payload), text=True)
+sys.exit(p.returncode)
+PY
+    echo "Relatório: $out"
 }

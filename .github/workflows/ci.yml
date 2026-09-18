@@ -53,5 +53,11 @@ jobs:
           H="$(mktemp -d)"
           HOME="$H" ./deploy.sh --dry-run --no-qdrant --no-archify
           test "$(find "$H" -type f | wc -l | tr -d ' ')" = "0"
+      - name: Eval suites are listable and valid (dry-run, no API calls)
+        run: |
+          set -e
+          ./scripts/test-skill-triggering.sh --dry >/dev/null
+          ./scripts/test-orchestrator-routing.sh --dry >/dev/null
+          ./scripts/run-trigger-eval.sh --dry >/dev/null
       - name: Deploy lifecycle (state, drift, prune, uninstall, restore) in a seeded HOME
         run: ./tests/test-deploy-lifecycle.sh

@@ -178,11 +178,43 @@ All notable changes to OSForge are recorded here. The format follows
   `~/.cursor/orchestrator/`); `AGENT.md` cites those paths and uses `model: sonnet` instead of
   the non-schema `always-active` / `model-tier` keys. The proportional-plan change waits for E3.
 
+### Added (stage 2 — evals that mean something)
+- **Model and repetitions pinned** (B-010, E-A45): both harnesses now require `--model`
+  outside `--dry`, run every case `--runs` times (default 3) and report **k of N**. PASS is
+  `k = N`; `0 < k < N` is **FLAKY** and fails the suite — one run cannot tell "the skill
+  triggers" from "it triggered once". New `--home DIR` (run against a clean deploy instead of
+  the live `~/.claude`), `--dry` (list and validate, calling no model) and `--report`.
+- **Verdict by block, not by line** (B-010): `scripts/lib/stream_assert.py` parses the
+  stream-json and requires the tool name and the path to be in the **same `tool_use` block**.
+  A message whose text quoted `skills/x/SKILL.md` while a `Read` in the same message opened
+  another file used to count as "skill reached". New `check_agent_dispatched`: routing cases
+  whose contract is delegation (heavy `offensive-*` skills) carry `!` in the agent column and
+  accept only a real subagent dispatch — announcing `@penetration-tester` and answering alone
+  is not delegating.
+- **Trigger eval connected** (B-011, E-A46): `scripts/run-trigger-eval.sh` drives the
+  `run_eval.py` that already shipped in `skill-creator` and that nothing ever called. 15 core
+  skills × (5 positive + 5 negative) = 150 hand-written cases in `scripts/evals/trigger/`,
+  each file carrying its 60/40 `tune`/`eval` split — a description tuned against the eval half
+  is tuned to the test. `--dry` validates (5+5 minimum, unique ids, no query shared between
+  skills, split covering every case) and prints the cost: 450 API calls for the whole suite,
+  180 for the `eval` split, 30 for one skill. The paid run awaits explicit authorisation.
+- **Results are versioned** (B-012): `docs/evals/README.md` + `scripts/lib/eval_report.py`,
+  behind `--report` on all three suites: repo SHA and version (marking a dirty tree), model id,
+  HOME, exact command, tokens summed from the streams (once per `message.id`), duration, and
+  the k-of-N table with the flaky list broken out for E1. The four loose "measured" numbers
+  (three in `claude-code/CLAUDE.md`, one in `hooks/route-guard.py`) now say they are from
+  2026-08 and unversioned, and are tabled under **Pendentes de versionamento** with the command
+  that redoes each one.
+- `tests/test-assertions.sh`: 26 → **60** offline checks, covering block precision, dispatch,
+  the model requirement, `--dry` with no `claude` on PATH at all, k-of-N aggregation with a
+  mock that hits once in three, report contents, and case-file validation. CI dry-runs the
+  three suites.
+
 ### Still open from the audit
-- Evals: model and repetitions pinned in both harnesses, trigger eval activated, results
-  versioned, stability run E1 (B-010–B-013; B-011/B-013 cost API calls). Proportional plan
-  (B-023/E-A38) after E3; `~/.claude/rules/` after measuring `paths:` (R-11); GateGuard
-  Edit/Write gate (E-A08) after E6; instincts loop (R-09) after E5.
+- **B-013 (E1, stability)** is ready to run and waits only on cost authorisation: pilot 6 API
+  calls, routing 48, trigger `eval` split 180 (commands in `docs/BACKLOG-EVOLUCAO.md`).
+- Proportional plan (B-023/E-A38) after E3; `~/.claude/rules/` after measuring `paths:` (R-11);
+  GateGuard Edit/Write gate (E-A08) after E6; instincts loop (R-09) after E5.
 
 ## [5.0.0] — 2026-09-10
 

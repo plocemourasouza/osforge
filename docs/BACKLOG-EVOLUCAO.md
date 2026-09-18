@@ -83,27 +83,43 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 
 ## Etapa 2 — Evals confiáveis
 
-### B-010 · Fixar modelo e repetições nos dois harnesses
+### B-010 · Fixar modelo e repetições nos dois harnesses — ✅ feito
 - **Recomendação / evidência:** R-08 · E-A45
 - **Arquivos:** `scripts/test-skill-triggering.sh`, `scripts/test-orchestrator-routing.sh`, `scripts/lib/harness-assertions.sh`, `tests/test-assertions.sh`.
 - **Mudança:** flags `--model` (obrigatória fora de `--dry`) e `--runs N` (padrão 3); relatório por caso = k de N; asserção de skill exige nome da ferramenta e caminho **no mesmo evento**; dimensão agente exige despacho (`Agent/Task`) quando o caso esperar delegação; opção `--home DIR` para rodar contra um deploy limpo.
 - **Aceite:** `tests/test-assertions.sh` cobre os dois modos novos com streams sintéticos; nenhuma chamada de API no teste offline.
 - **Esforço:** M.
+- **Resultado:** `--model` obrigatório fora de `--dry`, `--runs` (padrão 3) com veredito k de N (PASS só em `k = N`; `0 < k < N` = FLAKY, reprova), `--home DIR`, `--dry` (lista e valida sem chamar modelo) e `--report` nos dois harnesses. O veredito saiu do `grep` por linha para **lib/stream_assert.py**, que confere por BLOCO: texto citando o caminho + `tool_use` de outro arquivo na mesma mensagem passava como skill lida. Casos que exigem delegação levam `!` no campo de agente (`r12`) e só aceitam despacho real. `tests/test-assertions.sh`: 26 → 60 casos, todos offline.
 
-### B-011 · Ativar o eval de trigger que já existe
+### B-011 · Ativar o eval de trigger que já existe — ✅ feito (rodada paga pendente de autorização)
 - **Recomendação / evidência:** R-08 · E-A46
 - **Arquivos:** `skills/skill-creator/scripts/run_eval.py`, `run_loop.py`; **(NOVO)** `scripts/evals/trigger/<skill>.json` com consultas positivas e negativas; **(NOVO)** `scripts/run-trigger-eval.sh`.
 - **Mudança:** 5 positivas + 5 negativas escritas à mão para as 47 core, começando por 15; divisão 60/40 ajuste/avaliação registrada no arquivo.
 - **Aceite:** `--dry` lista os casos sem chamar modelo; uma rodada real gera `docs/evals/<data>-<modelo>-trigger.md`.
 - **Esforço:** M (a maior parte é escrever casos).
+- **Resultado:** `scripts/run-trigger-eval.sh` liga o `run_eval.py` que já existia e ninguém chamava (E-A46). 15 skills core × (5 positivas + 5 negativas) = 150 casos escritos à mão em `scripts/evals/trigger/`, com o split 60/40 gravado em cada arquivo (`tune` ajusta a description, `eval` mede). `--dry` valida (5+5 mínimos, ids únicos, consultas não repetidas entre skills, split cobrindo todos os casos) e imprime o custo: 450 chamadas a suíte inteira, 180 o split `eval`, 30 uma skill. **Falta só a rodada paga** — aguarda autorização de custo.
 
-### B-012 · Versionar resultados de eval
+### B-012 · Versionar resultados de eval — ✅ feito
 - **Arquivos (NOVOS):** `docs/evals/README.md`, `docs/evals/<data>-<modelo>-<suite>.md`.
 - **Conteúdo mínimo:** SHA do OSForge, id do modelo, comando, casos, k de N por caso, tokens e tempo totais. Substitui os números soltos em `claude-code/CLAUDE.md:49-50`, `hooks/route-guard.py:7-8` e na análise do Matt.
 - **Esforço:** P.
+- **Resultado:** `docs/evals/README.md` (formato, como nasce um arquivo, como ler, custo) + `scripts/lib/eval_report.py`, chamado pelo `--report` das três suítes: carimba SHA, versão, árvore suja, modelo, HOME, comando exato, tokens somados dos streams (uma vez por `message.id`), duração e a tabela de k de N, com a lista de instáveis separada para o E1. Os quatro números soltos (CLAUDE.md ×3, route-guard.py ×1) passaram a dizer que são de 2026-08 e não versionados, e estão tabelados em **Pendentes de versionamento** com o comando que os refaz.
 
-### B-013 · Rodar E1 (estabilidade) e decidir E2–E4
-- **Recomendação:** §8.2 do relatório. **Dependências:** B-003, B-010, B-012. **Custo:** API — fazer piloto de 2 casos antes. **Saída:** lista de casos instáveis e ruído por suíte, que vira o limiar de decisão dos demais experimentos.
+### B-013 · Rodar E1 (estabilidade) e decidir E2–E4 — ⏸ pronto para rodar; aguarda autorização de custo
+- **Recomendação:** §8.2 do relatório. **Dependências:** B-003, B-010, B-012 — **todas fechadas**. **Custo:** API — fazer piloto de 2 casos antes. **Saída:** lista de casos instáveis e ruído por suíte, que vira o limiar de decisão dos demais experimentos.
+- **Pronto para rodar** (o FLAKY do relatório já é a saída que o E1 pede). Piloto e rodada, em ordem de custo:
+
+```bash
+# piloto: 2 casos × 3 execuções = 6 chamadas
+./scripts/test-orchestrator-routing.sh --model <id> --id r01,r12 --runs 3 \
+    --home /tmp/osforge-home-limpo --report docs/evals/$(date +%F)-<id>-routing-piloto.md
+
+# E1 roteamento: 16 × 3 = 48 chamadas
+./scripts/test-orchestrator-routing.sh --model <id> --runs 3 --report docs/evals/$(date +%F)-<id>-routing.md
+
+# E1 trigger (split de avaliação): 60 × 3 = 180 chamadas
+./scripts/run-trigger-eval.sh --model <id> --runs 3 --split eval --report docs/evals/$(date +%F)-<id>-trigger.md
+```
 
 ## Etapa 3 — Consolidação
 

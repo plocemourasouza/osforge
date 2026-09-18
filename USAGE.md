@@ -22,6 +22,7 @@ Complete installation, configuration, and day-to-day usage instructions.
 12. [Smart Model Dispatch](#12-smart-model-dispatch)
 13. [Recommended MCPs](#13-recommended-mcps)
 14. [High-Risk Agents](#14-high-risk-agents)
+15. [Evals — medir em vez de achar](#15-evals--medir-em-vez-de-achar)
 
 ---
 
@@ -1016,6 +1017,35 @@ Four agents from The Agency can execute autonomous actions with real-world impac
 4. Each action is timestamped for audit purposes
 
 To use without the checkpoint in a controlled context, remove the `---⚠️ HIGH-RISK AGENT---` block from the beginning of the corresponding `.md` file.
+
+---
+
+## 15. Evals — medir em vez de achar
+
+Três suítes. Todas exigem `--model` e rodam cada caso `--runs` vezes (padrão 3); todas
+aceitam `--dry`, que lista os casos, valida os arquivos e **não chama modelo nenhum** —
+é o `--dry` que roda no CI, a rodada paga é sempre decisão sua.
+
+| Suíte | Pergunta que responde | Comando |
+|---|---|---|
+| `scripts/run-trigger-eval.sh` | a skill dispara quando deve **e só quando deve**? (5 positivas + 5 negativas por skill, 15 skills) | `--model X --split eval` |
+| `scripts/test-orchestrator-routing.sh` | o orquestrador alcança agente, skill e tier? | `--model X --id r01` |
+| `scripts/test-skill-triggering.sh` | as skills core disparam sem o nome no prompt? | `--model X --skill tdd-workflow` |
+
+```bash
+./scripts/run-trigger-eval.sh --dry                  # 150 casos; diz quanto custaria
+./scripts/run-trigger-eval.sh --model claude-sonnet-4-6 --split eval --runs 3     --report docs/evals/$(date +%F)-claude-sonnet-4-6-trigger.md
+```
+
+**PASS é `k = N`.** `0 < k < N` é **FLAKY** e reprova: um caso que acerta 2 de 3 não está
+verde, está instável — e é essa lista que o experimento de estabilidade consome.
+`--home DIR` roda contra um deploy limpo em vez do seu `~/.claude` vivo; `--report`
+grava o resultado em `docs/evals/` com SHA, modelo, comando, tokens e tempo
+(`docs/evals/README.md`). Sem `--report`, o resultado morre no terminal.
+
+**Custo:** cada caso são `--runs` chamadas de API. `--dry` imprime o total antes.
+A lógica de veredito roda offline em `./tests/test-assertions.sh` (60 casos, custo zero):
+é lá que se pega regressão de asserção sem depender de o modelo se comportar.
 
 ---
 

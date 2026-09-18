@@ -37,6 +37,18 @@
 #   # Rodar o claude em um diretório específico (padrão: temporário neutro)
 #   ./scripts/test-skill-triggering.sh --workdir ~/Projects/algum-projeto
 #
+#   # OBRIGATÓRIO fora de --dry: qual modelo está sendo medido (B-010, E-A45)
+#   ./scripts/test-skill-triggering.sh --model claude-sonnet-4-6 --runs 3
+#
+#   # Listar os casos sem chamar modelo nenhum (custo zero, serve ao CI)
+#   ./scripts/test-skill-triggering.sh --dry
+#
+#   # Contra um deploy limpo, sem o ~/.claude vivo da máquina
+#   ./scripts/test-skill-triggering.sh --model X --home /tmp/home-limpo
+#
+#   # Gravar o relatório versionável (docs/evals/, B-012)
+#   ./scripts/test-skill-triggering.sh --model X --report docs/evals/2026-09-18-sonnet-trigger.md
+#
 # ONDE O CLAUDE RODA IMPORTA:
 #   Por padrão cada caso roda em um diretório temporário vazio. Rodando de
 #   dentro do repo OSForge, `skills/<x>/SKILL.md` está a um Glob de distância e
@@ -81,6 +93,14 @@
 #   OSFORGE_TEST_MAX_TURNS   número de turnos max por caso (padrão: 3)
 #   OSFORGE_TEST_TIMEOUT     timeout por caso em segundos (padrão: 120)
 #   OSFORGE_TEST_VERBOSE     se "1", imprime o stream completo no stdout
+#
+# REPETIÇÕES E ESTABILIDADE (B-010):
+#   Cada caso roda --runs vezes (padrão 3) e o relatório traz k de N.
+#     k = N          PASS
+#     0 < k < N      FLAKY — o caso é instável, não "passou"; é a saída que o
+#                    experimento E1 consome para decidir o que medir
+#     k = 0          FAIL
+#   Um resultado de 1 execução não distingue "a skill dispara" de "disparou uma vez".
 # =============================================================================
 
 set -euo pipefail
@@ -98,6 +118,14 @@ OUTPUT_BASE="/tmp/osforge-skill-tests/${TIMESTAMP}"
 MAX_TURNS="${OSFORGE_TEST_MAX_TURNS:-3}"
 TIMEOUT_SECS="${OSFORGE_TEST_TIMEOUT:-120}"
 VERBOSE="${OSFORGE_TEST_VERBOSE:-0}"
+
+# B-010: modelo explícito, repetições, HOME isolado, modo seco e relatório versionável.
+MODEL=""                    # --model (obrigatório fora de --dry): o que está sendo medido
+RUNS="${OSFORGE_TEST_RUNS:-3}"   # --runs N: k de N por caso
+HOME_OVERRIDE=""            # --home DIR: roda contra um deploy limpo, não o ~/.claude vivo
+DRY=0                       # --dry: lista os casos e sai, sem chamar modelo
+REPORT_FILE=""              # --report FILE: markdown versionável (docs/evals/)
+ALLOW_FLAKY=0               # --allow-flaky: FLAKY não reprova a suíte
 
 # Detect a timeout binary (macOS lacks `timeout`; coreutils provides `gtimeout`)
 if command -v timeout &>/dev/null; then
@@ -167,110 +195,84 @@ run_case() {
     # dois casos depois, LEU esse arquivo procurando "the site" — gastando os
     # turnos em contexto alheio. Um --workdir explícito (projeto real do
     # usuário) continua compartilhado de propósito.
-    local case_workdir="$WORKDIR"
+    local case_workdir_base="$WORKDIR"
     if [ "$WORKDIR_IS_DEFAULT" = "1" ]; then
-        case_workdir="${out_dir}/workdir"
-        mkdir -p "$case_workdir"
+        case_workdir_base="${out_dir}/workdir"
     fi
 
-    local log_file="${out_dir}/stream.json"
-    local prompt_file="${out_dir}/prompt.txt"
+    echo "$prompt" > "${out_dir}/prompt.txt"
+    local rel; rel="$(skill_rel_path "$skill_name")"
 
-    echo "$prompt" > "$prompt_file"
-
-    log_info "Testando skill: $skill_name"
+    log_info "Testando skill: $skill_name  (${RUNS} execução(ões))"
     log_info "Prompt: $(echo "$prompt" | head -c 120)..."
-    log_info "Log: $log_file"
 
-    # Rodar claude headless com output stream-json
-    # --dangerously-skip-permissions: necessário em modo headless/não-interativo
-    #
-    # cd para WORKDIR: rodando de dentro do repo OSForge, `skills/<x>/SKILL.md`
-    # está a um Glob de distância, e o modelo acha a skill explorando o
-    # diretório — não pelo manifesto. O teste mediria "o modelo sabe achar
-    # arquivo no cwd", que é justamente o que NÃO queremos saber. O ambiente
-    # honesto é um diretório neutro, como qualquer projeto satélite.
-    set +e
-    ( cd "$case_workdir" && $TIMEOUT_CMD claude \
-        -p "$prompt" \
-        --dangerously-skip-permissions \
-        --max-turns "$MAX_TURNS" \
-        --output-format stream-json \
-        --verbose \
-        < /dev/null ) > "$log_file" 2>&1
-    local exit_code=$?
-    set -e
-
-    if [ "$exit_code" = "124" ]; then
-        # Antes de declarar TIMEOUT, olhar o stream parcial: o offensive-fuzzing
-        # identificou a skill, leu o SKILL.md certo e despachou um subagente
-        # (comportamento que o CLAUDE.md manda ter) — e foi marcado TIMEOUT
-        # porque o subagente estourou os 120s DEPOIS da evidência existir.
-        # Evidência no stream = a ativação aconteceu; o tempo é outro assunto.
-        local rel_t; rel_t="$(skill_rel_path "$skill_name")"
-        if check_skill_triggered "$log_file" "$skill_name" || \
-           { [ -n "$rel_t" ] && ! is_core_skill "$rel_t" && check_skill_resolved "$log_file" "$rel_t"; }; then
-            log_pass "PASS (evidência antes do timeout): $skill_name"
-            echo "PASS" > "${out_dir}/result.txt"
-            return 0
+    local hits=0 timeouts=0 run i log_file case_workdir exit_code
+    for (( i=1; i<=RUNS; i++ )); do
+        # Cada execução tem o SEU workdir e o SEU log: a 2ª execução herdando os
+        # arquivos que a 1ª escreveu mediria memória de disco, não triggering.
+        case_workdir="$case_workdir_base"
+        if [ "$WORKDIR_IS_DEFAULT" = "1" ]; then
+            case_workdir="${out_dir}/workdir-${i}"
         fi
-        log_warn "Timeout (${TIMEOUT_SECS}s) para skill: $skill_name"
-        echo "TIMEOUT" > "${out_dir}/result.txt"
-        return 2
-    fi
+        mkdir -p "$case_workdir"
+        log_file="${out_dir}/stream-${i}.json"
 
-    if [ "$VERBOSE" = "1" ]; then
-        echo "--- stream ---"
-        cat "$log_file"
-        echo "--- fim stream ---"
-    fi
+        set +e
+        ( cd "$case_workdir" && ${HOME_OVERRIDE:+env HOME="$HOME_OVERRIDE"} $TIMEOUT_CMD claude \
+            -p "$prompt" \
+            --model "$MODEL" \
+            --dangerously-skip-permissions \
+            --max-turns "$MAX_TURNS" \
+            --output-format stream-json \
+            --verbose \
+            < /dev/null ) > "$log_file" 2>&1
+        exit_code=$?
+        set -e
 
-    # Verificar PASS/FAIL
-    #   core     → tem de ser invocada nativamente (ferramenta Skill)
-    #   não-core → vale invocação nativa OU resolução via manifesto (Read do SKILL.md);
-    #              já pode estar instalada no projeto por install-skill.sh, daí o OU
-    local rel result
-    rel="$(skill_rel_path "$skill_name")"
+        [ "$VERBOSE" = "1" ] && { echo "--- stream (run $i) ---"; cat "$log_file"; echo "--- fim ---"; }
 
-    if check_skill_triggered "$log_file" "$skill_name"; then
-        result="PASS"
-        log_info "Modo: invocação nativa"
-    elif ! is_core_skill "$rel" && check_skill_resolved "$log_file" "$rel"; then
-        result="PASS"
-        log_info "Modo: resolvida via manifesto (skills/${rel}/SKILL.md)"
-    else
-        result="FAIL"
-        if [ -z "$rel" ]; then
-            log_warn "skill '$skill_name' não existe em skills/ — caso órfão no TSV"
-        elif is_core_skill "$rel"; then
-            log_info "Esperado: invocação nativa (skill está no core allowlist)"
+        # Veredito desta execução:
+        #   core     → invocação nativa (ferramenta Skill)
+        #   não-core → nativa OU resolução via manifesto (leitura do SKILL.md)
+        # Timeout não invalida evidência já presente no stream parcial: o
+        # offensive-fuzzing leu o SKILL.md certo e despachou o subagente, e era
+        # marcado TIMEOUT porque o SUBAGENTE estourou os 120s depois disso.
+        if check_skill_triggered "$log_file" "$skill_name" \
+           || { [ -n "$rel" ] && ! is_core_skill "$rel" && check_skill_resolved "$log_file" "$rel"; }; then
+            hits=$((hits + 1))
+            log_info "  run $i: HIT"
         else
-            log_info "Esperado: invocação nativa OU leitura de skills/${rel}/SKILL.md"
+            [ "$exit_code" = "124" ] && { timeouts=$((timeouts + 1)); log_info "  run $i: timeout (${TIMEOUT_SECS}s), sem evidência"; } \
+                                    || log_info "  run $i: miss"
         fi
-    fi
+    done
 
-    echo "$result" > "${out_dir}/result.txt"
+    RUN_HITS=$hits                      # lidos pelo chamador (k de N)
+    RUN_TIMEOUTS=$timeouts
+    printf '%s/%s\n' "$hits" "$RUNS" > "${out_dir}/result.txt"
 
-    # Reportar skills que foram acionadas (para diagnóstico)
-    local triggered
-    triggered=$(extract_triggered_skills "$log_file")
-    if [ -n "$triggered" ]; then
-        log_info "Skills acionadas: $triggered"
+    if [ -z "$rel" ]; then
+        log_warn "skill '$skill_name' não existe em skills/ — caso órfão no TSV"
+    elif is_core_skill "$rel"; then
+        log_info "Esperado: invocação nativa (skill está no core allowlist)"
     else
-        log_info "Skills acionadas: (nenhuma)"
+        log_info "Esperado: invocação nativa OU leitura de skills/${rel}/SKILL.md"
     fi
 
-    # Mostrar início da resposta
-    echo "Resposta (truncada):"
-    show_first_response "$log_file"
+    local triggered; triggered=$(extract_triggered_skills "${out_dir}/stream-1.json")
+    log_info "Skills acionadas (run 1): ${triggered:-(nenhuma)}"
+    echo "Resposta (run 1, truncada):"
+    show_first_response "${out_dir}/stream-1.json"
     echo ""
 
-    if [ "$result" = "PASS" ]; then
-        log_pass "PASS: $skill_name"
-        return 0
+    if [ "$hits" = "$RUNS" ]; then
+        log_pass "PASS ${hits}/${RUNS}: $skill_name"; return 0
+    elif [ "$hits" -gt 0 ]; then
+        log_warn "FLAKY ${hits}/${RUNS}: $skill_name"; return 3
+    elif [ "$timeouts" -gt 0 ]; then
+        log_warn "TIMEOUT 0/${RUNS}: $skill_name"; return 2
     else
-        log_fail "FAIL: $skill_name"
-        return 1
+        log_fail "FAIL 0/${RUNS}: $skill_name"; return 1
     fi
 }
 
@@ -337,6 +339,33 @@ while [[ $# -gt 0 ]]; do
             WORKDIR="$2"
             shift 2
             ;;
+        --model)
+            # O que está sendo medido. Sem isto o resultado não é comparável
+            # com o de ontem nem com o da outra máquina (E-A45).
+            MODEL="$2"
+            shift 2
+            ;;
+        --runs)
+            RUNS="$2"
+            shift 2
+            ;;
+        --home)
+            # Deploy limpo em vez do ~/.claude vivo da máquina.
+            HOME_OVERRIDE="$2"
+            shift 2
+            ;;
+        --dry)
+            DRY=1
+            shift
+            ;;
+        --report)
+            REPORT_FILE="$2"
+            shift 2
+            ;;
+        --allow-flaky)
+            ALLOW_FLAKY=1
+            shift
+            ;;
         --help|-h)
             sed -n '/^# =/,/^# ======/p' "$0" | grep '^#' | sed 's/^# \?//'
             exit 0
@@ -351,9 +380,21 @@ done
 # ---------------------------------------------------------------------------
 # Verificações de pré-requisitos
 # ---------------------------------------------------------------------------
-if ! command -v claude &>/dev/null; then
-    echo "[ERRO] 'claude' não encontrado no PATH. Configure o Claude CLI antes de rodar."
-    exit 1
+if [ "$DRY" = "0" ]; then
+    if ! command -v claude &>/dev/null; then
+        echo "[ERRO] 'claude' não encontrado no PATH. Configure o Claude CLI antes de rodar."
+        exit 1
+    fi
+    if [ -z "$MODEL" ]; then
+        echo "[ERRO] --model é obrigatório (ex.: --model claude-sonnet-4-6)."
+        echo "       Um resultado sem o id do modelo não é comparável com nenhum outro (E-A45)."
+        echo "       Para só listar os casos, sem custo: --dry"
+        exit 1
+    fi
+fi
+case "$RUNS" in ''|*[!0-9]*|0) echo "[ERRO] --runs precisa ser um inteiro ≥ 1 (recebido: '$RUNS')"; exit 1 ;; esac
+if [ -n "$HOME_OVERRIDE" ] && [ ! -d "$HOME_OVERRIDE" ]; then
+    echo "[ERRO] --home aponta para um diretório que não existe: $HOME_OVERRIDE"; exit 1
 fi
 
 if [ ! -f "$CASES_FILE" ]; then
@@ -375,6 +416,9 @@ echo "OSForge Skill Triggering Eval"
 echo "============================================================"
 echo "Arquivo de casos : $CASES_FILE"
 echo "Filtro de skills : ${FILTER_SKILLS:-'(todas)'}"
+echo "Modelo           : ${MODEL:-'(dry-run)'}"
+echo "Execuções/caso   : $RUNS"
+echo "HOME             : ${HOME_OVERRIDE:-$HOME (vivo)}"
 echo "Max turns        : $MAX_TURNS"
 echo "Timeout/caso     : ${TIMEOUT_SECS}s"
 echo "Output dir       : $OUTPUT_BASE"
@@ -386,6 +430,7 @@ PASSED=0
 FAILED=0
 SKIPPED=0
 TIMED_OUT=0
+FLAKY=0
 declare -a RESULTS=()
 
 # Diretório neutro: o teste tem de medir alcance pelo manifesto, não a
@@ -426,6 +471,32 @@ if [ -n "$SAMPLE_N" ]; then
 fi
 
 # Carregar casos e iterar
+CASE_JSON="${OUTPUT_BASE}/cases.json"
+: > "$CASE_JSON"
+START_EPOCH=$(date +%s)
+
+if [ "$DRY" = "1" ]; then
+    echo "MODO SECO — nenhum modelo é chamado, nenhum token é gasto."
+    echo ""
+    n=0
+    while IFS=$'\t' read -r skill_name prompt; do
+        n=$((n + 1))
+        rel="$(skill_rel_path "$skill_name")"
+        if [ -z "$rel" ]; then
+            kind="ÓRFÃO (não existe em skills/)"
+        elif is_core_skill "$rel"; then
+            kind="core → exige invocação nativa"
+        else
+            kind="manifesto → nativa OU leitura de skills/${rel}/SKILL.md"
+        fi
+        printf '%3d. %-34s %s\n' "$n" "$skill_name" "$kind"
+        printf '     %s\n' "$(echo "$prompt" | head -c 100)"
+    done < "$CASES_STREAM"
+    echo ""
+    echo "$n caso(s). Para rodar de verdade: --model <id> [--runs N]"
+    exit 0
+fi
+
 while IFS=$'\t' read -r skill_name prompt; do
     echo "------------------------------------------------------------"
     # NÃO usar o par `set +e` / `set -e` aqui: run_case contém o seu próprio
@@ -436,23 +507,22 @@ while IFS=$'\t' read -r skill_name prompt; do
     # em contexto de condição, onde o bash ignora errexit inclusive DENTRO da
     # função. Regressão coberta por tests/test-assertions.sh (loop survival).
     case_exit=0
+    RUN_HITS=0; RUN_TIMEOUTS=0
     run_case "$skill_name" "$prompt" || case_exit=$?
 
     case "$case_exit" in
-        0)
-            PASSED=$((PASSED + 1))
-            RESULTS+=("[PASS] $skill_name")
-            ;;
-        2)
-            TIMED_OUT=$((TIMED_OUT + 1))
-            RESULTS+=("[TIMEOUT] $skill_name")
-            ;;
-        *)
-            FAILED=$((FAILED + 1))
-            RESULTS+=("[FAIL] $skill_name")
-            ;;
+        0) verdict="PASS";    PASSED=$((PASSED + 1)) ;;
+        3) verdict="FLAKY";   FLAKY=$((FLAKY + 1)) ;;
+        2) verdict="TIMEOUT"; TIMED_OUT=$((TIMED_OUT + 1)) ;;
+        *) verdict="FAIL";    FAILED=$((FAILED + 1)) ;;
     esac
-
+    RESULTS+=("[$verdict ${RUN_HITS}/${RUNS}] $skill_name")
+    python3 - "$skill_name" "$RUN_HITS" "$RUNS" "$verdict" "$RUN_TIMEOUTS" >> "$CASE_JSON" <<'PY'
+import json, sys
+cid, k, n, verdict, tmo = sys.argv[1:6]
+detail = f"{tmo} timeout(s)" if int(tmo) else ""
+print(json.dumps({"id": cid, "k": int(k), "n": int(n), "verdict": verdict, "detail": detail}))
+PY
     echo ""
 done < "$CASES_STREAM"
 
@@ -462,20 +532,23 @@ done < "$CASES_STREAM"
 echo "============================================================"
 echo "RESULTADO FINAL"
 echo "============================================================"
-for r in "${RESULTS[@]}"; do
-    echo "  $r"
-done
+for r in "${RESULTS[@]:-}"; do [ -n "$r" ] && echo "  $r"; done
 echo ""
-echo "  PASS   : $PASSED"
+echo "  PASS   : $PASSED   (k = $RUNS de $RUNS)"
+echo "  FLAKY  : $FLAKY    (0 < k < $RUNS — instável, não aprovado)"
 echo "  FAIL   : $FAILED"
 echo "  TIMEOUT: $TIMED_OUT"
-echo "  SKIP   : $SKIPPED"
 echo ""
 echo "Logs completos em: $OUTPUT_BASE"
 echo "============================================================"
 
-# Exit code: 0 se todos PASS, 1 se algum falhou
-if [ "$FAILED" -gt 0 ] || [ "$TIMED_OUT" -gt 0 ]; then
+if [ -n "$REPORT_FILE" ]; then
+    emit_eval_report "trigger" "$REPORT_FILE" "$CASE_JSON" "$START_EPOCH" \
+        "$(printf '%s ' "$0" "$@")" "${OUTPUT_BASE}"/*/stream-*.json
+fi
+
+# Exit: FLAKY reprova junto com FAIL — um caso que acerta 2 de 3 não está verde.
+if [ "$FAILED" -gt 0 ] || [ "$TIMED_OUT" -gt 0 ] || { [ "$FLAKY" -gt 0 ] && [ "$ALLOW_FLAKY" = "0" ]; }; then
     exit 1
 fi
 exit 0

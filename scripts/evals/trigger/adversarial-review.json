@@ -1,0 +1,76 @@
+{
+  "$schema": "osforge/trigger-eval/v1",
+  "skill": "adversarial-review",
+  "rel": "quality/adversarial-review",
+  "core": true,
+  "note": "Crítica cínica de um artefato, procurando o que falta.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "query": "Esse spec parece completo demais. Destrói ele para mim."
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "query": "Quero a leitura mais pessimista possível desse documento."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "query": "Assume que quem escreveu isso foi descuidado e me mostra onde."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "query": "O que um revisor implicante acharia de errado aqui?"
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "query": "Procura o que está FALTANDO nesse desenho, não o que está escrito errado."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "query": "Revisa meu PR seguindo o checklist normal do time."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "query": "Escreve o spec da feature de notificações."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "query": "Formata esse documento em markdown."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "query": "Traduz o documento para inglês."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "query": "Resume esse spec em cinco bullets."
+    }
+  ]
+}
