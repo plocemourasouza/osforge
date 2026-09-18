@@ -83,8 +83,9 @@ cat > "$H/.claude/settings.json" <<'EOF'
 EOF
 printf '{"mcpServers":{"my-mcp":{"command":"echo"}}}\n' > "$H/.claude.json"
 # Instalação legada: um hook do OSForge de uma revisão ANTIGA do repo (sem estado)
+NEW_COMMIT="$(git -C "$R" log --format=%H -n 1 -- hooks/notify-done.sh)"
 OLD_COMMIT="$(git -C "$R" log --format=%H -n 2 -- hooks/notify-done.sh | tail -1)"
-if [ -n "$OLD_COMMIT" ] && git -C "$R" show "$OLD_COMMIT:hooks/notify-done.sh" > "$H/.claude/hooks/notify-done.sh" 2>/dev/null \
+if [ -n "$OLD_COMMIT" ] && [ "$OLD_COMMIT" != "$NEW_COMMIT" ] && git -C "$R" show "$OLD_COMMIT:hooks/notify-done.sh" > "$H/.claude/hooks/notify-done.sh" 2>/dev/null \
    && ! cmp -s "$H/.claude/hooks/notify-done.sh" "$R/hooks/notify-done.sh"; then
   LEGACY=1; chmod +x "$H/.claude/hooks/notify-done.sh"
 else
@@ -94,10 +95,16 @@ fi
 # __OSFORGE_SKILLS_ROOT__ expandido para o caminho da máquina, então nunca é
 # byte-idêntico a uma revisão. Sem tratar isso, o manifesto que dirige a descoberta de
 # skills ficaria congelado numa instalação legada, tratado como "arquivo seu".
+# A comparação tem de ser entre o BLOB antigo e o arquivo atual do repo (os dois com o
+# token), nunca entre o arquivo já gerado e o do repo: a substituição por si só já os faz
+# diferentes, e num clone raso (`fetch-depth: 1`) isso semearia como "revisão antiga" um
+# arquivo idêntico ao de hoje — foi assim que o caso passou aqui e reprovou no CI.
+NEW_SK="$(git -C "$R" log --format=%H -n 1 -- claude-code/SKILLS.md)"
 OLD_SK="$(git -C "$R" log --format=%H -n 2 -- claude-code/SKILLS.md | tail -1)"
-if [ -n "$OLD_SK" ] && git -C "$R" show "$OLD_SK:claude-code/SKILLS.md" 2>/dev/null \
-     | sed "s|__OSFORGE_SKILLS_ROOT__|$R/skills|g" > "$H/.claude/SKILLS.md" \
-   && ! cmp -s "$H/.claude/SKILLS.md" "$R/claude-code/SKILLS.md"; then
+if [ -n "$OLD_SK" ] && [ "$OLD_SK" != "$NEW_SK" ] \
+   && git -C "$R" show "$OLD_SK:claude-code/SKILLS.md" > "$WORK/old-skills.md" 2>/dev/null \
+   && ! cmp -s "$WORK/old-skills.md" "$R/claude-code/SKILLS.md"; then
+  sed "s|__OSFORGE_SKILLS_ROOT__|$R/skills|g" "$WORK/old-skills.md" > "$H/.claude/SKILLS.md"
   LEGACY_GEN=1
 else
   LEGACY_GEN=0; rm -f "$H/.claude/SKILLS.md"; echo "  (sem revisão antiga de SKILLS.md; item extra pulado)"

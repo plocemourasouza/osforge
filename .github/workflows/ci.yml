@@ -17,6 +17,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # test-deploy-lifecycle anda o histórico (instalação legada)
       - name: Syntax (bash -n, py_compile, JSON)
         run: |
           set -e
