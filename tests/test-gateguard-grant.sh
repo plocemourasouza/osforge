@@ -114,8 +114,10 @@ for nome, texto, esperado in CASOS:
     check(nome, gg.classify_prompt(texto), esperado)
 
 # ── 2. apply_prompt_to_state: ciclo de vida ──────────────────────────────────
-print("\n[2] ciclo de vida do grant")
-st = {"checked": []}
+print("\n[2] ciclo de vida do grant (com negação pendente — B-001)")
+def pending():
+    return gg._record_denial({"checked": []}, "__destructive__abc", "rm -rf build/")
+st = pending()
 st, v = gg.apply_prompt_to_state(st, "pode executar")
 check("grant de turno criado", bool(gg._active_grant(st)), True)
 check("scope = turn", st["grant"]["scope"], "turn")
@@ -132,11 +134,33 @@ check("prompt comum NÃO encerra grant de sessão", bool(gg._active_grant(st)), 
 st, v = gg.apply_prompt_to_state(st, "revogo a permissão")
 check("revogação encerra grant de sessão", gg._active_grant(st), None)
 
-st, v = gg.apply_prompt_to_state({"checked": []}, "sim")
+st, v = gg.apply_prompt_to_state(pending(), "sim")
 st["grant"]["expires_at"] = time.time() - 1
 check("grant expirado não é ativo", gg._active_grant(st), None)
 check("grant corrompido não é ativo", gg._active_grant({"grant": "lixo"}), None)
 check("grant sem expires_at não é ativo", gg._active_grant({"grant": {}}), None)
+
+# ── 2b. B-001: sem negação pendente, afirmativa é conversa ───────────────────
+print("\n[2b] grant exige negação pendente (B-001, E-A05)")
+st, v = gg.apply_prompt_to_state({"checked": []}, "ok")
+check("B001-1 'ok' sem negação → stale", v, "stale")
+check("B001-2 'ok' sem negação não cria grant", gg._active_grant(st), None)
+st, v = gg.apply_prompt_to_state({"checked": []}, "please proceed with the refactor of the header")
+check("B001-3 'proceed' em frase comum sem negação → stale", v, "stale")
+st, v = gg.apply_prompt_to_state({"checked": []}, "go ahead and explain the difference")
+check("B001-4 'go ahead' sem negação → stale", v, "stale")
+st, v = gg.apply_prompt_to_state({"checked": []}, "gateguard: sessão liberada")
+check("B001-5 sessão liberada NÃO exige negação pendente", v, "session")
+old = gg._record_denial({"checked": []}, "__destructive__x", "git clean -fd")
+old["last_denial"]["at"] = time.time() - gg.PENDING_DENIAL_TTL_S - 5
+st, v = gg.apply_prompt_to_state(old, "sim")
+check("B001-6 negação mais velha que PENDING_DENIAL_TTL_S não conta", v, "stale")
+st, v = gg.apply_prompt_to_state(pending(), "tem permissão, pode rodar")
+check("B001-7 autorização depois de negação → grant", v, "grant")
+gg.LEGACY_GRANT = True
+st, v = gg.apply_prompt_to_state({"checked": []}, "ok")
+check("B001-8 OSFORGE_GATEGUARD_LEGACY_GRANT restaura o comportamento antigo", v, "grant")
+gg.LEGACY_GRANT = False
 
 # ── 3. hook de ponta a ponta via stdin ───────────────────────────────────────
 print("\n[3] hook via stdin (estado em {})".format(os.environ["OSFORGE_GATEGUARD_STATE_DIR"]))
@@ -185,6 +209,12 @@ check("E2E10 sessão liberada sobrevive a prompt comum", decision(bash("git clea
 prompt("gateguard: ativa")
 check("E2E11 revogação fecha na hora", decision(bash("git clean -fdX")), "deny")
 check("E2E12 comando não destrutivo nunca é afetado", decision(bash("ls -la")), "allow")
+code, out = prompt("ok", sid="s3")
+check("E2E14 'ok' em sessão sem negação não injeta contexto", out, None)
+check("E2E15 'ok' em sessão sem negação não libera destrutivo",
+      decision(bash("git reset --hard HEAD~10", sid="s3")), "deny")
+check("E2E16 depois dessa negação, 'ok' libera o comando reformulado",
+      decision((prompt("ok", sid="s3"), bash("git reset --hard HEAD~9", sid="s3"))[1]), "allow")
 r = subprocess.run([sys.executable, HOOK],
                    input=json.dumps({"session_id": "s1", "hook_event_name": "PreToolUse",
                                      "tool_name": "Bash", "tool_input": {"command": "rm -rf /tmp/x"}}),
@@ -196,6 +226,7 @@ check("E2E13 kill-switch OSFORGE_GATEGUARD=off continua funcionando",
 log = open(os.path.join(os.environ["OSFORGE_GATEGUARD_STATE_DIR"], "denials.log"), encoding="utf-8").read()
 check("AUD1 liberações ficam auditáveis em denials.log", "GRANT-ALLOW\trm -rf ./build/ dist/" in log, True)
 check("AUD2 a confirmação em si é logada", "GRANT-GRANT\ttem permissão, pode rodar" in log, True)
+check("AUD3 afirmativa ignorada fica auditável", "GRANT-IGNORED-NO-PENDING-DENIAL\tok" in log, True)
 
 print()
 if falhas:
