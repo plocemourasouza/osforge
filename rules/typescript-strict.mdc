@@ -1,7 +1,7 @@
 ---
 description: Enforce TypeScript strict mode and compiler-driven error detection in all projects
 globs: ["**/*.ts", "**/*.tsx"]
-alwaysApply: true
+alwaysApply: false
 ---
 
 # TypeScript Strict Mode

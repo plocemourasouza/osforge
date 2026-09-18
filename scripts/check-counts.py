@@ -18,6 +18,8 @@ core = len([l for l in open("claude-code/skills-core.txt", encoding="utf-8") if 
 agents = len(glob.glob("agents/*.md")) + (1 if os.path.exists("agents/orchestrator/AGENT.md") else 0)
 rules = len([f for f in os.listdir("rules") if f.endswith((".md", ".mdc"))])
 rules_mdc = len([f for f in os.listdir("rules") if f.endswith(".mdc")])
+rules_always = rules - sum(1 for f in os.listdir("rules") if f.endswith(".mdc")
+                           and "alwaysApply: false" in open(os.path.join("rules", f), encoding="utf-8").read())
 spec_cmds = len(glob.glob("commands/spec-*.md"))
 hooks_json = json.load(open("hooks/hooks-claude-code.json", encoding="utf-8"))["hooks"]
 hook_scripts = {os.path.basename(h["command"].split()[-1]) for arr in hooks_json.values() for e in arr for h in e["hooks"]}
@@ -28,7 +30,8 @@ tool_search = json.load(open("claude-code/settings-base.json", encoding="utf-8")
 RULES = [
     ("README.md", r"(\d+) specialized agents", agents, "agents"),
     ("README.md", r"(\d+) on-demand skills", skills, "skills"),
-    ("README.md", r"(\d+) always-on rules \(Cursor\)", rules, "rules"),
+    ("README.md", r"(\d+) rules \(Cursor: \d+ always-on", rules, "rules"),
+    ("README.md", r"\d+ rules \(Cursor: (\d+) always-on", rules_always, "always-on rules"),
     ("README.md", r"(\d+) spec commands", spec_cmds, "spec commands"),
     ("README.md", r"\*\*MCP servers\*\* — (\d+) global", mcps, "global MCPs"),
     ("CLAUDE.md", r"\*\*(\d+) skills, \d+ agents\*\*", skills, "skills"),
@@ -38,7 +41,8 @@ RULES = [
     ("CLAUDE.md", r"\*\*, (\d+) hooks,", hooks, "hooks"),
     ("claude-code/CLAUDE.md", r"OSForge ships \*\*(\d+) skills\*\*", skills, "skills"),
     ("claude-code/CLAUDE.md", r"\*\*(\d+) agents\*\* \(orchestrator", agents, "agents"),
-    ("claude-code/CLAUDE.md", r"\*\*(\d+)\*\* always-on \*\*rules\*\*", rules, "rules"),
+    ("claude-code/CLAUDE.md", r"\*\*(\d+)\*\* \*\*rules\*\* \(Cursor only; \d+ always-on", rules, "rules"),
+    ("claude-code/CLAUDE.md", r"\*\*\d+\*\* \*\*rules\*\* \(Cursor only; (\d+) always-on", rules_always, "always-on rules"),
     ("claude-code/CLAUDE.md", r"the (\d+) core skills in `~/\.claude/skills/`", core, "core skills"),
     ("claude-code/CLAUDE.md", r"`env\.ENABLE_TOOL_SEARCH=(\w+)`", tool_search, "ENABLE_TOOL_SEARCH"),
     ("claude-code/CLAUDE.md", r"`@SKILLS\.md`, (\d+) skills\)", skills, "skills"),

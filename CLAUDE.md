@@ -34,6 +34,7 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-gateguard-sql.sh           # GateGuard destructive-SQL detector (offline)
 ./tests/test-scan-secrets.sh            # scan-secrets, both payload shapes, temp git repo (offline)
 python3 scripts/check-agents.py         # Agent frontmatter: tools scalar, model enum, read-only roles (deploy gate)
+python3 scripts/check-unicode.py        # Invisible/bidi/tag code points in everything that reaches the context (deploy gate; --sources for the vendored tree; --fix)
 ./tests/test-deploy-lifecycle.sh        # Deploy with state: user files/hooks/skills survive, idempotent, doctor/uninstall/restore (offline, ~1 min; CI)
 ./tests/test-session-continuity.sh      # One project identity for all hooks; resume as scoped, capped, scrubbed data (offline)
 ./tests/test-canvas-feedback.sh         # Canvas feedback drain (Stop) + server-side validation against the artifact (offline; bun for the server part)
@@ -50,7 +51,7 @@ Deploy behavior worth knowing:
 - `skills/` is synced with `rsync --delete` — removing a skill dir here removes it from `~/.claude/skills/` and `~/.cursor/skills/` on next deploy.
 - Hooks (`hooks/hooks-claude-code.json` → `~/.claude/settings.json`) merge **reconciling**: OSForge-managed hooks (command under `.claude/hooks/`) are authoritative — matcher/command changes propagate and removed hooks vanish; the user's own hooks are preserved. MCPs (`mcp/claude-code.json` → `~/.claude.json`) merge non-destructively (union). Deploy reports MCP drift between repo and live config.
 - Critical files are backed up to `~/.claude_backups/` before overwrite.
-- Pre-flight gates (abort the deploy): manifest drift, `tests/hooks/run-contracts.sh`, `scripts/check-agents.py`, `scripts/check-counts.py`. CI (`.github/workflows/ci.yml`) runs the same set plus `bash -n`/`py_compile`, a dry-run deploy in an empty HOME and `tests/test-deploy-lifecycle.sh`.
+- Pre-flight gates (abort the deploy): manifest drift, `tests/hooks/run-contracts.sh`, `scripts/check-agents.py`, `scripts/check-counts.py`, `scripts/check-unicode.py`. CI (`.github/workflows/ci.yml`) runs the same set plus `bash -n`/`py_compile`, a dry-run deploy in an empty HOME and `tests/test-deploy-lifecycle.sh`.
 - The deploy keeps state (`scripts/osforge-state.py`, `~/.osforge/install-state.json`): it never overwrites a file you edited, never deletes a skill/hook of yours, and can `--doctor`/`--uninstall`/`--restore`. `OSFORGE_DEPLOY_LEGACY=1` = old path, one release.
 
 ## Architecture

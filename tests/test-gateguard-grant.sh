@@ -213,6 +213,18 @@ code, out = prompt("ok", sid="s3")
 check("E2E14 'ok' em sessão sem negação não injeta contexto", out, None)
 check("E2E15 'ok' em sessão sem negação não libera destrutivo",
       decision(bash("git reset --hard HEAD~10", sid="s3")), "deny")
+
+# R-02 (B-024): 3 negações com o bloco completo; da 4ª em diante, uma linha com ordinal
+def reason(res):
+    return ((res[1] or {}).get("hookSpecificOutput") or {}).get("permissionDecisionReason", "")
+r1 = reason(bash("rm -rf a/", sid="s4")); r2 = reason(bash("rm -rf b/", sid="s4")); r3 = reason(bash("rm -rf c/", sid="s4"))
+r4 = reason(bash("rm -rf d/", sid="s4")); r5 = reason(bash("rm -rf e/", sid="s4"))
+check("R02-1 três primeiras negações trazem o bloco completo", all("Fact-Forcing Gate" in r for r in (r1, r2, r3)), True)
+check("R02-2 4ª negação é uma linha com o ordinal", "4ª negação" in r4 and "Fact-Forcing Gate" not in r4, True)
+check("R02-3 5ª idem, e continua negando", "5ª negação" in r5 and decision(bash("rm -rf f/", sid="s4")) == "deny", True)
+check("R02-4 linha curta ainda aponta a saída", "OSFORGE_GATEGUARD=off" in r4 and "confirmação" in r4, True)
+prompt("pode executar", sid="s4"); bash("rm -rf ./x", sid="s4"); prompt("outra coisa", sid="s4")
+check("R02-5 depois de um grant a contagem zera: bloco completo de novo", "Fact-Forcing Gate" in reason(bash("rm -rf g/", sid="s4")), True)
 check("E2E16 depois dessa negação, 'ok' libera o comando reformulado",
       decision((prompt("ok", sid="s3"), bash("git reset --hard HEAD~9", sid="s3"))[1]), "allow")
 r = subprocess.run([sys.executable, HOOK],

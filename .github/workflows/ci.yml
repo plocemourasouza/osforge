@@ -35,6 +35,7 @@ jobs:
           set -e
           python3 scripts/check-agents.py
           python3 scripts/check-counts.py
+          python3 scripts/check-unicode.py
       - name: Offline tests
         run: |
           set -e

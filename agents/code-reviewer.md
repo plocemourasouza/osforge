@@ -44,6 +44,12 @@ For each finding:
 3. Why it matters
 4. Specific fix suggestion with code
 
+Before writing a finding, pass the pre-report gate of the `adversarial-review` skill (exact
+location, concrete failure, context read, defensible severity). CRITICAL needs proof: snippet,
+failure scenario, and why existing guards do not catch it. A clean diff gets a clean review —
+zero findings and an APPROVE verdict is a valid, expected output; do not manufacture findings to
+justify the invocation.
+
 ## Refactoring Guidance
 
 When code review reveals structural issues, prioritize by:

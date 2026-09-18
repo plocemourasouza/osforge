@@ -154,7 +154,35 @@ All notable changes to OSForge are recorded here. The format follows
   within a band, new session warns again, timing, guards; usage dedup by id, per-model split,
   upsert on repeated Stop, totals in board/stats. Contract case CC-14. In CI.
 
-### Known defects (found by the audit, open until later stages ship)
+### Changed (stage 3/4 — small items)
+- **Adversarial review without a quota** (B-004, E-A42): `adversarial-review` v1.2 drops "minimum
+  of 10 issues" and "zero findings is suspicious"; adds the four-question pre-report gate, proof
+  for Critical/Important, "zero findings is a valid result" with the list of areas worked, and a
+  false-positive list. `code-reviewer` agent points at the gate. Textual adaptation from ECC's
+  `agents/code-reviewer.md` (MIT) recorded in the new `THIRD_PARTY_NOTICES`, which also credits
+  zunoworks/gateguard (via ECC) for the GateGuard design and mattpocock/skills. Experiment E4
+  still measures whether the reviewer got lenient.
+- **GateGuard attenuates repeated denials** (B-024/R-02): after three consecutive denials without
+  a grant the message becomes one line with the ordinal (the full block repeated on every denial
+  induced retry loops upstream); the count resets on a grant. 5 new cases in
+  `tests/test-gateguard-grant.sh`.
+- **Invisible-unicode check** (B-024/R-16): `scripts/check-unicode.py` (zero-width, bidi, variation
+  selectors, Unicode Tag block, fillers, invisible math operators; `U+FE0F` after a pictograph or
+  in a keycap is tolerated) in the deploy preflight and CI; `--sources` for the vendored tree,
+  `--fix` to strip. Tree is clean.
+- **Stack rules load by glob** (B-024/R-11): `nextjs-patterns`, `typescript-strict` and
+  `code-style` are `alwaysApply: false` in Cursor; 11 rules stay always-on. `check-counts.py`
+  checks both numbers. Bringing rules to Claude Code stays conditional on measuring `paths:`.
+- **Orchestrator support files are deployed** (B-023/E-A40): `triage-rules*.md`,
+  `plan-templates/` and `delegation-brief.md` go to `~/.claude/orchestrator/` (and
+  `~/.cursor/orchestrator/`); `AGENT.md` cites those paths and uses `model: sonnet` instead of
+  the non-schema `always-active` / `model-tier` keys. The proportional-plan change waits for E3.
+
+### Still open from the audit
+- Evals: model and repetitions pinned in both harnesses, trigger eval activated, results
+  versioned, stability run E1 (B-010–B-013; B-011/B-013 cost API calls). Proportional plan
+  (B-023/E-A38) after E3; `~/.claude/rules/` after measuring `paths:` (R-11); GateGuard
+  Edit/Write gate (E-A08) after E6; instincts loop (R-09) after E5.
 
 ## [5.0.0] — 2026-09-10
 

@@ -34,12 +34,13 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 - **Aceite:** `H=$(mktemp -d); HOME=$H ./deploy.sh --dry-run` sai 0 e `find $H -type f | wc -l` = 0; deploy real em HOME vazio chega a instalar `osforge-db` e `install-skill`; `settings.json` resultante não tem chave `_…`.
 - **Esforço:** P. **Risco:** baixo.
 
-### B-004 · Revisor: tirar a cota de achados, pôr o gate pré-relatório
+### B-004 · Revisor: tirar a cota de achados, pôr o gate pré-relatório — ✅ feito (E4 pendente)
 - **Recomendação / evidência:** R-12 · E-A42; origem `agents/code-reviewer.md:39-74` do ECC (MIT)
 - **Arquivos:** `skills/quality/adversarial-review/SKILL.md` L85-88; `agents/code-reviewer.md`; `THIRD_PARTY_NOTICES` **(NOVO)**.
 - **Mudança:** remover "HALT if zero findings" e "findings < 10"; acrescentar o gate de quatro perguntas, exigência de prova para HIGH/CRITICAL, a cláusula "zero achados é um resultado válido" e a lista de falsos positivos, reescritos no `SKILL-STANDARD`, com `inspired_by` e aviso MIT.
 - **Aceite:** harness de acionamento continua disparando a skill; experimento E4 agendado.
 - **Esforço:** P. **Risco:** revisor ficar leniente — é o que E4 mede.
+- **Resultado:** `adversarial-review` v1.2 sem cota, com gate de quatro perguntas, prova para Critical/Important, "zero achados é válido" (com a lista de áreas trabalhadas), lista de falsos positivos; `agents/code-reviewer.md` aponta para o gate. `THIRD_PARTY_NOTICES` criado (ECC MIT, zunoworks/gateguard via ECC, mattpocock). Harness de acionamento: descrição/keywords intactos.
 
 ### B-005 · Correções de documentação divergente — ✅ feito
 - **Recomendação / evidência:** §4.4 · E-A32, E-A35 a E-A39
@@ -163,14 +164,15 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 ### B-022 · Tokens por sessão e por projeto — ✅ feito
 - **Recomendação / evidência:** R-10 · E-B27. **Arquivos:** `hooks/session-save.py`; `scripts/osforge-db.py` (tabela `usage`, `cmd_board`). **Aceite:** transcript com a mesma `message.id` em duas linhas conta uma vez; tokens separados por modelo; `board` mostra o total do projeto. **Esforço:** P. **Dependências:** B-018. **Resultado:** tabela `usage` (upsert por projeto+sessão+modelo), `add-usage`/`usage`, totais no `board` (texto e `--json`) e no `stats`; `session-save.py` computa por `message.id`. Coberto em `tests/test-context-usage.sh`.
 
-### B-023 · Plano proporcional e arquivos do orquestrador
-- **Recomendação / evidência:** R-14 · E-A38, E-A40, E-A28. **Arquivos:** `claude-code/CLAUDE.md` L126, L140; `agents/orchestrator/AGENT.md` L126-137, L432-437; `deploy.sh` `copy_dir` (ou embutir `triage-rules.md`); `scripts/routing-cases.tsv` (casos de piso). **Aceite:** depois do experimento E3; `~/.claude/agents/orchestrator/` contém os arquivos citados ou o `AGENT.md` não os cita mais. **Esforço:** P.
+### B-023 · Plano proporcional e arquivos do orquestrador — ◐ arquivos feitos; plano proporcional aguarda E3
+- **Recomendação / evidência:** R-14 · E-A38, E-A40, E-A28. **Arquivos:** `claude-code/CLAUDE.md` L126, L140; `agents/orchestrator/AGENT.md` L126-137, L432-437; `deploy.sh` `copy_dir` (ou embutir `triage-rules.md`); `scripts/routing-cases.tsv` (casos de piso). **Aceite:** depois do experimento E3; `~/.claude/agents/orchestrator/` contém os arquivos citados ou o `AGENT.md` não os cita mais. **Esforço:** P. **Resultado (E-A40):** `deploy.sh` leva `triage-rules*.md`, `plan-templates/` e `delegation-brief.md` para `~/.claude/orchestrator/` (e `~/.cursor/orchestrator/`), e o `AGENT.md` cita esses caminhos; `always-active`/`model-tier` (não são esquema do Claude Code) viraram `model: sonnet`. **Pendente (E-A38):** plano proporcional — depois de E3.
 
-### B-024 · Rules com escopo; unicode; atenuação de negações
+### B-024 · Rules com escopo; unicode; atenuação de negações — ✅ feito (R-11 condicionada continua aberta)
 - **R-11 (parte imediata):** `alwaysApply: false` nas rules de stack em `rules/*.mdc`. **R-11 (condicionada):** gerar `~/.claude/rules/osforge/` em `deploy_claude` só depois de confirmar o carregamento com `measure-context.py` numa sessão real.
 - **R-16:** **(NOVO)** `scripts/check-unicode.py` no preflight e sobre `sources/`.
 - **R-02:** `_deny` em `hooks/gateguard.py` encurta a mensagem a partir da 4ª negação da sessão.
 - **Esforço:** P cada.
+- **Resultado:** R-11 imediata: `alwaysApply: false` em `nextjs-patterns`, `typescript-strict`, `code-style` (contagem 11 always-on + 3 por glob checada por `check-counts`). R-16: `scripts/check-unicode.py` (faixas do ECC + tolerância a `U+FE0F` após pictograma e em keycaps) no preflight e no CI; árvore limpa (709 arquivos). R-02: `gateguard.py` encurta a mensagem da 4ª negação consecutiva em diante e zera a contagem no grant (`tests/test-gateguard-grant.sh` 79 → 84 casos).
 
 ## Adiados — só com evidência
 

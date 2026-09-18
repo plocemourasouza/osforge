@@ -442,6 +442,15 @@ deploy_claude() {
   # Orchestrator tem subdiretório próprio — copiar o AGENT.md para agents/
   if [ -f "$REPO/agents/orchestrator/AGENT.md" ]; then
     copy_file "$REPO/agents/orchestrator/AGENT.md" "$CLAUDE/agents/orchestrator.md"
+    # Arquivos de apoio que o AGENT.md manda carregar (E-A40): triage-rules, plan-templates,
+    # delegation-brief → <harness>/orchestrator/ (fora de agents/, que só deve ter agentes).
+    if [ "$LEGACY_DEPLOY" != "1" ]; then
+      while IFS= read -r f; do
+        enqueue "$f" "$CLAUDE/orchestrator/${f#$REPO/agents/orchestrator/}"
+      done < <(find "$REPO/agents/orchestrator" -type f -not -name AGENT.md | sort)
+    elif $DRY_RUN; then skip "cp -R agents/orchestrator/{triage-rules*,plan-templates,delegation-brief} → $CLAUDE/orchestrator/"
+    else mkdir -p "$CLAUDE/orchestrator/plan-templates"; cp "$REPO/agents/orchestrator/"*.md "$CLAUDE/orchestrator/"; rm -f "$CLAUDE/orchestrator/AGENT.md"
+         cp "$REPO/agents/orchestrator/plan-templates/"*.md "$CLAUDE/orchestrator/plan-templates/"; ok "orchestrator/ (apoio)"; fi
   fi
 
   echo ""
@@ -872,6 +881,15 @@ deploy_cursor() {
   copy_dir "$REPO/agents" "$CURSOR/agents"
   if [ -f "$REPO/agents/orchestrator/AGENT.md" ]; then
     copy_file "$REPO/agents/orchestrator/AGENT.md" "$CURSOR/agents/orchestrator.md"
+    # Arquivos de apoio que o AGENT.md manda carregar (E-A40): triage-rules, plan-templates,
+    # delegation-brief → <harness>/orchestrator/ (fora de agents/, que só deve ter agentes).
+    if [ "$LEGACY_DEPLOY" != "1" ]; then
+      while IFS= read -r f; do
+        enqueue "$f" "$CURSOR/orchestrator/${f#$REPO/agents/orchestrator/}"
+      done < <(find "$REPO/agents/orchestrator" -type f -not -name AGENT.md | sort)
+    elif $DRY_RUN; then skip "cp -R agents/orchestrator/{triage-rules*,plan-templates,delegation-brief} → $CURSOR/orchestrator/"
+    else mkdir -p "$CURSOR/orchestrator/plan-templates"; cp "$REPO/agents/orchestrator/"*.md "$CURSOR/orchestrator/"; rm -f "$CURSOR/orchestrator/AGENT.md"
+         cp "$REPO/agents/orchestrator/plan-templates/"*.md "$CURSOR/orchestrator/plan-templates/"; ok "orchestrator/ (apoio)"; fi
   fi
 
   echo ""
@@ -946,13 +964,16 @@ preflight_manifest() {
 # OSFORGE_SKIP_PREFLIGHT_TESTS=1 pula (use só para diagnosticar o próprio preflight).
 preflight_tests() {
   echo ""
-  echo "🔍 Pre-flight: contratos de hook · agentes · contagens"
+  echo "🔍 Pre-flight: contratos de hook · agentes · contagens · unicode"
   if [ "${OSFORGE_SKIP_PREFLIGHT_TESTS:-}" = "1" ]; then echo "  ⟳  pulado (OSFORGE_SKIP_PREFLIGHT_TESTS=1)"; return 0; fi
   local failed=0 log; log="$(mktemp)"
   if "$REPO/tests/hooks/run-contracts.sh" >"$log" 2>&1; then ok "hooks: $(tail -1 "$log")"; rm -f "$log"
   else echo "  ❌ contratos de hook falharam — veja: cat $log"; failed=1; fi
   python3 "$REPO/scripts/check-agents.py" --quiet || failed=1
   python3 "$REPO/scripts/check-counts.py" || failed=1
+  local ulog; ulog="$(mktemp)"                                       # R-16: unicode invisível no que vai para o contexto
+  if (cd "$REPO" && python3 scripts/check-unicode.py >"$ulog" 2>&1); then ok "$(tail -1 "$ulog")"; rm -f "$ulog"
+  else cat "$ulog"; rm -f "$ulog"; failed=1; fi
   if [ "$failed" != "0" ]; then
     echo ""
     echo "  ❌ Pre-flight reprovou. Nada foi deployado. Corrija e rode de novo."

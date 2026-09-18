@@ -4,7 +4,7 @@
 
 **An AI-powered development framework: skills, agents, rules, hooks, commands, and a full library of specialists — the single source of truth for your global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration.**
 
-27 specialized agents · 177 on-demand skills · 14 always-on rules (Cursor) · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
+27 specialized agents · 177 on-demand skills · 14 rules (Cursor: 11 always-on, 3 stack rules by file glob) · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -211,7 +211,7 @@ Full index with triggers in [claude-code/SKILLS.md](claude-code/SKILLS.md). Main
 - **Meta & Context** — Systematic Debugging, Performance Profiling, Smart Model Dispatch, llmfit Advisor, Context Distillator, osforge-db, OSForge Canvas, System Diagrams (Archify), Stuck Recovery, Config Critique, Context Compact, Tool Safety Classifier, Evolve/Instinct.
 - **The Agency** — 121 AI specialists across 10 divisions + 32 marketing execution workflows.
 
-### 14 always-on rules (Cursor)
+### 14 rules (Cursor: 11 always-on, 3 stack rules by file glob)
 
 TypeScript Strict, Code Style, Product Thinking (PDD), TDD Enforcement, Next.js Patterns, Security Mindset, Intelligent Routing, Anti-AI-Slop, Commit Conventions, Agent Skills Reference, Memory Hierarchy, Artifact Chain, Orchestrator Awareness, Plan Mode. (Claude Code equivalents live inside `claude-code/CLAUDE.md`.)
 

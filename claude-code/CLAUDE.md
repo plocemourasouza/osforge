@@ -8,7 +8,7 @@
 > **ADR-001:** never edit `~/.claude/` directly. Edit `claude-code/CLAUDE.md` in the repo and run
 > `./deploy.sh`. Changing this file invalidates the prompt cache of every session — keep it stable.
 
-OSForge ships **177 skills**, **27 agents** (orchestrator + 26 specialists), **14** always-on **rules** (Cursor only — see R-11),
+OSForge ships **177 skills**, **27 agents** (orchestrator + 26 specialists), **14** **rules** (Cursor only; 11 always-on, 3 stack rules — `nextjs-patterns`, `typescript-strict`, `code-style` — load only when a matching file is in context, R-11),
 **9 `spec-*` commands**, hooks, and `osforge-db` (SQLite state + vector memory). Full rosters and
 operational reference live in the repo's `USAGE.md` — this file describes *how to orchestrate*, it doesn't catalog.
 

@@ -323,7 +323,7 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 
 ## 5. Always-On Rules (Cursor)
 
-The 14 rules (12 `.mdc` + 2 `.md`: `artifact-chain`, `orchestrator-awareness`) are automatically active in all Cursor sessions. No activation needed.
+The 14 rules (12 `.mdc` + 2 `.md`: `artifact-chain`, `orchestrator-awareness`) are active in Cursor sessions. Eleven are always on; the three **stack rules** — `nextjs-patterns`, `typescript-strict`, `code-style` — carry `alwaysApply: false` and load only when a file matching their `globs` is in context, so a Markdown-only or Python session does not pay for them (R-11, B-024). Taking them to Claude Code as `~/.claude/rules/` stays conditional on confirming, with `scripts/measure-context.py` in a real session, that `paths:` is honoured there.
 
 | Rule | Effect |
 |---|---|

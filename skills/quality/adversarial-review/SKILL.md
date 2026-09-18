@@ -6,7 +6,8 @@ context: fork
 agent: general-purpose
 allowed-tools: Read, Glob, Grep
 metadata:
-  version: '1.1'
+  version: '1.2'
+  inspired_by: "affaan-m/ECC agents/code-reviewer.md (MIT, © 2026 Affaan Mustafa) — pre-report gate, proof for high severities, zero findings as a valid result, false-positive list. See THIRD_PARTY_NOTICES."
 ---
 
 # Adversarial Review
@@ -53,12 +54,48 @@ Areas of attack (adapt to the content type):
 - RLS: policies covering all access scenarios
 - Migrations: backward compatibility, data loss risk
 
-Find a **MINIMUM of 10 issues** to fix or improve.
+There is **no quota of findings**. The previous version demanded "a minimum of 10 issues" and
+treated zero findings as suspicious; the audit (E-A42) found that this is exactly what makes an LLM
+reviewer manufacture findings. Depth comes from working every area of attack, not from a number.
 
 **Done when:** every area of attack listed for this content type has been worked through, and each
-finding names the file, line or section it attacks. The 10-issue floor is a floor, not a target —
-hitting it is not permission to stop while an area is still unexamined, and padding the list to
-reach it defeats the skill more thoroughly than finding nine.
+finding that survives the gate below names the file, line or section it attacks.
+
+### 2b. Pre-report gate — answer all four before writing a finding
+
+If any answer is "no" or "unsure", downgrade the severity or drop the finding.
+
+1. **Can I cite the exact location?** File and line, or section and sentence. "Somewhere in the
+   auth layer" is not a finding.
+2. **Can I describe the concrete failure?** The input, the state and the bad outcome. If you cannot
+   name the trigger you are pattern-matching, not reviewing.
+3. **Have I read the surrounding context?** Callers, imports, tests, the previous section of the
+   spec. Many apparent issues are handled one frame up or guarded by a type or an AC.
+4. **Is the severity defensible?** A missing comment is never Critical. A single `any` in a test
+   fixture is never Critical. Severity inflation erodes trust faster than a missed finding.
+
+**Critical and Important require proof.** For each one include the exact snippet or sentence, the
+specific failure scenario (input, state, outcome) and why the existing guards — types, validation,
+framework defaults, an AC elsewhere in the spec — do not catch it. Without all three, demote to
+Improvement or drop.
+
+**Zero findings is a valid result.** If the artifact is small, well-typed, tested and consistent
+with the project's patterns, the correct output is the report with zero rows and the verdict
+"nothing found after working all areas of attack" — plus the list of areas worked, so the reader
+can see the review happened. Manufactured findings, filler nits, "consider using X" without a
+trigger and hypothetical edge cases with no path to reach them are the primary failure mode of an
+LLM reviewer and the one thing this skill must not do.
+
+**Common false positives — skip unless you have evidence specific to this artifact:**
+"consider adding error handling" where the caller or framework handles it (error middleware, error
+boundary, upstream `.catch`); "missing input validation" on an internal function whose callers
+validate (trace one caller first); "magic number" for `200`, `404`, `1000` ms, `24`, `1024`, HTTP
+codes or a single-use constant whose name says what it is; "function too long" for exhaustive
+`switch`es, config objects, test tables, generated code; "possible null dereference" when the line
+above narrows the type; "N+1" on a fixed-cardinality loop or a path already batched; "missing
+await" on an intentionally detached call (`void`, logging, metrics); "hardcoded value" in fixtures,
+examples or docs; `Math.random()` outside a cryptographic context. When tempted, ask: would a
+senior engineer on this team flag it, or would they say "that's fine here"?
 
 ### 3. Present Findings
 
@@ -67,7 +104,7 @@ reach it defeats the skill more thoroughly than finding nine.
 
 **Content reviewed:** {identification}
 **Type:** {code|spec|prd|schema|config}
-**Findings:** {N total}
+**Findings:** {N total} — {areas of attack worked, one line}
 
 ### Critical (blocks deploy/approval)
 1. {finding with location and fix suggestion}
@@ -83,16 +120,15 @@ reach it defeats the skill more thoroughly than finding nine.
 ```
 
 ## Halt Conditions
-- HALT if zero findings → suspicious, re-analyze with more skepticism
-- HALT if findings < 10 issues after the first pass → do ONE more skeptical second pass (alternative flows, implicit assumptions, race conditions, error states, omissions). If after the second pass there are still < 10 findings, stop searching for more issues: deliver the real findings found and explicitly state in the report that the minimum of 10 was not reached and why (e.g., artifact too small or trivial). Never invent artificial findings to hit the quota.
 - HALT if content is empty or unreadable
+- HALT if the areas of attack for this content type were not all worked — finish them before reporting
 
 
 ## Gotchas
 
-- **Findings that are too obvious**: if all 10 findings are "missing comment" or "bad variable name", the review failed. adversarial-review exists to find problems of LOGIC, SECURITY and COMPLETENESS — not style issues the linter already catches.
-- **Stopping with fewer than 10 findings**: the instruction is to find a MINIMUM of 10 issues. If you got to 7 and it seems like there are no more, review with more skepticism — the problem is in the depth of the analysis, not the artifact.
-- **"Zero findings" as a result**: that output is suspicious by definition. Re-analyze focusing on: uncovered alternative flows, implicit assumptions, race conditions, error states, and what was OMITTED (not just what was written incorrectly).
+- **Findings that are too obvious**: if every finding is "missing comment" or "bad variable name", the review failed. adversarial-review exists to find problems of LOGIC, SECURITY and COMPLETENESS — not style issues the linter already catches.
+- **Padding to look thorough**: a review with twelve rows of which nine fail the pre-report gate is worse than a review with three that pass it. The reader stops trusting the list and misses the three.
+- **Stopping early with zero findings**: zero is a valid result only after every area of attack was worked. "Looks fine" after reading the happy path is not a review — list the areas worked so the reader can tell the difference.
 - **Not separating by priority**: all issues carry different weight. Without separating Critical/Important/Improvement, the recipient doesn't know where to focus. Prioritization is mandatory — not optional.
 - **Being adversarial in tone, not in content**: the goal is to find real problems, not to sound aggressive. The tone should be "demanding, experienced reviewer", not "troll". Precision and specificity > sarcasm.
 - **Not suggesting fixes**: each finding must have an actionable fix suggestion. "This is wrong" without "here's how to fix it" adds no value to the recipient.

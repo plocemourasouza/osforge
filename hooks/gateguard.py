@@ -6,8 +6,11 @@ Forces investigation before Edit/Write/Bash. Instead of asking "are you sure?"
 (which LLMs always answer "yes"), this hook demands concrete facts.
 The act of investigation creates awareness that self-evaluation never did.
 
-Based on the ecc GateGuard mechanism (+2.25 pts vs ungated, two independent A/B tests).
-Adapted for OSForge: Python stdlib only, zero dependencies, minimalista.
+Based on the GateGuard mechanism as shipped in affaan-m/ECC (scripts/hooks/gateguard-fact-force.js,
+MIT, © 2026 Affaan Mustafa), which itself credits https://github.com/zunoworks/gateguard
+(package `gateguard-ai`). Re-implemented for OSForge: Python stdlib only, zero dependencies,
+minimalista; no code copied. See THIRD_PARTY_NOTICES. ECC reports +2.25 pts vs ungated in two
+A/B tests — their number, not ours; OSForge measures it in experiment E6 (docs/BACKLOG-EVOLUCAO.md).
 
 ── Gates ──────────────────────────────────────────────────────────────────────
   Edit/Write   : first touch per file per session → demand importers, API surface,
@@ -432,7 +435,24 @@ def _record_denial(state: dict, key: str, detail: str) -> dict:
         "at": time.time(),
         "excerpt": (detail or "").replace("\n", " ")[:120],
     }
+    state["deny_streak"] = int(state.get("deny_streak", 0) or 0) + 1
     return state
+
+
+ATTENUATE_AFTER = 3   # R-02: 3 negações com o bloco completo; da 4ª em diante, uma linha
+
+
+def _attenuate(msg: str, state: dict) -> str:
+    """Repetir o mesmo bloco de 12 linhas a cada negação induz o agente a repetir a
+    mesma tentativa (laço observado no upstream, ECC #2142). Depois de ATTENUATE_AFTER
+    negações consecutivas sem grant, a mensagem vira uma linha com o ordinal."""
+    n = int(state.get("deny_streak", 0) or 0)
+    if n <= ATTENUATE_AFTER:
+        return msg
+    return (f"[GateGuard] {n}ª negação nesta sessão sem os fatos pedidos — mesmos requisitos "
+            "da mensagem anterior (importadores/alvos, superfície afetada ou rollback, instrução "
+            "textual do usuário). Apresente-os, ou peça ao usuário uma confirmação explícita. "
+            "OSFORGE_GATEGUARD=off desliga o gate.")
 
 
 def _pending_denial(state: dict):
@@ -467,6 +487,7 @@ def apply_prompt_to_state(state: dict, prompt: str) -> tuple:
     if verdict == "revoke":
         state.pop("grant", None)
     elif verdict in ("grant", "session"):
+        state["deny_streak"] = 0
         ttl = GRANT_SESSION_TTL_S if verdict == "session" else GRANT_TTL_S
         state["grant"] = {
             "granted_at": now,
@@ -823,7 +844,7 @@ def main():
             msg = _edit_gate_msg(file_path) if tool_name == "Edit" else _write_gate_msg(file_path)
             _record_denial(state, file_path, f"{tool_name} {file_path}")
             _save_state(state_path, state)
-            _deny(msg)
+            _deny(_attenuate(msg, state))
 
         _allow()
 
@@ -892,8 +913,8 @@ def main():
                         "state could not be persisted for destructive command; "
                         "blocking to enforce fact-forcing gate."
                     )
-                    _deny(_destructive_bash_msg())
-                _deny(_destructive_bash_msg())
+                    _deny(_attenuate(_destructive_bash_msg(), state))
+                _deny(_attenuate(_destructive_bash_msg(), state))
             _allow()
 
         _allow()
