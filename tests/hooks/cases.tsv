@@ -1,0 +1,61 @@
+# cases.tsv — contratos de hook (B-006). Colunas separadas por TAB:
+#   id	harness	event	hook	fixture	expect
+# harness: claude-code | cursor.  event: como no JSON de hooks (Claude Code: PreToolUse…; Cursor: beforeShellExecution…).
+# hook: substring do comando no JSON de hooks (basename do script). "*" = todos os hooks daquele evento.
+# fixture: caminho relativo a tests/hooks/fixtures/. Tokens __HOME__ e __FIXTURES__ são substituídos.
+# expect (Claude Code): deny | allow | block | context | silent | any
+#   deny/allow  → PreToolUse: hookSpecificOutput.permissionDecision
+#   block       → Stop: {"decision":"block"}
+#   context     → stdout JSON com hookSpecificOutput.additionalContext (ou texto plano em SessionStart)
+#   silent      → stdout vazio
+#   any         → só as invariantes (exit 0; stdout vazio ou JSON válido; nada escrito fora do sandbox)
+# expect (Cursor): deny | allow (campo permission) | silent | any
+#
+# Sempre, para todo caso: exit 0; stdout vazio ou JSON válido; nenhum arquivo novo em /tmp fora do sandbox.
+#
+# ── PreToolUse Bash
+CC-01	claude-code	PreToolUse	scan-secrets	claude-code/pretooluse-bash-rm-home.json	deny
+CC-02	claude-code	PreToolUse	gateguard	claude-code/pretooluse-bash-rm-home.json	deny
+CC-03	claude-code	PreToolUse	scan-secrets	claude-code/pretooluse-bash-force-push.json	allow
+CC-04	claude-code	PreToolUse	gateguard	claude-code/pretooluse-bash-force-push.json	deny
+CC-05	claude-code	PreToolUse	*	claude-code/pretooluse-bash-ls.json	allow
+CC-06	claude-code	PreToolUse	*	claude-code/pretooluse-bash-commit-clean.json	allow
+# ── UserPromptSubmit (gateguard)
+CC-10	claude-code	UserPromptSubmit	gateguard	claude-code/userprompt-ok.json	silent
+CC-11	claude-code	UserPromptSubmit	gateguard	claude-code/userprompt-session-release.json	context
+CC-12	claude-code	UserPromptSubmit	gateguard	claude-code/userprompt-plain.json	silent
+# ── PostToolUse
+CC-20	claude-code	PostToolUse	protect-tests	claude-code/posttooluse-edit-test.json	context
+CC-21	claude-code	PostToolUse	protect-tests	claude-code/posttooluse-edit-src.json	silent
+CC-22	claude-code	PostToolUse	observe-capture	claude-code/posttooluse-edit-src.json	silent
+CC-23	claude-code	PostToolUse	observe-capture	claude-code/posttooluse-read-skill.json	silent
+# ── SessionStart
+CC-30	claude-code	SessionStart	session-resume	claude-code/sessionstart.json	silent
+CC-31	claude-code	SessionStart	canvas-autostart	claude-code/sessionstart.json	any
+# ── Stop
+CC-40	claude-code	Stop	route-guard	claude-code/stop-no-route.json	block
+CC-41	claude-code	Stop	route-guard	claude-code/stop-with-route.json	silent
+CC-42	claude-code	Stop	route-guard	claude-code/stop-skill-declared-not-loaded.json	block
+CC-43	claude-code	Stop	route-guard	claude-code/stop-skill-echo-bypass.json	block
+CC-44	claude-code	Stop	route-guard	claude-code/stop-skill-loaded.json	silent
+CC-45	claude-code	Stop	route-guard	claude-code/stop-active.json	silent
+CC-46	claude-code	Stop	route-guard	claude-code/stop-question.json	silent
+CC-47	claude-code	Stop	notify-done	claude-code/stop-with-route.json	silent
+CC-48	claude-code	Stop	session-save	claude-code/stop-with-route.json	silent
+# ── Payloads malformados: todos os hooks de todos os eventos sobrevivem
+CC-90	claude-code	PreToolUse	*	claude-code/payload-not-object.json	any
+CC-91	claude-code	Stop	*	claude-code/payload-not-object.json	any
+CC-92	claude-code	PostToolUse	*	claude-code/payload-not-object.json	any
+CC-93	claude-code	UserPromptSubmit	*	claude-code/payload-not-object.json	any
+CC-94	claude-code	SessionStart	*	claude-code/payload-not-object.json	any
+CC-95	claude-code	PreToolUse	*	claude-code/payload-garbage.json	any
+CC-96	claude-code	Stop	*	claude-code/payload-garbage.json	any
+CC-97	claude-code	PreToolUse	*	__BIG__	any
+CC-98	claude-code	Stop	*	__BIG__	any
+# ── Cursor
+CU-01	cursor	beforeShellExecution	scan-secrets	cursor/beforeShellExecution-rm-home.json	deny
+CU-02	cursor	beforeShellExecution	scan-secrets	cursor/beforeShellExecution-ls.json	allow
+CU-03	cursor	afterFileEdit	protect-tests	cursor/afterFileEdit-test.json	silent
+CU-04	cursor	stop	notify-done	cursor/stop-completed.json	silent
+CU-05	cursor	sessionStart	canvas-autostart	cursor/sessionStart.json	any
+CU-90	cursor	beforeShellExecution	*	claude-code/payload-garbage.json	any

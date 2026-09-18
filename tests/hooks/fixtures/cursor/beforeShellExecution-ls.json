@@ -1,0 +1,6 @@
+{
+ "command": "ls -la",
+ "workspace_roots": [
+  "__HOME__/proj"
+ ]
+}

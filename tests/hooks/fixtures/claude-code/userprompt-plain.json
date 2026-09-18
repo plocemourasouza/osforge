@@ -1,0 +1,6 @@
+{
+ "hook_event_name": "UserPromptSubmit",
+ "session_id": "u3",
+ "prompt": "agora ajusta o css do header",
+ "cwd": "__HOME__/proj"
+}

@@ -1,0 +1,7 @@
+{
+ "hook_event_name": "Stop",
+ "session_id": "t4",
+ "stop_hook_active": false,
+ "transcript_path": "__FIXTURES__/transcripts/skill-echo-bypass.jsonl",
+ "cwd": "__HOME__/proj"
+}

@@ -1,0 +1,6 @@
+{
+ "hook_event_name": "UserPromptSubmit",
+ "session_id": "u1",
+ "prompt": "ok",
+ "cwd": "__HOME__/proj"
+}
