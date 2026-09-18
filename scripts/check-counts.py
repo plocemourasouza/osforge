@@ -31,6 +31,7 @@ RULES = [
     ("README.md", r"(\d+) specialized agents", agents, "agents"),
     ("README.md", r"(\d+) on-demand skills", skills, "skills"),
     ("README.md", r"(\d+) rules \(Cursor: \d+ always-on", rules, "rules"),
+    ("README.md", r'HK\["(\d+) hooks"\]', hooks, "hooks (diagrama)"),
     ("README.md", r"\d+ rules \(Cursor: (\d+) always-on", rules_always, "always-on rules"),
     ("README.md", r"(\d+) spec commands", spec_cmds, "spec commands"),
     ("README.md", r"\*\*MCP servers\*\* — (\d+) global", mcps, "global MCPs"),

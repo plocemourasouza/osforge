@@ -28,24 +28,29 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-./tests/test-assertions.sh              # Verdict logic of the harness — offline, no API cost
-./tests/hooks/run-contracts.sh          # Hook contracts: real command strings × payload fixtures, both harnesses (offline; deploy gate)
-./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle (offline)
-./tests/test-gateguard-sql.sh           # GateGuard destructive-SQL detector (offline)
-./tests/test-scan-secrets.sh            # scan-secrets, both payload shapes, temp git repo (offline)
-python3 scripts/check-agents.py         # Agent frontmatter: tools scalar, model enum, read-only roles (deploy gate)
-python3 scripts/check-unicode.py        # Invisible/bidi/tag code points in everything that reaches the context (deploy gate; --sources for the vendored tree; --fix)
-./tests/test-deploy-lifecycle.sh        # Deploy with state: user files/hooks/skills survive, idempotent, doctor/uninstall/restore (offline, ~1 min; CI)
-./tests/test-session-continuity.sh      # One project identity for all hooks; resume as scoped, capped, scrubbed data (offline)
-./tests/test-canvas-feedback.sh         # Canvas feedback drain (Stop) + server-side validation against the artifact (offline; bun for the server part)
-./tests/test-context-usage.sh           # Context-threshold warning from real usage + per-session/project tokens (offline)
+# Suítes offline (416 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
+./tests/test-assertions.sh              # Lógica de veredito dos harnesses de eval (60)
+./tests/hooks/run-contracts.sh          # Contratos de hook: comandos reais × fixtures, dois harnesses (59; gate do deploy)
+./tests/test-gateguard-grant.sh         # Ciclo de vida do grant do GateGuard + atenuação de negações (84)
+./tests/test-deploy-lifecycle.sh        # Deploy com estado: nada seu se perde, idempotente, doctor/uninstall/restore (61; ~1 min; CI)
+./tests/test-session-continuity.sh      # Uma identidade de projeto; resume com escopo, teto e limpeza (35)
+./tests/test-canvas-feedback.sh         # Dreno do feedback do Canvas (Stop) + validação no servidor (34; parte do servidor precisa de bun)
+./tests/test-scan-secrets.sh            # scan-secrets nos dois formatos de payload, repo git temporário (33)
+./tests/test-context-usage.sh           # Aviso de contexto pelo uso real + tokens por sessão/projeto (27)
+./tests/test-gateguard-sql.sh           # Detector de SQL destrutivo do GateGuard (23)
+
+# Gates estáticos (rodam no preflight do deploy e no CI):
+python3 scripts/_generate_manifest.py --check   # MANIFEST de claude-code/SKILLS.md em dia
+python3 scripts/check-agents.py         # Frontmatter dos agentes: tools escalar, model no enum, papéis read-only
+python3 scripts/check-counts.py         # Números citados em README/CLAUDE.md/USAGE batem com a árvore
+python3 scripts/check-unicode.py        # Unicode invisível/bidi/tag no que chega ao contexto (--sources, --fix)
 
 # Evals (consomem API; --dry lista e valida sem chamar modelo — é o que o CI roda):
-./scripts/test-skill-triggering.sh --dry            # ou --model <id> --runs 3 --report docs/evals/<data>-<modelo>-skills.md
-./scripts/test-orchestrator-routing.sh --dry        # ou --model <id> --runs 3 [--home DIR] --report …-routing.md
-./scripts/run-trigger-eval.sh --dry [--split eval]  # ou --model <id> --runs 3 --report …-trigger.md
-python3 scripts/check-counts.py         # Numbers quoted in README/CLAUDE.md/USAGE match the tree (deploy gate)
-./scripts/test-skill-triggering.sh --generated --sample 20   # Real triggering run (consumes API)
+./scripts/run-trigger-eval.sh --dry [--split eval]  # 15 skills × (5 positivas + 5 negativas)
+./scripts/test-orchestrator-routing.sh --dry        # roteamento: agente, skill, tier
+./scripts/test-skill-triggering.sh --dry            # triggering das skills core
+#   rodada real: --model <id> --runs 3 [--home DIR] --report docs/evals/<data>-<modelo>-<suite>.md
+#   PASS é k = N; 0 < k < N é FLAKY e reprova. Formato e pendências: docs/evals/README.md
 
 python3 scripts/buscar-skill.py <query> # Search skills locally
 python3 scripts/osforge-db.py --help    # State CLI (deployed as `osforge-db` in ~/.local/bin)
@@ -53,9 +58,9 @@ bun scripts/canvas/server.ts            # OSForge Canvas — local generative UI
 ```
 
 Deploy behavior worth knowing:
-- `skills/` is synced with `rsync --delete` — removing a skill dir here removes it from `~/.claude/skills/` and `~/.cursor/skills/` on next deploy.
-- Hooks (`hooks/hooks-claude-code.json` → `~/.claude/settings.json`) merge **reconciling**: OSForge-managed hooks (command under `.claude/hooks/`) are authoritative — matcher/command changes propagate and removed hooks vanish; the user's own hooks are preserved. MCPs (`mcp/claude-code.json` → `~/.claude.json`) merge non-destructively (union). Deploy reports MCP drift between repo and live config.
-- Critical files are backed up to `~/.claude_backups/` before overwrite.
+- Removing a skill dir here removes it from `~/.claude/skills/` and `~/.cursor/skills/` on the next deploy — **only if the installed copy is still byte-identical to what the deploy wrote**. Your own skills, and anything installed with `install-skill --global`, are never deleted (there is no `rsync --delete` on this path any more).
+- Hooks (`hooks/hooks-claude-code.json` → `~/.claude/settings.json`) merge **by id** (`event|matcher|script`), three-way: a managed entry still equal to what was recorded is replaced, one **you edited** aborts the deploy with both versions (`--force-hooks`), an event the repo dropped disappears, and your own entries — including under `~/.claude/hooks/` — are never touched. MCPs (`mcp/claude-code.json` → `~/.claude.json`) merge non-destructively (union). Deploy reports MCP drift between repo and live config.
+- Backups go to `~/.claude_backups/<run_id>/<path relative to HOME>`, and only when something is actually overwritten or kept — an idempotent second run writes nothing and creates no backup. `./deploy.sh --restore=<run_id>` puts a run's backups back.
 - Pre-flight gates (abort the deploy): manifest drift, `tests/hooks/run-contracts.sh`, `scripts/check-agents.py`, `scripts/check-counts.py`, `scripts/check-unicode.py`. CI (`.github/workflows/ci.yml`) runs the same set plus `bash -n`/`py_compile`, a dry-run deploy in an empty HOME and `tests/test-deploy-lifecycle.sh`.
 - Evals: `--model` é obrigatório fora de `--dry`, cada caso roda `--runs` vezes (padrão 3) e o relatório vai para `docs/evals/` (`docs/evals/README.md` explica o formato e lista o que ainda é narrativa). PASS é `k = N`; `0 < k < N` é FLAKY e reprova.
 - The deploy keeps state (`scripts/osforge-state.py`, `~/.osforge/install-state.json`): it never overwrites a file you edited, never deletes a skill/hook of yours, and can `--doctor`/`--uninstall`/`--restore`. `OSFORGE_DEPLOY_LEGACY=1` = old path, one release.
@@ -64,10 +69,10 @@ Deploy behavior worth knowing:
 
 ### Deployed content (the product)
 - `skills/` — One directory per skill, each with a `SKILL.md` (frontmatter: `name`, `description` with `Use when:` / `Keywords:` / `Do NOT use for:` triggers per `docs/SKILL-STANDARD.md`). Some skills have subdirectories with reference modules.
-- `agents/` — One `.md` per agent. Exception: `agents/orchestrator/` is a directory; deploy copies its `AGENT.md` to `agents/orchestrator.md`.
+- `agents/` — One `.md` per agent. Exception: `agents/orchestrator/` is a directory; the deploy copies its `AGENT.md` to `agents/orchestrator.md` and its support files (`triage-rules*.md`, `plan-templates/`, `delegation-brief.md`) to `~/.claude/orchestrator/` — the paths the `AGENT.md` tells the model to load.
 - `rules/` — `.mdc` files loaded as Cursor always-on global rules (Claude Code equivalents live inside `claude-code/CLAUDE.md`).
 - `commands/` — `spec-*.md` slash commands. Unified spec system (ADR-003): commands are the execution interface; the `tlc-spec-driven` skill holds templates. Both operate on `.specs/` in target projects.
-- `hooks/` — Shell/Python hook scripts (`canvas-autostart`, `session-resume`, `session-save`, `observe-capture`, `protect-tests`, `scan-secrets`, `gateguard`, `notify-done`) + two configs: `hooks-claude-code.json` (Claude Code → settings.json) and `hooks.json` (Cursor, absolute `$HOME/.cursor/hooks/` paths per ADR-006).
+- `hooks/` — 11 shell/Python hook scripts (`canvas-autostart`, `session-resume`, `session-save`, `observe-capture`, `protect-tests`, `scan-secrets`, `gateguard`, `route-guard`, `notify-done`, `canvas-feedback`, `context-threshold`) + `hooks/lib/` (shared: `project_id.py` resolves one project identity for every hook, `scrub.py` removes secrets from anything persisted or re-injected) + two configs: `hooks-claude-code.json` (Claude Code → settings.json) and `hooks.json` (Cursor, absolute `$HOME/.cursor/hooks/` paths per ADR-006). `hooks/validate.py` is a project template, not a hook, and is not deployed. Output contract: `docs/HOOKS.md`.
 - `claude-code/CLAUDE.md` and `claude-code/SKILLS.md` — deployed as `~/.claude/CLAUDE.md` and `~/.claude/SKILLS.md`. `SKILLS.md` has two halves: a hand-written **spine** (global rules + the always-active disciplines) and a generated **MANIFEST** between `<!-- MANIFEST:START/END -->` markers, holding one line per non-core skill. Edit the spine by hand; regenerate the manifest with `scripts/_generate_manifest.py`. A skill outside both the core allowlist and the manifest does not exist at runtime.
 - `claude-code/skills-core.txt` — the Model A allowlist: the only skills `deploy.sh` copies to `~/.claude/skills` (and `~/.cursor/skills`). Everything else is pulled per project via `scripts/install-skill.sh`. `--all-skills` restores the old deploy-everything behavior.
 - `mcp/claude-code.json` — MCP server definitions.

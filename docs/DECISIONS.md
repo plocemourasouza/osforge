@@ -289,4 +289,12 @@ id-keyed hook merge, install-state, guarded resume and canvas-feedback drain are
   (`OSFORGE_DEPLOY_LEGACY`, `OSFORGE_GATEGUARD_LEGACY_GRANT`); rejected imports can be reopened
   only through the conditions in `.out-of-scope/ecc-imports.md`.
 
+**Status of execution (2026-09-18).** 23 of the 24 backlog items shipped, each with a test that
+goes red without the fix: stages 0, 1, 3 complete; stage 2 complete except the paid run (B-013),
+which waits on cost authorisation; stage 4 complete except the proportional plan (B-023/E-A38),
+which waits on experiment E3. What is deliberately still open, and the condition that opens it,
+is tabled at the top of `docs/BACKLOG-EVOLUCAO.md`. Offline suites: nine under `tests/`, 416 checks,
+all runnable with a temporary `HOME`, none touching a live `~/.claude`; CI runs them plus a
+dry-run of the three eval suites on ubuntu and macos.
+
 **Date:** 2026-09-18.

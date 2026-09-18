@@ -81,11 +81,11 @@ flowchart LR
     AG["27 agents"]
     RU["14 rules"]
     CM["9 spec commands"]
-    HK["hooks"]
-    MC["8 MCP servers"]
+    HK["11 hooks"]
+    MC["1 global MCP + per-project stacks"]
     DBCLI["osforge-db CLI"]
   end
-  REPO -->|"./deploy.sh (rsync --delete)"| HOME["~/.claude/ + ~/.cursor/"]
+  REPO -->|"./deploy.sh (com estado: nada seu é sobrescrito)"| HOME["~/.claude/ + ~/.cursor/"]
   HOME --> CC["Claude Code"]
   HOME --> CU["Cursor"]
   DBCLI -->|"~/.local/bin"| STATE[("~/.osforge/osforge.db<br/>SQLite + vector memory")]
@@ -247,7 +247,7 @@ OSForge separates **authoring language** from **runtime language**:
 - **Authoring = English.** All repository content (skills, agents, rules, `CLAUDE.md`, `SKILLS.md`, commands, ADRs, comments) is written in English — one language maximizes the model's predictability and removes mixed-language drift.
 - **Runtime = the user's language**, via the orchestrator translation boundary (see [Architecture §2](#2-orchestration--the-language-boundary)).
 
-New skills follow a single standard — [`docs/SKILL-STANDARD.md`](docs/SKILL-STANDARD.md) — built from [`docs/SKILL.template.md`](docs/SKILL.template.md). It merges OSForge's activation pattern (`Use when` / `Keywords` / `Do NOT use for`) and execution-routing frontmatter (`model` / `context` / `agent` / `allowed-tools`) with an explicit invocation axis (orchestrator vs. discipline), leading words, checkable completion criteria, and a failure-mode audit. Activation is validated with `scripts/test-skill-triggering.sh`.
+New skills follow a single standard — [`docs/SKILL-STANDARD.md`](docs/SKILL-STANDARD.md) — built from [`docs/SKILL.template.md`](docs/SKILL.template.md). It merges OSForge's activation pattern (`Use when` / `Keywords` / `Do NOT use for`) and execution-routing frontmatter (`model` / `context` / `agent` / `allowed-tools`) with an explicit invocation axis (orchestrator vs. discipline), leading words, checkable completion criteria, and a failure-mode audit. Activation is validated by measurement, not by eye: `scripts/run-trigger-eval.sh` runs 5 queries where the skill **must** fire and 5 where it **must not** (a description that fires at everything costs context in every session), each 3 times, and writes the result to [`docs/evals/`](docs/evals/README.md).
 
 ### Bundled subsystems
 

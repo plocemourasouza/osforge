@@ -5,6 +5,35 @@ Base: OSForge `d87a9bfc2058df233d30a2637fe252efb3256894`. Caminhos relativos à 
 Esforço: **P** até meio dia · **M** 1–3 dias · **G** 3–7 dias, para quem conhece o repositório.
 Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/.claude`.
 
+## Estado (2026-09-18)
+
+**23 de 24 itens fechados.** O que sobrou não é trabalho parado: é trabalho que depende de
+uma decisão de gasto ou do resultado de um experimento.
+
+| Etapa | Itens | Estado |
+|---|---|---|
+| 0 — Correções imediatas | B-001 … B-005 | ✅ |
+| 1 — Rede de segurança | B-006 … B-009 | ✅ |
+| 2 — Evals confiáveis | B-010, B-011, B-012 | ✅ · B-013 ⏸ aguarda autorização de custo |
+| 3 — Consolidação | B-014 … B-020 | ✅ |
+| 4 — Conforme os experimentos | B-021, B-022, B-024 | ✅ · B-023 ◐ (arquivos feitos; plano proporcional depende do E3) |
+
+Aberto, e por quê:
+
+- **B-013 (E1, estabilidade)** — infraestrutura pronta, falta a rodada paga. Piloto de 6
+  chamadas, roteamento 48, trigger 180. Comandos no próprio B-013.
+- **B-023 (plano proporcional)** — os arquivos do orquestrador já são deployados; mudar o
+  "todo plano precisa de Roster/User stories/Task manifest" depende do E3, que depende do E1.
+- **R-11 condicionada** (`~/.claude/rules/`) — precisa confirmar em sessão real, com
+  `scripts/measure-context.py`, que o Claude Code honra `paths:`.
+- **E-A08** (ligar o gate de Edit/Write do GateGuard) e **R-09** (laço de instincts) — presos
+  a E6 e E5, pela mesma razão: ninguém mediu o ganho ainda.
+
+Tudo que foi fechado tem teste que falha sem a correção. As nove suítes offline somam
+**416 verificações** (assertions 60 · contratos de hook 59 · gateguard-grant 84 · deploy
+lifecycle 61 · continuidade 35 · canvas 34 · scan-secrets 33 · contexto/tokens 27 ·
+gateguard-sql 23) e nenhuma toca o `~/.claude` de ninguém.
+
 ## Etapa 0 — Correções imediatas
 
 ### B-001 · Grant do GateGuard exige negação pendente — ✅ feito

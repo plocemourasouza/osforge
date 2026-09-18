@@ -1,5 +1,11 @@
 # Apêndice de auditoria e evidências — OSForge × ECC
 
+> **Este documento é um retrato**, congelado no SHA auditado (`d87a9bf`) de 2026-09-18. Os
+> defeitos E-A* descritos aqui **não** são o estado atual do repositório: a maioria foi
+> corrigida depois, cada um com teste que fica vermelho sem a correção. O estado corrente
+> está em [`BACKLOG-EVOLUCAO.md`](BACKLOG-EVOLUCAO.md) (painel no topo) e no `CHANGELOG.md`.
+> Alterar as linhas abaixo apagaria a evidência que justificou cada mudança — elas ficam.
+
 ## 1. Snapshots
 
 | | Projeto A — OSForge | Projeto B — ECC |
