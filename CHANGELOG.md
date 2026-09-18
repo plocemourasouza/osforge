@@ -119,6 +119,26 @@ All notable changes to OSForge are recorded here. The format follows
   another project's task never appears; a 6000-line transcript yields the *last* messages; the
   vector filter goes red on the previous code (mock embeddings). In CI.
 
+### Added (stage 3 — canvas feedback loop)
+- **Stop hook drains Canvas feedback** (B-020, E-A43): `hooks/canvas-feedback.py` blocks the
+  Stop once, with the content (decisions, checked items, form values, comment — scrubbed),
+  when the user submitted feedback for an artifact of **this project** that the agent has not
+  seen; delivery is recorded in `<data dir>/.delivered.json`, `stop_hook_active` is respected,
+  a server that is down means pass, `OSFORGE_CANVAS_FEEDBACK=off` disables. Pattern from ECC's
+  `plan-canvas-pending.js` (MIT), re-implemented for the OSForge data model. The skill's
+  "read the file next turn" prose is now backed by the hook. 10 hooks.
+- **Canvas server validates against the artifact** (E-A44): POST `/api/feedback/:id` now
+  answers 404 for a missing artifact, 409 for a `revision` that is not the artifact's current
+  one, 400 for a `revision` < 1, an unknown block, a response whose type differs from the
+  block's, an unknown checklist item or form field, a `decision.action` outside
+  approve|edit|reject or not offered by the block, or a required comment missing; 403 for a
+  browser `Origin` that is not this loopback server (`null` included); 413 above 256 KB. Only
+  the validated fields are persisted, with `receivedAt`.
+- **`tests/test-canvas-feedback.sh`** (34 checks): the hook against a seeded data dir and a
+  fake health endpoint (no Bun), then the real `server.ts` on a random port for every 4xx above
+  and the real hook against it. Contract cases CC-49/CC-50; the contract runner now points the
+  hook at a dead port and a sandbox DB so it never touches a live Canvas.
+
 ### Known defects (found by the audit, open until later stages ship)
 
 ## [5.0.0] — 2026-09-10

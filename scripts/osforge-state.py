@@ -61,7 +61,7 @@ BACKUP_ROOT = os.environ.get("OSFORGE_BACKUP_DIR") or os.path.join(HOME, ".claud
 # Scripts this repo ships as hooks; used only to ADOPT pre-state hook groups on the first run.
 OWN_HOOK_SCRIPTS = {"canvas-autostart.sh", "session-resume.sh", "gateguard.py", "protect-tests.sh",
                     "observe-capture.py", "scan-secrets.sh", "scan-secrets.py", "notify-done.sh",
-                    "session-save.py", "route-guard.py"}
+                    "session-save.py", "route-guard.py", "canvas-feedback.py"}
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────

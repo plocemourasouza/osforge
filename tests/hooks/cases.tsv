@@ -42,6 +42,8 @@ CC-45	claude-code	Stop	route-guard	claude-code/stop-active.json	silent
 CC-46	claude-code	Stop	route-guard	claude-code/stop-question.json	silent
 CC-47	claude-code	Stop	notify-done	claude-code/stop-with-route.json	silent
 CC-48	claude-code	Stop	session-save	claude-code/stop-with-route.json	silent
+CC-49	claude-code	Stop	canvas-feedback	claude-code/stop-with-route.json	silent
+CC-50	claude-code	Stop	canvas-feedback	claude-code/stop-active.json	silent
 # ── Payloads malformados: todos os hooks de todos os eventos sobrevivem
 CC-90	claude-code	PreToolUse	*	claude-code/payload-not-object.json	any
 CC-91	claude-code	Stop	*	claude-code/payload-not-object.json	any

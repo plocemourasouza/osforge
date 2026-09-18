@@ -7,7 +7,7 @@ maintain the framework; `claude-code/CLAUDE.md` = how to behave in a session.
 
 ## What this repo is
 
-OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **177 skills, 27 agents** (orchestrator + 26 specialists), **14 rules (deployed to Cursor), 9 `spec-*` commands, 1 global MCP server (Context7; the rest are per-project stacks in `mcp/stacks/`)**, 9 hooks, and the `osforge-db` SQLite state CLI (with local vector memory). There is no build or lint step; the offline test suite is `tests/` (see below) and the "build" is the deploy.
+OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **177 skills, 27 agents** (orchestrator + 26 specialists), **14 rules (deployed to Cursor), 9 `spec-*` commands, 1 global MCP server (Context7; the rest are per-project stacks in `mcp/stacks/`)**, 10 hooks, and the `osforge-db` SQLite state CLI (with local vector memory). There is no build or lint step; the offline test suite is `tests/` (see below) and the "build" is the deploy.
 
 **ADR-001 (docs/DECISIONS.md): never edit `~/.claude/` or `~/.cursor/` directly.** All changes happen here, get committed, then deployed via `./deploy.sh`.
 
@@ -36,6 +36,7 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 python3 scripts/check-agents.py         # Agent frontmatter: tools scalar, model enum, read-only roles (deploy gate)
 ./tests/test-deploy-lifecycle.sh        # Deploy with state: user files/hooks/skills survive, idempotent, doctor/uninstall/restore (offline, ~1 min; CI)
 ./tests/test-session-continuity.sh      # One project identity for all hooks; resume as scoped, capped, scrubbed data (offline)
+./tests/test-canvas-feedback.sh         # Canvas feedback drain (Stop) + server-side validation against the artifact (offline; bun for the server part)
 python3 scripts/check-counts.py         # Numbers quoted in README/CLAUDE.md/USAGE match the tree (deploy gate)
 ./scripts/test-skill-triggering.sh --generated --sample 20   # Real triggering run (consumes API)
 

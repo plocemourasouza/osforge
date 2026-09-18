@@ -115,7 +115,7 @@ selects the old copy/rsync path for one release.
 - Copies `CLAUDE.md` and `SKILLS.md`
 - Syncs 27 agents (orchestrator + 26 specialists) to `~/.claude/agents/`
 - Copies 9 `spec-*` commands to `~/.claude/commands/`
-- Installs 9 hooks to `~/.claude/hooks/`
+- Installs 10 hooks to `~/.claude/hooks/` (plus the shared `hooks/lib/`)
 - Merges the managed hook entries into `~/.claude/settings.json` by id (yours are preserved) and the MCP servers into `~/.claude.json` (non-destructive)
 
 **Cursor (`~/.cursor/`)**
@@ -483,7 +483,7 @@ cp hooks/*.py hooks/*.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*
 ```
 
-### What each hook does (9 hooks)
+### What each hook does (10 hooks)
 
 **`canvas-autostart.sh`** (SessionStart)
 - Inicia o OSForge Canvas em `localhost:4242` se ainda não estiver rodando
@@ -540,6 +540,13 @@ chmod +x ~/.claude/hooks/*
 **`notify-done.sh`** (Stop)
 - Envia notificação macOS via AppleScript quando o agente para normalmente (`stop_hook_active=false`;
   a versão anterior tinha a lógica invertida — B-007); silencioso fora do macOS; log em `~/.osforge/logs/hooks.log`
+
+**`canvas-feedback.py`** (Stop)
+- Se o usuário enviou feedback no Canvas para um artefato **deste projeto** (id prefixado com o
+  slug) que o agente ainda não leu, bloqueia o Stop **uma vez** com o conteúdo (decisões,
+  checklist, form, comentário — sem segredos); o Stop seguinte passa. Respeita `stop_hook_active`,
+  passa se o servidor está fora do ar; entregas registradas em `<data dir>/.delivered.json`.
+  Kill-switch: `OSFORGE_CANVAS_FEEDBACK=off`. Padrão do `plan-canvas-pending.js` do ECC (MIT), reimplementado (B-020)
 
 **`session-save.py`** (Stop)
 - Lê o **fim** do transcript (últimos 4 MB) e grava `set-resume` com as últimas 8 mensagens,

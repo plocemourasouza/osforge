@@ -22,6 +22,9 @@ SANDBOX="$(mktemp -d)"; trap 'rm -rf "$SANDBOX"' EXIT
 export HOME="$SANDBOX/home"; mkdir -p "$HOME/.claude/hooks" "$HOME/.cursor/hooks" "$HOME/proj" "$SANDBOX/tmp"
 export TMPDIR="$SANDBOX/tmp" OSFORGE_GATEGUARD_STATE_DIR="$SANDBOX/gg" OSFORGE_LOG_DIR="$SANDBOX/logs"
 export OSFORGE_HOOK_DEBUG=1
+# Nunca falar com um Canvas real nem com o banco real: o contrato é do hook, não do ambiente.
+export OSFORGE_CANVAS_HEALTH_URL="http://127.0.0.1:1/api/health" OSFORGE_DB="$SANDBOX/db.sqlite"
+unset OSFORGE_PROJECT
 unset CLAUDE_SESSION_ID CLAUDE_PROJECT_DIR CLAUDE_TRANSCRIPT_PATH
 cp "$ROOT"/hooks/*.sh "$ROOT"/hooks/*.py "$HOME/.claude/hooks/"; cp "$ROOT"/hooks/*.sh "$ROOT"/hooks/*.py "$HOME/.cursor/hooks/"
 chmod +x "$HOME"/.claude/hooks/* "$HOME"/.cursor/hooks/*

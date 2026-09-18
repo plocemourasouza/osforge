@@ -33,5 +33,11 @@ else was rejected, each for a verified reason, not for taste:
   `adversarial-review`, two-stage review, `elicitation-engine`, `grilling`, `PLAN.template.md` and
   ADR-012.
 
+**Imported (clean-room, `inspired_by`):** the Stop-hook feedback drain in
+`hooks/canvas-feedback.py` follows the shape of ECC's `scripts/hooks/plan-canvas-pending.js`
+(MIT, © 2026 Affaan Mustafa; E-B06): respect `stop_hook_active`, scope to the current project,
+deliver once, time out fast when the server is down. The code is OSForge's own, written against
+the OSForge Canvas data model (`artifacts/`, `feedback/`, `revision`, `.delivered.json`).
+
 **Would reopen if:** OSForge is distributed to third parties (installer/adapters), or a paired
 experiment (§8 of the report) shows a measured gain for a specific rejected mechanism.

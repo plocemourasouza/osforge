@@ -148,11 +148,12 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 - **Esforço:** M. **Dependências:** B-018, B-006.
 - **Resultado:** `tests/test-session-continuity.sh` (35 checagens, offline): hooks reais + `osforge-db` real em banco temporário (`OSFORGE_DB`) e repositórios git temporários. Cobre E-A14, E-A19 a E-A24 e E-A26 por execução; o filtro vetorial de E-A24 foi verificado ficando vermelho no código anterior (provider `mock`).
 
-### B-020 · Dreno do feedback do Canvas + validação no servidor
+### B-020 · Dreno do feedback do Canvas + validação no servidor — ✅ feito
 - **Recomendação / evidência:** R-05 · E-A43, E-A44; origem E-B06
 - **Arquivos:** **(NOVO)** `hooks/canvas-feedback.py`; `hooks/hooks-claude-code.json` (Stop); `scripts/canvas/server.ts` L176-196, L291-314; `skills/osforge-canvas/SKILL.md` L99-137; **(NOVO)** `tests/canvas/` com o roteiro `curl` desta auditoria.
 - **Aceite:** feedback pendente do projeto atual → Stop bloqueia uma vez com o conteúdo; outro cwd, `stop_hook_active`, já entregue e servidor fora do ar → passa; POST para artefato inexistente, `revision` divergente, `action` fora do enum ou Origin não-loopback → 4xx.
 - **Esforço:** M. **Dependências:** B-018 (slug), B-006.
+- **Resultado:** `tests/test-canvas-feedback.sh` (34 checagens): parte A roda o hook contra um data dir semeado e um health falso (sem Bun); parte B sobe o `server.ts` real em porta aleatória e verifica os 4xx do aceite mais o hook contra o servidor real. Servidor: 404/409/400/403 conforme o aceite; só os campos validados são persistidos. Contratos CC-49/CC-50 no runner.
 
 ## Etapa 4 — Conforme os experimentos
 
