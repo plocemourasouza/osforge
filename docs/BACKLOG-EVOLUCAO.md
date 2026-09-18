@@ -106,7 +106,7 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 
 ## Etapa 3 — Consolidação
 
-### B-014 · `scripts/osforge-state.py` + install-state
+### B-014 · `scripts/osforge-state.py` + install-state — ✅ feito
 - **Recomendação / evidência:** R-03 · E-A27 a E-A30; origem E-B01, E-B02, E-B04
 - **Arquivos:** **(NOVO)** `scripts/osforge-state.py`; `deploy.sh` (`copy_file`, `copy_dir`, `backup_file`, laço de hooks L323-329, cópia do canvas, `deploy_skills`).
 - **Mudança:** esquema `osforge.install.v1` do relatório §5.3; registro de `{dst, src, sha256}`; backup em `~/.claude_backups/<run_id>/<relativo>`; regra de propriedade (não registrado e diferente → pula e avisa; registrado e alterado → backup + aviso, sobrescreve com `--force`); modo adoção na primeira execução.
@@ -114,24 +114,25 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 - **Aceite:** ver B-017.
 - **Esforço:** M–G. **Risco:** estado corrompido → escrita atômica; ausência de estado = modo adoção.
 
-### B-015 · Merge de hooks por id com recusa de drift
+### B-015 · Merge de hooks por id com recusa de drift — ✅ feito
 - **Recomendação / evidência:** R-03 · E-A27; origem E-B01
 - **Arquivos:** `deploy.sh` `merge_hooks_claude` L96-143 e `merge_settings_claude` L146-194.
 - **Mudança:** id = `evento|matcher|basename(comando)`; remove só entrada idêntica à gravada no estado; id gravado com conteúdo diferente → aborta mostrando diff (`--force-hooks`); itera eventos do estado **e** do repositório; escrita em temporário + `mv`; um único backup por execução.
 - **Aceite:** hook do usuário em `~/.claude/hooks/meu.sh` sobrevive; hook do OSForge editado à mão faz o deploy parar; evento removido do repositório some do `settings.json`.
 - **Esforço:** M.
 
-### B-016 · `--doctor`, `--uninstall`, `--restore <run_id>`; poda por estado
+### B-016 · `--doctor`, `--uninstall`, `--restore <run_id>`; poda por estado — ✅ feito
 - **Recomendação / evidência:** R-03 · E-A29; origem E-B04
 - **Arquivos:** `deploy.sh`, `scripts/osforge-state.py`.
 - **Mudança:** `deploy_skills` troca `rsync --delete` por cópia + poda do que estava no estado anterior e saiu da allowlist; mesma poda para agentes, comandos e scripts de hook; excluir `hooks/validate.py` do glob L323 (mover para `docs/templates/`).
 - **Aceite:** skill instalada por `install-skill.sh --global` sobrevive ao deploy; agente removido do repositório some do destino; `--uninstall` deixa só o que era do usuário e restaura valores anteriores das settings.
 - **Esforço:** M.
 
-### B-017 · Teste de ciclo de vida do deploy
+### B-017 · Teste de ciclo de vida do deploy — ✅ feito
 - **Arquivos (NOVO):** `tests/test-deploy-lifecycle.sh` (roteiro do relatório §5.3, HOME temporário; usa `rsync` real se existir).
 - **Aceite:** verde; entra no CI de B-008.
 - **Esforço:** P–M.
+- **Resultado:** 61 checagens, ~50 s, offline; roda o `deploy.sh` real 15× num HOME semeado (hook seu, skill sua, skill `--global`, `CLAUDE.md` seu, `settings.json` com `theme`/`env`/hooks seus, `~/.claude.json` com MCP seu, hook do OSForge de uma revisão antiga = instalação legada). Adicionado ao CI; não entra no preflight do deploy por custo (~1 min).
 
 ### B-018 · Identidade de projeto única
 - **Recomendação / evidência:** R-04 · E-A19, E-A20, E-A26; origem E-B08

@@ -68,9 +68,36 @@ All notable changes to OSForge are recorded here. The format follows
   "14 always-on rules" qualified as Cursor-only, and the root `CLAUDE.md` no longer says there is
   no test suite.
 
+### Added (stage 3 — the deploy has a memory)
+- **`scripts/osforge-state.py` + `~/.osforge/install-state.json`** (B-014, E-A27–E-A30): every
+  file the deploy writes is recorded with its SHA-256, every managed hook entry by id
+  (`event|matcher|script`), every settings key with its previous value, every MCP server it
+  added. `deploy.sh` now *enqueues* what it wants to write and `osforge-state.py apply` decides
+  per file: missing → copy; recorded and untouched → update; recorded and **edited by you** →
+  keep yours, back it up to `~/.claude_backups/<run>/`, warn (`--force` overwrites); not
+  recorded and different → **yours, skipped** (`--adopt` takes over, with backup); identical to
+  an older git revision of the repo → legacy install, updated. Absent from the repo → removed
+  only if still byte-identical to what was installed, and only under the roots this run deployed
+  (`--claude-only` never prunes `~/.cursor`). No `rsync --delete` anywhere on this path.
+- **Hooks merged by id, three-way** (B-015): your hook entries in `settings.json` — including
+  the ones under `~/.claude/hooks/` — are never touched; a managed entry you edited aborts the
+  deploy with both versions (`--force-hooks`); an event the repo dropped disappears; the file is
+  written atomically and only when something changed. Same for `settings-base.json` and
+  `~/.claude.json` (MCPs): no more timestamped backup on every run.
+- **`--doctor`, `--uninstall [--dry-run]`, `--restore=<run_id>`** (B-016): doctor exits 1 and
+  lists missing/edited files and drifted hooks; uninstall removes only what OSForge installed
+  and you did not edit, drops the managed hook entries, restores the settings keys it had set,
+  removes the MCP servers it had added, keeps your data; restore copies a run's backups back.
+  `hooks/validate.py` (a project template) is no longer deployed as a hook (E-A33).
+- **`tests/test-deploy-lifecycle.sh`** (B-017): the real `deploy.sh` against a seeded temporary
+  HOME (your hook, skill, `--global` skill, `CLAUDE.md`, settings/env/MCP, a legacy-installed
+  hook) — 61 checks: nothing of yours is lost, second run byte-identical with no new backup,
+  drift kept + backed up, `--force`/`--restore` round-trip, edited hook aborts, retired core skill
+  removed while yours stay, uninstall leaves only your files, dry-run on an empty HOME creates
+  nothing. Runs in CI (not in the deploy preflight: ~1 min).
+- `OSFORGE_DEPLOY_LEGACY=1` keeps the previous copy/rsync path for one release.
+
 ### Known defects (found by the audit, open until later stages ship)
-- `deploy.sh` unregisters user hooks under `~/.claude/hooks/`, overwrites same-name agents
-  without backup, deletes user skills and clobbers its own `settings.json` backup — B-014–B-016.
 - Session resume keys on the directory basename, injects stored text verbatim and shows the
   cross-project board in satellite sessions — B-018, B-019.
 

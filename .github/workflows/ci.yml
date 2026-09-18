@@ -49,3 +49,5 @@ jobs:
           H="$(mktemp -d)"
           HOME="$H" ./deploy.sh --dry-run --no-qdrant --no-archify
           test "$(find "$H" -type f | wc -l | tr -d ' ')" = "0"
+      - name: Deploy lifecycle (state, drift, prune, uninstall, restore) in a seeded HOME
+        run: ./tests/test-deploy-lifecycle.sh

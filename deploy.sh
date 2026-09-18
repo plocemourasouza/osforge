@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # deploy.sh — Agent Skills Framework
 # Sincroniza agent-skills-consolidado/ → ~/.claude/ e ~/.cursor/
-# Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run]
+# Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run | --doctor | --uninstall | --restore ID]
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")" && pwd)"
@@ -13,6 +13,25 @@ DEPLOY_CLAUDE=true
 DEPLOY_CURSOR=true
 DEPLOY_QDRANT_OVERRIDE=""   # "yes" | "no" | "" (interativo)
 DEPLOY_ALL_SKILLS=false     # false = só o core allowlist (Model A); true = todas as skills
+
+# ── Deploy com estado (B-014/B-015/B-016, ADR-015) ───────────────────────────
+# Tudo que o deploy escreve fica registrado em ~/.osforge/install-state.json
+# (SHA-256 por arquivo, hooks por id, valores anteriores de settings). Com isso o
+# deploy sabe o que é dele: não sobrescreve arquivo seu, não apaga skill sua, não
+# desregistra hook seu e remove só o que ele mesmo instalou e você não editou.
+# OSFORGE_DEPLOY_LEGACY=1 volta ao caminho antigo (cp direto + rsync --delete) por
+# uma versão. `scripts/osforge-state.py` é a implementação.
+STATE_PY="$REPO/scripts/osforge-state.py"
+LEGACY_DEPLOY="${OSFORGE_DEPLOY_LEGACY:-0}"
+RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-$$"
+FORCE_FILES=false           # --force: sobrescreve arquivo gerenciado que você editou (com backup)
+ADOPT_FILES=false           # --adopt: assume arquivo seu que colide com um do OSForge (com backup)
+FORCE_HOOKS=false           # --force-hooks: sobrepõe hook gerenciado que você editou
+ACTION="deploy"             # deploy | doctor | uninstall | restore
+RESTORE_ID=""
+MANIFEST_FILE=""            # lista (JSONL) de tudo que este run quer escrever
+STAGE_ROOT=""               # cópias temporárias (SKILLS.md renderizado, skills achatadas)
+PRUNE_UNDER=()              # raízes onde arquivos aposentados podem ser removidos
 
 # Archify (tt-a1i/archify, MIT) — motor de diagramas verificados usado pela skill
 # core `system-diagrams`. É uma FERRAMENTA que executamos, não um padrão que
@@ -34,6 +53,12 @@ for arg in "$@"; do
     --all-skills)  DEPLOY_ALL_SKILLS=true ;;
     --with-archify) DEPLOY_ARCHIFY=true ;;
     --no-archify)   DEPLOY_ARCHIFY=false ;;
+    --force)        FORCE_FILES=true ;;
+    --adopt)        ADOPT_FILES=true ;;
+    --force-hooks)  FORCE_HOOKS=true ;;
+    --doctor)       ACTION="doctor" ;;
+    --uninstall)    ACTION="uninstall" ;;
+    --restore=*)    ACTION="restore"; RESTORE_ID="${arg#--restore=}" ;;
     --help)
       echo "Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run | --with-qdrant | --no-qdrant | --all-skills | --no-archify]"
       echo ""
@@ -42,6 +67,12 @@ for arg in "$@"; do
       echo "  --all-skills    Deploya TODAS as skills globalmente (default: só o core de claude-code/skills-core.txt)"
       echo "  --with-archify  Instala/atualiza o Archify pinado (v$ARCHIFY_VERSION) em ~/.claude/skills e ~/.cursor/skills (default)"
       echo "  --no-archify    Pula o Archify (a skill system-diagrams cai no fallback Mermaid)"
+      echo "  --force         Sobrescreve arquivos gerenciados que você editou (backup em ~/.claude_backups/<run>)"
+      echo "  --adopt         Assume arquivos seus que colidem com os do OSForge (backup idem)"
+      echo "  --force-hooks   Sobrepõe hooks gerenciados que você editou em settings.json"
+      echo "  --doctor        Relata arquivos ausentes/alterados e hooks divergentes; não escreve nada"
+      echo "  --uninstall     Remove o que o OSForge instalou e você não editou; restaura settings; --dry-run mostra"
+      echo "  --restore=ID    Restaura os backups do run ID (veja ~/.claude_backups/)"
       exit 0 ;;
     *) echo "Flag desconhecida: $arg"; exit 1 ;;
   esac
@@ -71,7 +102,31 @@ backup_file() {
   fi
 }
 
+# Caminho com estado: as funções de cópia só ENFILEIRAM no manifesto; quem
+# escreve é `osforge-state.py apply`, uma vez por run, com as regras de
+# propriedade. Caminho legado: cópia direta, como antes.
+enqueue() {
+  # enqueue <src> <dst> [critical] [executable] [origin]
+  # origin = caminho relativo ao repo (para reconhecer versões antigas via git);
+  # derivado de src quando src está dentro do repo, vazio para arquivos gerados.
+  local src="$1" dst="$2" critical="${3:-false}" exe="${4:-false}" origin="${5:-}"
+  if [ -z "$origin" ]; then case "$src" in "$REPO"/*) origin="${src#$REPO/}" ;; esac; fi
+  python3 - "$src" "$dst" "$critical" "$exe" "$origin" "$MANIFEST_FILE" <<'PYEOF'
+import json, sys
+src, dst, critical, exe, origin, mf = sys.argv[1:7]
+with open(mf, "a", encoding="utf-8") as f:
+    f.write(json.dumps({"src": src, "dst": dst, "critical": critical == "true",
+                        "executable": exe == "true", "origin": origin}) + "\n")
+PYEOF
+}
+
 copy_file() {
+  local src="$1" dst="$2" critical="${3:-false}"
+  if [ "$LEGACY_DEPLOY" = "1" ]; then copy_file_legacy "$@"; return; fi
+  enqueue "$src" "$dst" "$critical"
+}
+
+copy_file_legacy() {
   local src="$1" dst="$2" critical="${3:-false}"
   if $DRY_RUN; then skip "cp $(basename $src) → $dst"; return; fi
   [ "$critical" = "true" ] && backup_file "$dst"
@@ -86,6 +141,11 @@ copy_file() {
 copy_skills_md() {
   local dst="$1"
   local src="$REPO/claude-code/SKILLS.md"
+  if [ "$LEGACY_DEPLOY" != "1" ]; then
+    local rendered="$STAGE_ROOT/SKILLS.$(echo "$dst" | tr '/' '_').md"
+    sed "s|__OSFORGE_SKILLS_ROOT__|$REPO/skills|g" "$src" > "$rendered"
+    enqueue "$rendered" "$dst"; return
+  fi
   if $DRY_RUN; then skip "cp SKILLS.md → $dst (com raiz de skills expandida)"; return; fi
   sed "s|__OSFORGE_SKILLS_ROOT__|$REPO/skills|g" "$src" > "$dst"
   ok "SKILLS.md (raiz: $REPO/skills)"
@@ -93,19 +153,46 @@ copy_skills_md() {
 
 copy_dir() {
   local src_dir="$1" dst_dir="$2"
-  $DRY_RUN || mkdir -p "$dst_dir"
+  if [ "$LEGACY_DEPLOY" = "1" ]; then $DRY_RUN || mkdir -p "$dst_dir"; fi
   for f in "$src_dir"/*; do
     [ -f "$f" ] || continue
     copy_file "$f" "$dst_dir/$(basename $f)"
   done
 }
 
+# Enfileira uma árvore inteira (skills achatadas, etc.) preservando a estrutura sob dst.
+enqueue_tree() {
+  # enqueue_tree <src_root> <dst_root> [origin_root]
+  local src_root="$1" dst_root="$2" origin_root="${3:-}"
+  while IFS= read -r f; do
+    local rel="${f#$src_root/}"
+    enqueue "$f" "$dst_root/$rel" false false "${origin_root:+$origin_root/$rel}"
+  done < <(find "$src_root" -type f | sort)
+}
+
+state_apply() {
+  local args=(apply --manifest "$MANIFEST_FILE" --run-id "$RUN_ID" --version "$OSFORGE_VERSION" --repo "$REPO"
+              --commit "$(git -C "$REPO" rev-parse HEAD 2>/dev/null || echo unknown)")
+  $DRY_RUN && args+=(--dry-run)
+  $FORCE_FILES && args+=(--force)
+  $ADOPT_FILES && args+=(--adopt)
+  local root; for root in "${PRUNE_UNDER[@]}"; do args+=(--prune-under "$root"); done
+  echo ""
+  echo "📦 Aplicando $(wc -l < "$MANIFEST_FILE" | tr -d ' ') arquivos com estado (run $RUN_ID)"
+  python3 "$STATE_PY" "${args[@]}"
+}
+
 merge_hooks_claude() {
-  # Merge reconciliador: hooks OSForge-managed (.claude/hooks/) refletem sempre
-  # o repo (matcher/command atualizados, removidos somem); hooks próprios do
-  # usuário em settings.json são preservados intactos. Idempotente.
   local hook_src="$REPO/hooks/hooks-claude-code.json"
   local settings="$CLAUDE/settings.json"
+  if [ "$LEGACY_DEPLOY" != "1" ]; then
+    # Por id, em três vias (B-015): substitui só o que ainda é igual ao gravado;
+    # hook seu nunca é tocado; hook gerenciado que você editou aborta o deploy.
+    local args=(merge-hooks --hooks "$hook_src" --settings "$settings" --run-id "$RUN_ID")
+    $DRY_RUN && args+=(--dry-run); $FORCE_HOOKS && args+=(--force-hooks)
+    python3 "$STATE_PY" "${args[@]}"; return
+  fi
+  # Legado: merge reconciliador por substring "/.claude/hooks/" (apaga hook seu nesse diretório).
   if $DRY_RUN; then skip "merge hooks-claude-code.json → settings.json (não-destrutivo)"; return; fi
   backup_file "$settings"
   python3 - <<'PYEOF'
@@ -158,6 +245,11 @@ merge_settings_claude() {
   local base_src="$REPO/claude-code/settings-base.json"
   local settings="$CLAUDE/settings.json"
   [ -f "$base_src" ] || return 0
+  if [ "$LEGACY_DEPLOY" != "1" ]; then
+    local args=(merge-settings --base "$base_src" --settings "$settings")
+    $DRY_RUN && args+=(--dry-run)
+    python3 "$STATE_PY" "${args[@]}"; return
+  fi
   if $DRY_RUN; then skip "merge settings-base.json → settings.json (disableClaudeAiConnectors, ENABLE_TOOL_SEARCH)"; return; fi
   backup_file "$settings"
   BASE_SRC="$base_src" SETTINGS="$settings" python3 - <<'PYEOF'
@@ -208,9 +300,11 @@ sync_mcps_claude() {
   local mcp_src="$REPO/mcp/claude-code.json"
   local claude_json="$HOME/.claude.json"
   if $DRY_RUN; then skip "sync mcp/claude-code.json → ~/.claude.json"; return; fi
-  backup_file "$claude_json"
-  python3 - <<'PYEOF'
-import json, os
+  # Legado: backup timestampado a cada run (cresce sem parar). Com estado: backup
+  # em ~/.claude_backups/<run>/ só quando algo é de fato adicionado.
+  [ "$LEGACY_DEPLOY" = "1" ] && backup_file "$claude_json"
+  RUN_ID="$RUN_ID" python3 - <<'PYEOF'
+import json, os, shutil
 mcp_src    = os.environ.get('MCP_SRC')
 claude_json = os.environ.get('CLAUDE_JSON')
 
@@ -233,11 +327,26 @@ for name, cfg in new_mcps.items():
         cur_mcps[name] = cfg
         added.append(name)
 
-with open(claude_json, 'w') as f:
+if not added:
+    print("  ✅ MCPs em paridade — nenhuma alteração")
+    raise SystemExit(0)
+
+if os.environ.get('LEGACY_DEPLOY') != '1' and os.path.isfile(claude_json):
+    bak_dir = os.environ.get('OSFORGE_BACKUP_DIR') or os.path.expanduser('~/.claude_backups')
+    bak = os.path.join(bak_dir, os.environ['RUN_ID'], '.claude.json')
+    os.makedirs(os.path.dirname(bak), exist_ok=True)
+    if not os.path.exists(bak):
+        shutil.copy2(claude_json, bak)
+tmp = claude_json + '.osforge-tmp'
+with open(tmp, 'w') as f:
     json.dump(current, f, indent=2, ensure_ascii=False)
+os.replace(tmp, claude_json)
 
 if added:
     print(f"  ✅ MCPs adicionados: {added}")
+    if os.environ.get('LEGACY_DEPLOY') != '1':
+        import subprocess, sys
+        subprocess.run([sys.executable, os.environ['STATE_PY'], 'record-mcps', '--names', ','.join(added)])
 else:
     print("  ✅ MCPs em paridade — nenhuma alteração")
 PYEOF
@@ -250,6 +359,32 @@ PYEOF
 deploy_skills() {
   local dst="$1"
   local manifest="$REPO/claude-code/skills-core.txt"
+
+  if [ "$LEGACY_DEPLOY" != "1" ]; then
+    # Achata o core num stage e enfileira arquivo a arquivo; o `apply` grava, e
+    # aposenta (só se intactas) as skills que saíram da allowlist — sem rsync --delete,
+    # que apagava skills suas e as instaladas com install-skill.sh --global (E-A29).
+    local stage="$STAGE_ROOT/skills.$(echo "$dst" | tr '/' '_')"; mkdir -p "$stage"
+    if $DEPLOY_ALL_SKILLS || [ ! -f "$manifest" ]; then
+      (cd "$REPO/skills" && find . -type f -not -path './_*' -not -path './archify/*' | while IFS= read -r f; do
+        mkdir -p "$stage/$(dirname "$f")"; cp -a "$f" "$stage/$f"; done)
+      enqueue_tree "$stage" "$dst" "skills"
+    else
+      while IFS= read -r rel; do
+        rel="${rel%$'\r'}"; case "$rel" in ''|\#*) continue ;; esac
+        local src="$REPO/skills/$rel"
+        if [ ! -d "$src" ]; then echo "  ⚠️  core skill ausente no repo: $rel" >&2; continue; fi
+        local flat; flat="$(basename "$rel")"
+        if [ -e "$stage/$flat" ]; then
+          echo "  ❌ colisão de basename no core: '$rel' vs skill já staged como '$flat' — ajuste skills-core.txt" >&2; exit 1
+        fi
+        cp -a "$src" "$stage/$flat"
+        enqueue_tree "$stage/$flat" "$dst/$flat" "skills/$rel"
+      done < "$manifest"
+    fi
+    log "$(find "$stage" -name 'SKILL.md' | wc -l | tr -d ' ') skills enfileiradas → $dst"
+    return
+  fi
 
   if $DRY_RUN; then
     if $DEPLOY_ALL_SKILLS || [ ! -f "$manifest" ]; then skip "rsync TODAS skills/ → $dst"
@@ -306,11 +441,7 @@ deploy_claude() {
   copy_dir "$REPO/agents" "$CLAUDE/agents"
   # Orchestrator tem subdiretório próprio — copiar o AGENT.md para agents/
   if [ -f "$REPO/agents/orchestrator/AGENT.md" ]; then
-    if $DRY_RUN; then skip "cp orchestrator/AGENT.md → agents/orchestrator.md"
-    else
-      cp "$REPO/agents/orchestrator/AGENT.md" "$CLAUDE/agents/orchestrator.md"
-      ok "orchestrator.md"
-    fi
+    copy_file "$REPO/agents/orchestrator/AGENT.md" "$CLAUDE/agents/orchestrator.md"
   fi
 
   echo ""
@@ -325,7 +456,10 @@ deploy_claude() {
 
   echo ""
   log "OSForge Canvas (server + viewer):"
-  if $DRY_RUN; then skip "cp scripts/canvas/{server.ts,viewer.html} → ~/.claude/canvas/"
+  if [ "$LEGACY_DEPLOY" != "1" ]; then
+    copy_file "$REPO/scripts/canvas/server.ts" "$CLAUDE/canvas/server.ts"
+    copy_file "$REPO/scripts/canvas/viewer.html" "$CLAUDE/canvas/viewer.html"
+  elif $DRY_RUN; then skip "cp scripts/canvas/{server.ts,viewer.html} → ~/.claude/canvas/"
   else
     mkdir -p "$CLAUDE/canvas"
     cp "$REPO/scripts/canvas/server.ts" "$REPO/scripts/canvas/viewer.html" "$CLAUDE/canvas/"
@@ -334,9 +468,11 @@ deploy_claude() {
 
   echo ""
   log "Hook scripts e Python hooks:"
-  $DRY_RUN || mkdir -p "$CLAUDE/hooks"
+  if [ "$LEGACY_DEPLOY" = "1" ]; then $DRY_RUN || mkdir -p "$CLAUDE/hooks"; fi
   for f in "$REPO/hooks/"*.sh "$REPO/hooks/"*.py; do
     [ -f "$f" ] || continue
+    case "$(basename "$f")" in validate.py) continue ;; esac   # template de projeto, não é hook (E-A33/B-016)
+    if [ "$LEGACY_DEPLOY" != "1" ]; then enqueue "$f" "$CLAUDE/hooks/$(basename "$f")"; continue; fi
     if $DRY_RUN; then skip "cp $(basename $f) + chmod +x"; continue; fi
     cp "$f" "$CLAUDE/hooks/"
     chmod +x "$CLAUDE/hooks/$(basename $f)"
@@ -344,12 +480,16 @@ deploy_claude() {
   done
 
   echo ""
+  if [ "$LEGACY_DEPLOY" = "1" ]; then
   log "Hooks → settings.json (merge não-destrutivo):"
   HOOK_SRC="$REPO/hooks/hooks-claude-code.json" SETTINGS="$CLAUDE/settings.json" merge_hooks_claude
+  fi
 
   echo ""
+  if [ "$LEGACY_DEPLOY" = "1" ]; then
   log "Settings base → settings.json (anti-bloat de contexto MCP):"
   merge_settings_claude
+  fi
 
   echo ""
   log "CLAUDE.md + SKILLS.md + CONTEXT.md:"
@@ -358,14 +498,20 @@ deploy_claude() {
   copy_file "$REPO/claude-code/CONTEXT.md" "$CLAUDE/CONTEXT.md"
 
   log "Authoring templates/standards → docs/:"
-  $DRY_RUN || mkdir -p "$CLAUDE/docs"
+  if [ "$LEGACY_DEPLOY" = "1" ]; then $DRY_RUN || mkdir -p "$CLAUDE/docs"; fi
   copy_file "$REPO/docs/PLAN.template.md"   "$CLAUDE/docs/PLAN.template.md"
   copy_file "$REPO/docs/SKILL.template.md"  "$CLAUDE/docs/SKILL.template.md"
   copy_file "$REPO/docs/SKILL-STANDARD.md"  "$CLAUDE/docs/SKILL-STANDARD.md"
 
+  if [ "$LEGACY_DEPLOY" != "1" ]; then
+    PRUNE_UNDER+=("$CLAUDE")
+    log "(hooks, settings e MCPs são aplicados depois do estado — ver post_claude)"
+    echo ""; ok "Claude Code enfileirado"; return
+  fi
+
   echo ""
   log "MCPs → ~/.claude.json (sync não-destrutivo):"
-  MCP_SRC="$REPO/mcp/claude-code.json" CLAUDE_JSON="$HOME/.claude.json" sync_mcps_claude
+  MCP_SRC="$REPO/mcp/claude-code.json" CLAUDE_JSON="$HOME/.claude.json" STATE_PY="$STATE_PY" LEGACY_DEPLOY="$LEGACY_DEPLOY" sync_mcps_claude
 
 
   echo ""
@@ -396,6 +542,20 @@ PYEOF
   ok "Claude Code deploy completo"
 }
 
+# Etapa pós-estado do Claude Code: só roda depois de `state_apply`, porque o merge
+# de hooks precisa do estado gravado e os arquivos já precisam existir.
+post_claude() {
+  echo ""
+  echo "🔵 Claude Code — hooks, settings e MCPs"
+  log "Hooks → settings.json (por id, três vias):"
+  HOOK_SRC="$REPO/hooks/hooks-claude-code.json" SETTINGS="$CLAUDE/settings.json" merge_hooks_claude
+  log "Settings base → settings.json:"
+  merge_settings_claude
+  log "MCPs → ~/.claude.json (sync não-destrutivo):"
+  MCP_SRC="$REPO/mcp/claude-code.json" CLAUDE_JSON="$HOME/.claude.json" STATE_PY="$STATE_PY" LEGACY_DEPLOY="$LEGACY_DEPLOY" sync_mcps_claude
+  ok "Claude Code deploy completo"
+}
+
 # ── Deploy osforge-db ────────────────────────────────────────────────────
 deploy_osforge_db() {
   echo ""
@@ -404,6 +564,18 @@ deploy_osforge_db() {
   local db_dir="$HOME/.osforge"
   local db_bin="$HOME/.local/bin/osforge-db"
   local script_src="$REPO/scripts/osforge-db.py"
+
+  if [ "$LEGACY_DEPLOY" != "1" ]; then
+    printf '%s\n' "$REPO" > "$STAGE_ROOT/repo-path"
+    enqueue "$STAGE_ROOT/repo-path" "$db_dir/repo-path"
+    enqueue "$script_src" "$db_bin" false true
+    for helper in install-skill install-mcp; do
+      [ -f "$REPO/scripts/${helper}.sh" ] && enqueue "$REPO/scripts/${helper}.sh" "$HOME/.local/bin/${helper}" false true
+    done
+    PRUNE_UNDER+=("$HOME/.local/bin" "$db_dir/repo-path")
+    log "osforge-db, install-skill e install-mcp enfileirados → ~/.local/bin"
+    return
+  fi
 
   if $DRY_RUN; then
     skip "mkdir -p $db_dir"
@@ -445,6 +617,22 @@ deploy_osforge_db() {
     echo "  ⚠️  ~/.local/bin não está no PATH"
     echo "     Adicione ao ~/.zshrc ou ~/.bashrc:"
     echo '     export PATH="$HOME/.local/bin:$PATH"'
+  fi
+}
+
+# Pós-estado do osforge-db: inicializa/migra o banco com o binário já gravado.
+post_osforge_db() {
+  local db_dir="$HOME/.osforge" db_bin="$HOME/.local/bin/osforge-db"
+  if $DRY_RUN; then skip "osforge-db init"; return; fi
+  mkdir -p "$db_dir"
+  if [ ! -f "$db_dir/osforge.db" ]; then
+    python3 "$db_bin" init >/dev/null 2>&1 && ok "Banco global criado: $db_dir/osforge.db"
+  else
+    python3 "$db_bin" init >/dev/null 2>&1; ok "Banco global verificado: $db_dir/osforge.db"
+  fi
+  if ! command -v osforge-db &>/dev/null; then
+    echo "  ⚠️  ~/.local/bin não está no PATH"
+    echo '     Adicione ao ~/.zshrc ou ~/.bashrc: export PATH="$HOME/.local/bin:$PATH"'
   fi
 }
 
@@ -679,11 +867,7 @@ deploy_cursor() {
   log "Agentes:"
   copy_dir "$REPO/agents" "$CURSOR/agents"
   if [ -f "$REPO/agents/orchestrator/AGENT.md" ]; then
-    if $DRY_RUN; then skip "cp orchestrator/AGENT.md → agents/orchestrator.md"
-    else
-      cp "$REPO/agents/orchestrator/AGENT.md" "$CURSOR/agents/orchestrator.md"
-      ok "orchestrator.md"
-    fi
+    copy_file "$REPO/agents/orchestrator/AGENT.md" "$CURSOR/agents/orchestrator.md"
   fi
 
   echo ""
@@ -696,9 +880,11 @@ deploy_cursor() {
 
   echo ""
   log "Hook scripts:"
-  $DRY_RUN || mkdir -p "$CURSOR/hooks"
+  if [ "$LEGACY_DEPLOY" = "1" ]; then $DRY_RUN || mkdir -p "$CURSOR/hooks"; fi
   for f in "$REPO/hooks/"*.sh "$REPO/hooks/"*.py; do
     [ -f "$f" ] || continue
+    case "$(basename "$f")" in validate.py) continue ;; esac
+    if [ "$LEGACY_DEPLOY" != "1" ]; then enqueue "$f" "$CURSOR/hooks/$(basename "$f")"; continue; fi
     if $DRY_RUN; then skip "cp $(basename $f) + chmod +x"; continue; fi
     cp "$f" "$CURSOR/hooks/"
     chmod +x "$CURSOR/hooks/$(basename $f)"
@@ -715,11 +901,12 @@ deploy_cursor() {
   copy_file "$REPO/claude-code/CONTEXT.md" "$CURSOR/CONTEXT.md"
 
   log "Authoring templates/standards → docs/:"
-  $DRY_RUN || mkdir -p "$CURSOR/docs"
+  if [ "$LEGACY_DEPLOY" = "1" ]; then $DRY_RUN || mkdir -p "$CURSOR/docs"; fi
   copy_file "$REPO/docs/PLAN.template.md"   "$CURSOR/docs/PLAN.template.md"
   copy_file "$REPO/docs/SKILL.template.md"  "$CURSOR/docs/SKILL.template.md"
   copy_file "$REPO/docs/SKILL-STANDARD.md"  "$CURSOR/docs/SKILL-STANDARD.md"
 
+  [ "$LEGACY_DEPLOY" != "1" ] && PRUNE_UNDER+=("$CURSOR")
   echo ""
   ok "Cursor deploy completo"
 }
@@ -772,13 +959,34 @@ echo " Repo: $REPO"
 $DRY_RUN && echo " Modo: DRY RUN (sem alterações reais)"
 echo "═══════════════════════════════════════════════════"
 
+# Ações de manutenção do estado: não passam pelo preflight nem tocam o repo.
+case "$ACTION" in
+  doctor)    python3 "$STATE_PY" doctor; exit $? ;;
+  uninstall) if $DRY_RUN; then python3 "$STATE_PY" uninstall --dry-run; else python3 "$STATE_PY" uninstall; fi; exit $? ;;
+  restore)   [ -n "$RESTORE_ID" ] || { echo "❌ --restore=<run_id> (veja ~/.claude_backups/)"; exit 1; }
+             if $DRY_RUN; then python3 "$STATE_PY" restore --run-id "$RESTORE_ID" --dry-run; else python3 "$STATE_PY" restore --run-id "$RESTORE_ID"; fi; exit $? ;;
+esac
+
 preflight_manifest
 preflight_tests
 
+if [ "$LEGACY_DEPLOY" != "1" ]; then
+  MANIFEST_FILE="$(mktemp)"; STAGE_ROOT="$(mktemp -d)"
+  trap 'rm -rf "$MANIFEST_FILE" "$STAGE_ROOT"' EXIT
+fi
+
 $DEPLOY_CLAUDE && deploy_claude
 $DEPLOY_CURSOR && deploy_cursor
-deploy_archify || true  # terceiro, opcional; falha de rede não aborta o deploy
 deploy_osforge_db
+if [ "$LEGACY_DEPLOY" != "1" ]; then
+  state_apply
+  $DEPLOY_CLAUDE && post_claude
+  post_osforge_db
+  echo ""
+  log "Estado: ~/.osforge/install-state.json · backups deste run: ~/.claude_backups/$RUN_ID (se houve)"
+  log "Conferir depois: ./deploy.sh --doctor · reverter: ./deploy.sh --restore=$RUN_ID · remover: ./deploy.sh --uninstall"
+fi
+deploy_archify || true  # terceiro, opcional; falha de rede não aborta o deploy
 deploy_qdrant || true   # Qdrant é opt-in; falha (Docker ausente etc.) não aborta o deploy
 
 echo ""

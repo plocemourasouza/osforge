@@ -76,7 +76,38 @@ cargo install llmfit
 ./deploy.sh --with-qdrant   # Also provision vector memory (Qdrant via Docker, opt-in)
 ./deploy.sh --no-qdrant     # Skip Qdrant; keep SQLite vector backend (no prompt)
 ./deploy.sh --no-archify    # Skip the pinned Archify install (system-diagrams falls back to Mermaid)
+./deploy.sh --doctor        # Report managed files that are missing/edited and hooks that drifted; writes nothing
+./deploy.sh --uninstall     # Remove what OSForge installed and you did not edit; restore settings (--dry-run to preview)
+./deploy.sh --restore=ID    # Put back the backups taken by run ID (see ~/.claude_backups/)
+./deploy.sh --force         # Overwrite managed files you edited (backup first)
+./deploy.sh --adopt         # Take over files of yours that collide with OSForge's (backup first)
+./deploy.sh --force-hooks   # Overwrite a managed hook entry you edited in settings.json
 ```
+
+### The deploy has a memory (ADR-015, stage 3)
+
+Everything the deploy writes is recorded in `~/.osforge/install-state.json` — one SHA-256 per
+file, each managed hook entry by id (`event|matcher|script`), the previous value of every
+settings key it sets, and the MCP servers it added. Every later run consults that record, so:
+
+- a file it wrote and you did not touch is updated; a file it wrote and **you edited** is kept
+  (your version is backed up to `~/.claude_backups/<run>/`; `--force` overwrites);
+- a file that exists and **is not OSForge's** is skipped with a warning (`--adopt` takes it
+  over, with backup). A file that matches an *older* revision of the repo is recognised as a
+  legacy install and simply updated;
+- a skill, agent or command that **left the repo** is removed — only if it is still byte-identical
+  to what was installed. Your own skills in `~/.claude/skills/` and the ones installed with
+  `install-skill --global` are never deleted (no more `rsync --delete`);
+- your hooks in `settings.json` — even under `~/.claude/hooks/` — are never touched. A managed
+  hook entry you edited by hand **aborts the deploy** with the diff (`--force-hooks` overrides);
+- a second run with nothing changed writes nothing and takes no backup (idempotent);
+- `--doctor` exits 1 and lists what drifted; `--uninstall` leaves only your files, removes the
+  managed hook entries, restores the settings keys it had set, removes the MCP servers it had
+  added, and keeps your data (`~/.osforge/osforge.db`, `config.json`).
+
+`tests/test-deploy-lifecycle.sh` runs the real `deploy.sh` against a seeded temporary HOME and
+checks all of the above by execution (61 checks, ~1 min, offline). `OSFORGE_DEPLOY_LEGACY=1`
+selects the old copy/rsync path for one release.
 
 ### What the deploy does
 
@@ -85,7 +116,7 @@ cargo install llmfit
 - Syncs 27 agents (orchestrator + 26 specialists) to `~/.claude/agents/`
 - Copies 9 `spec-*` commands to `~/.claude/commands/`
 - Installs 9 hooks to `~/.claude/hooks/`
-- Non-destructive MCP merge into `~/.claude.json` (hooks OSForge-managed refletem o repo; hooks de usuário preservados)
+- Merges the managed hook entries into `~/.claude/settings.json` by id (yours are preserved) and the MCP servers into `~/.claude.json` (non-destructive)
 
 **Cursor (`~/.cursor/`)**
 - Copies `SKILLS.md`
