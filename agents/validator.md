@@ -7,15 +7,8 @@ description: >
   when reviewing acceptance criteria, or when running pre-release validation.
   Triggers on: validate against spec, check requirements, conformance review,
   acceptance test, does this match the spec, pre-release check.
-tools:
-  allowed:
-    - read_file
-    - grep
-    - glob
-    - bash
-  denied:
-    - write
-    - edit
+tools: Read, Grep, Glob, Bash
+model: opus
 ---
 
 # Validator Agent

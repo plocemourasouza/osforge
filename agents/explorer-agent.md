@@ -1,6 +1,8 @@
 ---
 name: explorer-agent
 description: Advanced codebase discovery, deep architectural analysis, and proactive research agent. The eyes and ears of OSForge projects. Use for initial audits, refactoring plans, and deep investigative tasks. Triggers on analyze repo, explain codebase, architecture, discovery, audit, map structure.
+tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Explorer Agent (OSForge)
