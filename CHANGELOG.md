@@ -211,6 +211,16 @@ All notable changes to OSForge are recorded here. The format follows
   three suites.
 
 ### Fixed (outside the backlog — found while preparing the first CI run)
+- **A generated file could never be recognised as OSForge's own**, so on a legacy install
+  `SKILLS.md` — the manifest that drives skill discovery — would have been skipped forever as
+  "yours" and frozen at whatever the old deploy left. The installed copy is the repo file with
+  `__OSFORGE_SKILLS_ROOT__` expanded to this machine's path, so it is byte-identical to no git
+  revision at all. A manifest entry can now carry `subst`, the transformation the deploy
+  applies when generating the file; the legacy check applies the same transformation to each
+  historical blob before comparing. Caught on a real legacy install (`--dry-run` reported it as
+  a user-owned collision); three new checks in `tests/test-deploy-lifecycle.sh` (64 now) go red
+  without the fix. This is a regression of the state path against the old deploy, which
+  overwrote unconditionally — the kind that only shows up against a machine with history.
 - **CI would have failed on its first run**, on a file that is *supposed* to be invalid: the
   syntax step validated every `*.json`, including `tests/hooks/fixtures/claude-code/payload-garbage.json`,
   the deliberately malformed payload `run-contracts.sh` uses to prove the hooks fail open.

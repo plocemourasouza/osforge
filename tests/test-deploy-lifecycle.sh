@@ -90,6 +90,18 @@ if [ -n "$OLD_COMMIT" ] && git -C "$R" show "$OLD_COMMIT:hooks/notify-done.sh" >
 else
   LEGACY=0; rm -f "$H/.claude/hooks/notify-done.sh"; echo "  (sem revisão antiga distinta de notify-done.sh; item 9 pulado)"
 fi
+# Instalação legada de um arquivo GERADO: o SKILLS.md instalado é o do repo com
+# __OSFORGE_SKILLS_ROOT__ expandido para o caminho da máquina, então nunca é
+# byte-idêntico a uma revisão. Sem tratar isso, o manifesto que dirige a descoberta de
+# skills ficaria congelado numa instalação legada, tratado como "arquivo seu".
+OLD_SK="$(git -C "$R" log --format=%H -n 2 -- claude-code/SKILLS.md | tail -1)"
+if [ -n "$OLD_SK" ] && git -C "$R" show "$OLD_SK:claude-code/SKILLS.md" 2>/dev/null \
+     | sed "s|__OSFORGE_SKILLS_ROOT__|$R/skills|g" > "$H/.claude/SKILLS.md" \
+   && ! cmp -s "$H/.claude/SKILLS.md" "$R/claude-code/SKILLS.md"; then
+  LEGACY_GEN=1
+else
+  LEGACY_GEN=0; rm -f "$H/.claude/SKILLS.md"; echo "  (sem revisão antiga de SKILLS.md; item extra pulado)"
+fi
 ok "semeado"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -115,6 +127,11 @@ check "MCP seu preservado + Context7 adicionado" '[ "$(jq_py "$H/.claude.json" "
 check "banco global criado" '[ -f "$H/.osforge/osforge.db" ]'
 if [ "$LEGACY" = 1 ]; then
   check "instalação legada reconhecida e atualizada" 'grep -q "notify-done.sh: versão antiga do OSForge" <<<"$OUT" && cmp -s "$H/.claude/hooks/notify-done.sh" "$R/hooks/notify-done.sh"'
+fi
+if [ "$LEGACY_GEN" = 1 ]; then
+  check "arquivo GERADO de revisão antiga também é reconhecido (SKILLS.md)" 'grep -q "SKILLS.md: versão antiga do OSForge" <<<"$OUT"'
+  check "…e fica com o conteúdo novo, com a raiz expandida" 'grep -q "Context Budget" "$H/.claude/SKILLS.md" && grep -q "$R/skills" "$H/.claude/SKILLS.md" && ! grep -q "__OSFORGE_SKILLS_ROOT__" "$H/.claude/SKILLS.md"'
+  check "…e NÃO foi tratado como arquivo seu" '! grep -q "SKILLS.md: existe e não é do OSForge" <<<"$OUT"'
 fi
 # só os dois JSONs de fato alterados (hooks/settings e MCPs) são copiados para o backup do run
 check "backup do 1º deploy contém só settings.json e .claude.json" '[ "$(cd "$H/.claude_backups" && find . -type f | LC_ALL=C sort | sed "s|^\./[^/]*/||" | tr "\n" " ")" = ".claude.json .claude/settings.json " ]'

@@ -114,18 +114,24 @@ backup_file() {
 # escreve é `osforge-state.py apply`, uma vez por run, com as regras de
 # propriedade. Caminho legado: cópia direta, como antes.
 enqueue() {
-  # enqueue <src> <dst> [critical] [executable] [origin]
+  # enqueue <src> <dst> [critical] [executable] [origin] [subst: TOKEN=valor]
   # origin = caminho relativo ao repo (para reconhecer versões antigas via git);
   # derivado de src quando src está dentro do repo, vazio para arquivos gerados.
-  local src="$1" dst="$2" critical="${3:-false}" exe="${4:-false}" origin="${5:-}"
+  # subst = transformação que o deploy aplica ao GERAR o arquivo, para que o
+  # reconhecimento de versão antiga também funcione em arquivo gerado de template.
+  local src="$1" dst="$2" critical="${3:-false}" exe="${4:-false}" origin="${5:-}" subst="${6:-}"
   if [ -z "$origin" ]; then case "$src" in "$REPO"/*) origin="${src#$REPO/}" ;; esac; fi
-  python3 - "$src" "$dst" "$critical" "$exe" "$origin" "$MANIFEST_FILE" <<'PYEOF'
+  python3 - "$src" "$dst" "$critical" "$exe" "$origin" "$subst" "$MANIFEST_FILE" <<'ENQEOF'
 import json, sys
-src, dst, critical, exe, origin, mf = sys.argv[1:7]
+src, dst, critical, exe, origin, subst, mf = sys.argv[1:8]
+entry = {"src": src, "dst": dst, "critical": critical == "true",
+         "executable": exe == "true", "origin": origin}
+if subst:
+    k, _, v = subst.partition("=")
+    entry["subst"] = {k: v}
 with open(mf, "a", encoding="utf-8") as f:
-    f.write(json.dumps({"src": src, "dst": dst, "critical": critical == "true",
-                        "executable": exe == "true", "origin": origin}) + "\n")
-PYEOF
+    f.write(json.dumps(entry) + "\n")
+ENQEOF
 }
 
 copy_file() {
@@ -152,7 +158,10 @@ copy_skills_md() {
   if [ "$LEGACY_DEPLOY" != "1" ]; then
     local rendered="$STAGE_ROOT/SKILLS.$(echo "$dst" | tr '/' '_').md"
     sed "s|__OSFORGE_SKILLS_ROOT__|$REPO/skills|g" "$src" > "$rendered"
-    enqueue "$rendered" "$dst"; return
+    # origin + subst: o conteúdo instalado é específico da máquina (caminho absoluto do
+    # repo), então só casa com uma revisão antiga se a mesma expansão for aplicada ao blob.
+    enqueue "$rendered" "$dst" false false "claude-code/SKILLS.md" "__OSFORGE_SKILLS_ROOT__=$REPO/skills"
+    return
   fi
   if $DRY_RUN; then skip "cp SKILLS.md → $dst (com raiz de skills expandida)"; return; fi
   sed "s|__OSFORGE_SKILLS_ROOT__|$REPO/skills|g" "$src" > "$dst"

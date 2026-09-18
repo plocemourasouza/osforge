@@ -14,7 +14,8 @@ Backups:    ~/.claude_backups/<run_id>/<path relative to HOME>   (never overwrit
 Subcommands (all stdlib, all exit 0 on success, 1 on failure or refusal)
   apply    --manifest FILE --run-id ID --version V --repo R --commit C [--dry-run] [--force] [--adopt]
            Manifest: one JSON object per line
-             {"src": ..., "dst": ..., "critical": bool, "executable": bool, "origin": "repo/relative/path"}
+             {"src": ..., "dst": ..., "critical": bool, "executable": bool,
+              "origin": "repo/relative/path", "subst": {"__TOKEN__": "valor expandido"}}
            Rules per file, in this order:
              dst missing                                  → copy, record
              dst == src (hash)                             → record (adopt), nothing written
@@ -134,13 +135,19 @@ def backup(path, run_id, dry):
 _HIST_CACHE = {}
 
 
-def known_old_version(repo, origin, cur_hash, max_commits=300):
+def known_old_version(repo, origin, cur_hash, max_commits=300, subst=None):
     """Return the short commit where `origin` (repo-relative path) had content `cur_hash`,
     or None. Used to recognise files a LEGACY deploy wrote before install-state existed:
-    they are OSForge's, just stale — not the user's. Fail-soft when git is unavailable."""
+    they are OSForge's, just stale — not the user's. Fail-soft when git is unavailable.
+
+    `subst` são as substituições que o deploy aplica ao GERAR o arquivo (ex.:
+    `__OSFORGE_SKILLS_ROOT__` → caminho absoluto do repo). Sem elas, um arquivo gerado a
+    partir de template nunca casa com uma revisão — o conteúdo instalado é específico da
+    máquina — e o SKILLS.md de uma instalação legada ficaria congelado para sempre, tratado
+    como "arquivo seu". Aplicamos a mesma transformação ao blob antes de comparar."""
     if not repo or not origin or not os.path.isdir(os.path.join(repo, ".git")):
         return None
-    key = (repo, origin)
+    key = (repo, origin, tuple(sorted((subst or {}).items())))
     if key not in _HIST_CACHE:
         table = {}
         try:
@@ -155,6 +162,8 @@ def known_old_version(repo, origin, cur_hash, max_commits=300):
                 seen_blobs.add(blob)
                 data = subprocess.run(["git", "-C", repo, "cat-file", "blob", blob],
                                       capture_output=True, timeout=10, check=False).stdout
+                for frm, to in (subst or {}).items():
+                    data = data.replace(frm.encode("utf-8"), to.encode("utf-8"))
                 table.setdefault(hashlib.sha256(data).hexdigest(), commit[:7])
         except (OSError, subprocess.SubprocessError):
             pass
@@ -220,7 +229,7 @@ def cmd_apply(a):
                 action = "kept-user-edit"
                 say(f"⚠️  {rel_home(dst)}: editado por você desde o último deploy — mantido "
                     f"(backup do seu arquivo em {b}; use --force para sobrescrever)")
-        elif (old := known_old_version(a.repo, e.get("origin"), cur_hash)):
+        elif (old := known_old_version(a.repo, e.get("origin"), cur_hash, subst=e.get("subst"))):
             action = "copied"                       # legacy deploy wrote it (matches commit `old`) → update
             say(f"↻  {rel_home(dst)}: versão antiga do OSForge ({old}), atualizada")
             counts["legacy-updated"] = counts.get("legacy-updated", 0) + 1

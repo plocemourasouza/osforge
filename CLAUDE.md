@@ -28,11 +28,11 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Suítes offline (438 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
+# Suítes offline (441 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
 ./tests/test-assertions.sh              # Lógica de veredito dos harnesses de eval (60)
 ./tests/hooks/run-contracts.sh          # Contratos de hook: comandos reais × fixtures, dois harnesses (59; gate do deploy)
 ./tests/test-gateguard-grant.sh         # Ciclo de vida do grant do GateGuard + atenuação de negações (84)
-./tests/test-deploy-lifecycle.sh        # Deploy com estado: nada seu se perde, idempotente, doctor/uninstall/restore (61; ~1 min; CI)
+./tests/test-deploy-lifecycle.sh        # Deploy com estado: nada seu se perde, idempotente, doctor/uninstall/restore (64; ~1 min; CI)
 ./tests/test-session-continuity.sh      # Uma identidade de projeto; resume com escopo, teto e limpeza (35)
 ./tests/test-canvas-feedback.sh         # Dreno do feedback do Canvas (Stop) + validação no servidor (34; parte do servidor precisa de bun)
 ./tests/test-scan-secrets.sh            # scan-secrets nos dois formatos de payload, repo git temporário (33)

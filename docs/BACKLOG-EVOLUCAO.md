@@ -30,8 +30,8 @@ Aberto, e por quê:
   a E6 e E5, pela mesma razão: ninguém mediu o ganho ainda.
 
 Tudo que foi fechado tem teste que falha sem a correção. As dez suítes offline somam
-**438 verificações** (assertions 60 · contratos de hook 59 · gateguard-grant 84 · deploy
-lifecycle 61 · continuidade 35 · canvas 34 · scan-secrets 33 · contexto/tokens 27 ·
+**441 verificações** (assertions 60 · contratos de hook 59 · gateguard-grant 84 · deploy
+lifecycle 64 · continuidade 35 · canvas 34 · scan-secrets 33 · contexto/tokens 27 ·
 gateguard-sql 23 · installers 22) e nenhuma toca o `~/.claude` de ninguém.
 
 Fora do backlog, uma coisa que a auditoria não tinha visto: `scripts/install-skill.sh` —
