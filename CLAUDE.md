@@ -7,7 +7,7 @@ maintain the framework; `claude-code/CLAUDE.md` = how to behave in a session.
 
 ## What this repo is
 
-OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **177 skills, 27 agents** (orchestrator + 26 specialists), **14 always-on rules, 9 `spec-*` commands, 8 MCP servers**, hooks, and the `osforge-db` SQLite state CLI (now with local vector memory). There is no build, lint, or test suite. The "build" is the deploy.
+OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **177 skills, 27 agents** (orchestrator + 26 specialists), **14 rules (deployed to Cursor), 9 `spec-*` commands, 1 global MCP server (Context7; the rest are per-project stacks in `mcp/stacks/`)**, 9 hooks, and the `osforge-db` SQLite state CLI (with local vector memory). There is no build or lint step; the offline test suite is `tests/` (see below) and the "build" is the deploy.
 
 **ADR-001 (docs/DECISIONS.md): never edit `~/.claude/` or `~/.cursor/` directly.** All changes happen here, get committed, then deployed via `./deploy.sh`.
 
@@ -27,6 +27,12 @@ python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKIL
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
 ./tests/test-assertions.sh              # Verdict logic of the harness — offline, no API cost
+./tests/hooks/run-contracts.sh          # Hook contracts: real command strings × payload fixtures, both harnesses (offline; deploy gate)
+./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle (offline)
+./tests/test-gateguard-sql.sh           # GateGuard destructive-SQL detector (offline)
+./tests/test-scan-secrets.sh            # scan-secrets, both payload shapes, temp git repo (offline)
+python3 scripts/check-agents.py         # Agent frontmatter: tools scalar, model enum, read-only roles (deploy gate)
+python3 scripts/check-counts.py         # Numbers quoted in README/CLAUDE.md/USAGE match the tree (deploy gate)
 ./scripts/test-skill-triggering.sh --generated --sample 20   # Real triggering run (consumes API)
 
 python3 scripts/buscar-skill.py <query> # Search skills locally
@@ -38,6 +44,7 @@ Deploy behavior worth knowing:
 - `skills/` is synced with `rsync --delete` — removing a skill dir here removes it from `~/.claude/skills/` and `~/.cursor/skills/` on next deploy.
 - Hooks (`hooks/hooks-claude-code.json` → `~/.claude/settings.json`) merge **reconciling**: OSForge-managed hooks (command under `.claude/hooks/`) are authoritative — matcher/command changes propagate and removed hooks vanish; the user's own hooks are preserved. MCPs (`mcp/claude-code.json` → `~/.claude.json`) merge non-destructively (union). Deploy reports MCP drift between repo and live config.
 - Critical files are backed up to `~/.claude_backups/` before overwrite.
+- Pre-flight gates (abort the deploy): manifest drift, `tests/hooks/run-contracts.sh`, `scripts/check-agents.py`, `scripts/check-counts.py`. CI (`.github/workflows/ci.yml`) runs the same set plus `bash -n`/`py_compile` and a dry-run deploy in an empty HOME.
 
 ## Architecture
 

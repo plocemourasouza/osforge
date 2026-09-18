@@ -95,7 +95,7 @@ for s in all_sorted:
     L.append(f"- `{s['name']}` — {short_src} — `{s['local_path']}/`")
 
 L.append("\n---\n")
-L.append("*Índice gerado automaticamente por Claude Opus 4.6 a partir de 770 SKILL.md files.*")
+L.append(f"*Índice gerado automaticamente por scripts/_generate_index_md.py a partir de {len(skills)} SKILL.md files.*")
 
 content = '\n'.join(L)
 out = BASE / "docs" / "INDICE-SKILLS.md"

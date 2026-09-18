@@ -30,7 +30,7 @@ Complete installation, configuration, and day-to-day usage instructions.
 Novo no OSForge? Leia nesta ordem:
 
 1. **Este USAGE.md §1-2** — instalação e deploy
-2. **[`claude-code/SKILLS.md`](claude-code/SKILLS.md)** — índice de triggers das 169 skills
+2. **[`claude-code/SKILLS.md`](claude-code/SKILLS.md)** — índice de triggers das 177 skills
 3. **[`claude-code/CLAUDE.md`](claude-code/CLAUDE.md)** — orquestração de sessão, workflow de agentes, regras globais
 
 > **1 sessão = 1 projeto.** Nunca misture projetos em uma única sessão Claude Code — polui o contexto, duplica prompts de permissão e degrada a precisão do `resume`. Abra uma sessão-sede em `~/Development/osforge` para planejamento e uma sessão-satélite por projeto para execução. Detalhes completos em [§10](#10-operação-multi-projeto--sessão-sede-e-satélites).
@@ -84,13 +84,13 @@ cargo install llmfit
 - Copies `CLAUDE.md` and `SKILLS.md`
 - Syncs 27 agents (orchestrator + 26 specialists) to `~/.claude/agents/`
 - Copies 9 `spec-*` commands to `~/.claude/commands/`
-- Installs 8 hooks to `~/.claude/hooks/`
+- Installs 9 hooks to `~/.claude/hooks/`
 - Non-destructive MCP merge into `~/.claude.json` (hooks OSForge-managed refletem o repo; hooks de usuário preservados)
 
 **Cursor (`~/.cursor/`)**
 - Copies `SKILLS.md`
 - Syncs agents to `~/.cursor/agents/`
-- Copies 13 rules (11 `.mdc` + 2 `.md`) to `~/.cursor/rules/`
+- Copies 14 rules (12 `.mdc` + 2 `.md`) to `~/.cursor/rules/`
 - Copies hook scripts
 
 **Archify (third-party, pinned)**
@@ -292,7 +292,7 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 
 ## 5. Always-On Rules (Cursor)
 
-The 13 rules (11 `.mdc` + 2 `.md`: `artifact-chain`, `orchestrator-awareness`) are automatically active in all Cursor sessions. No activation needed.
+The 14 rules (12 `.mdc` + 2 `.md`: `artifact-chain`, `orchestrator-awareness`) are automatically active in all Cursor sessions. No activation needed.
 
 | Rule | Effect |
 |---|---|
@@ -452,7 +452,7 @@ cp hooks/*.py hooks/*.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*
 ```
 
-### What each hook does (8 hooks)
+### What each hook does (9 hooks)
 
 **`canvas-autostart.sh`** (SessionStart)
 - Inicia o OSForge Canvas em `localhost:4242` se ainda não estiver rodando
@@ -463,8 +463,9 @@ chmod +x ~/.claude/hooks/*
 - Injeta automaticamente `osforge-db resume <slug>` + `board` no início da sessão (~50 tokens)
 
 **`protect-tests.sh`** (PostToolUse — Write | Edit | MultiEdit)
-- Alerta e loga quando um arquivo de teste foi alterado
-- Lembrete: testes devem falhar por lógica de negócio, nunca ajustados para passar
+- No Claude Code, injeta `additionalContext` quando um arquivo de teste é alterado, lembrando a
+  Iron Law do TDD (teste só muda para descrever comportamento, nunca para passar); no Cursor só loga
+- Log em `~/.osforge/logs/hooks.log` (nunca em `/tmp`)
 
 **`observe-capture.py`** (PostToolUse — Edit | Write | MultiEdit | Bash)
 - Grava observações de comportamento do Claude para alimentar o ciclo `evolve`
@@ -503,7 +504,8 @@ chmod +x ~/.claude/hooks/*
 - Testes: `tests/test-gateguard-sql.sh` (detector SQL) e `tests/test-gateguard-grant.sh` (liberação)
 
 **`notify-done.sh`** (Stop)
-- Envia notificação macOS via AppleScript ao término da sessão
+- Envia notificação macOS via AppleScript quando o agente para normalmente (`stop_hook_active=false`;
+  a versão anterior tinha a lógica invertida — B-007); silencioso fora do macOS; log em `~/.osforge/logs/hooks.log`
 
 **`session-save.py`** (Stop)
 - Parseia o transcript da sessão e grava `set-resume` automático no `osforge-db`

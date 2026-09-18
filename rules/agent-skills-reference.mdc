@@ -1,12 +1,12 @@
 ---
-description: Reference to the local repository of 770+ Agent Skills — when and how to consult it, Tiers 1/2/3, search and installation in projects
+description: Reference to the local upstream Agent Skills collections — when and how to consult it, Tiers 1/2/3, search and installation in projects
 globs: ["**/*.ts", "**/*.tsx", "**/*.md"]
 alwaysApply: true
 ---
 
 # Local Agent Skills Repository
 
-The upstream collections with 770+ Agent Skills live in `~/Development/osforge/sources/` (ADR-009; gitignored, disk only).
+The upstream Agent Skills collections (13 sources) live in `~/Development/osforge/sources/` (ADR-009; gitignored, disk only).
 
 Skills are best-practice references extracted from official repositories (Anthropic, Vercel, Supabase, Trail of Bits, Cloudflare, Expo, Sentry) and from the community.
 

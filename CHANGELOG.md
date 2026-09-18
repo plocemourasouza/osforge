@@ -34,6 +34,40 @@ All notable changes to OSForge are recorded here. The format follows
   check and every `mkdir`/`rm` behind `--dry-run` (dry-run now creates nothing), and drops every
   `_`-prefixed documentation key from `settings-base.json` before merging.
 
+### Added (stage 1 — safety net)
+- **Hook contract tests** (B-006): `tests/hooks/run-contracts.sh` runs the real command
+  strings from `hooks/hooks-claude-code.json` and `hooks/hooks.json` against payload fixtures
+  for both harnesses (52 checks) in a sandboxed HOME, asserting exit 0, JSON-or-empty stdout,
+  the harness verdict and no writes to `/tmp`. Wired into the deploy preflight. Contract in
+  `docs/HOOKS.md`.
+- **Agent frontmatter validation** (B-009): `scripts/check-agents.py` (deploy preflight + CI):
+  `tools` scalar with known names, `model` enum, read-only roles must not carry write tools.
+  `planner`, `code-reviewer`, `security-auditor`, `validator`, `explorer-agent` and
+  `system-architect` now declare `tools: Read, Grep, Glob, Bash`; `planner`, `validator` and
+  `system-architect` are `model: opus` per the tier table; `validator` dropped a non-Claude-Code
+  tools schema; `project-planner` gained `Write` (its body creates a file).
+- **Count drift check** (B-008): `scripts/check-counts.py` fails when README, CLAUDE.md,
+  `claude-code/CLAUDE.md` or USAGE quote a number that differs from the tree (skills, core,
+  agents, rules, hooks, spec commands, global MCPs, `ENABLE_TOOL_SEARCH`).
+- **Minimal CI** (B-008): `.github/workflows/ci.yml` on ubuntu + macos: syntax, fresh
+  manifest/indexes, agents, counts, the five offline test suites, and a dry-run deploy in an
+  empty HOME that must create nothing.
+
+### Fixed (stage 1)
+- `notify-done.sh` notified only when `stop_hook_active` was true, i.e. almost never (B-007,
+  E-A13). `protect-tests.sh` now tells the model (additionalContext) instead of logging to
+  `/tmp` (E-A12). `gateguard.py`, `route-guard.py` and `observe-capture.py` no longer crash on
+  a payload that is not an object. No hook writes to `/tmp` any more: logs live in
+  `~/.osforge/logs/` (`OSFORGE_LOG_DIR`).
+- `route-guard.py` counted `echo skills/x/SKILL.md` in a Bash command, or a bare skill name in
+  a subagent prompt, as evidence that the skill was loaded (E-A11). Only Read/Glob/Grep, a
+  reading Bash command (`cat`, `sed`, `head`…) or a `SKILL.md` path in a dispatched prompt count.
+- Documentation numbers (B-005): "~64 core" → 47, `ENABLE_TOOL_SEARCH=auto` → `true`,
+  "8 hooks" → 9, "13 rules" → 14, "169 skills" → 177, "8 MCP servers" → 1 global + per-project
+  stacks, "770+ skills" removed, the README's "~12K-token base" replaced by the measured method,
+  "14 always-on rules" qualified as Cursor-only, and the root `CLAUDE.md` no longer says there is
+  no test suite.
+
 ### Known defects (found by the audit, open until later stages ship)
 - `deploy.sh` unregisters user hooks under `~/.claude/hooks/`, overwrites same-name agents
   without backup, deletes user skills and clobbers its own `settings.json` backup — B-014–B-016.

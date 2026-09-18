@@ -4,7 +4,7 @@
 
 **An AI-powered development framework: skills, agents, rules, hooks, commands, and a full library of specialists — the single source of truth for your global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration.**
 
-27 specialized agents · 177 on-demand skills · 14 always-on rules · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
+27 specialized agents · 177 on-demand skills · 14 always-on rules (Cursor) · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -33,7 +33,7 @@
 
 AI coding agents are only as good as the context they receive. OSForge solves five problems:
 
-1. **Context efficiency** — 177 skills in a ~12K-token base (~6% of a 200K window). Everything else loads on demand.
+1. **Context efficiency** — 177 skills reachable from a fixed base (≈21k tokens by bytes/4 over the deployed files: `CLAUDE.md`, `SKILLS.md`, `CONTEXT.md`, core descriptions, agent descriptions — measured baseline in `scripts/measure-context.py`). Everything else loads on demand.
 2. **Stack-specific patterns** — skills tuned for Next.js App Router + Prisma + Supabase + shadcn/ui, with broad coverage for mobile, game dev, Rust, Python, and cross-platform.
 3. **Built-in quality gates** — TDD enforcement, security auditing, red-team tactics, insecure-defaults detection, a Reality Check + Quality Control loop in every agent, and zero-token Python hooks.
 4. **Local SQLite state** — `osforge-db` persists project state, decisions, blockers, and a task board (waves, dependencies, priorities) with a cross-project view. Session resume in ~50 tokens.
@@ -279,7 +279,7 @@ New skills follow a single standard — [`docs/SKILL-STANDARD.md`](docs/SKILL-ST
 
 **Accessory libraries** (commonly paired across the skills) — data/state: TanStack Query, SWR · forms: React Hook Form (+ Zod resolver) · charts: Recharts · theming: next-themes · icons: lucide-react · motion: Framer Motion, GSAP.
 
-**MCP servers** — 8 configured (Context7, GitHub, Supabase, Shadcn, Browsermcp, next-devtools, Prisma-Local, Prisma-Remote). See `mcp/claude-code.json`.
+**MCP servers** — 1 global (Context7, `mcp/claude-code.json`); GitHub, Supabase, Shadcn, Browsermcp, next-devtools and Prisma are per-project stacks in `mcp/stacks/`, installed with `scripts/install-mcp.sh`.
 
 ---
 

@@ -41,7 +41,7 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 - **Aceite:** harness de acionamento continua disparando a skill; experimento E4 agendado.
 - **Esforço:** P. **Risco:** revisor ficar leniente — é o que E4 mede.
 
-### B-005 · Correções de documentação divergente
+### B-005 · Correções de documentação divergente — ✅ feito
 - **Recomendação / evidência:** §4.4 · E-A32, E-A35 a E-A39
 - **Arquivos:** `README.md` L36, L282; `CLAUDE.md` L10, L39, L55; `claude-code/CLAUDE.md` L11, L75, L206-207, L221; `USAGE.md` L33, L87, L93, L106-107; `rules/agent-skills-reference.mdc` L2, L9; `scripts/_generate_index_md.py` L98; `docs/DECISIONS.md` (marcar ADR-002 como superado pelo Model A); docstring de `hooks/gateguard.py` L53.
 - **Aceite:** passa na checagem de contagens de B-008.
@@ -49,7 +49,7 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 
 ## Etapa 1 — Rede de proteção
 
-### B-006 · Runner de testes de contrato de hook
+### B-006 · Runner de testes de contrato de hook — ✅ feito
 - **Recomendação / evidência:** R-01 · E-A01, E-A12, E-A13; estilo de E-B25
 - **Arquivos (NOVOS):** `tests/hooks/run-contracts.sh`, `tests/hooks/cases.tsv`, `tests/hooks/fixtures/{claude-code,cursor,transcripts}/*`, `docs/HOOKS.md`.
 - **Mudança:** conforme §5.3 do relatório: extrai o comando real de `hooks/hooks-claude-code.json` e `hooks/hooks.json`, roda com fixture no stdin, HOME e TMPDIR temporários, confere exit 0, stdout vazio ou JSON válido, veredito por harness e nenhuma escrita fora do sandbox.
@@ -58,13 +58,13 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 - **Verificação:** `./tests/hooks/run-contracts.sh`
 - **Esforço:** M. **Risco:** contrato do Claude Code mudar → contrato fica numa tabela só dentro do runner.
 
-### B-007 · Correções pequenas que o runner revela
+### B-007 · Correções pequenas que o runner revela — ✅ feito
 - **Evidência:** E-A11, E-A12, E-A13, E-A14
 - **Arquivos:** `hooks/notify-done.sh` L25 (condição invertida); `hooks/gateguard.py` e `hooks/route-guard.py` (payload que não é dict → permitir, exit 0); `hooks/protect-tests.sh` e `hooks/notify-done.sh` (log em `~/.osforge/logs/`, não `/tmp`); `hooks/route-guard.py` L115-118 (evidência de carga só vale em `Skill`, `Read` de `SKILL.md` e prompt de `Task/Agent` que cite o **caminho**, não o nome solto).
 - **Decisão embutida:** `protect-tests.sh` passa a emitir `additionalContext` ("arquivo de teste alterado: …") ou sai do JSON de hooks. Não fica como está.
 - **Esforço:** P.
 
-### B-008 · CI mínimo + checagem de contagens
+### B-008 · CI mínimo + checagem de contagens — ✅ feito (CI ainda não executado no GitHub)
 - **Recomendação / evidência:** R-13 · §4.4
 - **Arquivos (NOVOS):** `.github/workflows/ci.yml`, `scripts/check-counts.py`.
 - **Conteúdo do job** (ubuntu + macos): `bash -n` em `*.sh`; `python3 -m py_compile` em `*.py`; parse dos JSON; `_generate_manifest.py --check`; regenerar índices + `git diff --exit-code`; `tests/*.sh`; `tests/hooks/run-contracts.sh`; `HOME=$(mktemp -d) ./deploy.sh --dry-run`; `scripts/check-counts.py`.
@@ -73,7 +73,7 @@ Todos os comandos de verificação rodam com `HOME` temporário; nenhum toca `~/
 - **Aceite:** verde no `main`; introduzir "~64 core" em qualquer doc deixa vermelho.
 - **Esforço:** P. **Rejeitado de propósito:** matriz de versões, gate de cobertura.
 
-### B-009 · Frontmatter e ferramentas dos agentes
+### B-009 · Frontmatter e ferramentas dos agentes — ✅ feito
 - **Recomendação / evidência:** R-07 · E-A41, E-A40; origem E-B20
 - **Arquivos:** `scripts/_generate_manifest.py` (nova checagem em `--check`); `agents/*.md`; apagar `claude-code/agents/`.
 - **Mudança:** `tools: Read, Grep, Glob, Bash` em `code-reviewer`, `security-auditor`, `validator`, `explorer-agent`, `planner`; corrigir `validator.md` L9-18 para o esquema do Claude Code; `project-planner` ganha `Write` (o corpo exige criar arquivo); `model:` alinhado a `smart-model-dispatch`; remover `always-active`/`model-tier` de `orchestrator/AGENT.md` ou documentar que são só anotação.

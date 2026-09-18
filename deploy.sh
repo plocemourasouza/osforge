@@ -745,6 +745,26 @@ preflight_manifest() {
   fi
 }
 
+# Etapa 1 do BACKLOG-EVOLUCAO (ADR-015): o deploy só segue se os hooks cumprem o
+# contrato de cada harness, os agentes têm frontmatter válido e os números citados
+# nos docs sempre carregados batem com a árvore. Tudo offline, segundos.
+# OSFORGE_SKIP_PREFLIGHT_TESTS=1 pula (use só para diagnosticar o próprio preflight).
+preflight_tests() {
+  echo ""
+  echo "🔍 Pre-flight: contratos de hook · agentes · contagens"
+  if [ "${OSFORGE_SKIP_PREFLIGHT_TESTS:-}" = "1" ]; then echo "  ⟳  pulado (OSFORGE_SKIP_PREFLIGHT_TESTS=1)"; return 0; fi
+  local failed=0 log; log="$(mktemp)"
+  if "$REPO/tests/hooks/run-contracts.sh" >"$log" 2>&1; then ok "hooks: $(tail -1 "$log")"; rm -f "$log"
+  else echo "  ❌ contratos de hook falharam — veja: cat $log"; failed=1; fi
+  python3 "$REPO/scripts/check-agents.py" --quiet || failed=1
+  python3 "$REPO/scripts/check-counts.py" || failed=1
+  if [ "$failed" != "0" ]; then
+    echo ""
+    echo "  ❌ Pre-flight reprovou. Nada foi deployado. Corrija e rode de novo."
+    exit 1
+  fi
+}
+
 # ── Main ─────────────────────────────────────────────────────────────────
 echo "═══════════════════════════════════════════════════"
 echo " OSForge v$OSFORGE_VERSION — Deploy"
@@ -753,6 +773,7 @@ $DRY_RUN && echo " Modo: DRY RUN (sem alterações reais)"
 echo "═══════════════════════════════════════════════════"
 
 preflight_manifest
+preflight_tests
 
 $DEPLOY_CLAUDE && deploy_claude
 $DEPLOY_CURSOR && deploy_cursor

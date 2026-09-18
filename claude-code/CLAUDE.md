@@ -8,7 +8,7 @@
 > **ADR-001:** never edit `~/.claude/` directly. Edit `claude-code/CLAUDE.md` in the repo and run
 > `./deploy.sh`. Changing this file invalidates the prompt cache of every session — keep it stable.
 
-OSForge ships **177 skills**, **27 agents** (orchestrator + 26 specialists), **14** always-on **rules**,
+OSForge ships **177 skills**, **27 agents** (orchestrator + 26 specialists), **14** always-on **rules** (Cursor only — see R-11),
 **9 `spec-*` commands**, hooks, and `osforge-db` (SQLite state + vector memory). Full rosters and
 operational reference live in the repo's `USAGE.md` — this file describes *how to orchestrate*, it doesn't catalog.
 
@@ -72,7 +72,7 @@ Complexity triage: **QUICK** (1–3 files, zero ambiguity) · **STANDARD** (mult
 ### 3. Skill triggers (two channels, one protocol)
 Skills reach you through two channels, and confusing them is how a capability goes missing:
 
-- **Native** — the ~64 core skills in `~/.claude/skills/` (Model A allowlist). Their `description`
+- **Native** — the 47 core skills in `~/.claude/skills/` (Model A allowlist). Their `description`
   is already in context; they fire on their own triggers. Nothing to look up.
 - **On-demand** — every other skill lives only in the repo. It is invisible unless the
   **MANIFEST** in `@SKILLS.md` names it. The manifest is generated from frontmatter and gated at
@@ -204,7 +204,7 @@ Conflict = the more specific level wins. Details in the `memory-hierarchy.mdc` r
 To maximize cache hits on the Anthropic API, content splits into two blocks:
 
 - **🔒 Cacheable prefix (stable):** identity + safety (this file, top), `settings.json` (permissions/hooks),
-  style rules (`typescript-strict.mdc`, `code-style.mdc`, `anti-ai-slop.mdc`), the skills index (`@SKILLS.md`, 177 skills).
+  the style spine inside `@SKILLS.md` (TypeScript strict, code style — the `.mdc` rules themselves reach Cursor only), the skills index (`@SKILLS.md`, 177 skills).
   **Keep it stable** — changing it invalidates every session's cache.
 - **🌊 Dynamic suffix (changes per session):** on-demand loaded skills, memory (`CLAUDE.local.md`, `.osforge/`),
   environment context (OS/dir/git), language preferences, active MCP instructions, context-window guidelines.
@@ -218,7 +218,7 @@ MCP tool schemas are the biggest context cost — scope them tightly.
   `scripts/install-mcp.sh <stack>` (writes the project's `.mcp.json`). Templates in `mcp/stacks/`.
 - **Anti-bloat settings** (deployed from `claude-code/settings-base.json` → `~/.claude/settings.json`):
   `disableClaudeAiConnectors: true` (keeps claude.ai account connectors — Gmail, Drive, Figma, Higgsfield… — **out** of
-  Claude Code) and `env.ENABLE_TOOL_SEARCH=auto` (defers large tool schemas, loading them on demand).
+  Claude Code) and `env.ENABLE_TOOL_SEARCH=true` (defers large tool schemas, loading them on demand — `true`, not `auto`, because of the local proxy; rationale and measurement in `claude-code/settings-base.json`).
 - **Cleanup:** deploy merges MCPs additively and never prunes; remove accumulated/dead globals with
   `scripts/prune-global-mcps.sh` (`--dead` drops `MCP_DOCKER` + `Prisma-Remote`).
 

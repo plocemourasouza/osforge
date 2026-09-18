@@ -533,4 +533,4 @@ Lista compacta para busca rápida com `Ctrl+F`:
 
 ---
 
-*Índice gerado automaticamente por Claude Opus 4.6 a partir de 770 SKILL.md files.*
+*Índice gerado automaticamente por scripts/_generate_index_md.py a partir de 177 SKILL.md files.*
