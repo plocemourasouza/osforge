@@ -8,7 +8,7 @@ All notable changes to OSForge are recorded here. The format follows
 `VERSION` holds the current version; `deploy.sh` prints it. Releases are annotated git tags
 (`vX.Y.Z`) with a GitHub Release carrying the matching section of this file.
 
-## [Unreleased]
+## [5.1.0] — 2026-09-18
 
 ### Added
 - **ECC comparative audit (rev. 3)** — `docs/ANALISE-COMPARATIVA-ECC.md` with the evidence table
@@ -249,6 +249,15 @@ All notable changes to OSForge are recorded here. The format follows
   from `~/.local/bin` via the `~/.osforge/repo-path` anchor, `OSFORGE_REPO` precedence, the
   `.mcp.json` merge preserving your own servers, and both scripts in a shell with the bash-4
   builtins disabled. Reintroducing the `mapfile` turns 3 of them red.
+- **The first CI run reprovou o lifecycle nos dois runners — e não era o deploy.**
+  `actions/checkout` clona raso (1 commit) e o caso "instalação legada de um arquivo
+  GERADO" precisa de uma revisão anterior do arquivo. A guarda do teste comparava o arquivo
+  já semeado (com a raiz expandida) com o do repo (ainda com o token): a substituição
+  sozinha já os faz diferentes, então ela semeava o arquivo de hoje e o chamava de revisão
+  antiga. Agora compara o blob antigo com o arquivo atual do repo e exige commits distintos
+  — num clone raso os dois casos legados são pulados honestamente (60 ok), com histórico
+  completo rodam (64 ok) — e o CI clona com `fetch-depth: 0`, para que o reconhecimento de
+  instalação legada seja de fato exercitado lá.
 
 ### Still open from the audit
 - **B-013 (E1, stability)** is ready to run and waits only on cost authorisation: pilot 6 API
@@ -360,4 +369,5 @@ Orchestrator layer + 14 planning/quality/context skills (`arch-builder`, `prd-bu
 31 skills, 7 agents, 4 rules, first Python hooks; repository established as the single source
 of truth for `~/.claude/` and `~/.cursor/` (ADR-001).
 
+[5.1.0]: https://github.com/plocemourasouza/osforge/releases/tag/v5.1.0
 [5.0.0]: https://github.com/plocemourasouza/osforge/releases/tag/v5.0.0

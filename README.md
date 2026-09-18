@@ -1,6 +1,6 @@
 # 🔨 OSForge
 
-[![Version](https://img.shields.io/badge/version-5.0.0-blue)](CHANGELOG.md) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Archify](https://img.shields.io/badge/diagrams-Archify_v2.16.0-8A2BE2)](docs/ANALISE-ARCHIFY.md)
+[![Version](https://img.shields.io/badge/version-5.1.0-blue)](CHANGELOG.md) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Archify](https://img.shields.io/badge/diagrams-Archify_v2.16.0-8A2BE2)](docs/ANALISE-ARCHIFY.md)
 
 **An AI-powered development framework: skills, agents, rules, hooks, commands, and a full library of specialists — the single source of truth for your global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration.**
 
