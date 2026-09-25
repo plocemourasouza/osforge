@@ -1,0 +1,75 @@
+adversarial-review	p1	This spec looks too complete. Tear it apart for me.
+adversarial-review	p2	I want the most pessimistic possible reading of this document.
+adversarial-review	p3	Assume whoever wrote this was careless and show me where.
+adversarial-review	p4	What would a nitpicking reviewer find wrong here?
+adversarial-review	p5	Look for what is MISSING in this design, not what is written wrong.
+brainstorming	p1	I had an idea for an app that helps freelancers collect from late-paying clients. What do you think?
+brainstorming	p2	I want to do something with AI for my sister's clinic, but it's still vague.
+brainstorming	p3	I'm torn between building a marketplace or a scheduling SaaS. Help me think?
+brainstorming	p4	I want to explore ways to monetize the user base I already have, without deciding anything yet.
+brainstorming	p5	I thought of a community feature inside the product. Is it worth investigating?
+clean-code	p1	This file has 900 lines and nobody understands it anymore. Help me organize it?
+clean-code	p2	There is duplicated logic in four places in the orders module.
+clean-code	p3	The function names here say nothing. I want to improve that.
+clean-code	p4	This component does too much. How do I split it without breaking the app?
+clean-code	p5	I inherited this code and want to make it presentable before touching the feature.
+code-review	p1	I finished the coupon feature. Can you take a look before I open the PR?
+code-review	p2	Review this diff with a critical eye, especially the permission part.
+code-review	p3	I want a second opinion on these changes before the merge.
+code-review	p4	The intern's PR has been open for two days. Can you review it?
+code-review	p5	Look at this commit and tell me what you would change.
+domain-modeling	p1	I need to model subscription, plan and billing. The rules are getting mixed up.
+domain-modeling	p2	I don't know if 'order' and 'cart' should be the same thing in my system.
+domain-modeling	p3	Each part of the team calls the same thing by a different name. How do I organize this?
+domain-modeling	p4	I want to make explicit in the code which contract states are valid.
+domain-modeling	p5	The business rules are scattered across the controllers. Where should they live?
+edge-case-hunter	p1	What could go wrong in this payment flow that I haven't thought of?
+edge-case-hunter	p2	List the edge cases of this installment function.
+edge-case-hunter	p3	User without email, without tax ID, with an empty name - what else can happen here?
+edge-case-hunter	p4	I want to map all the unhappy paths before writing the tests.
+edge-case-hunter	p5	This API assumes the array never comes empty. What else does it assume?
+frontend-design	p1	This screen is ugly and I can't say why.
+frontend-design	p2	I want the landing page to look professional; today it looks like a generic template.
+frontend-design	p3	The dashboard has too much information and nobody finds what matters.
+frontend-design	p4	I need to define the product's look before building components.
+frontend-design	p5	The visual hierarchy of this page is confusing for a new user.
+grilling	p1	I finished the database migration plan. I want you to interrogate me before I approve it.
+grilling	p2	This plan looks too good. Attack it with hard questions.
+grilling	p3	Before I send this to the team, find the holes in my reasoning.
+grilling	p4	Ask me the questions my tech lead would ask about this design.
+grilling	p5	I want to close all open decisions in this plan before starting.
+osforge-canvas	p1	I want to review the implementation plan before coding. Can I see it all organized?
+osforge-canvas	p2	Show me the proposal in a way I can approve point by point.
+osforge-canvas	p3	I'd rather look at this on a screen and mark what I approve and what I don't.
+osforge-canvas	p4	Put together a view of the scope for me to comment on, item by item.
+osforge-canvas	p5	I want to give structured feedback on this design, not reply in a paragraph.
+prd-builder	p1	I need to document the onboarding feature so the whole team understands the scope.
+prd-builder	p2	What exactly is in and what is out of the reports module? I want that written down.
+prd-builder	p3	I want a product document for this initiative to present to stakeholders.
+prd-builder	p4	We already decided on the idea; now I want requirements and acceptance criteria formalized.
+prd-builder	p5	I need to align product and engineering on what version 1 of this is.
+requirements-clarify	p1	Improve the system's performance.
+requirements-clarify	p2	Make the app faster and prettier.
+requirements-clarify	p3	Fix the report problem.
+requirements-clarify	p4	I want to integrate with their ERP.
+requirements-clarify	p5	Make the system secure.
+system-diagrams	p1	I want to see how the services talk to each other in this project.
+system-diagrams	p2	Draw the authentication flow so I can explain it to the team.
+system-diagrams	p3	I need an architecture diagram to put in the documentation.
+system-diagrams	p4	Visually show the path of an order from checkout to delivery.
+system-diagrams	p5	Can I see the relationship between the main tables in a diagram?
+systematic-debugging	p1	My API returns 500 in production but works locally. How do I investigate without guessing?
+systematic-debugging	p2	The test passes alone and fails when the whole suite runs. I have no idea why.
+systematic-debugging	p3	The upload fails once in a while, one in twenty. I already changed three places and it got worse.
+systematic-debugging	p4	There is a memory leak in the worker and I can't reproduce it on my machine.
+systematic-debugging	p5	After yesterday's deploy the webhooks stopped. I need to find the cause, not patch it.
+tdd-workflow	p1	I need to implement shipping cost by postal code range. Where do I start?
+tdd-workflow	p2	I'm going to add tax ID validation to signup. I want to do it right, without just coding away.
+tdd-workflow	p3	This cumulative discount bug has come back twice already. How do I make sure it doesn't come back?
+tdd-workflow	p4	I want to write the installment function today and not break checkout.
+tdd-workflow	p5	Let's build the refund endpoint. I'd rather go slowly and safely.
+verification-before-completion	p1	I just fixed the form bug. Can I consider it resolved?
+verification-before-completion	p2	I finished the implementation. Is anything missing before I close the task?
+verification-before-completion	p3	I think it's ready for production. How do I confirm that?
+verification-before-completion	p4	I already tested on my machine and it worked. Is that enough?
+verification-before-completion	p5	I'm going to mark it as done. Is there any step I usually forget?

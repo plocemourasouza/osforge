@@ -1,0 +1,171 @@
+skill	id	categoria	rota_esperada	critico	query
+adversarial-review	p1	positivo	adversarial-review		Esse spec parece completo demais. Destrói ele para mim.
+adversarial-review	p2	positivo	adversarial-review		Quero a leitura mais pessimista possível desse documento.
+adversarial-review	p3	positivo	adversarial-review		Assume que quem escreveu isso foi descuidado e me mostra onde.
+adversarial-review	p4	positivo	adversarial-review		O que um revisor implicante acharia de errado aqui?
+adversarial-review	p5	positivo	adversarial-review		Procura o que está FALTANDO nesse desenho, não o que está escrito errado.
+adversarial-review	n1	vizinho	code-review		Revisa meu PR seguindo o checklist normal do time.
+adversarial-review	n2	vizinho	spec-builder		Escreve o spec da feature de notificações.
+adversarial-review	n3	irrelevante	-		Formata esse documento em markdown.
+adversarial-review	n4	irrelevante	-		Traduz o documento para inglês.
+adversarial-review	n5	irrelevante	-		Resume esse spec em cinco bullets.
+adversarial-review	n6	negacao	-	sim	Não precisa criticar nada, só confere se o spec tem todas as seções do template.
+brainstorming	p1	positivo	brainstorming		Tive uma ideia de um app que ajuda freelancer a cobrar cliente atrasado. O que acha?
+brainstorming	p2	positivo	brainstorming		Quero fazer alguma coisa com IA para a clínica da minha irmã, mas ainda tá vago.
+brainstorming	p3	positivo	brainstorming		Tô entre fazer um marketplace ou um SaaS de agendamento. Me ajuda a pensar?
+brainstorming	p4	positivo	brainstorming		Quero explorar formas de monetizar a base que já tenho, sem decidir nada ainda.
+brainstorming	p5	positivo	brainstorming		Pensei numa feature de comunidade dentro do produto. Vale a pena investigar?
+brainstorming	n1	vizinho	prd-builder		Escreve o PRD da feature de comunidade que a gente já fechou o escopo.
+brainstorming	n2	irrelevante	tdd-workflow		Implementa o botão de compartilhar no card do produto.
+brainstorming	n3	irrelevante	-		Corrige o erro de tipagem no arquivo de rotas.
+brainstorming	n4	irrelevante	-		Quais são os planos e preços do Supabase hoje?
+brainstorming	n5	irrelevante	-		Faz o deploy da branch de staging.
+brainstorming	n6	negacao	-	sim	Não quero discutir a ideia, já está decidida; só me diz por onde começar a implementar.
+brainstorming	n7	vizinho	arch-builder		Já decidi fazer o marketplace; agora quero definir a arquitetura.
+clean-code	p1	positivo	clean-code		Esse arquivo tem 900 linhas e ninguém entende mais. Ajuda a organizar?
+clean-code	p2	positivo	clean-code		Tem lógica duplicada em quatro lugares do módulo de pedidos.
+clean-code	p3	positivo	clean-code		Os nomes das funções aqui não dizem nada. Quero melhorar isso.
+clean-code	p4	positivo	clean-code		Esse componente faz coisa demais. Como quebro sem quebrar o app?
+clean-code	p5	positivo	clean-code		Herdei esse código e quero deixá-lo apresentável antes de mexer na feature.
+clean-code	n1	irrelevante	systematic-debugging		Por que esse teste está falhando no CI?
+clean-code	n2	irrelevante	tdd-workflow		Adiciona o campo telefone no formulário de cadastro.
+clean-code	n3	irrelevante	-		Qual a complexidade do quicksort no pior caso?
+clean-code	n4	irrelevante	-		Faz o build de produção e me diz o tamanho do bundle.
+clean-code	n5	irrelevante	-		Escreve a documentação da API pública.
+clean-code	n6	negacao	-	sim	Não mexe na estrutura nem nos nomes; só corrige o erro de digitação na mensagem de erro.
+clean-code	n7	vizinho	code-review		Revisa esse PR antes do merge.
+clean-code	n8	vizinho	nextjs-react-expert		Esse componente está lento para renderizar a lista de produtos.
+code-review	p1	positivo	code-review		Terminei a feature de cupom. Dá uma olhada antes de eu abrir o PR?
+code-review	p2	positivo	code-review		Revisa esse diff com olhar crítico, principalmente a parte de permissão.
+code-review	p3	positivo	code-review		Quero uma segunda opinião nessas mudanças antes do merge.
+code-review	p4	positivo	code-review		O PR do estagiário está aberto há dois dias. Consegue revisar?
+code-review	p5	positivo	code-review		Olha esse commit e me diz o que você mudaria.
+code-review	n1	irrelevante	tdd-workflow		Escreve a feature de cupom para mim.
+code-review	n2	vizinho	finishing-a-development-branch		Faz o merge da branch na main.
+code-review	n3	irrelevante	-		Qual a convenção de commit que a gente usa mesmo?
+code-review	n4	irrelevante	-		Gera o changelog da versão 2.1.
+code-review	n5	irrelevante	-		Roda o prettier em tudo.
+code-review	n6	negacao	-	sim	Não precisa revisar, só faz o commit do que está staged.
+code-review	n7	vizinho	receiving-code-review		O revisor pediu mudanças no meu PR; como eu respondo aos comentários?
+domain-modeling	p1	positivo	domain-modeling		Preciso modelar assinatura, plano e cobrança. As regras estão se misturando.
+domain-modeling	p2	positivo	domain-modeling		Não sei se 'pedido' e 'carrinho' deviam ser a mesma coisa no meu sistema.
+domain-modeling	p3	positivo	domain-modeling		Cada parte do time chama a mesma coisa por um nome diferente. Como organizo isso?
+domain-modeling	p4	positivo	domain-modeling		Quero deixar explícito no código quais estados de contrato são válidos.
+domain-modeling	p5	positivo	domain-modeling		As regras de negócio estão espalhadas pelos controllers. Onde elas deviam morar?
+domain-modeling	n1	vizinho	-		Cria a migration com as tabelas que a gente já definiu.
+domain-modeling	n2	irrelevante	-		Otimiza essa query que está lenta.
+domain-modeling	n3	vizinho	-		Instala o Zod e configura o schema do formulário.
+domain-modeling	n4	irrelevante	-		Qual ORM tem melhor suporte a Postgres?
+domain-modeling	n5	irrelevante	-		Arruma o import quebrado no arquivo de tipos.
+domain-modeling	n6	negacao	-	sim	Não quero repensar o modelo; só adiciona a coluna status na tabela pedidos.
+edge-case-hunter	p1	positivo	edge-case-hunter		O que pode dar errado nesse fluxo de pagamento que eu não pensei?
+edge-case-hunter	p2	positivo	edge-case-hunter		Lista as situações limite dessa função de parcelamento.
+edge-case-hunter	p3	positivo	edge-case-hunter		Usuário sem e-mail, sem CPF, com nome vazio — o que mais pode acontecer aqui?
+edge-case-hunter	p4	positivo	edge-case-hunter		Quero mapear todos os caminhos infelizes antes de escrever os testes.
+edge-case-hunter	p5	positivo	edge-case-hunter		Essa API assume que o array nunca vem vazio. O que mais ela assume?
+edge-case-hunter	n1	vizinho	tdd-workflow		Escreve os testes de unidade dessa função.
+edge-case-hunter	n2	vizinho	systematic-debugging		Por que esse teste está flaky?
+edge-case-hunter	n3	vizinho	-		Explica o que é property-based testing.
+edge-case-hunter	n4	irrelevante	-		Aumenta o timeout do teste e2e.
+edge-case-hunter	n5	irrelevante	-		Configura o coverage no CI.
+edge-case-hunter	n6	negacao	-	sim	Não precisa caçar caso de borda, é só um protótipo para a demo de amanhã.
+frontend-design	p1	positivo	frontend-design		Essa tela está feia e eu não sei dizer por quê.
+frontend-design	p2	positivo	frontend-design		Quero que a landing pareça profissional, hoje parece template genérico.
+frontend-design	p3	positivo	frontend-design		O dashboard tem informação demais e ninguém acha o que importa.
+frontend-design	p4	positivo	frontend-design		Preciso definir a cara do produto antes de sair montando componente.
+frontend-design	p5	positivo	frontend-design		A hierarquia visual dessa página está confusa para o usuário novo.
+frontend-design	n1	irrelevante	nextjs-react-expert		Por que o useEffect está rodando duas vezes?
+frontend-design	n2	vizinho	tailwind-patterns		Configura o Tailwind com o preset da empresa.
+frontend-design	n3	irrelevante	-		Escreve o texto do e-mail de boas-vindas.
+frontend-design	n4	irrelevante	-		Otimiza as imagens do diretório public.
+frontend-design	n5	irrelevante	nextjs-react-expert		Corrige o erro de hidratação no Next.
+frontend-design	n6	negacao	-	sim	Não quero opinião de design; só troca a cor do botão para o azul da marca.
+frontend-design	n7	vizinho	ui-audit		Audita essa tela contra as regras de acessibilidade e contraste.
+grilling	p1	positivo	grilling		Terminei o plano da migração de banco. Quero que você me interrogue antes de eu aprovar.
+grilling	p2	positivo	grilling		Esse plano parece bom demais. Ataca ele com perguntas difíceis.
+grilling	p3	positivo	grilling		Antes de eu mandar isso para o time, encontra os buracos no meu raciocínio.
+grilling	p4	positivo	grilling		Me faz as perguntas que o meu tech lead faria nesse desenho.
+grilling	p5	positivo	grilling		Quero fechar todas as decisões em aberto desse plano antes de começar.
+grilling	n1	vizinho	arch-builder		Escreve o plano de migração do banco para mim.
+grilling	n2	irrelevante	-		Roda o lint e arruma o que der.
+grilling	n3	irrelevante	-		Explica como funciona o índice B-tree do Postgres.
+grilling	n4	irrelevante	tdd-workflow		Gera os testes e2e do fluxo de login.
+grilling	n5	irrelevante	-		Resume essa thread de e-mail em três linhas.
+grilling	n6	negacao	-	sim	Não me interroga, o plano já foi aprovado; só executa o primeiro passo.
+grilling	n7	vizinho	adversarial-review		Destrói esse spec procurando o que falta.
+osforge-canvas	p1	positivo	osforge-canvas		Quero revisar o plano de implementação antes de codar. Tem como ver tudo organizado?
+osforge-canvas	p2	positivo	osforge-canvas		Me mostra a proposta de um jeito que eu consiga aprovar ponto a ponto.
+osforge-canvas	p3	positivo	osforge-canvas		Prefiro olhar isso numa tela e ir marcando o que aprovo e o que não.
+osforge-canvas	p4	positivo	osforge-canvas		Monta uma visão do escopo para eu comentar em cima, item por item.
+osforge-canvas	p5	positivo	osforge-canvas		Quero dar feedback estruturado nesse desenho, não responder num parágrafo.
+osforge-canvas	n1	negacao	-	sim	Me manda o plano em markdown mesmo, num arquivo.
+osforge-canvas	n2	irrelevante	-		Sobe o servidor local do projeto na porta 3000.
+osforge-canvas	n3	vizinho	system-diagrams		Faz um diagrama de arquitetura dos serviços.
+osforge-canvas	n4	irrelevante	-		Quais componentes do shadcn eu já uso no projeto?
+osforge-canvas	n5	irrelevante	-		Corrige o CSS do header que quebrou no mobile.
+osforge-canvas	n6	vizinho	visual-planner		Transforma esse plano num HTML visual para eu mostrar ao time.
+prd-builder	p1	positivo	prd-builder		Preciso documentar a feature de onboarding para o time inteiro entender o escopo.
+prd-builder	p2	positivo	prd-builder		O que exatamente entra e o que fica de fora do módulo de relatórios? Quero isso escrito.
+prd-builder	p3	positivo	prd-builder		Quero um documento de produto dessa iniciativa para apresentar aos stakeholders.
+prd-builder	p4	positivo	prd-builder		Já decidimos a ideia; agora quero requisitos e critérios de aceite formalizados.
+prd-builder	p5	positivo	prd-builder		Preciso alinhar produto e engenharia sobre o que é a versão 1 disso.
+prd-builder	n1	vizinho	brainstorming		Ainda estou pensando na ideia, nem sei se faz sentido.
+prd-builder	n2	vizinho	story-executor		Implementa o onboarding conforme o documento aprovado.
+prd-builder	n3	vizinho	epic-decomposer		Quebra o épico em tarefas com dependências.
+prd-builder	n4	irrelevante	system-diagrams		Faz um diagrama de sequência do login.
+prd-builder	n5	irrelevante	-		Qual o preço do plano enterprise do Linear?
+prd-builder	n6	negacao	-	sim	Não precisa de documento formal; é uma mudança de uma linha no texto do rodapé.
+requirements-clarify	p1	positivo	requirements-clarify	sim	Melhora a performance do sistema.
+requirements-clarify	p2	positivo	requirements-clarify		Deixa o app mais rápido e mais bonito.
+requirements-clarify	p3	positivo	requirements-clarify		Arruma o problema do relatório.
+requirements-clarify	p4	positivo	requirements-clarify		Quero integrar com o ERP deles.
+requirements-clarify	p5	positivo	requirements-clarify	sim	Faz o sistema ficar seguro.
+requirements-clarify	n1	vizinho	-		Troca o texto do botão de 'Enviar' para 'Confirmar'.
+requirements-clarify	n2	vizinho	-		Roda a migration pendente no banco de staging.
+requirements-clarify	n3	irrelevante	-		Qual versão do Node o projeto usa?
+requirements-clarify	n4	vizinho	-		Adiciona o campo created_at na tabela orders, tipo timestamptz, default now().
+requirements-clarify	n5	vizinho	-		Faz commit do que está staged com a mensagem 'fix: corrige máscara de CPF'.
+requirements-clarify	n6	negacao	-	sim	Não me pergunta nada: troca o timeout do fetch de 5 para 10 segundos.
+system-diagrams	p1	positivo	system-diagrams		Quero enxergar como os serviços conversam entre si nesse projeto.
+system-diagrams	p2	positivo	system-diagrams		Faz um desenho do fluxo de autenticação para eu explicar ao time.
+system-diagrams	p3	positivo	system-diagrams		Preciso de um diagrama da arquitetura para colocar na documentação.
+system-diagrams	p4	positivo	system-diagrams		Mostra visualmente o caminho de um pedido desde o checkout até a entrega.
+system-diagrams	p5	positivo	system-diagrams		Consigo ver o relacionamento entre as tabelas principais num diagrama?
+system-diagrams	n1	negacao	-	sim	Explica em texto como funciona o fluxo de autenticação.
+system-diagrams	n2	irrelevante	-		Cria as tabelas do banco conforme o modelo.
+system-diagrams	n3	vizinho	-		Instala o mermaid no projeto.
+system-diagrams	n4	vizinho	-		Exporta esse gráfico de vendas em PNG.
+system-diagrams	n5	irrelevante	-		Qual biblioteca de gráficos combina com shadcn?
+systematic-debugging	p1	positivo	systematic-debugging		Minha API devolve 500 em produção mas funciona local. Como investigo isso sem chutar?
+systematic-debugging	p2	positivo	systematic-debugging		O teste passa sozinho e falha quando roda a suíte inteira. Não faço ideia do porquê.
+systematic-debugging	p3	positivo	systematic-debugging	sim	O upload falha de vez em quando, uma vez a cada vinte. Já mexi em três lugares e piorou.
+systematic-debugging	p4	positivo	systematic-debugging		Tem um vazamento de memória no worker e eu não consigo reproduzir na minha máquina.
+systematic-debugging	p5	positivo	systematic-debugging		Depois do deploy de ontem os webhooks pararam. Preciso achar a causa, não remendar.
+systematic-debugging	n1	irrelevante	tdd-workflow		Escreve um teste unitário para essa função de formatação de data.
+systematic-debugging	n2	vizinho	-		Como configuro o debugger do VS Code para Next.js?
+systematic-debugging	n3	irrelevante	clean-code		Refatora esse componente em dois menores.
+systematic-debugging	n4	vizinho	-		Qual a diferença entre erro 502 e 504?
+systematic-debugging	n5	irrelevante	-		Adiciona um log de auditoria quando o usuário troca a senha.
+systematic-debugging	n6	negacao	-	sim	Não precisa investigar a causa, só reverte o último commit que eu resolvo depois.
+tdd-workflow	p1	positivo	tdd-workflow		Preciso implementar o cálculo de frete por faixa de CEP. Por onde começo?
+tdd-workflow	p2	positivo	tdd-workflow		Vou adicionar validação de CPF no cadastro. Quero fazer direito, sem sair codando.
+tdd-workflow	p3	positivo	tdd-workflow		Esse bug do desconto cumulativo já voltou duas vezes. Como garanto que não volta de novo?
+tdd-workflow	p4	positivo	tdd-workflow		Quero escrever a função de parcelamento hoje e não quebrar o checkout.
+tdd-workflow	p5	positivo	tdd-workflow		Vamos fazer o endpoint de refund. Prefiro ir devagar e com segurança.
+tdd-workflow	n1	irrelevante	-		O que é o padrão Repository e quando vale a pena usar?
+tdd-workflow	n2	vizinho	-		Roda a suíte de testes e me diz quais estão vermelhos agora.
+tdd-workflow	n3	irrelevante	-		Traduz esse README para inglês, por favor.
+tdd-workflow	n4	vizinho	-		Qual a diferença entre Vitest e Jest em performance?
+tdd-workflow	n5	irrelevante	-		Preciso de um resumo do que mudou no último release do Prisma.
+tdd-workflow	n6	negacao	-	sim	Sem testes agora, é um script descartável para migrar uns dados uma vez só.
+verification-before-completion	p1	positivo	verification-before-completion	sim	Acabei de corrigir o bug do formulário. Posso considerar resolvido?
+verification-before-completion	p2	positivo	verification-before-completion		Terminei a implementação. Falta alguma coisa antes de eu fechar a task?
+verification-before-completion	p3	positivo	verification-before-completion	sim	Acho que está pronto para produção. Como confirmo isso?
+verification-before-completion	p4	positivo	verification-before-completion		Já testei na minha máquina e funcionou. É suficiente?
+verification-before-completion	p5	positivo	verification-before-completion		Vou marcar como concluído. Tem algum passo que eu costumo esquecer?
+verification-before-completion	n1	irrelevante	tdd-workflow		Começa a implementar a feature de cupom.
+verification-before-completion	n2	vizinho	systematic-debugging		Por que o build está falhando?
+verification-before-completion	n3	irrelevante	-		Escreve o plano da próxima sprint.
+verification-before-completion	n4	irrelevante	-		Explica o que é integração contínua.
+verification-before-completion	n5	vizinho	finishing-a-development-branch		Abre um PR com as mudanças atuais.
+verification-before-completion	n6	negacao	-	sim	Não precisa verificar nada, isso é só um rascunho que eu vou jogar fora.

@@ -21,19 +21,22 @@ conjunto, e não da ordem em que cada projeto foi lido.
 
 | Prefixo | Significado |
 |---|---|
-| `L-01`… | candidato do Laya (a próxima fonte usa outra letra) |
-| `EV-L…` | evidência no código da fonte, com permalink no SHA fixado |
-| `EV-O…` | evidência no OSForge (caminho:linha em `v5.1.0`, `3f0446c`) |
+| `L-01`…, `N-01`… | candidato de uma fonte (L = Laya, N = Needle) |
+| `EV-L…`, `EV-N…` | evidência no código da fonte, com permalink no SHA fixado |
+| `EV-O…`, `EV-O-N…` | evidência no OSForge (caminho:linha em `v5.1.0`, `3f0446c`), por fonte |
 | `EV-C…` | comportamento do Claude Code observado (versão registrada) |
-| `EV-M…` | medição feita na máquina de trabalho (agregada, sem conteúdo) |
+| `EV-M…`, `EV-N-M…` | medição feita na máquina de trabalho (agregada, sem conteúdo), por fonte |
 | `D-…` | decisão em aberto que a implementação precisa tomar |
 
 ## Estado
 
 | Fonte | Analisada em | SHA | Candidatos | Estado |
 |---|---|---|---|---|
-| [Laya](laya/ANALISE.md) (`aayushch/laya`, Apache-2.0) | 2026-09-22 → 24 | `5970a11` | L-01 guarda de cota · L-02 juiz isolado · L-03 auditoria por chamada · L-04 decisão do R-09 | aguardando fechamento do pacote |
+| [Laya](laya/ANALISE.md) (`aayushch/laya`, Apache-2.0) | 2026-09-22 → 24 | `5970a11` | L-01 guarda de cota · L-02 juiz isolado · L-03 auditoria por chamada · L-04 decisão do R-09 | no [Pacote 01](PACOTE-01-qualidade-e-controle.md) |
+| [Needle](needle/ANALISE.md) (`cactus-compute/needle`, Apache-2.0) | 2026-09-24 → 25 | `42bf1f2` | N-01 casos de eval com categoria e críticos · o modelo foi **recusado com medição** | no [Pacote 01](PACOTE-01-qualidade-e-controle.md) |
 
-Quando o pacote fechar: cada `L-xx` vira um `B-0xx` no backlog com a mesma spec como corpo,
+**Pacotes:** [Pacote 01 — Qualidade e controle](PACOTE-01-qualidade-e-controle.md) (B-025 a B-030), proposta aguardando aprovação.
+
+Quando um pacote é aprovado: cada candidato vira um `B-0xx` no backlog com a mesma spec como corpo,
 a análise passa a ser citada pela ADR que aprovar o pacote, e esta tabela marca a fonte como
 **incorporada**.
