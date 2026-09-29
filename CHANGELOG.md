@@ -41,8 +41,13 @@ Pacote 01 — quality and control before the first paid eval run (ADR-016, B-025
   synthetic `StructuredOutput` tool, now the one tool the isolation check tolerates.
 - **ADR-016** — the package's decision record.
 
+### Fixed
+- **Suite verdict ignored `ERROR`**: a run where every case errored (not logged in, API
+  down) reported the suite as PASS. `suite_verdict` now returns INCOMPLETE (exit 2) when any
+  case is ERROR and nothing measured failed. Found by the E1 pilot. `test-eval-cases` 39 → 42.
+
 ### Changed
-- Offline suites: 441 → 631 checks; CI runs the five new suites.
+- Offline suites: 441 → 634 checks; CI runs the five new suites.
 
 ## [5.1.0] — 2026-09-18
 

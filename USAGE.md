@@ -1070,7 +1070,8 @@ printf '%s' "$input" | python3 "$HOME/.claude/hooks/quota-record.py" >/dev/null 
 ```
 
 Sem essa linha (ou com auth por API key, onde `rate_limits` vem nulo) o aviso fica em
-silêncio. Rejeições registradas no transcript também alimentam o arquivo. Detalhes:
+silêncio — e também na extensão do VS Code, que não executa o statusline (visto em
+2026-09-29); lá sobra só a fonte do transcript, que registra a rejeição quando ela acontece. Rejeições registradas no transcript também alimentam o arquivo. Detalhes:
 `docs/HOOKS.md`. Suíte: `./tests/test-quota.sh`.
 
 **Auditoria por chamada.** Tabela `calls` no `osforge-db`, uma linha por chamada de modelo

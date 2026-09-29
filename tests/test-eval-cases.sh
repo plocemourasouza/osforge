@@ -295,6 +295,17 @@ printf '%s\n' '{"id":"c1","verdict":"PASS","critical":true}' '{"id":"c2","verdic
 suite_verdict "$WORK/all-pass.jsonl" 0 > /dev/null
 check "tudo PASS aprova"                        "0" "$?"
 
+# ERROR = não medido (is_error sem ser cota: login ausente, API caída). Visto no piloto
+# E1 de 2026-09-29: 2/2 casos ERROR e a suíte saiu PASS. Nada medido não é aprovado.
+printf '%s\n' '{"id":"c1","verdict":"ERROR","critical":false}' '{"id":"c2","verdict":"PASS","critical":false}' > "$WORK/err.jsonl"
+suite_verdict "$WORK/err.jsonl" 0 > "$WORK/err-out.log"
+check "caso ERROR deixa a suíte 'incompleta' (exit 2)" "2" "$?"
+check "e diz INCOMPLETE"                               "PASS" "$(grep -q '^INCOMPLETE$' "$WORK/err-out.log" && echo PASS || echo FAIL)"
+
+printf '%s\n' '{"id":"c1","verdict":"ERROR","critical":false}' '{"id":"c2","verdict":"FAIL","critical":false}' > "$WORK/err-fail.jsonl"
+suite_verdict "$WORK/err-fail.jsonl" 0 > /dev/null
+check "FAIL medido prevalece sobre ERROR (exit 1)" "1" "$?"
+
 # ── 9. eval_report.py: categoria + críticos no topo ─────────────────────────
 echo ""
 echo "9. eval_report.py — linha por categoria e críticos reprovados no topo:"

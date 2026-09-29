@@ -291,8 +291,10 @@ print(json.dumps([{"query": c["query"], "should_trigger": c["should_trigger"]}
                   for c in d["cases"] if c["id"] in sel], ensure_ascii=False))
 PY
     res="$OUT_BASE/${skill//\//-}.result.json"
+    # PYTHONPATH: run_eval.py imports `scripts.utils`; `python3 <file>` puts the script's
+    # own dir on sys.path, not the cwd (first real E1 run, 2026-09-29: 15/15 rc=1).
     ( cd "$REPO_ROOT/skills/skill-creator" && \
-      ${HOME_OVERRIDE:+env HOME="$HOME_OVERRIDE"} python3 "$RUN_EVAL" \
+      env ${HOME_OVERRIDE:+HOME="$HOME_OVERRIDE"} PYTHONPATH="$REPO_ROOT/skills/skill-creator" python3 "$RUN_EVAL" \
         --eval-set "$set_file" \
         --skill-path "$REPO_ROOT/skills/$rel" \
         --model "$MODEL" \

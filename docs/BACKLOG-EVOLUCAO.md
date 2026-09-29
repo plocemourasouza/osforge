@@ -33,8 +33,8 @@ Tudo que foi fechado tem teste que falha sem a correção. As dez suítes offlin
 **441 verificações** (assertions 60 · contratos de hook 59 · gateguard-grant 84 · deploy
 lifecycle 64 · continuidade 35 · canvas 34 · scan-secrets 33 · contexto/tokens 27 ·
 gateguard-sql 23 · installers 22) e nenhuma toca o `~/.claude` de ninguém. O Pacote 01
-(B-025–B-029) somou mais cinco — judge 77 · eval-cases 39 · quota 30 · calls 26 · harness-quota
-15 — e os contratos de hook foram a 62: **631 verificações** em quinze suítes.
+(B-025–B-029) somou mais cinco — judge 77 · eval-cases 42 · quota 30 · calls 26 · harness-quota
+15 — e os contratos de hook foram a 62: **634 verificações** em quinze suítes.
 
 Fora do backlog, uma coisa que a auditoria não tinha visto: `scripts/install-skill.sh` —
 deployado em `~/.local/bin` e metade do Model A — usava `mapfile`, que **não existe no
@@ -148,8 +148,9 @@ e `scripts/check-portability.py` no preflight e no CI para impedir a classe inte
 
 ```bash
 # piloto: 2 casos × 3 execuções = 6 chamadas
+# (sem --home: um HOME vazio não tem login -- "Not logged in", 6/6 ERROR, 2026-09-29)
 ./scripts/test-orchestrator-routing.sh --model <id> --id r01,r12 --runs 3 \
-    --home /tmp/osforge-home-limpo --report docs/evals/$(date +%F)-<id>-routing-piloto.md
+    --report docs/evals/$(date +%F)-<id>-routing-piloto.md
 
 # E1 roteamento: 16 × 3 = 48 chamadas
 ./scripts/test-orchestrator-routing.sh --model <id> --runs 3 --report docs/evals/$(date +%F)-<id>-routing.md

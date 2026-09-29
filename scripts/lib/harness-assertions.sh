@@ -203,9 +203,11 @@ print(json.dumps({"id": sys.argv[1], "k": 0, "n": int(sys.argv[2]), "verdict": "
 # rodar (cota esgotada — NOT RUN, L-01), a suíte não é aprovada nem
 # reprovada: fica INCOMPLETE. Um caso não-crítico continua com a regra de
 # sempre (FAIL/TIMEOUT reprovam; FLAKY reprova só sem --allow-flaky).
+# Um caso ERROR (is_error que não é cota: sem login, API fora) não foi medido:
+# se nada medido reprovou, a suíte fica INCOMPLETE — nunca PASS.
 #
 # suite_verdict <casos.jsonl> <allow_flaky:0|1>
-#   casos.jsonl: uma linha por caso, {"verdict": "PASS|FLAKY|FAIL|TIMEOUT|NOT RUN", "critical": bool}
+#   casos.jsonl: uma linha por caso, {"verdict": "PASS|FLAKY|FAIL|TIMEOUT|ERROR|NOT RUN", "critical": bool}
 #   stdout: PASS | FAIL | INCOMPLETE
 #   exit:   0 (PASS) | 1 (FAIL) | 2 (INCOMPLETE)
 suite_verdict() {
@@ -231,6 +233,8 @@ if noncrit_bad:
     print("FAIL"); sys.exit(1)
 if noncrit_flaky and not allow_flaky:
     print("FAIL"); sys.exit(1)
+if any(c.get("verdict") == "ERROR" for c in cases):
+    print("INCOMPLETE"); sys.exit(2)
 print("PASS"); sys.exit(0)
 PY
 }
