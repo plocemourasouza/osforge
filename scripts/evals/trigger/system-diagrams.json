@@ -1,5 +1,5 @@
 {
-  "$schema": "osforge/trigger-eval/v1",
+  "$schema": "osforge/trigger-eval/v2",
   "skill": "system-diagrams",
   "rel": "system-diagrams",
   "core": true,
@@ -25,51 +25,67 @@
     {
       "id": "p1",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "system-diagrams",
       "query": "Quero enxergar como os serviços conversam entre si nesse projeto."
     },
     {
       "id": "p2",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "system-diagrams",
       "query": "Faz um desenho do fluxo de autenticação para eu explicar ao time."
     },
     {
       "id": "p3",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "system-diagrams",
       "query": "Preciso de um diagrama da arquitetura para colocar na documentação."
     },
     {
       "id": "p4",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "system-diagrams",
       "query": "Mostra visualmente o caminho de um pedido desde o checkout até a entrega."
     },
     {
       "id": "p5",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "system-diagrams",
       "query": "Consigo ver o relacionamento entre as tabelas principais num diagrama?"
     },
     {
       "id": "n1",
       "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
       "query": "Explica em texto como funciona o fluxo de autenticação."
     },
     {
       "id": "n2",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "Cria as tabelas do banco conforme o modelo."
     },
     {
       "id": "n3",
       "should_trigger": false,
+      "category": "vizinho",
       "query": "Instala o mermaid no projeto."
     },
     {
       "id": "n4",
       "should_trigger": false,
+      "category": "vizinho",
       "query": "Exporta esse gráfico de vendas em PNG."
     },
     {
       "id": "n5",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "Qual biblioteca de gráficos combina com shadcn?"
     }
   ]

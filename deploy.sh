@@ -526,6 +526,7 @@ deploy_claude() {
   copy_file "$REPO/claude-code/CLAUDE.md" "$CLAUDE/CLAUDE.md" true
   copy_skills_md "$CLAUDE/SKILLS.md"
   copy_file "$REPO/claude-code/CONTEXT.md" "$CLAUDE/CONTEXT.md"
+  copy_file "$REPO/claude-code/pricing.json" "$CLAUDE/pricing.json"
 
   log "Authoring templates/standards → docs/:"
   if [ "$LEGACY_DEPLOY" = "1" ]; then $DRY_RUN || mkdir -p "$CLAUDE/docs"; fi

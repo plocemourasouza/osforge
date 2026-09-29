@@ -55,6 +55,11 @@ jobs:
           ./tests/test-canvas-feedback.sh
           ./tests/test-context-usage.sh
           ./tests/test-installers.sh
+          ./tests/test-eval-cases.sh
+          ./tests/test-harness-quota.sh
+          ./tests/test-quota.sh
+          ./tests/test-calls.sh
+          ./tests/test-judge.sh
       - name: Dry-run deploy on an empty HOME creates nothing
         run: |
           set -e

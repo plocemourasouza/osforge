@@ -90,6 +90,14 @@ Regras:
 
 ## Experimento E-J0 (pede autorização: 1 a 3 chamadas curtas)
 
+**Resultado (2026-09-29, `claude-sonnet-5`): 4/4.** (1) completa sem `ANTHROPIC_API_KEY`; (2)
+`system/init` com `mcp_servers: []` e `tools: ["StructuredOutput"]` — a ferramenta sintética que
+`--json-schema` cria para carregar o veredito; a checagem de isolamento passou a tolerar só ela
+(`SCHEMA_TOOLS`, dois casos novos em `tests/test-judge.sh`); (3) a sonda de contaminação não
+conhece a linha de rota do `CLAUDE.md` do usuário — lida por humano; (4) `structured_output`
+válido e `rate_limit_event` presente (`allowed`, `resets_at` real), o que confirma a fonte do L-01.
+Fallback `--settings <vazio>` não foi necessário.
+
 Com o modelo mais barato disponível; schema `{"answer": "yes"|"no"}` para os itens 1, 2 e 4 e
 `{"answer": string}` para a sonda do item 3:
 

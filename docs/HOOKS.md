@@ -26,7 +26,7 @@ Rules that every hook follows, and that `tests/hooks/run-contracts.sh` enforces:
    is the reference).
 5. **Every block message names the hook and its kill-switch** (`OSFORGE_GATEGUARD=off`,
    `OSFORGE_SCAN_SECRETS=off`, `OSFORGE_ROUTEGUARD=off`, `OSFORGE_OBSERVE_CAPTURE=0`,
-   `OSFORGE_CANVAS_FEEDBACK=off`, `OSFORGE_CONTEXT_THRESHOLD=off`), so
+   `OSFORGE_CANVAS_FEEDBACK=off`, `OSFORGE_CONTEXT_THRESHOLD=off`, `OSFORGE_QUOTA_THRESHOLD=off`), so
    neither the agent nor the user gets stuck behind a false positive.
 6. **Fail open, except for the irreversible.** GateGuard denies a destructive Bash command
    when it cannot persist state; everything else allows and warns on stderr.
@@ -36,6 +36,35 @@ Rules that every hook follows, and that `tests/hooks/run-contracts.sh` enforces:
    persists (command context, user message, resume) or re-injects goes through
    `hooks/lib/scrub.py`, and what comes back from the database is wrapped as *data*, capped,
    and scoped to the current project. `tests/test-session-continuity.sh` enforces this.
+
+## Quota-window guard (B-027, SPEC-L01 Parte A) — not a lifecycle hook
+
+`hooks/quota-record.py` looks like a hook (same directory, same coding rules) but is **not**
+wired in `hooks/hooks-claude-code.json` or `hooks/hooks.json`, and `scripts/check-counts.py`'s
+hook count does not see it (it only reads the hooks JSON) — the count stays 11. Reason: the
+data it needs — the 5-hour/7-day usage percentages — only exists in the statusline's stdin
+(EV-C01), and the statusline script is the user's own (`~/.claude/statusline-command.sh`),
+outside this repo. OSForge does not manage it.
+
+To feed the guard, add this line to your own statusline script (D-1 in SPEC-L01;
+`>/dev/null 2>&1 &` so it never blocks or pollutes the status line, and the recorder itself is
+silent and exits 0 on any error):
+
+```bash
+printf '%s' "$input" | python3 "$HOME/.claude/hooks/quota-record.py" >/dev/null 2>&1 &
+```
+
+It writes `~/.osforge/quota.json` (override: `OSFORGE_QUOTA_FILE`) — schema `osforge.quota.v1`,
+see `hooks/lib/quota.py`'s module docstring. `hooks/session-save.py` feeds the same file
+independently, on `Stop`: if the transcript's tail holds a rate-limit rejection line (EV-C04),
+it records `rejected` there too, without needing the statusline.
+
+The warning itself (A3) runs **inside** `context-threshold.py`'s `UserPromptSubmit` (D-2, so the
+hook count doesn't move and there's one fewer process per prompt) but is a fully independent
+check: own kill-switch `OSFORGE_QUOTA_THRESHOLD=off`, own bands (`OSFORGE_QUOTA_BANDS=80,95`),
+own "already warned" state, keyed by the window's `resets_at` (not by session — the window
+crosses sessions). It can appear in the same `additionalContext` as the context-budget warning,
+one per line, or alone, or not at all.
 
 ## Adding or changing a hook
 

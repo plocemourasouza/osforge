@@ -72,9 +72,9 @@ Comandos:
     OPENAI_API_KEY      Chave para openai
 """
 
-import sqlite3, sys, os, json, textwrap, math, hashlib, struct
+import sqlite3, sys, os, json, textwrap, math, hashlib, struct, re
 from array import array
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib import request as _urllib_request
 from urllib import error as _urllib_error
@@ -873,6 +873,24 @@ CREATE TABLE IF NOT EXISTS usage (
     UNIQUE(project_id, session_id, model)
 );
 
+CREATE TABLE IF NOT EXISTS calls (
+    message_id    TEXT PRIMARY KEY,            -- assistant message id (dedupes)
+    project_id    INTEGER REFERENCES projects(id),
+    session_id    TEXT    NOT NULL,
+    ts            TEXT    NOT NULL,            -- transcript line timestamp, UTC ISO-8601
+    model         TEXT    NOT NULL,
+    input         INTEGER NOT NULL DEFAULT 0,
+    output        INTEGER NOT NULL DEFAULT 0,
+    cache_read    INTEGER NOT NULL DEFAULT 0,
+    cache_write_5m INTEGER NOT NULL DEFAULT 0, -- usage.cache_creation.ephemeral_5m_input_tokens
+    cache_write_1h INTEGER NOT NULL DEFAULT 0, -- usage.cache_creation.ephemeral_1h_input_tokens
+    sidechain     INTEGER NOT NULL DEFAULT 0,  -- isSidechain (subagent)
+    stop_reason   TEXT,
+    error         TEXT                         -- error TYPE only ("rate_limit", ...), already scrubbed
+);
+CREATE INDEX IF NOT EXISTS calls_ts ON calls(ts);
+CREATE INDEX IF NOT EXISTS calls_project_ts ON calls(project_id, ts);
+
 CREATE TABLE IF NOT EXISTS vec_memory (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     source_table TEXT    NOT NULL,
@@ -996,6 +1014,10 @@ def _normalize_remote(url):
 def _remote_hash(url):
     n = _normalize_remote(url)
     return hashlib.sha256(n.encode("utf-8")).hexdigest()[:16] if n else ""
+
+def _slugify(name):
+    """Mesmo algoritmo de hooks/lib/project_id.py:slugify (mantido em sincronia; testado)."""
+    return re.sub(r"[^a-z0-9-]+", "-", (name or "").lower().replace("_", "-")).strip("-")
 
 def _resolve_root(root_arg):
     """--root=. → raiz git do cwd (repo principal no caso de worktree); caminho → realpath."""
@@ -1427,6 +1449,296 @@ def cmd_usage(conn, slug):
     _out(f"  total: {tot['total']:,} tokens em {tot['sessions']} sessão(ões) "
          f"(in {tot['input']:,} · out {tot['output']:,} · cache_read {tot['cache_read']:,} · cache_create {tot['cache_create']:,})")
 
+
+# ── B-028: auditoria por chamada (calls) ──────────────────────────────────────
+# Diferente de `usage` (upsert por sessão inteira): aqui é append-only, uma linha por
+# message.id, nunca duplica (ON CONFLICT DO NOTHING). Custo nunca é armazenado — é
+# recalculado na consulta a partir de claude-code/pricing.json (corrigir o arquivo
+# corrige o histórico todo).
+
+def _pricing_path():
+    """Ordem: OSFORGE_PRICING → caminho de dev (sibling deste script) → deploy
+    (~/.claude/pricing.json) → âncora ~/.osforge/repo-path. None se nada resolver
+    (degrada para todo modelo sem preço, nunca falha)."""
+    override = os.environ.get("OSFORGE_PRICING")
+    if override:
+        return override if os.path.isfile(override) else None
+    here = os.path.dirname(os.path.abspath(__file__))
+    dev_path = os.path.normpath(os.path.join(here, "..", "claude-code", "pricing.json"))
+    if os.path.isfile(dev_path):
+        return dev_path
+    deployed = os.path.expanduser("~/.claude/pricing.json")
+    if os.path.isfile(deployed):
+        return deployed
+    anchor = os.path.expanduser("~/.osforge/repo-path")
+    try:
+        with open(anchor, encoding="utf-8") as f:
+            cand = os.path.join(f.read().strip(), "claude-code", "pricing.json")
+        if os.path.isfile(cand):
+            return cand
+    except OSError:
+        pass
+    return None
+
+def _load_pricing():
+    path = _pricing_path()
+    if not path:
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        models = data.get("models")
+        return models if isinstance(models, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+def _price_for_model(models, model):
+    """Longest-prefix match; None quando nenhum prefixo casa (modelo sem preço)."""
+    best = None
+    for prefix, price in models.items():
+        if model.startswith(prefix) and (best is None or len(prefix) > len(best[0])):
+            best = (prefix, price)
+    return best[1] if best else None
+
+def _cost_usd(price, row):
+    if not price:
+        return 0.0
+    total = 0.0
+    for field in ("input", "output", "cache_read", "cache_write_5m", "cache_write_1h"):
+        total += (row[field] or 0) * float(price.get(field, 0) or 0) / 1_000_000
+    return total
+
+def _row_from_entry(e, msg, u, session_id):
+    """Constrói uma linha de `calls` a partir de uma entrada de transcript já sabida ter
+    message.usage (mesmo formato que hooks/session-save.py:_build_call_row — duplicado por
+    design, ver _normalize_remote acima). None quando falta timestamp ou message.id (ambos
+    NOT NULL no schema)."""
+    ts = e.get("timestamp")
+    if not isinstance(ts, str) or not ts:
+        return None
+    mid = msg.get("id") or e.get("uuid")
+    if not mid:
+        return None
+    cache_creation = u.get("cache_creation")
+    if isinstance(cache_creation, dict):
+        cw5 = cache_creation.get("ephemeral_5m_input_tokens") or 0
+        cw1h = cache_creation.get("ephemeral_1h_input_tokens") or 0
+    else:
+        cw5 = u.get("cache_creation_input_tokens") or 0
+        cw1h = 0
+    error = None
+    if e.get("isApiErrorMessage"):
+        error = e.get("error") or "unknown"
+    return {
+        "message_id": str(mid), "session_id": session_id or "", "ts": ts,
+        "model": str(msg.get("model") or "unknown"),
+        "input": int(u.get("input_tokens") or 0), "output": int(u.get("output_tokens") or 0),
+        "cache_read": int(u.get("cache_read_input_tokens") or 0),
+        "cache_write_5m": int(cw5), "cache_write_1h": int(cw1h),
+        "sidechain": 1 if e.get("isSidechain") else 0,
+        "stop_reason": msg.get("stop_reason"), "error": error,
+    }
+
+def _insert_calls_rows(conn, project_id, rows):
+    for r in rows:
+        conn.execute("""
+            INSERT INTO calls (message_id, project_id, session_id, ts, model, input, output,
+                                cache_read, cache_write_5m, cache_write_1h, sidechain, stop_reason, error)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+            ON CONFLICT(message_id) DO NOTHING
+        """, (str(r.get("message_id")), project_id, str(r.get("session_id") or ""), str(r.get("ts")),
+              str(r.get("model") or "unknown"), int(r.get("input") or 0), int(r.get("output") or 0),
+              int(r.get("cache_read") or 0), int(r.get("cache_write_5m") or 0), int(r.get("cache_write_1h") or 0),
+              1 if r.get("sidechain") else 0, r.get("stop_reason"), r.get("error")))
+    conn.commit()
+
+def cmd_add_calls(conn, slug):
+    """Lê JSONL do stdin (uma linha por chamada) e insere em `calls`; resolve project_id
+    UMA vez para o lote inteiro. Chamado pelo session-save.py com --stdin (B-028)."""
+    p = _get_project(conn, slug)
+    rows = []
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            r = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(r, dict) and r.get("message_id") and r.get("ts"):
+            rows.append(r)
+    _insert_calls_rows(conn, p["id"], rows)
+    _ok(f"calls '{slug}': {len(rows)} linha(s) processada(s)")
+
+def _parse_since(s):
+    """'5h'|'24h'|'7d' → cutoff relativo a agora; 'AAAA-MM-DD' → aquela data 00:00 UTC.
+    None (formato desconhecido) → sem filtro de data."""
+    if not s:
+        return None
+    m = re.match(r"^(\d+)([hd])$", s)
+    if m:
+        n, unit = int(m.group(1)), m.group(2)
+        delta = timedelta(hours=n) if unit == "h" else timedelta(days=n)
+        return (datetime.now(timezone.utc) - delta).strftime("%Y-%m-%dT%H:%M:%SZ")
+    try:
+        d = datetime.strptime(s, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        return d.strftime("%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        return None
+
+def cmd_calls(conn, proj_flt=None, since_flt=None, by_flt=None):
+    """Tokens/custo por model|session|day|sidechain (--by, padrão model), com filtro opcional
+    de projeto e janela (--since). Custo = 'custo equivalente de API', calculado agora a
+    partir de pricing.json — nunca armazenado (B-028)."""
+    where, params = [], []
+    if proj_flt:
+        p = _get_project(conn, proj_flt)
+        where.append("project_id=?"); params.append(p["id"])
+    cutoff = _parse_since(since_flt)
+    if cutoff:
+        where.append("ts>=?"); params.append(cutoff)
+    clause = ("WHERE " + " AND ".join(where)) if where else ""
+    rows = conn.execute(f"SELECT * FROM calls {clause} ORDER BY ts", params).fetchall()
+
+    models = _load_pricing()
+    key_fn = {
+        "model":     lambda r: r["model"],
+        "session":   lambda r: r["session_id"],
+        "day":       lambda r: (r["ts"] or "")[:10],
+        "sidechain": lambda r: "sidechain" if r["sidechain"] else "main",
+    }.get(by_flt or "model", lambda r: r["model"])
+
+    groups = {}
+    priceless = {}
+    for r in rows:
+        key = key_fn(r)
+        g = groups.setdefault(key, {"calls": 0, "input": 0, "output": 0, "cache_read": 0,
+                                     "cache_write_5m": 0, "cache_write_1h": 0, "cost_usd": 0.0})
+        g["calls"] += 1
+        for f in ("input", "output", "cache_read", "cache_write_5m", "cache_write_1h"):
+            g[f] += r[f]
+        price = _price_for_model(models, r["model"])
+        if price is None:
+            priceless[r["model"]] = priceless.get(r["model"], 0) + 1
+        else:
+            g["cost_usd"] += _cost_usd(price, r)
+
+    if _json_mode:
+        print(json.dumps({"groups": [{"key": k, **v} for k, v in groups.items()],
+                           "priceless": priceless}, ensure_ascii=False))
+        return
+    if not rows:
+        _out("Sem chamadas registradas"); return
+    for k, v in groups.items():
+        _out(f"  {str(k):28} calls={v['calls']:>6} in={v['input']:>9,} out={v['output']:>8,} "
+             f"cache_read={v['cache_read']:>10,} custo equivalente de API=US$ {v['cost_usd']:.4f}")
+    for model, n in priceless.items():
+        _out(f"  sem preço: {n} chamadas de {model}")
+
+def cmd_prune_calls(conn, older_than):
+    """DELETE FROM calls WHERE ts < cutoff — janela de retenção (padrão chamado pelo
+    session-save.py no máximo uma vez por dia; B-028)."""
+    m = re.match(r"^(\d+)d$", older_than or "")
+    if not m:
+        _err("Uso: prune-calls --older-than=90d")
+    days = int(m.group(1))
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    cur = conn.execute("DELETE FROM calls WHERE ts<?", (cutoff,))
+    conn.commit()
+    _ok(f"prune-calls: {cur.rowcount} linha(s) removida(s) (mais antigas que {days}d)")
+
+def _resolve_project_id_for_cwd(conn, cwd, cache):
+    """Mesma ordem de hooks/lib/project_id.py:resolve (sem o passo OSFORGE_PROJECT — o
+    backfill varre históricos de MUITOS projetos, não 'esta sessão'): root_path (exato ou
+    subdiretório) → remote_hash → slugify(basename). None quando nada casa. Reusa os
+    helpers locais _git_out/_resolve_root/_remote_hash já usados por cmd_bind_project."""
+    if not cwd:
+        return None
+    if cwd in cache:
+        return cache[cwd]
+    pid = None
+    root = None
+    if os.path.isdir(cwd):
+        top = _git_out(["rev-parse", "--show-toplevel"], cwd)
+        if top:
+            common = _git_out(["rev-parse", "--path-format=absolute", "--git-common-dir"], cwd)
+            root = (os.path.realpath(os.path.dirname(common))
+                    if common and os.path.basename(common) == ".git" else os.path.realpath(top))
+    if root:
+        for r in conn.execute("SELECT id, root_path FROM projects").fetchall():
+            rp = (r["root_path"] or "").rstrip("/")
+            if rp and (cwd == rp or cwd.startswith(rp + os.sep) or root == rp):
+                pid = r["id"]; break
+    if pid is None and root:
+        remote_url = _git_out(["config", "--get", "remote.origin.url"], root)
+        rh = _remote_hash(remote_url) if remote_url else ""
+        if rh:
+            row = conn.execute("SELECT id FROM projects WHERE remote_hash=?", (rh,)).fetchone()
+            if row:
+                pid = row["id"]
+    if pid is None:
+        base = _slugify(os.path.basename(root or cwd))
+        row = conn.execute("SELECT id FROM projects WHERE slug=?", (base,)).fetchone()
+        if row:
+            pid = row["id"]
+    cache[cwd] = pid
+    return pid
+
+def cmd_backfill_calls(conn, root_dir=None):
+    """Varre recursivamente transcripts JSONL (padrão ~/.claude/projects) e importa chamadas
+    históricas — leitura apenas na fonte, idempotente (ON CONFLICT DO NOTHING; correr duas
+    vezes não duplica). Projeto resolvido pelo `cwd` de cada transcript (B-028)."""
+    base = os.path.expanduser(root_dir) if root_dir else os.path.expanduser("~/.claude/projects")
+    if not os.path.isdir(base):
+        _err(f"Diretório não encontrado: {base}")
+    cache = {}
+    total_rows = 0
+    total_files = 0
+    for path in Path(base).rglob("*.jsonl"):
+        total_files += 1
+        rows = []
+        cwd = None
+        sid = None
+        seen = set()
+        try:
+            with open(path, encoding="utf-8", errors="replace") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or '"usage"' not in line:
+                        continue
+                    try:
+                        e = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    if not isinstance(e, dict):
+                        continue
+                    if cwd is None and e.get("cwd"):
+                        cwd = e.get("cwd")
+                    if sid is None and (e.get("sessionId") or e.get("session_id")):
+                        sid = e.get("sessionId") or e.get("session_id")
+                    msg = e.get("message")
+                    if not isinstance(msg, dict) or msg.get("role") != "assistant":
+                        continue
+                    u = msg.get("usage")
+                    if not isinstance(u, dict):
+                        continue
+                    mid = msg.get("id") or e.get("uuid")
+                    if not mid or mid in seen:
+                        continue
+                    seen.add(mid)
+                    row = _row_from_entry(e, msg, u, sid or "")
+                    if row:
+                        rows.append(row)
+        except OSError:
+            continue
+        if not rows:
+            continue
+        pid = _resolve_project_id_for_cwd(conn, cwd, cache) if cwd else None
+        _insert_calls_rows(conn, pid, rows)
+        total_rows += len(rows)
+    _ok(f"backfill-calls: {total_files} arquivo(s) escaneado(s), {total_rows} chamada(s) processada(s)")
+
+
 def cmd_add_observation(conn, project, trigger_text, context="", tool=""):
     """Grava uma observação de sessão para posterior clusterização via evolve."""
     conn.execute(
@@ -1713,6 +2025,9 @@ def main():
     top_arg      = next((a for a in args if a.startswith("--top=")), None)
     source_arg   = next((a for a in args if a.startswith("--source=")), None)
     root_arg     = next((a for a in args if a.startswith("--root=")), None)
+    since_arg    = next((a for a in args if a.startswith("--since=")), None)
+    by_arg       = next((a for a in args if a.startswith("--by=")), None)
+    older_arg    = next((a for a in args if a.startswith("--older-than=")), None)
     _flags = [x for x in args if x.startswith("--")]      # capturado agora: `args` é filtrado adiante
     def _intflag(name, default=0):
         a = next((x for x in _flags if x.startswith(f"--{name}=")), None)
@@ -1740,6 +2055,9 @@ def main():
     top_flt    = int(top_arg.split("=",1)[1])  if top_arg       else 5
     source_flt = source_arg.split("=",1)[1]   if source_arg    else "decisions"
     root_flt   = root_arg.split("=",1)[1]     if root_arg      else None
+    since_flt  = since_arg.split("=",1)[1]    if since_arg     else None
+    by_flt     = by_arg.split("=",1)[1]       if by_arg        else None
+    older_flt  = older_arg.split("=",1)[1]    if older_arg     else "90d"
     session_flt = session_arg.split("=",1)[1] if session_arg   else None
     model_flt  = model_arg.split("=",1)[1]    if model_arg     else None
     remote_flt = remote_arg.split("=",1)[1]   if remote_arg    else None
@@ -1844,6 +2162,16 @@ def main():
         if not rest:
             _err("Uso: usage <slug>")
         cmd_usage(conn, rest[0])
+    elif cmd == "add-calls":
+        if not rest:
+            _err("Uso: add-calls <slug> --stdin")
+        cmd_add_calls(conn, rest[0])
+    elif cmd == "calls":
+        cmd_calls(conn, proj_flt, since_flt, by_flt)
+    elif cmd == "prune-calls":
+        cmd_prune_calls(conn, older_flt)
+    elif cmd == "backfill-calls":
+        cmd_backfill_calls(conn, rest[0] if rest else None)
     elif cmd == "import-yaml":
         if len(rest) < 2:
             _err("Uso: import-yaml <yaml_path> <slug>")

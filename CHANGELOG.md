@@ -8,6 +8,42 @@ All notable changes to OSForge are recorded here. The format follows
 `VERSION` holds the current version; `deploy.sh` prints it. Releases are annotated git tags
 (`vX.Y.Z`) with a GitHub Release carrying the matching section of this file.
 
+## [Unreleased]
+
+Pacote 01 — quality and control before the first paid eval run (ADR-016, B-025–B-029).
+
+### Added
+- **Eval cases v2** (B-025): every trigger case carries `category` (`positivo` / `vizinho` /
+  `irrelevante` / `negacao`) and `critical`; reports aggregate by category. 20 new cases,
+  negation 2 → 15 (150 → 170; split `eval` 73). Routing cases mark the mandatory-dispatch
+  (`!`) ones as critical; `expect_route` stays informative. `--dry` now fails on an orphan
+  (missing skill) or malformed case instead of letting a paid run find it.
+  `scripts/migrate-trigger-v2.py` did the one-off migration. `tests/test-eval-cases.sh` (39).
+- **Harness respects the quota** (B-026): a quota rejection mid-run stops the harness; the
+  remaining cases are reported `NOT RUN`, exit is 75, and the report records
+  `quota_at_start`/`quota_at_end`. It also stops before the next block when the 5-hour window
+  is past `OSFORGE_EVAL_QUOTA_STOP` (default 85). `tests/test-harness-quota.sh` (15).
+- **Quota warning to the model** (B-027): `context-threshold` warns at 80% / 95% of the 5-hour
+  window, once per band per window, and once per rejection (`OSFORGE_QUOTA_BANDS`,
+  `OSFORGE_QUOTA_THRESHOLD=off`). Source is `~/.osforge/quota.json`, written by
+  `hooks/quota-record.py` from one optional line in the user's own statusline script, and by
+  `session-save` when the transcript holds a rejection. Hook count stays 11.
+  `tests/test-quota.sh` (30).
+- **Per-call audit** (B-028): `calls` table in `osforge-db` (`add-calls`, `calls`,
+  `backfill-calls`, `prune-calls --older-than=90d`), main session and subagents. API-equivalent
+  cost is derived at query time from the dated `claude-code/pricing.json` (deployed to
+  `~/.claude/pricing.json`), never stored. `tests/test-calls.sh` (26).
+- **Isolated judge** (B-029): `scripts/lib/judge.py` — a model-based judge on the subscription
+  (never `--bare`), no tools, no MCP, no user `CLAUDE.md`, empty cwd; isolation verified on
+  every call from `system/init`; structured verdict against a JSON schema; exit 75 on quota.
+  Rubrics/fixtures in `scripts/evals/judge/`. Offline contract `tests/test-judge.sh` (77);
+  E-J0 passed 4/4 on claude-sonnet-5 (2026-09-29); it showed `--json-schema` exposes a
+  synthetic `StructuredOutput` tool, now the one tool the isolation check tolerates.
+- **ADR-016** — the package's decision record.
+
+### Changed
+- Offline suites: 441 → 631 checks; CI runs the five new suites.
+
 ## [5.1.0] — 2026-09-18
 
 ### Added

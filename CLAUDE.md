@@ -28,9 +28,9 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Suítes offline (441 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
+# Suítes offline (631 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
 ./tests/test-assertions.sh              # Lógica de veredito dos harnesses de eval (60)
-./tests/hooks/run-contracts.sh          # Contratos de hook: comandos reais × fixtures, dois harnesses (59; gate do deploy)
+./tests/hooks/run-contracts.sh          # Contratos de hook: comandos reais × fixtures, dois harnesses (62; gate do deploy)
 ./tests/test-gateguard-grant.sh         # Ciclo de vida do grant do GateGuard + atenuação de negações (84)
 ./tests/test-deploy-lifecycle.sh        # Deploy com estado: nada seu se perde, idempotente, doctor/uninstall/restore (64; ~1 min; CI)
 ./tests/test-session-continuity.sh      # Uma identidade de projeto; resume com escopo, teto e limpeza (35)
@@ -39,6 +39,11 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-context-usage.sh           # Aviso de contexto pelo uso real + tokens por sessão/projeto (27)
 ./tests/test-gateguard-sql.sh           # Detector de SQL destrutivo do GateGuard (23)
 ./tests/test-installers.sh              # install-skill/install-mcp: os helpers que rodam na SUA máquina (22)
+./tests/test-judge.sh                   # Juiz isolado: argv/env/isolamento/exit codes com claude falso (77)
+./tests/test-eval-cases.sh              # Casos de eval v2: categoria, críticos, órfãos reprovam o --dry (39)
+./tests/test-quota.sh                   # quota.json: gravação, frescor, aviso 80/95% uma vez por faixa (30)
+./tests/test-calls.sh                   # Tabela calls: ingestão, custo derivado, retenção, backfill (26)
+./tests/test-harness-quota.sh           # Harness para na cota: NOT RUN, exit 75, quota_at_start/end (15)
 
 # Gates estáticos (rodam no preflight do deploy e no CI):
 python3 scripts/_generate_manifest.py --check   # MANIFEST de claude-code/SKILLS.md em dia

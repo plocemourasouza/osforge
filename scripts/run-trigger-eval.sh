@@ -24,8 +24,22 @@
 #
 # CUSTO: (casos do split) × --runs chamadas de API. Com 15 skills, split `eval`
 # (4 casos por skill) e --runs 3, são 180 chamadas. Comece por --skill uma só.
+#
+# GUARDA DE COTA (B-026, SPEC-L01 Parte B): `skills/skill-creator/scripts/
+# run_eval.py` roda TODAS as consultas de uma skill numa chamada só e nunca
+# devolve o stream/is_error/rate_limit_event bruto -- por isso a detecção
+# mid-run (B2) que os outros dois harnesses fazem por EXECUÇÃO não é possível
+# aqui. Substituto prático: preflight de cota (B3) antes de CADA bloco de
+# skill, não só uma vez no início -- se uma rejeição aconteceu durante o
+# bloco anterior, o Stop hook (Parte A, session-save.py) já deve ter
+# atualizado quota.json a tempo do preflight seguinte. `quota.json` acima de
+# OSFORGE_EVAL_QUOTA_STOP (padrão 85) ou com rejeição de reset futuro PARA
+# antes do próximo bloco: exit 75 (EX_TEMPFAIL), blocos restantes NOT RUN.
+# --ignore-quota desliga a checagem.
 # =============================================================================
 set -uo pipefail
+
+EX_TEMPFAIL=75
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -35,6 +49,7 @@ RUN_EVAL="$REPO_ROOT/skills/skill-creator/scripts/run_eval.py"
 MODEL=""; RUNS="${OSFORGE_TEST_RUNS:-3}"; SPLIT="all"; ONLY=""; DRY=0; REPORT_FILE=""
 TIMEOUT_SECS="${OSFORGE_TEST_TIMEOUT:-60}"; WORKERS="${OSFORGE_EVAL_WORKERS:-4}"
 HOME_OVERRIDE=""
+IGNORE_QUOTA=0               # --ignore-quota: desliga a guarda de cota (B-026)
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -45,7 +60,8 @@ while [ $# -gt 0 ]; do
         --home)   HOME_OVERRIDE="$2"; shift 2 ;;
         --report) REPORT_FILE="$2"; shift 2 ;;
         --dry)    DRY=1; shift ;;
-        --help|-h) sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        --ignore-quota) IGNORE_QUOTA=1; shift ;;
+        --help|-h) sed -n '2,38p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) echo "argumento desconhecido: $1 (use --help)"; exit 1 ;;
     esac
 done
@@ -58,11 +74,44 @@ case "$RUNS" in ''|*[!0-9]*|0) echo "[ERRO] --runs precisa ser inteiro ≥ 1"; e
 source "$SCRIPT_DIR/lib/harness-assertions.sh"
 
 # ── Validação dos arquivos de caso (roda sempre, inclusive em --dry) ─────────
+# Schema osforge/trigger-eval/v2 (N-01/B-025): cada caso ganha "category" —
+# positivo/vizinho/irrelevante/negacao — e, quando aplicável, "critical" e
+# "expect_route". Um FLAKY sozinho não diz ONDE a skill falha; a categoria diz
+# se foi no caso difícil (vizinho), no fácil (irrelevante) ou no que desobedece
+# o usuário (negacao) — ver docs/intake/needle/SPEC-N01-casos-de-eval.md.
 validate() {
     python3 - "$CASES_DIR" "$REPO_ROOT" <<'PY'
-import json, os, sys
+import json, os, re, sys
+
 cases_dir, repo = sys.argv[1:3]
-errs, total, skills = [], 0, 0
+VALID_CATEGORIES = {"positivo", "vizinho", "irrelevante", "negacao"}
+MIN_BY_CATEGORY = {"positivo": 5, "vizinho": 2, "negacao": 1, "irrelevante": 1}
+
+_skill_names = None
+
+
+def skill_exists(name):
+    """A skill identifier resolves if it matches a skill dir name or its
+    frontmatter `name:`, anywhere under skills/ — not just the 15 skills
+    this suite measures. `expect_route` routinely points elsewhere."""
+    global _skill_names
+    if _skill_names is None:
+        _skill_names = set()
+        root = os.path.join(repo, "skills")
+        for dirpath, _dirs, filenames in os.walk(root):
+            if "SKILL.md" not in filenames:
+                continue
+            _skill_names.add(os.path.basename(dirpath))
+            text = open(os.path.join(dirpath, "SKILL.md"), encoding="utf-8", errors="replace").read()
+            m = re.match(r"^---\s*\n(.*?)\n---", text, re.S)
+            if m:
+                n = re.search(r'^name:\s*["\']?([^"\'#\n]+)["\']?\s*$', m.group(1), re.M)
+                if n:
+                    _skill_names.add(n.group(1).strip())
+    return name in _skill_names
+
+
+errs, total, skills, critical_total = [], 0, 0, 0
 seen_q = {}
 for f in sorted(os.listdir(cases_dir)):
     if not f.endswith(".json"):
@@ -89,15 +138,49 @@ for f in sorted(os.listdir(cases_dir)):
         errs.append(f"{f}: casos fora do split: {sorted(set(ids) - cover)}")
     if set(split.get("tune", [])) & set(split.get("eval", [])):
         errs.append(f"{f}: caso em tune E eval ao mesmo tempo")
+
+    cat_count = {}
     for c in d["cases"]:
         q = c["query"].strip().lower()
         if q in seen_q and seen_q[q] != f:
             errs.append(f"{f}: consulta repetida de {seen_q[q]}: {q[:50]}")
         seen_q[q] = f
         total += 1
+
+        cat = c.get("category")
+        if cat is None:
+            errs.append(f"{f}: caso {c['id']} sem 'category'")
+        elif cat not in VALID_CATEGORIES:
+            errs.append(f"{f}: caso {c['id']} categoria desconhecida '{cat}'")
+        else:
+            cat_count[cat] = cat_count.get(cat, 0) + 1
+            expected_trigger = (cat == "positivo")
+            if c["should_trigger"] != expected_trigger:
+                errs.append(
+                    f"{f}: caso {c['id']} categoria '{cat}' incoerente com "
+                    f"should_trigger={c['should_trigger']}"
+                )
+            if cat == "negacao" and c.get("critical") is not True:
+                errs.append(f"{f}: caso {c['id']} é negacao mas não tem critical:true")
+
+        if "critical" in c:
+            if not isinstance(c["critical"], bool):
+                errs.append(f"{f}: caso {c['id']} 'critical' não é booleano")
+            elif c["critical"]:
+                critical_total += 1
+
+        route = c.get("expect_route")
+        if route and not skill_exists(route):
+            errs.append(f"{f}: caso {c['id']} expect_route '{route}' não aponta para skill existente")
+
+    for cat, minimum in MIN_BY_CATEGORY.items():
+        got = cat_count.get(cat, 0)
+        if got < minimum:
+            errs.append(f"{f}: {got} caso(s) '{cat}' (mínimo {minimum})")
+
 for e in errs:
     print(f"  ❌ {e}")
-print(f"validação: {skills} skills, {total} casos, {len(errs)} problema(s)")
+print(f"validação: {skills} skills, {total} casos, {critical_total} críticos, {len(errs)} problema(s)")
 sys.exit(1 if errs else 0)
 PY
 }
@@ -170,8 +253,31 @@ OUT_BASE="$(mktemp -d)"
 CASE_JSON="$OUT_BASE/cases.json"; : > "$CASE_JSON"
 START_EPOCH=$(date +%s)
 TOTAL_PASS=0; TOTAL_FAIL=0
+QUOTA_STOPPED=0
+QUOTA_REASON=""
+SKILL_IDX=0
+NOT_RUN_FROM=""
+
+# Guarda de cota (B-026, B3): snapshot ANTES de gastar qualquer chamada de API.
+QUOTA_AT_START="$(quota_snapshot)"
 
 while IFS=$'\t' read -r file skill rel; do
+    SKILL_IDX=$((SKILL_IDX + 1))
+    # B3: preflight de cota antes de CADA bloco de skill (ver nota no topo do
+    # arquivo sobre por que é por-bloco, e não por-consulta, aqui). Fail-open
+    # por design -- só para quando há motivo explícito.
+    if [ "$IGNORE_QUOTA" = "0" ]; then
+        preflight_reason="$(quota_preflight_reason || true)"
+        if [ -n "$preflight_reason" ]; then
+            echo ""
+            echo "[cota] $preflight_reason -- parando antes de '$skill'"
+            QUOTA_STOPPED=1
+            QUOTA_REASON="cota: $preflight_reason (antes de '$skill')"
+            NOT_RUN_FROM="$SKILL_IDX"
+            break
+        fi
+    fi
+
     echo ""
     echo "------------------------------------------------------------"
     echo "skill: $skill"
@@ -218,6 +324,8 @@ for r in d.get("results", []):
         "k": int(k), "n": int(r["runs"]),
         "verdict": "PASS" if r["pass"] and k == r["runs"] else ("PASS" if r["pass"] else ("FLAKY" if 0 < k < r["runs"] else "FAIL")),
         "detail": ("deve disparar" if r["should_trigger"] else "NÃO deve disparar") + f" · {r['query'][:60]}",
+        "category": c.get("category"),
+        "critical": bool(c.get("critical", False)),
     }, ensure_ascii=False))
 PY
     s_pass=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d['summary']['passed'])" "$res")
@@ -226,12 +334,41 @@ PY
     TOTAL_PASS=$((TOTAL_PASS + s_pass)); TOTAL_FAIL=$((TOTAL_FAIL + s_tot - s_pass))
 done < "$MANIFEST"
 
+# B3: lote parado por cota -- toda skill do ponto de parada em diante (a
+# corrente inclusive, ela nunca chamou run_eval.py) sai NOT RUN, por consulta,
+# no relatório -- não conta como hit nem como miss.
+if [ "$QUOTA_STOPPED" = "1" ] && [ -n "$NOT_RUN_FROM" ]; then
+    tail -n +"$NOT_RUN_FROM" "$MANIFEST" | while IFS=$'\t' read -r rfile rskill _rrel; do
+        [ -z "$rfile" ] && continue
+        python3 - "$rfile" "$rskill" "$SPLIT" "$RUNS" >> "$CASE_JSON" <<'PY'
+import json, sys
+src, skill, split, runs = sys.argv[1:5]
+d = json.load(open(src, encoding="utf-8"))
+sel = d["split"].get(split) if split in ("tune", "eval") else [c["id"] for c in d["cases"]]
+for c in d["cases"]:
+    if c["id"] not in sel:
+        continue
+    kind = "+" if c["should_trigger"] else "-"
+    print(json.dumps({
+        "id": f"{skill}/{c['id']}{kind}", "k": 0, "n": int(runs), "verdict": "NOT RUN",
+        "detail": "quota: lote interrompido antes de iniciar",
+        "category": c.get("category"), "critical": bool(c.get("critical", False)),
+    }, ensure_ascii=False))
+PY
+    done
+fi
+QUOTA_AT_END="$(quota_snapshot)"
+export QUOTA_AT_START QUOTA_AT_END
+
 echo ""
 echo "============================================================"
 echo "RESULTADO — TRIGGER EVAL"
 echo "============================================================"
 echo "  consultas OK : $TOTAL_PASS"
 echo "  consultas NOK: $TOTAL_FAIL"
+if [ "$QUOTA_STOPPED" = "1" ]; then
+    echo "  NOT RUN      : cota ($QUOTA_REASON)"
+fi
 echo "  artefatos    : $OUT_BASE"
 echo "============================================================"
 
@@ -240,4 +377,16 @@ if [ -n "$REPORT_FILE" ]; then
         emit_eval_report "trigger" "$REPORT_FILE" "$CASE_JSON" "$START_EPOCH" "$(printf '%s ' "$0" "$@")"
 fi
 
-[ "$TOTAL_FAIL" -eq 0 ]
+# B2/B3: lote interrompido por cota -- exit 75 (EX_TEMPFAIL), distinto do
+# veredito de suíte. Não é "reprovado", é "não terminou".
+if [ "$QUOTA_STOPPED" = "1" ]; then
+    echo "[QUOTA] $QUOTA_REASON"
+    exit "$EX_TEMPFAIL"
+fi
+
+# Veredito da suíte (N-01/B-025, B-026): um caso crítico que não seja PASS
+# reprova mesmo que TOTAL_FAIL pareça pequeno (harness-assertions.sh: suite_verdict).
+suite_result="$(suite_verdict "$CASE_JSON" "0")"
+suite_exit=$?
+echo "  Veredito da suíte: $suite_result"
+[ "$TOTAL_FAIL" -eq 0 ] && [ "$suite_exit" -eq 0 ]

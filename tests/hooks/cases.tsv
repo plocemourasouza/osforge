@@ -1,5 +1,5 @@
 # cases.tsv — contratos de hook (B-006). Colunas separadas por TAB:
-#   id	harness	event	hook	fixture	expect
+#   id	harness	event	hook	fixture	expect	[env]
 # harness: claude-code | cursor.  event: como no JSON de hooks (Claude Code: PreToolUse…; Cursor: beforeShellExecution…).
 # hook: substring do comando no JSON de hooks (basename do script). "*" = todos os hooks daquele evento.
 # fixture: caminho relativo a tests/hooks/fixtures/. Tokens __HOME__ e __FIXTURES__ são substituídos.
@@ -10,6 +10,9 @@
 #   silent      → stdout vazio
 #   any         → só as invariantes (exit 0; stdout vazio ou JSON válido; nada escrito fora do sandbox)
 # expect (Cursor): deny | allow (campo permission) | silent | any
+# env (OPCIONAL, 7ª coluna): "KEY=VALUE;KEY2=VALUE2", aplicado só ao(s) comando(s) desse caso.
+#   "GEN:<nome>" gera o arquivo em tempo de execução (ver GENERATORS em run-contracts.sh) —
+#   necessário para osforge.quota.v1, cujo `at`/`resets_at` precisam ser recentes na hora do teste.
 #
 # Sempre, para todo caso: exit 0; stdout vazio ou JSON válido; nenhum arquivo novo em /tmp fora do sandbox.
 #
@@ -45,6 +48,11 @@ CC-48	claude-code	Stop	session-save	claude-code/stop-with-route.json	silent
 CC-14	claude-code	UserPromptSubmit	context-threshold	claude-code/userprompt-plain.json	silent
 CC-49	claude-code	Stop	canvas-feedback	claude-code/stop-with-route.json	silent
 CC-50	claude-code	Stop	canvas-feedback	claude-code/stop-active.json	silent
+# ── context-threshold + quota.json (B-027, SPEC-L01 Parte A3). CC-14 above is already the
+# "sem quota.json" case (default sandbox state, no OSFORGE_QUOTA_FILE override) → silent.
+CC-15	claude-code	UserPromptSubmit	context-threshold	claude-code/userprompt-plain.json	context	OSFORGE_QUOTA_FILE=GEN:quota-fresh-83
+CC-16	claude-code	UserPromptSubmit	context-threshold	claude-code/userprompt-plain.json	silent	OSFORGE_QUOTA_FILE=GEN:quota-stale-83
+CC-17	claude-code	UserPromptSubmit	context-threshold	claude-code/userprompt-plain.json	silent	OSFORGE_QUOTA_FILE=GEN:quota-fresh-83;OSFORGE_QUOTA_THRESHOLD=off
 # ── Payloads malformados: todos os hooks de todos os eventos sobrevivem
 CC-90	claude-code	PreToolUse	*	claude-code/payload-not-object.json	any
 CC-91	claude-code	Stop	*	claude-code/payload-not-object.json	any

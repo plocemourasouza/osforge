@@ -1,5 +1,5 @@
 {
-  "$schema": "osforge/trigger-eval/v1",
+  "$schema": "osforge/trigger-eval/v2",
   "skill": "osforge-canvas",
   "rel": "osforge-canvas",
   "core": true,
@@ -11,7 +11,8 @@
       "p3",
       "n1",
       "n2",
-      "n3"
+      "n3",
+      "n6"
     ],
     "eval": [
       "p4",
@@ -25,52 +26,76 @@
     {
       "id": "p1",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "osforge-canvas",
       "query": "Quero revisar o plano de implementação antes de codar. Tem como ver tudo organizado?"
     },
     {
       "id": "p2",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "osforge-canvas",
       "query": "Me mostra a proposta de um jeito que eu consiga aprovar ponto a ponto."
     },
     {
       "id": "p3",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "osforge-canvas",
       "query": "Prefiro olhar isso numa tela e ir marcando o que aprovo e o que não."
     },
     {
       "id": "p4",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "osforge-canvas",
       "query": "Monta uma visão do escopo para eu comentar em cima, item por item."
     },
     {
       "id": "p5",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "osforge-canvas",
       "query": "Quero dar feedback estruturado nesse desenho, não responder num parágrafo."
     },
     {
       "id": "n1",
       "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
       "query": "Me manda o plano em markdown mesmo, num arquivo."
     },
     {
       "id": "n2",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "Sobe o servidor local do projeto na porta 3000."
     },
     {
       "id": "n3",
       "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "system-diagrams",
       "query": "Faz um diagrama de arquitetura dos serviços."
     },
     {
       "id": "n4",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "Quais componentes do shadcn eu já uso no projeto?"
     },
     {
       "id": "n5",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "Corrige o CSS do header que quebrou no mobile."
+    },
+    {
+      "id": "n6",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "visual-planner",
+      "query": "Transforma esse plano num HTML visual para eu mostrar ao time."
     }
   ]
 }

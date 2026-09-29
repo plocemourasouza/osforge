@@ -26,8 +26,12 @@ export OSFORGE_HOOK_DEBUG=1
 export OSFORGE_CANVAS_HEALTH_URL="http://127.0.0.1:1/api/health" OSFORGE_DB="$SANDBOX/db.sqlite"
 unset OSFORGE_PROJECT
 unset CLAUDE_SESSION_ID CLAUDE_PROJECT_DIR CLAUDE_TRANSCRIPT_PATH
-cp "$ROOT"/hooks/*.sh "$ROOT"/hooks/*.py "$HOME/.claude/hooks/"; cp "$ROOT"/hooks/*.sh "$ROOT"/hooks/*.py "$HOME/.cursor/hooks/"
-chmod +x "$HOME"/.claude/hooks/* "$HOME"/.cursor/hooks/*
+# hooks/lib/ too (as the real deploy does, CLAUDE.md "Deployed content") — a hook that imports
+# from it (project_id, scrub, quota) must see the same layout here as in production, or its
+# import fails silently and the test passes for the wrong reason (fail-open, not "no data").
+cp "$ROOT"/hooks/*.sh "$ROOT"/hooks/*.py "$HOME/.claude/hooks/"; cp -r "$ROOT"/hooks/lib "$HOME/.claude/hooks/"
+cp "$ROOT"/hooks/*.sh "$ROOT"/hooks/*.py "$HOME/.cursor/hooks/"; cp -r "$ROOT"/hooks/lib "$HOME/.cursor/hooks/"
+chmod +x "$HOME"/.claude/hooks/*.sh "$HOME"/.claude/hooks/*.py "$HOME"/.cursor/hooks/*.sh "$HOME"/.cursor/hooks/*.py
 
 ROOT="$ROOT" ONLY="$ONLY" SANDBOX="$SANDBOX" python3 - <<'PY'
 import json, os, re, subprocess, sys, time, glob
@@ -59,6 +63,42 @@ def fixture(path):
         return big
     raw = open(os.path.join(FIX, path), encoding="utf-8").read()
     return raw.replace("__HOME__", HOME).replace("__FIXTURES__", FIX)
+
+# Optional 7th column (env): "KEY=VALUE;KEY2=VALUE2". Backward-compatible — existing 6-column
+# rows are untouched. A value of "GEN:<name>" is generated at RUN TIME (not a static file, since
+# osforge.quota.v1's `at`/`resets_at` must be fresh relative to whenever the suite actually runs)
+# into a per-case file under the sandbox, then the env var points at that file.
+def _gen_quota(now, at_offset, pct, resets_offset):
+    return {"schema": "osforge.quota.v1", "at": now + at_offset, "source": "statusline",
+            "five_hour": {"pct": pct, "resets_at": now + resets_offset}}
+
+GENERATORS = {
+    "quota-fresh-83": lambda now: _gen_quota(now, 0, 83, 3600),       # fresh, band 1 (>=80)
+    "quota-stale-83": lambda now: _gen_quota(now, -1200, 83, 3600),   # `at` 20 min ago → silence
+}
+
+def resolve_env(env_spec, cid):
+    if not env_spec:
+        return {}
+    out = {}
+    now = time.time()
+    for kv in env_spec.split(";"):
+        kv = kv.strip()
+        if not kv:
+            continue
+        k, _, v = kv.partition("=")
+        v = v.replace("__HOME__", HOME).replace("__FIXTURES__", FIX)
+        if v.startswith("GEN:"):
+            gen = GENERATORS.get(v[len("GEN:"):])
+            if gen is None:
+                raise SystemExit(f"{cid}: gerador de env desconhecido: {v}")
+            genpath = os.path.join(SANDBOX, "gen", f"{cid}-{k}.json")
+            os.makedirs(os.path.dirname(genpath), exist_ok=True)
+            with open(genpath, "w", encoding="utf-8") as f:
+                json.dump(gen(now), f)
+            v = genpath
+        out[k] = v
+    return out
 
 def verdict(harness, event, out):
     if out is None:
@@ -96,20 +136,25 @@ for line in open(os.path.join(ROOT, "tests/hooks/cases.tsv"), encoding="utf-8"):
     line = line.rstrip("\n")
     if not line or line.startswith("#"):
         continue
-    cid, harness, event, hook, fx, expect = line.split("\t")
+    fields = line.split("\t")
+    cid, harness, event, hook, fx, expect = fields[:6]
+    env_spec = fields[6] if len(fields) > 6 else ""
     if ONLY and not cid.startswith(ONLY):
         continue
     cmds = commands(harness, event, hook)
     if not cmds:
         total += 1; fails.append((cid, "nenhum hook casa com evento/hook no JSON")); print(f"  FALHA {cid}: sem comando para {event}/{hook}"); continue
     payload = fixture(fx)
+    case_env = resolve_env(env_spec, cid)
     for cmd in cmds:
         total += 1
         name = os.path.basename(cmd.split()[-1])
         before = tmp_snapshot()
+        run_env = dict(os.environ)
+        run_env.update(case_env)
         try:
             r = subprocess.run(["bash", "-c", cmd], input=payload, capture_output=True, text=True, timeout=20,
-                               cwd=os.path.join(HOME, "proj"))
+                               cwd=os.path.join(HOME, "proj"), env=run_env)
             rc, so = r.returncode, r.stdout.strip()
         except subprocess.TimeoutExpired:
             rc, so = "timeout", ""

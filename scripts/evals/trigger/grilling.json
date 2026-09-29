@@ -1,5 +1,5 @@
 {
-  "$schema": "osforge/trigger-eval/v1",
+  "$schema": "osforge/trigger-eval/v2",
   "skill": "grilling",
   "rel": "grilling",
   "core": true,
@@ -11,13 +11,15 @@
       "p3",
       "n1",
       "n2",
-      "n3"
+      "n3",
+      "n7"
     ],
     "eval": [
       "p4",
       "p5",
       "n4",
-      "n5"
+      "n5",
+      "n6"
     ],
     "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
   },
@@ -25,52 +27,83 @@
     {
       "id": "p1",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "grilling",
       "query": "Terminei o plano da migração de banco. Quero que você me interrogue antes de eu aprovar."
     },
     {
       "id": "p2",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "grilling",
       "query": "Esse plano parece bom demais. Ataca ele com perguntas difíceis."
     },
     {
       "id": "p3",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "grilling",
       "query": "Antes de eu mandar isso para o time, encontra os buracos no meu raciocínio."
     },
     {
       "id": "p4",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "grilling",
       "query": "Me faz as perguntas que o meu tech lead faria nesse desenho."
     },
     {
       "id": "p5",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "grilling",
       "query": "Quero fechar todas as decisões em aberto desse plano antes de começar."
     },
     {
       "id": "n1",
       "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "arch-builder",
       "query": "Escreve o plano de migração do banco para mim."
     },
     {
       "id": "n2",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "Roda o lint e arruma o que der."
     },
     {
       "id": "n3",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "Explica como funciona o índice B-tree do Postgres."
     },
     {
       "id": "n4",
       "should_trigger": false,
+      "category": "irrelevante",
+      "expect_route": "tdd-workflow",
       "query": "Gera os testes e2e do fluxo de login."
     },
     {
       "id": "n5",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "Resume essa thread de e-mail em três linhas."
+    },
+    {
+      "id": "n6",
+      "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
+      "query": "Não me interroga, o plano já foi aprovado; só executa o primeiro passo."
+    },
+    {
+      "id": "n7",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "adversarial-review",
+      "query": "Destrói esse spec procurando o que falta."
     }
   ]
 }

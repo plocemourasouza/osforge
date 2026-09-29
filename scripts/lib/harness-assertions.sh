@@ -123,10 +123,127 @@ check_tier_mentioned() {
     _stream_assert tier "$1" "$2"
 }
 
+# ── Guarda de cota (B-026 / SPEC-L01 Parte B) ───────────────────────────────
+# B1: ok | error | quota para UMA execução (stream de UM `claude -p`).
+run_status_of() {
+    _stream_assert run-status "$1"
+}
+
+# B3: preflight antes de CADA caso. Reusa hooks/lib/quota.py:read_state() -- o MESMO leitor
+# que a A3 usa -- em vez de reimplementar o parse de quota.json aqui. Fail-open por design: sem
+# quota.json, com dado stale, ou qualquer erro de leitura -> exit 1 (segue). Cota é parada
+# ADVISÓRIA; a ausência do dado nunca deve, por si só, travar a suíte.
+#   stdout: uma linha com o motivo, só quando for parar
+#   exit:   0 = pare o lote antes deste caso · 1 = siga
+quota_preflight_reason() {
+    local threshold="${OSFORGE_EVAL_QUOTA_STOP:-85}"
+    python3 - "$REPO_ROOT" "$threshold" <<'PY'
+import os, sys, time
+sys.path.insert(0, os.path.join(sys.argv[1], "hooks", "lib"))
+try:
+    from quota import read_state
+except Exception:
+    sys.exit(1)
+
+threshold = float(sys.argv[2])
+now = time.time()
+state = read_state(now)
+if not state:
+    sys.exit(1)
+
+five = state.get("five_hour")
+if isinstance(five, dict):
+    pct = five.get("pct")
+    if isinstance(pct, (int, float)) and pct >= threshold:
+        print("five_hour.pct=%.0f >= OSFORGE_EVAL_QUOTA_STOP=%.0f" % (pct, threshold))
+        sys.exit(0)
+
+rejected = state.get("rejected")
+if isinstance(rejected, dict):
+    resets_at = rejected.get("resets_at")
+    if isinstance(resets_at, (int, float)) and resets_at > now:
+        print("rejected, resets_at=%d (ainda no futuro)" % int(resets_at))
+        sys.exit(0)
+
+sys.exit(1)
+PY
+}
+
+# Snapshot de quota.json (read_state() agora) como JSON numa linha, ou "null". Para
+# quota_at_start/quota_at_end no relatório (B3).
+quota_snapshot() {
+    python3 - "$REPO_ROOT" <<'PY'
+import os, sys, json, time
+sys.path.insert(0, os.path.join(sys.argv[1], "hooks", "lib"))
+try:
+    from quota import read_state
+except Exception:
+    print("null")
+else:
+    state = read_state(time.time())
+    print(json.dumps(state) if state is not None else "null")
+PY
+}
+
+# emit_not_run_case <case_json_file> <id> <n> <critical:0|1> <detail>
+# Uma linha "NOT RUN" no formato que suite_verdict()/eval_report.py esperam -- fora do k de N
+# (B2/B3): a cota parou o lote antes deste caso rodar, não é um miss.
+emit_not_run_case() {
+    local case_json="$1" id="$2" n="$3" critical="$4" detail="$5"
+    python3 -c '
+import json, sys
+print(json.dumps({"id": sys.argv[1], "k": 0, "n": int(sys.argv[2]), "verdict": "NOT RUN",
+                   "detail": sys.argv[3], "critical": sys.argv[4] == "1"}, ensure_ascii=False))
+' "$id" "$n" "$detail" "$critical" >> "$case_json"
+}
+
+# ── Veredito da suíte com casos críticos (N-01 / B-025) ─────────────────────
+# Um caso `critical` (negação, ou positivo caro de errar) pesa mais que os
+# outros: reprova a suíte mesmo com --allow-flaky, e se ele nem chegou a
+# rodar (cota esgotada — NOT RUN, L-01), a suíte não é aprovada nem
+# reprovada: fica INCOMPLETE. Um caso não-crítico continua com a regra de
+# sempre (FAIL/TIMEOUT reprovam; FLAKY reprova só sem --allow-flaky).
+#
+# suite_verdict <casos.jsonl> <allow_flaky:0|1>
+#   casos.jsonl: uma linha por caso, {"verdict": "PASS|FLAKY|FAIL|TIMEOUT|NOT RUN", "critical": bool}
+#   stdout: PASS | FAIL | INCOMPLETE
+#   exit:   0 (PASS) | 1 (FAIL) | 2 (INCOMPLETE)
+suite_verdict() {
+    local cases_jsonl="$1" allow_flaky="$2"
+    python3 - "$cases_jsonl" "$allow_flaky" <<'PY'
+import json, sys
+
+path, allow_flaky = sys.argv[1], sys.argv[2] == "1"
+with open(path, encoding="utf-8") as fh:
+    cases = [json.loads(line) for line in fh if line.strip()]
+
+bad = {"FAIL", "TIMEOUT", "FLAKY"}
+crit_bad = [c for c in cases if c.get("critical") and c.get("verdict") in bad]
+crit_not_run = [c for c in cases if c.get("critical") and c.get("verdict") == "NOT RUN"]
+noncrit_bad = [c for c in cases if not c.get("critical") and c.get("verdict") in ("FAIL", "TIMEOUT")]
+noncrit_flaky = [c for c in cases if not c.get("critical") and c.get("verdict") == "FLAKY"]
+
+if crit_bad:
+    print("FAIL"); sys.exit(1)
+if crit_not_run:
+    print("INCOMPLETE"); sys.exit(2)
+if noncrit_bad:
+    print("FAIL"); sys.exit(1)
+if noncrit_flaky and not allow_flaky:
+    print("FAIL"); sys.exit(1)
+print("PASS"); sys.exit(0)
+PY
+}
+
 # ── Relatório versionável (B-012) ───────────────────────────────────────────
 # emit_eval_report <suite> <arquivo_md> <casos.jsonl> <epoch_inicio> <comando> [logs...]
 # Junta metadados (SHA, versão, modelo, HOME, tempo) + tokens somados dos streams e
 # chama lib/eval_report.py. Sem isto, um número de eval em prosa não diz de quando é.
+#
+# Cota (B-026, B3): se as variáveis QUOTA_AT_START/QUOTA_AT_END estiverem definidas no
+# ambiente (JSON de quota_snapshot(), ou "null"), entram no payload como quota_at_start/
+# quota_at_end. Env em vez de parâmetro posicional para não quebrar as três chamadas
+# existentes -- os dois são opcionais e ausentes vira "sem dados" no relatório.
 emit_eval_report() {
     local suite="$1" out="$2" cases="$3" started="$4" cmd="$5"; shift 5
     local toks; toks="$(python3 "${REPO_ROOT}/scripts/lib/stream_assert.py" tokens "$@" 2>/dev/null || echo '0 0 0 0')"
@@ -136,17 +253,26 @@ emit_eval_report() {
     version="$(tr -d '[:space:]' < "$REPO_ROOT/VERSION" 2>/dev/null || echo dev)"
     python3 - "$suite" "$cases" "$started" "$cmd" "$sha" "$version" "$dirty" \
               "${MODEL:-?}" "${RUNS:-1}" "${HOME_OVERRIDE:-$HOME}" "$toks" "$out" \
-              "${REPO_ROOT}/scripts/lib/eval_report.py" <<'PY' >/dev/null
+              "${REPO_ROOT}/scripts/lib/eval_report.py" "${QUOTA_AT_START:-null}" "${QUOTA_AT_END:-null}" <<'PY' >/dev/null
 import json, subprocess, sys, time, os
-suite, cases, started, cmd, sha, version, dirty, model, runs, home, toks, out, gen = sys.argv[1:14]
+suite, cases, started, cmd, sha, version, dirty, model, runs, home, toks, out, gen, qstart, qend = sys.argv[1:16]
 rows = [json.loads(l) for l in open(cases, encoding="utf-8") if l.strip()]
 i, o, cr, cc = (int(x) for x in toks.split())
+try:
+    quota_start = json.loads(qstart)
+except ValueError:
+    quota_start = None
+try:
+    quota_end = json.loads(qend)
+except ValueError:
+    quota_end = None
 payload = {
     "suite": suite, "model": model, "runs": int(runs), "command": cmd.strip(),
     "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(int(started))),
     "duration_s": int(time.time()) - int(started),
     "repo_sha": sha, "repo_version": version, "dirty": bool(dirty), "home": home,
     "tokens": {"input": i, "output": o, "cache_read": cr, "cache_create": cc},
+    "quota_at_start": quota_start, "quota_at_end": quota_end,
     "cases": rows,
 }
 p = subprocess.run([sys.executable, gen, out], input=json.dumps(payload), text=True)

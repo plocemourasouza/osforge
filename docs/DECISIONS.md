@@ -298,3 +298,51 @@ all runnable with a temporary `HOME`, none touching a live `~/.claude`; CI runs 
 dry-run of the three eval suites on ubuntu and macos.
 
 **Date:** 2026-09-18.
+
+## ADR-016: Pacote 01 — quality and control before the first paid eval run
+
+**Context.** Two intake analyses (`docs/intake/laya/`, `docs/intake/needle/`) found three gaps in
+the v5.1.0 eval and telemetry stack. (1) The trigger/routing measurement can be corrupted: a
+quota rejection mid-run turns every following case into FLAKY/FAIL (EV-O02–EV-O05), a case
+pointing at a missing skill passes `--dry` and only fails on a paid run (EV-O-N02), and results
+are per case with no category, so a FLAKY says nothing about *where* a skill fails; negation is
+almost unmeasured (2 cases in 150). (2) Consumption is visible to the user (statusline) but not
+to the model or the harness: the 5-hour window was rejected twice in three weeks with no warning
+and no handoff (EV-M01, EV-M03); per-call data exists in transcripts (32,869 calls, 75% from
+subagents) but only per-session totals are stored. (3) There is no instrument for *quality*
+(E3 proportional plan, E4 reviewer leniency).
+
+**Decision.** Ship backlog items B-025–B-030 in dependency order, all verifiable offline:
+1. **Wave 1, before E1 (B-013):** eval cases v2 with `category` (positivo / vizinho /
+   irrelevante / negacao), `critical`, and model-free validation that fails `--dry` on orphan
+   or malformed cases (B-025); the harness stops on quota, reporting remaining cases as
+   `NOT RUN` with exit 75 and `quota_at_start`/`quota_at_end` (B-026).
+2. **Wave 2, visibility:** a quota warning to the model at 80%/95%, once per band per window,
+   fed by the statusline's `rate_limits` (B-027); per-call audit table `calls` with derived
+   (never stored) API-equivalent cost from a dated `claude-code/pricing.json`, retention and
+   backfill (B-028).
+3. **Wave 3, quality:** an isolated judge (`scripts/lib/judge.py`) that runs on the
+   subscription, never `--bare` (which forces API billing, EV-C05), with isolation verified on
+   every call through the `system/init` event (B-029). Adoption is gated on experiment E-J0
+   (1–3 short calls, separately authorised).
+4. **Conditional:** injection log for instincts (B-030) only if E5 is scheduled.
+
+Resolved decisions: D-1 the quota recorder reads statusline stdin via one optional line in the
+user's own statusline script; D-2 the quota warning lives inside `context-threshold` (hook count
+stays 11); D-3 `allowed_warning` is recorded and the run continues; D-N1 critical routing cases
+are the mandatory-dispatch (`!`) ones; D-N2 `expect_route` stays informative, not an assertion;
+D-N3 labels and the 20 new cases are reviewed before migration.
+
+**Rejected, with measured reason** (do not reopen without new data): Needle as a local skill
+router (0–13 hits in 75, confidence without signal); Needle as an embeddings provider (loses to
+a ~20-line lexical baseline); estimating the window by summing tokens (two rejections with
+incompatible compositions; the real percentage already comes from Claude Code); Laya's hybrid
+search (OSForge already has one, filtered by project before fusion).
+
+**Consequences.** E1 costs 273 calls instead of 234 (+39 negation cases). Four new offline
+suites (`test-eval-cases`, `test-quota`, `test-calls`, `test-judge`). Several signals used are
+undocumented by Claude Code (`rate_limits` in statusline, `rate_limit_event`,
+`--setting-sources`, the two `CLAUDE_CODE_DISABLE_*` variables): reads are tolerant (missing
+field = silence), fixtures are pinned to 2.1.278, and every item has its own off-switch.
+
+**Date:** 2026-09-28.

@@ -281,8 +281,10 @@ tg_badsplit=$?
 set -e
 check "arquivos de caso passam na validação" "PASS" "$(grep -q '0 problema(s)' "$WORK/tg-dry.log" && echo PASS || echo FAIL)"
 check "--dry roda sem claude no PATH" "0" "$tg_dry"
-check "15 skills com casos" "PASS" "$(grep -q 'validação: 15 skills, 150 casos' "$WORK/tg-dry.log" && echo PASS || echo FAIL)"
-check "--dry informa o custo em chamadas" "PASS" "$(grep -q 'custaria 450 chamadas' "$WORK/tg-dry.log" && echo PASS || echo FAIL)"
+# 150 → 170 casos e 450 → 510 chamadas: o formato v2 (categoria e casos
+# críticos, N-01/B-025) acrescentou 20 casos negativos (13 negação + 7 vizinho).
+check "15 skills com casos" "PASS" "$(grep -q 'validação: 15 skills, 170 casos' "$WORK/tg-dry.log" && echo PASS || echo FAIL)"
+check "--dry informa o custo em chamadas" "PASS" "$(grep -q 'custaria 510 chamadas' "$WORK/tg-dry.log" && echo PASS || echo FAIL)"
 check "sem --model recusa rodar" "1" "$tg_nomodel"
 check "--split inválido recusa" "1" "$tg_badsplit"
 

@@ -49,6 +49,9 @@
 #   # Gravar o relatório versionável (docs/evals/, B-012)
 #   ./scripts/test-skill-triggering.sh --model X --report docs/evals/2026-09-18-sonnet-trigger.md
 #
+#   # Rodar mesmo com quota.json acusando janela apertada (sabendo o que faz)
+#   ./scripts/test-skill-triggering.sh --model X --ignore-quota
+#
 # ONDE O CLAUDE RODA IMPORTA:
 #   Por padrão cada caso roda em um diretório temporário vazio. Rodando de
 #   dentro do repo OSForge, `skills/<x>/SKILL.md` está a um Glob de distância e
@@ -101,9 +104,23 @@
 #                    experimento E1 consome para decidir o que medir
 #     k = 0          FAIL
 #   Um resultado de 1 execução não distingue "a skill dispara" de "disparou uma vez".
+#
+# GUARDA DE COTA (B-026, SPEC-L01 Parte B):
+#   Antes de CADA caso, e depois de CADA execução dentro dele, o lote confere
+#   sinal de cota. `rate_limit_info.status == "rejected"` (ou is_error com texto
+#   de limite) NO STREAM da própria execução PARA o lote ali: o caso corrente e
+#   todos os seguintes saem como NOT RUN — não contam como hit nem como miss.
+#   `quota.json` (~/.osforge/quota.json) acima de OSFORGE_EVAL_QUOTA_STOP (padrão
+#   85, five_hour.pct) ou com uma rejeição cujo reset ainda está no futuro PARA
+#   antes de iniciar qualquer caso. Nos dois casos: exit 75 (EX_TEMPFAIL),
+#   distinto de FAIL(1)/TIMEOUT(2)/FLAKY(3). Uma execução com is_error que NÃO É
+#   cota conta como ERROR — fora do k de N, mas não para o lote.
+#   --ignore-quota desliga as duas checagens.
 # =============================================================================
 
 set -euo pipefail
+
+EX_TEMPFAIL=75
 
 # ---------------------------------------------------------------------------
 # Constantes e paths
@@ -126,6 +143,7 @@ HOME_OVERRIDE=""            # --home DIR: roda contra um deploy limpo, não o ~/
 DRY=0                       # --dry: lista os casos e sai, sem chamar modelo
 REPORT_FILE=""              # --report FILE: markdown versionável (docs/evals/)
 ALLOW_FLAKY=0               # --allow-flaky: FLAKY não reprova a suíte
+IGNORE_QUOTA=0               # --ignore-quota: desliga a guarda de cota (B-026)
 
 # Detect a timeout binary (macOS lacks `timeout`; coreutils provides `gtimeout`)
 if command -v timeout &>/dev/null; then
@@ -206,7 +224,7 @@ run_case() {
     log_info "Testando skill: $skill_name  (${RUNS} execução(ões))"
     log_info "Prompt: $(echo "$prompt" | head -c 120)..."
 
-    local hits=0 timeouts=0 run i log_file case_workdir exit_code
+    local hits=0 timeouts=0 errors=0 run i log_file case_workdir exit_code status
     for (( i=1; i<=RUNS; i++ )); do
         # Cada execução tem o SEU workdir e o SEU log: a 2ª execução herdando os
         # arquivos que a 1ª escreveu mediria memória de disco, não triggering.
@@ -231,6 +249,25 @@ run_case() {
 
         [ "$VERBOSE" = "1" ] && { echo "--- stream (run $i) ---"; cat "$log_file"; echo "--- fim ---"; }
 
+        # Guarda de cota (B-026, B1/B2): rejeição detectada NESTA execução para o
+        # lote inteiro -- não conta como hit nem como miss, e nem os runs restantes
+        # deste caso rodam. --ignore-quota pula esta checagem por completo.
+        status="ok"
+        if [ "$IGNORE_QUOTA" = "0" ]; then
+            status="$(run_status_of "$log_file")"
+        fi
+        if [ "$status" = "quota" ]; then
+            log_warn "  run $i: quota (rate_limit rejected) -- abortando o lote"
+            RUN_HITS=$hits
+            RUN_TIMEOUTS=$timeouts
+            RUN_ERRORS=$errors
+            return "$EX_TEMPFAIL"
+        elif [ "$status" = "error" ]; then
+            errors=$((errors + 1))
+            log_info "  run $i: error (is_error, não é cota) -- fora do k de N"
+            continue
+        fi
+
         # Veredito desta execução:
         #   core     → invocação nativa (ferramenta Skill)
         #   não-core → nativa OU resolução via manifesto (leitura do SKILL.md)
@@ -249,6 +286,7 @@ run_case() {
 
     RUN_HITS=$hits                      # lidos pelo chamador (k de N)
     RUN_TIMEOUTS=$timeouts
+    RUN_ERRORS=$errors
     printf '%s/%s\n' "$hits" "$RUNS" > "${out_dir}/result.txt"
 
     if [ -z "$rel" ]; then
@@ -271,6 +309,9 @@ run_case() {
         log_warn "FLAKY ${hits}/${RUNS}: $skill_name"; return 3
     elif [ "$timeouts" -gt 0 ]; then
         log_warn "TIMEOUT 0/${RUNS}: $skill_name"; return 2
+    elif [ "$errors" -gt 0 ]; then
+        # B2: is_error sem ser cota -- fora do k de N, não é FAIL do harness.
+        log_warn "ERROR ${errors}/${RUNS} execuções com is_error (não-cota): $skill_name"; return 4
     else
         log_fail "FAIL 0/${RUNS}: $skill_name"; return 1
     fi
@@ -366,6 +407,10 @@ while [[ $# -gt 0 ]]; do
             ALLOW_FLAKY=1
             shift
             ;;
+        --ignore-quota)
+            IGNORE_QUOTA=1
+            shift
+            ;;
         --help|-h)
             sed -n '/^# =/,/^# ======/p' "$0" | grep '^#' | sed 's/^# \?//'
             exit 0
@@ -431,7 +476,11 @@ FAILED=0
 SKIPPED=0
 TIMED_OUT=0
 FLAKY=0
+ERRORED=0                   # is_error sem ser cota (B2) -- fora do k de N, não reprova o lote
 declare -a RESULTS=()
+QUOTA_STOPPED=0
+QUOTA_REASON=""
+NOT_RUN_FROM=""
 
 # Diretório neutro: o teste tem de medir alcance pelo manifesto, não a
 # capacidade do modelo de achar arquivo no diretório corrente.
@@ -479,11 +528,13 @@ if [ "$DRY" = "1" ]; then
     echo "MODO SECO — nenhum modelo é chamado, nenhum token é gasto."
     echo ""
     n=0
+    orphans=0
     while IFS=$'\t' read -r skill_name prompt; do
         n=$((n + 1))
         rel="$(skill_rel_path "$skill_name")"
         if [ -z "$rel" ]; then
             kind="ÓRFÃO (não existe em skills/)"
+            orphans=$((orphans + 1))
         elif is_core_skill "$rel"; then
             kind="core → exige invocação nativa"
         else
@@ -494,11 +545,52 @@ if [ "$DRY" = "1" ]; then
     done < "$CASES_STREAM"
     echo ""
     echo "$n caso(s). Para rodar de verdade: --model <id> [--runs N]"
+    if [ "$orphans" -gt 0 ]; then
+        echo "[ERRO] $orphans caso(s) ÓRFÃO(s): a skill referida não existe em skills/."
+        exit 1
+    fi
     exit 0
 fi
 
+# Caso órfão: a skill não existe. Rodar mesmo assim gasta chamadas de API num
+# FAIL garantido — a suíte se recusa a começar (N-01/B-025, EV-O-N02).
+orphan_skills=""
+while IFS=$'\t' read -r skill_name _prompt; do
+    rel="$(skill_rel_path "$skill_name")"
+    [ -z "$rel" ] && orphan_skills="$orphan_skills $skill_name"
+done < "$CASES_STREAM"
+if [ -n "$orphan_skills" ]; then
+    echo "[ERRO] caso(s) ÓRFÃO(s), skill inexistente em skills/:$orphan_skills"
+    echo "       Corrija $CASES_FILE antes de gastar chamadas de API."
+    exit 1
+fi
+
+# Guarda de cota (B-026, B3): snapshot ANTES de gastar qualquer chamada de API, para o
+# relatório poder mostrar "em que estado a janela estava quando isto começou". Calculado
+# só aqui (depois do --dry e do check de órfãos) -- nenhum dos dois gasta chamada nem
+# precisa de leitura de quota.json.
+QUOTA_AT_START="$(quota_snapshot)"
+
+CASE_IDX=0
 while IFS=$'\t' read -r skill_name prompt; do
+    CASE_IDX=$((CASE_IDX + 1))
     echo "------------------------------------------------------------"
+
+    # B3: preflight de cota ANTES de gastar a chamada deste caso. Fail-open por
+    # design (quota_preflight_reason já cobre isso) -- só para quando há motivo
+    # explícito. `|| true` porque `set -e` mataria o script no exit 1 comum
+    # ("siga normalmente"), que não é um erro.
+    if [ "$IGNORE_QUOTA" = "0" ]; then
+        preflight_reason="$(quota_preflight_reason || true)"
+        if [ -n "$preflight_reason" ]; then
+            log_warn "cota: $preflight_reason -- parando antes de '$skill_name'"
+            QUOTA_STOPPED=1
+            QUOTA_REASON="cota: $preflight_reason (antes de '$skill_name')"
+            NOT_RUN_FROM="$CASE_IDX"
+            break
+        fi
+    fi
+
     # NÃO usar o par `set +e` / `set -e` aqui: run_case contém o seu próprio
     # `set -e` interno (após capturar o exit do claude), que reativava o errexit
     # GLOBALMENTE e anulava a proteção do call site — o script morria no
@@ -507,24 +599,49 @@ while IFS=$'\t' read -r skill_name prompt; do
     # em contexto de condição, onde o bash ignora errexit inclusive DENTRO da
     # função. Regressão coberta por tests/test-assertions.sh (loop survival).
     case_exit=0
-    RUN_HITS=0; RUN_TIMEOUTS=0
+    RUN_HITS=0; RUN_TIMEOUTS=0; RUN_ERRORS=0
     run_case "$skill_name" "$prompt" || case_exit=$?
+
+    # B2: rejeição detectada NO MEIO deste caso -- ele próprio conta como NOT RUN
+    # (não como o hit/miss parcial que já tinha acumulado), e o lote para aqui.
+    if [ "$case_exit" = "$EX_TEMPFAIL" ]; then
+        log_warn "cota: rejeição durante '$skill_name' -- parando o lote"
+        QUOTA_STOPPED=1
+        QUOTA_REASON="cota: rejeição mid-run em '$skill_name'"
+        emit_not_run_case "$CASE_JSON" "$skill_name" "$RUNS" "0" "quota: rejeição mid-run"
+        NOT_RUN_FROM=$((CASE_IDX + 1))
+        break
+    fi
 
     case "$case_exit" in
         0) verdict="PASS";    PASSED=$((PASSED + 1)) ;;
         3) verdict="FLAKY";   FLAKY=$((FLAKY + 1)) ;;
         2) verdict="TIMEOUT"; TIMED_OUT=$((TIMED_OUT + 1)) ;;
+        4) verdict="ERROR";   ERRORED=$((ERRORED + 1)) ;;
         *) verdict="FAIL";    FAILED=$((FAILED + 1)) ;;
     esac
     RESULTS+=("[$verdict ${RUN_HITS}/${RUNS}] $skill_name")
-    python3 - "$skill_name" "$RUN_HITS" "$RUNS" "$verdict" "$RUN_TIMEOUTS" >> "$CASE_JSON" <<'PY'
+    python3 - "$skill_name" "$RUN_HITS" "$RUNS" "$verdict" "$RUN_TIMEOUTS" "$RUN_ERRORS" >> "$CASE_JSON" <<'PY'
 import json, sys
-cid, k, n, verdict, tmo = sys.argv[1:6]
-detail = f"{tmo} timeout(s)" if int(tmo) else ""
-print(json.dumps({"id": cid, "k": int(k), "n": int(n), "verdict": verdict, "detail": detail}))
+cid, k, n, verdict, tmo, err = sys.argv[1:7]
+parts = []
+if int(tmo): parts.append(f"{tmo} timeout(s)")
+if int(err): parts.append(f"{err} error(s) (fora do k de N)")
+print(json.dumps({"id": cid, "k": int(k), "n": int(n), "verdict": verdict, "detail": ", ".join(parts)}))
 PY
     echo ""
 done < "$CASES_STREAM"
+
+# B2/B3: lote parado por cota -- tudo do ponto de parada em diante (inclusive o caso
+# corrente, se a parada foi no preflight) sai como NOT RUN no relatório.
+if [ "$QUOTA_STOPPED" = "1" ] && [ -n "$NOT_RUN_FROM" ]; then
+    tail -n +"$NOT_RUN_FROM" "$CASES_STREAM" | while IFS=$'\t' read -r skill_name _prompt; do
+        [ -z "$skill_name" ] && continue
+        emit_not_run_case "$CASE_JSON" "$skill_name" "$RUNS" "0" "quota: lote interrompido antes de iniciar"
+    done
+fi
+QUOTA_AT_END="$(quota_snapshot)"
+export QUOTA_AT_START QUOTA_AT_END
 
 # ---------------------------------------------------------------------------
 # Relatório final
@@ -538,6 +655,10 @@ echo "  PASS   : $PASSED   (k = $RUNS de $RUNS)"
 echo "  FLAKY  : $FLAKY    (0 < k < $RUNS — instável, não aprovado)"
 echo "  FAIL   : $FAILED"
 echo "  TIMEOUT: $TIMED_OUT"
+echo "  ERROR  : $ERRORED  (is_error, não-cota -- fora do k de N)"
+if [ "$QUOTA_STOPPED" = "1" ]; then
+    echo "  NOT RUN: $(tail -n +"${NOT_RUN_FROM:-1}" "$CASES_STREAM" | grep -c . || true)  ($QUOTA_REASON)"
+fi
 echo ""
 echo "Logs completos em: $OUTPUT_BASE"
 echo "============================================================"
@@ -545,6 +666,13 @@ echo "============================================================"
 if [ -n "$REPORT_FILE" ]; then
     emit_eval_report "trigger" "$REPORT_FILE" "$CASE_JSON" "$START_EPOCH" \
         "$(printf '%s ' "$0" "$@")" "${OUTPUT_BASE}"/*/stream-*.json
+fi
+
+# B2/B3: lote interrompido por cota -- exit 75 (EX_TEMPFAIL), distinto de
+# FAIL(1)/TIMEOUT(2)/FLAKY(3). Não é veredito da suíte, é "não terminou".
+if [ "$QUOTA_STOPPED" = "1" ]; then
+    echo "[QUOTA] $QUOTA_REASON"
+    exit "$EX_TEMPFAIL"
 fi
 
 # Exit: FLAKY reprova junto com FAIL — um caso que acerta 2 de 3 não está verde.

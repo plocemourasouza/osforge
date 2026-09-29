@@ -15,6 +15,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from collections import deque
 from pathlib import Path
 
@@ -26,6 +27,10 @@ except Exception:                                   # pragma: no cover
     _resolve_project = None
     _find_db_cmd = None
     _scrub = lambda t: t
+try:
+    from quota import record_rejection as _record_rejection                            # A2 (B-027)
+except Exception:                                   # pragma: no cover
+    _record_rejection = None
 
 # ── Configuração ──────────────────────────────────────────────────────────────
 
@@ -77,6 +82,49 @@ def _resolve_slug(db_cmd: list[str]) -> str | None:
     if res and res.get("status") not in (None, "unregistered"):
         return res["slug"]
     return None
+
+
+# ── A2: rejeição de cota pelo transcript (B-027, SPEC-L01, EV-C04) ────────────
+
+def _detect_rejection(transcript_path: str) -> None:
+    """Lê o MESMO fim do transcript (EV-O07) já lido pelo Stop e procura a linha de rejeição de
+    cota: `quotaLimits.status == "rejected"` (EV-C04). Formato exato não-documentado e sujeito a
+    mudança — leitura tolerante, campo ausente = nada a fazer. Independe de projeto registrado
+    (a cota é da conta, não do projeto) e roda antes de qualquer checagem de slug/osforge-db."""
+    if _record_rejection is None:
+        return
+    if os.environ.get("OSFORGE_QUOTA_THRESHOLD", "").strip().lower() in ("off", "0", "false"):
+        return
+    try:
+        p = Path(transcript_path)
+        size = p.stat().st_size
+        with open(p, "rb") as fb:
+            if size > TAIL_BYTES:
+                fb.seek(size - TAIL_BYTES)
+                fb.readline()
+            data = fb.read().decode("utf-8", errors="replace")
+    except OSError:
+        return
+    for line in reversed(data.splitlines()):
+        line = line.strip()
+        if not line or "quotaLimits" not in line:
+            continue
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(entry, dict):
+            continue
+        ql = entry.get("quotaLimits")
+        if not isinstance(ql, dict):
+            msg = entry.get("message")
+            ql = msg.get("quotaLimits") if isinstance(msg, dict) else None
+        if isinstance(ql, dict) and ql.get("status") == "rejected":
+            try:
+                _record_rejection(ql)
+            except Exception as exc:
+                _log(f"[session-save] record_rejection error: {exc}")
+        return   # only the most recent quotaLimits line matters
 
 
 # ── Extrai resumo do transcript JSONL ────────────────────────────────────────
@@ -195,17 +243,54 @@ def _extract_summary(transcript_path: str) -> str | None:
 MAX_USAGE_BYTES = 64 * 1024 * 1024   # transcript maior que isso: uso não computado (nunca trava o Stop)
 
 
-def _extract_usage(transcript_path: str) -> dict:
-    """{model: {input, output, cache_read, cache_create, turns}} somando `message.usage` de cada
-    mensagem do assistente UMA vez por `message.id` (o JSONL repete a mesma mensagem em várias
-    linhas quando ela tem vários blocos de conteúdo)."""
+def _build_call_row(e: dict, msg: dict, u: dict, model: str, session_id: str) -> dict | None:
+    """Uma linha para a tabela `calls` (B-028), a partir de uma entrada de transcript já validada
+    (tem message.usage). None quando falta timestamp ou message.id (ambos NOT NULL no schema).
+    Sem conteúdo de mensagem — só metadados/tokens (privacidade)."""
+    ts = e.get("timestamp")
+    if not isinstance(ts, str) or not ts:
+        return None
+    mid = msg.get("id") or e.get("uuid")
+    if not mid:
+        return None
+    cache_creation = u.get("cache_creation")
+    if isinstance(cache_creation, dict):
+        cw5 = cache_creation.get("ephemeral_5m_input_tokens") or 0
+        cw1h = cache_creation.get("ephemeral_1h_input_tokens") or 0
+    else:
+        cw5 = u.get("cache_creation_input_tokens") or 0
+        cw1h = 0
+    # Tolerante como _detect_rejection (quotaLimits): isApiErrorMessage/error podem estar no
+    # nível da entrada OU dentro de message.
+    is_err = e.get("isApiErrorMessage") or msg.get("isApiErrorMessage")
+    error = (e.get("error") or msg.get("error") or "unknown") if is_err else None
+    return {
+        "message_id": str(mid),
+        "session_id": session_id,
+        "ts": ts,
+        "model": model,
+        "input": int(u.get("input_tokens") or 0),
+        "output": int(u.get("output_tokens") or 0),
+        "cache_read": int(u.get("cache_read_input_tokens") or 0),
+        "cache_write_5m": int(cw5),
+        "cache_write_1h": int(cw1h),
+        "sidechain": 1 if e.get("isSidechain") else 0,
+        "stop_reason": msg.get("stop_reason"),
+        "error": _scrub(error) if error else None,
+    }
+
+def _extract_usage_and_calls(transcript_path: str, session_id: str) -> tuple[dict, list]:
+    """Passada única sobre o transcript: mantém os totais por modelo (B-022, inalterado) e, além
+    disso, monta uma linha por `message.id` único para a tabela `calls` (B-028) — evita ler o
+    transcript duas vezes. Mesmo teto de tamanho e mesma regra de dedup de antes."""
     totals: dict = {}
+    calls_rows: list = []
     seen: set = set()
     try:
         p = Path(transcript_path)
         if p.stat().st_size > MAX_USAGE_BYTES:
             _log("[session-save] transcript grande demais para computar uso")
-            return {}
+            return {}, []
         with open(p, encoding="utf-8", errors="replace") as f:
             for line in f:
                 if '"usage"' not in line:
@@ -232,9 +317,12 @@ def _extract_usage(transcript_path: str) -> dict:
                     if isinstance(v, (int, float)):
                         t[key] += int(v)
                 t["turns"] += 1
+                row = _build_call_row(e, msg, u, model, session_id)
+                if row:
+                    calls_rows.append(row)
     except Exception as exc:
         _log(f"[session-save] erro ao computar uso: {exc}")
-    return totals
+    return totals, calls_rows
 
 
 def _save_usage(db_cmd: list[str], slug: str, session_id: str, totals: dict) -> None:
@@ -246,6 +334,60 @@ def _save_usage(db_cmd: list[str], slug: str, session_id: str, totals: dict) -> 
                            capture_output=True, text=True, timeout=10)
         except Exception as exc:
             _log(f"[session-save] add-usage error: {exc}")
+
+# ── Auditoria por chamada (B-028) ─────────────────────────────────────────────
+
+def _calls_enabled() -> bool:
+    return os.environ.get("OSFORGE_CALLS", "").strip().lower() not in ("off", "0", "false")
+
+def _save_calls(db_cmd: list[str], slug: str, calls_rows: list) -> None:
+    """Envia todas as linhas de uma vez via --stdin (um subprocess para a sessão inteira, não
+    um por chamada) para `add-calls` (B-028)."""
+    if not calls_rows:
+        return
+    payload = "\n".join(json.dumps(r) for r in calls_rows)
+    try:
+        result = subprocess.run(db_cmd + ["add-calls", slug, "--stdin"],
+                                 input=payload, capture_output=True, text=True, timeout=15)
+        if result.returncode != 0:
+            _log(f"[session-save] add-calls falhou: {result.stderr.strip()}")
+    except Exception as exc:
+        _log(f"[session-save] add-calls error: {exc}")
+
+def _prune_marker_path() -> str:
+    return os.environ.get("OSFORGE_CALLS_PRUNE_MARKER") or os.path.expanduser("~/.osforge/calls-pruned-at")
+
+def _maybe_prune_calls(db_cmd: list[str]) -> None:
+    """No máximo uma vez por dia (marcador em arquivo), pede ao osforge-db para podar linhas de
+    `calls` mais antigas que a janela de retenção. OSFORGE_CALLS_RETENTION_DAYS sobrescreve o
+    padrão (90); '0' desabilita a poda (B-028)."""
+    retention = os.environ.get("OSFORGE_CALLS_RETENTION_DAYS", "90").strip()
+    if retention == "0":
+        return
+    try:
+        days = int(retention)
+    except ValueError:
+        days = 90
+    marker = _prune_marker_path()
+    today = time.strftime("%Y-%m-%d", time.gmtime())
+    try:
+        if os.path.exists(marker):
+            with open(marker, encoding="utf-8") as f:
+                if f.read().strip() == today:
+                    return
+    except OSError:
+        pass
+    try:
+        subprocess.run(db_cmd + ["prune-calls", f"--older-than={days}d"],
+                        capture_output=True, text=True, timeout=15)
+    except Exception as exc:
+        _log(f"[session-save] prune-calls error: {exc}")
+    try:
+        os.makedirs(os.path.dirname(marker), exist_ok=True)
+        with open(marker, "w", encoding="utf-8") as f:
+            f.write(today)
+    except OSError:
+        pass
 
 
 # ── Persiste o resumo ─────────────────────────────────────────────────────────
@@ -302,6 +444,10 @@ def main() -> None:
         except Exception:
             transcript_path = None
 
+    # A2: independente de projeto registrado — a janela de cota é da conta, não do projeto.
+    if transcript_path:
+        _detect_rejection(transcript_path)
+
     db_cmd = _find_osforge_db()
     if not db_cmd:
         _log("[session-save] osforge-db não encontrado")
@@ -316,9 +462,15 @@ def main() -> None:
         _log("[session-save] transcript_path ausente — nada a fazer")
         return
 
-    usage = _extract_usage(transcript_path)
+    sid_for_usage = session_id or Path(transcript_path).stem
+    usage, calls_rows = _extract_usage_and_calls(transcript_path, sid_for_usage)
     if usage:
-        _save_usage(db_cmd, slug, session_id or Path(transcript_path).stem, usage)
+        _save_usage(db_cmd, slug, sid_for_usage, usage)
+    if _calls_enabled():
+        _save_calls(db_cmd, slug, calls_rows)
+        _maybe_prune_calls(db_cmd)
+    else:
+        _log("[session-save] OSFORGE_CALLS=off — calls não gravadas")
 
     summary = _extract_summary(transcript_path)
     if not summary:

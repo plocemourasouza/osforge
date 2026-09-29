@@ -1033,7 +1033,7 @@ aceitam `--dry`, que lista os casos, valida os arquivos e **não chama modelo ne
 | `scripts/test-skill-triggering.sh` | as skills core disparam sem o nome no prompt? | `--model X --skill tdd-workflow` |
 
 ```bash
-./scripts/run-trigger-eval.sh --dry                  # 150 casos; diz quanto custaria
+./scripts/run-trigger-eval.sh --dry                  # 170 casos (73 no split eval); diz quanto custaria
 ./scripts/run-trigger-eval.sh --model claude-sonnet-4-6 --split eval --runs 3     --report docs/evals/$(date +%F)-claude-sonnet-4-6-trigger.md
 ```
 
@@ -1046,6 +1046,53 @@ grava o resultado em `docs/evals/` com SHA, modelo, comando, tokens e tempo
 **Custo:** cada caso são `--runs` chamadas de API. `--dry` imprime o total antes.
 A lógica de veredito roda offline em `./tests/test-assertions.sh` (60 casos, custo zero):
 é lá que se pega regressão de asserção sem depender de o modelo se comportar.
+
+### Qualidade e controle (Pacote 01, ADR-016)
+
+**Casos v2.** Cada caso de trigger tem `category` (`positivo` · `vizinho` · `irrelevante` ·
+`negacao`) e `critical`; o relatório agrega por categoria, então um FLAKY diz *onde* a skill
+falha. `--dry` agora reprova caso órfão (skill inexistente) ou malformado — antes isso só
+aparecia na rodada paga. Validação offline: `./tests/test-eval-cases.sh`.
+
+**O harness respeita a cota.** Uma rejeição de cota no meio da rodada não vira mais uma
+cascata de FLAKY/FAIL: o harness para, marca o resto como `NOT RUN`, sai com **exit 75** e
+grava `quota_at_start`/`quota_at_end` no relatório. Também para *antes* do próximo bloco
+se a janela já passou de `OSFORGE_EVAL_QUOTA_STOP` (padrão 85%). Suíte: `./tests/test-harness-quota.sh`.
+
+**Aviso de janela ao modelo.** O `context-threshold` também avisa o modelo quando a janela
+de 5 h passa de 80% e de 95% — uma vez por faixa por janela (`OSFORGE_QUOTA_BANDS`;
+desliga com `OSFORGE_QUOTA_THRESHOLD=off`). A fonte
+é `~/.osforge/quota.json`, alimentado por **uma linha opcional** no *seu* script de
+statusline (o OSForge não o gerencia):
+
+```bash
+printf '%s' "$input" | python3 "$HOME/.claude/hooks/quota-record.py" >/dev/null 2>&1 &
+```
+
+Sem essa linha (ou com auth por API key, onde `rate_limits` vem nulo) o aviso fica em
+silêncio. Rejeições registradas no transcript também alimentam o arquivo. Detalhes:
+`docs/HOOKS.md`. Suíte: `./tests/test-quota.sh`.
+
+**Auditoria por chamada.** Tabela `calls` no `osforge-db`, uma linha por chamada de modelo
+(sessão principal e subagentes). O custo equivalente em API é **derivado na consulta** a
+partir de `claude-code/pricing.json` (datado) — nunca armazenado, então corrigir o preço
+corrige o histórico.
+
+```bash
+osforge-db backfill-calls [slug]          # importa dos transcripts existentes
+osforge-db calls --project=osforge --since=7d --by=model
+osforge-db prune-calls --older-than=90d   # retenção
+```
+
+Suíte: `./tests/test-calls.sh`.
+
+**Juiz isolado** (`scripts/lib/judge.py`). Mede *qualidade* (review achou o problema certo?
+plano proporcional?), não trigger. Roda na assinatura — **nunca `--bare`**, que força
+cobrança por API key — sem ferramentas, sem MCP, sem o seu `CLAUDE.md`, num diretório vazio;
+o isolamento é verificado a cada chamada pelo evento `system/init`. Saída: uma linha JSON
+validada contra o schema; exit 75 em rejeição de cota. O contrato roda offline em
+`./tests/test-judge.sh`; o uso real espera o experimento **E-J0** (1–3 chamadas curtas,
+autorizadas à parte).
 
 **Os helpers que rodam na sua máquina** (`install-skill`, `install-mcp`, em `~/.local/bin`)
 têm a sua própria suíte, `./tests/test-installers.sh` (22 verificações), que inclui rodá-los

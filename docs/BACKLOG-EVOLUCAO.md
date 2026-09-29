@@ -32,7 +32,9 @@ Aberto, e por quê:
 Tudo que foi fechado tem teste que falha sem a correção. As dez suítes offline somam
 **441 verificações** (assertions 60 · contratos de hook 59 · gateguard-grant 84 · deploy
 lifecycle 64 · continuidade 35 · canvas 34 · scan-secrets 33 · contexto/tokens 27 ·
-gateguard-sql 23 · installers 22) e nenhuma toca o `~/.claude` de ninguém.
+gateguard-sql 23 · installers 22) e nenhuma toca o `~/.claude` de ninguém. O Pacote 01
+(B-025–B-029) somou mais cinco — judge 77 · eval-cases 39 · quota 30 · calls 26 · harness-quota
+15 — e os contratos de hook foram a 62: **631 verificações** em quinze suítes.
 
 Fora do backlog, uma coisa que a auditoria não tinha visto: `scripts/install-skill.sh` —
 deployado em `~/.local/bin` e metade do Model A — usava `mapfile`, que **não existe no
@@ -224,6 +226,28 @@ e `scripts/check-portability.py` no preflight e no CI para impedir a classe inte
 - **R-02:** `_deny` em `hooks/gateguard.py` encurta a mensagem a partir da 4ª negação da sessão.
 - **Esforço:** P cada.
 - **Resultado:** R-11 imediata: `alwaysApply: false` em `nextjs-patterns`, `typescript-strict`, `code-style` (contagem 11 always-on + 3 por glob checada por `check-counts`). R-16: `scripts/check-unicode.py` (faixas do ECC + tolerância a `U+FE0F` após pictograma e em keycaps) no preflight e no CI; árvore limpa (709 arquivos). R-02: `gateguard.py` encurta a mensagem da 4ª negação consecutiva em diante e zera a contagem no grant (`tests/test-gateguard-grant.sh` 79 → 84 casos).
+
+## Pacote 01 — Qualidade e controle (ADR-016)
+
+Proposta e specs: [`intake/PACOTE-01-qualidade-e-controle.md`](intake/PACOTE-01-qualidade-e-controle.md). Decisões D-1, D-2, D-3, D-N1, D-N2 e D-N3 aprovadas em 2026-09-28 como recomendadas; rótulos duvidosos (`systematic-debugging n4`, `tdd-workflow n4`, `adversarial-review n2`) mantidos.
+
+### B-025 · Casos de eval com categoria, casos críticos e validação sem modelo — ✅
+- **Spec:** [N-01](intake/needle/SPEC-N01-casos-de-eval.md). **Chamadas pagas:** 0. `tests/test-eval-cases.sh`; `--dry`: 170 casos, 20 críticos, 0 problemas.
+
+### B-026 · Harness respeita a cota — ✅
+- **Spec:** [L-01 parte B](intake/laya/SPEC-L01-guarda-de-cota.md). **Dependências:** B-027. **Chamadas pagas:** 0. `tests/test-harness-quota.sh`; rejeição → `NOT RUN` + exit 75; parada preventiva em `OSFORGE_EVAL_QUOTA_STOP` (85%).
+
+### B-027 · Aviso de janela de cota ao modelo — ✅
+- **Spec:** [L-01 parte A](intake/laya/SPEC-L01-guarda-de-cota.md). **Chamadas pagas:** 0. `tests/test-quota.sh`; hooks continuam 11 (D-2).
+
+### B-028 · Auditoria por chamada, custo derivado, retenção — ✅
+- **Spec:** [L-03](intake/laya/SPEC-L03-auditoria-por-chamada.md). **Chamadas pagas:** 0. `tests/test-calls.sh`; `osforge-db calls|backfill-calls|prune-calls`; custo derivado de `claude-code/pricing.json`, nunca armazenado.
+
+### B-029 · Juiz isolado sobre a assinatura — ✅ (E-J0 4/4, 2026-09-29)
+- **Spec:** [L-02](intake/laya/SPEC-L02-juiz-isolado.md). **Chamadas pagas:** 1–3 (E-J0). `tests/test-judge.sh`.
+
+### B-030 · Registro de injeção de instincts — ⏸ só se o E5 for rodar
+- **Insumo:** [L-04](intake/laya/DECISAO-L04-laco-de-aprendizado.md).
 
 ## Adiados — só com evidência
 

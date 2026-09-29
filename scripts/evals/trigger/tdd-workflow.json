@@ -1,5 +1,5 @@
 {
-  "$schema": "osforge/trigger-eval/v1",
+  "$schema": "osforge/trigger-eval/v2",
   "skill": "tdd-workflow",
   "rel": "tdd-workflow",
   "core": true,
@@ -17,7 +17,8 @@
       "p4",
       "p5",
       "n4",
-      "n5"
+      "n5",
+      "n6"
     ],
     "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
   },
@@ -25,52 +26,74 @@
     {
       "id": "p1",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "tdd-workflow",
       "query": "Preciso implementar o cálculo de frete por faixa de CEP. Por onde começo?"
     },
     {
       "id": "p2",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "tdd-workflow",
       "query": "Vou adicionar validação de CPF no cadastro. Quero fazer direito, sem sair codando."
     },
     {
       "id": "p3",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "tdd-workflow",
       "query": "Esse bug do desconto cumulativo já voltou duas vezes. Como garanto que não volta de novo?"
     },
     {
       "id": "p4",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "tdd-workflow",
       "query": "Quero escrever a função de parcelamento hoje e não quebrar o checkout."
     },
     {
       "id": "p5",
       "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "tdd-workflow",
       "query": "Vamos fazer o endpoint de refund. Prefiro ir devagar e com segurança."
     },
     {
       "id": "n1",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "O que é o padrão Repository e quando vale a pena usar?"
     },
     {
       "id": "n2",
       "should_trigger": false,
+      "category": "vizinho",
       "query": "Roda a suíte de testes e me diz quais estão vermelhos agora."
     },
     {
       "id": "n3",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "Traduz esse README para inglês, por favor."
     },
     {
       "id": "n4",
       "should_trigger": false,
+      "category": "vizinho",
       "query": "Qual a diferença entre Vitest e Jest em performance?"
     },
     {
       "id": "n5",
       "should_trigger": false,
+      "category": "irrelevante",
       "query": "Preciso de um resumo do que mudou no último release do Prisma."
+    },
+    {
+      "id": "n6",
+      "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
+      "query": "Sem testes agora, é um script descartável para migrar uns dados uma vez só."
     }
   ]
 }
