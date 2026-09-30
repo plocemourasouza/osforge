@@ -11,7 +11,7 @@ declarada era carregada em ~metade — prompt-only chega nesse teto e para.
 
 Verifica, na última resposta do assistant:
   1. Demanda acionável sem linha de rota  → bloqueia 1x pedindo a linha.
-  2. Linha declara `skill: X` sem evidência de carga no transcript (invocação
+  2. Linha declara `skill: X` sem evidência de carga em nenhum turno da sessão (invocação
      da Skill tool, Read/Bash do SKILL.md, ou despacho de subagente citando a
      skill) → bloqueia 1x: carregue ou declare `skill: none`.
 
@@ -85,9 +85,12 @@ def main():
     except OSError:
         allow()
 
-    # Reconstituir a ÚLTIMA resposta do assistant: blocos de texto + tools usadas.
+    # Reconstituir a ÚLTIMA resposta do assistant (blocos de texto + tools usadas).
+    # Evidência de carga de skill vale para a sessão inteira: uma skill carregada num
+    # turno anterior continua no contexto, e exigir recarga a cada turno só gasta tokens.
     texts, tools, skills_invoked, files_touched = [], [], set(), []
     last_user_seen = False
+    in_last_turn = True
     for ln in reversed(lines):
         if not ln.strip().startswith("{"):
             continue
@@ -102,16 +105,19 @@ def main():
             if isinstance(content, str) or (isinstance(content, list) and any(
                     isinstance(c, dict) and c.get("type") == "text" for c in content)):
                 last_user_seen = True
-                break
+                in_last_turn = False
+                continue
         if t == "assistant":
             for c in ((e.get("message") or {}).get("content") or []):
                 if not isinstance(c, dict):
                     continue
                 if c.get("type") == "text":
-                    texts.append(c.get("text", ""))
+                    if in_last_turn:
+                        texts.append(c.get("text", ""))
                 elif c.get("type") == "tool_use":
                     name = c.get("name", "")
-                    tools.append(name)
+                    if in_last_turn:
+                        tools.append(name)
                     inp = json.dumps(c.get("input", {}), ensure_ascii=False)
                     if name == "Skill":
                         m = re.search(r'"skill":\s*"([^"]+)"', inp)

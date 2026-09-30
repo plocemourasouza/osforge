@@ -43,6 +43,7 @@ CC-43	claude-code	Stop	route-guard	claude-code/stop-skill-echo-bypass.json	block
 CC-44	claude-code	Stop	route-guard	claude-code/stop-skill-loaded.json	silent
 CC-45	claude-code	Stop	route-guard	claude-code/stop-active.json	silent
 CC-46	claude-code	Stop	route-guard	claude-code/stop-question.json	silent
+CC-51	claude-code	Stop	route-guard	claude-code/stop-skill-loaded-earlier-turn.json	silent
 CC-47	claude-code	Stop	notify-done	claude-code/stop-with-route.json	silent
 CC-48	claude-code	Stop	session-save	claude-code/stop-with-route.json	silent
 CC-14	claude-code	UserPromptSubmit	context-threshold	claude-code/userprompt-plain.json	silent

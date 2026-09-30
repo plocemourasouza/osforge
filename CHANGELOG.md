@@ -10,6 +10,15 @@ All notable changes to OSForge are recorded here. The format follows
 
 ## [Unreleased]
 
+## [5.2.1] — 2026-09-30
+
+### Fixed
+
+- **`route-guard` demanded a skill reload every turn**: load evidence was collected only from
+  the last response, so a skill loaded in an earlier turn of the same session still blocked the
+  Stop with "declared but not loaded". Evidence now spans every turn in the transcript window;
+  the route-line check stays on the last response. Contract case CC-51; `run-contracts` 62 → 63.
+
 ## [5.2.0] — 2026-09-29
 
 Pacote 01 — quality and control before the first paid eval run (ADR-016, B-025–B-029).
@@ -427,6 +436,7 @@ Orchestrator layer + 14 planning/quality/context skills (`arch-builder`, `prd-bu
 31 skills, 7 agents, 4 rules, first Python hooks; repository established as the single source
 of truth for `~/.claude/` and `~/.cursor/` (ADR-001).
 
+[5.2.1]: https://github.com/plocemourasouza/osforge/releases/tag/v5.2.1
 [5.2.0]: https://github.com/plocemourasouza/osforge/releases/tag/v5.2.0
 [5.1.0]: https://github.com/plocemourasouza/osforge/releases/tag/v5.1.0
 [5.0.0]: https://github.com/plocemourasouza/osforge/releases/tag/v5.0.0
