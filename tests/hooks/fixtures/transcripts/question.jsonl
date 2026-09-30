@@ -1,0 +1,2 @@
+{"type": "user", "message": {"role": "user", "content": [{"type": "text", "text": "o que é um off-by-one?"}]}}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "text", "text": "É um erro de limite em laços ou índices, normalmente um a mais ou a menos."}]}}

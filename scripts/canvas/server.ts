@@ -16,7 +16,10 @@
  * │ Defenses still applied (defense in depth):                               │
  * │  - :id sanitized to [a-z0-9_-] to block path traversal.                  │
  * │  - Writes are confined to outputs/canvas/feedback/ via basename only.    │
- * │  - POST feedback is structurally validated before it touches disk.       │
+ * │  - POST feedback is validated against the ARTIFACT before it touches    │
+ * │    disk: artifact exists, revision matches, every response addresses a  │
+ * │    block of the right type, decision.action in the enum (E-A44/B-020).  │
+ * │  - A browser Origin that is not this loopback server is refused (403).  │
  * └─────────────────────────────────────────────────────────────────────────┘
  *
  * Run:  bun scripts/canvas/server.ts [--dir=<path>]
@@ -173,8 +176,81 @@ async function handleGetFeedback(id: string): Promise<Response> {
   return Response.json(parsed);
 }
 
+const DECISION_ACTIONS = new Set(["approve", "edit", "reject"]);
+const MAX_COMMENT = 20_000;
+const MAX_BODY_BYTES = 256 * 1024;
+
+/** A browser request must come from THIS server; tools without Origin (curl) are local by definition. */
+function isAllowedOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin || origin === "null") return !origin;   // "null" (file://, sandboxed) is refused
+  try {
+    const u = new URL(origin);
+    const loopback = u.hostname === "127.0.0.1" || u.hostname === "localhost" || u.hostname === "[::1]";
+    return loopback && (u.port === String(PORT) || (u.port === "" && PORT === 80));
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validate one feedback response against its block. Returns an error string or null.
+ * Rules mirror skills/osforge-canvas/references/schema.md → "Feedback File".
+ */
+function validateResponse(blockId: string, resp: unknown, block: Record<string, unknown>): string | null {
+  if (!isRecord(resp)) return `responses.${blockId} must be an object`;
+  const type = resp["type"];
+  if (type !== block["type"]) return `responses.${blockId}.type must be "${String(block["type"])}"`;
+  if (type === "checklist") {
+    const checked = resp["checked"];
+    if (!Array.isArray(checked) || !checked.every((x) => typeof x === "string")) {
+      return `responses.${blockId}.checked must be string[]`;
+    }
+    const items = Array.isArray(block["items"]) ? (block["items"] as unknown[]) : [];
+    const ids = new Set(items.map((it) => (isRecord(it) ? String(it["id"]) : "")));
+    const unknown = (checked as string[]).find((x) => !ids.has(x));
+    if (unknown !== undefined) return `responses.${blockId}.checked has unknown item "${unknown}"`;
+    return null;
+  }
+  if (type === "form") {
+    const values = resp["values"];
+    if (!isRecord(values)) return `responses.${blockId}.values must be an object`;
+    const fields = Array.isArray(block["fields"]) ? (block["fields"] as unknown[]) : [];
+    const ids = new Set(fields.map((f) => (isRecord(f) ? String(f["id"]) : "")));
+    for (const [k, v] of Object.entries(values)) {
+      if (!ids.has(k)) return `responses.${blockId}.values has unknown field "${k}"`;
+      if (typeof v !== "string" || v.length > MAX_COMMENT) return `responses.${blockId}.values.${k} must be a string`;
+    }
+    return null;
+  }
+  if (type === "decision") {
+    const action = resp["action"];
+    if (typeof action !== "string" || !DECISION_ACTIONS.has(action)) {
+      return `responses.${blockId}.action must be one of approve|edit|reject`;
+    }
+    const offered = Array.isArray(block["options"]) ? (block["options"] as unknown[]).map(String) : [];
+    if (offered.length > 0 && !offered.includes(action)) {
+      return `responses.${blockId}.action "${action}" is not offered by this block`;
+    }
+    const comment = resp["comment"];
+    if (comment !== undefined && (typeof comment !== "string" || comment.length > MAX_COMMENT)) {
+      return `responses.${blockId}.comment must be a string`;
+    }
+    const reqFor = Array.isArray(block["commentRequiredFor"]) ? (block["commentRequiredFor"] as unknown[]).map(String) : [];
+    if (reqFor.includes(action) && (typeof comment !== "string" || comment.trim() === "")) {
+      return `responses.${blockId}: action "${action}" requires a comment`;
+    }
+    return null;
+  }
+  return `responses.${blockId}: block type "${String(type)}" is not interactive`;
+}
+
 async function handlePostFeedback(id: string, request: Request): Promise<Response> {
   if (!isSafeId(id)) return jsonError("invalid id", 400);
+  if (!isAllowedOrigin(request)) return jsonError("forbidden origin", 403);
+
+  const length = Number(request.headers.get("content-length") ?? "0");
+  if (Number.isFinite(length) && length > MAX_BODY_BYTES) return jsonError("body too large", 413);
 
   let body: unknown;
   try {
@@ -187,11 +263,45 @@ async function handlePostFeedback(id: string, request: Request): Promise<Respons
   if (body["artifactId"] !== id) {
     return jsonError(`body.artifactId must equal ":id" ("${id}")`, 400);
   }
-  if (typeof body["revision"] !== "number") {
-    return jsonError("body.revision must be a number", 400);
+  const revision = body["revision"];
+  if (typeof revision !== "number" || !Number.isInteger(revision) || revision < 1) {
+    return jsonError("body.revision must be an integer >= 1", 400);
   }
 
-  await Bun.write(join(FEEDBACK_DIR, `${id}.json`), JSON.stringify(body, null, 2));
+  // The artifact is the source of truth: no artifact, no feedback (E-A44).
+  const artifact = await readJsonResilient(join(ARTIFACTS_DIR, `${id}.json`));
+  if (!isRecord(artifact)) return jsonError("artifact not found", 404);
+  const current = typeof artifact["revision"] === "number" ? (artifact["revision"] as number) : 1;
+  if (revision !== current) {
+    return jsonError(`revision mismatch: feedback is for rev ${revision}, artifact is rev ${current} — reload the page`, 409);
+  }
+
+  const responses = body["responses"];
+  if (responses !== undefined && !isRecord(responses)) return jsonError("body.responses must be an object", 400);
+  const blocks = Array.isArray(artifact["blocks"]) ? (artifact["blocks"] as unknown[]) : [];
+  const byId = new Map<string, Record<string, unknown>>();
+  for (const b of blocks) if (isRecord(b) && typeof b["id"] === "string") byId.set(b["id"] as string, b);
+  for (const [blockId, resp] of Object.entries(responses ?? {})) {
+    const block = byId.get(blockId);
+    if (!block) return jsonError(`responses.${blockId}: no such block in artifact`, 400);
+    const err = validateResponse(blockId, resp, block);
+    if (err) return jsonError(err, 400);
+  }
+  const comment = body["comment"];
+  if (comment !== undefined && (typeof comment !== "string" || comment.length > MAX_COMMENT)) {
+    return jsonError("body.comment must be a string", 400);
+  }
+
+  // Only the validated fields are persisted (the viewer's payload is rebuilt, not echoed).
+  const record = {
+    artifactId: id,
+    revision,
+    submittedAt: typeof body["submittedAt"] === "string" ? body["submittedAt"] : new Date().toISOString(),
+    receivedAt: new Date().toISOString(),
+    responses: responses ?? {},
+    ...(typeof comment === "string" ? { comment } : {}),
+  };
+  await Bun.write(join(FEEDBACK_DIR, `${id}.json`), JSON.stringify(record, null, 2));
   return Response.json({ ok: true });
 }
 

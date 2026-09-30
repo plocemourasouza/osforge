@@ -1,0 +1,6 @@
+{
+ "command": "rm -rf ~",
+ "workspace_roots": [
+  "__HOME__/proj"
+ ]
+}

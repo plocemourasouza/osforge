@@ -68,10 +68,18 @@ print("\n".join(out))
 PY
 }
 
-mkdir -p "$TARGET"
+# Só cria o destino quando vai mesmo instalar: `--list` é uma consulta e não deve
+# deixar um .claude/skills vazio em qualquer diretório de onde foi chamado.
+$LIST_ONLY || mkdir -p "$TARGET"
 installed=0
 for term in "${TERMS[@]}"; do
-  mapfile -t hits < <(resolve_paths "$term")
+  # `mapfile` é bash 4+; o /bin/bash do macOS é 3.2 e este script é deployado em
+  # ~/.local/bin, ou seja, roda na máquina do usuário. Laço de leitura equivalente.
+  # (scripts/check-portability.py impede que isso volte.)
+  hits=()
+  while IFS= read -r _line; do
+    [ -n "$_line" ] && hits+=("$_line")
+  done < <(resolve_paths "$term")
   if [ ${#hits[@]} -eq 0 ]; then
     echo "⚠️  nenhuma skill casa com: $term" >&2; continue
   fi

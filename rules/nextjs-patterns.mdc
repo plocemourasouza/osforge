@@ -1,7 +1,7 @@
 ---
 description: Mandatory patterns for Next.js 15+, React 19, Prisma 6, Supabase, shadcn/ui and MCPs — apply in every implementation on the stack
 globs: ["**/*.ts", "**/*.tsx", "src/**", "app/**", "prisma/**"]
-alwaysApply: true
+alwaysApply: false
 ---
 
 # Technical Stack and Next.js Patterns

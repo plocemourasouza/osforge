@@ -1,0 +1,61 @@
+# Third-party notices
+
+OSForge is MIT-licensed (see LICENSE). The items below are the parts of this repository that
+adapt text or mechanisms from other MIT-licensed projects. Mechanisms re-implemented from scratch
+carry `inspired_by` in their header or frontmatter and are listed here for completeness; the two
+textual adaptations reproduce the upstream license notice as the MIT license requires.
+
+## affaan-m/ECC — MIT License, Copyright (c) 2026 Affaan Mustafa
+
+Audited at commit dd6ee538aee0f548d4a6b520118f875431fd749e (docs/ANALISE-COMPARATIVA-ECC.md).
+
+Textual adaptation (wording rewritten for OSForge's review model, structure and examples kept):
+- `skills/quality/adversarial-review/SKILL.md` § "Pre-report gate", "Critical and Important
+  require proof", "Zero findings is a valid result", "Common false positives" — from
+  `agents/code-reviewer.md` §§ "Pre-Report Gate", "HIGH / CRITICAL Require Proof", "It Is
+  Acceptable And Expected To Return Zero Findings", "Common False Positives".
+- `scripts/check-unicode.py` — the invisible/bidi code-point ranges are the same set ECC's
+  `unicode-safety` check uses.
+
+Clean-room re-implementations (mechanism only, no code copied):
+- `hooks/canvas-feedback.py` ← `scripts/hooks/plan-canvas-pending.js` (Stop-hook feedback drain)
+- `hooks/context-threshold.py` ← `scripts/lib/transcript-context.js` (context from `message.usage`)
+- `scripts/osforge-state.py` ← the installer's id-keyed hook merge idea (`event|matcher|command`)
+- `tests/hooks/run-contracts.sh` ← the idea of running the real hook command strings against
+  payload fixtures for every harness
+
+MIT License
+
+Copyright (c) 2026 Affaan Mustafa
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+## zunoworks/gateguard — via ECC
+
+`hooks/gateguard.py` is OSForge's Python re-implementation of the fact-forcing gate that ECC
+ships as `scripts/hooks/gateguard-fact-force.js`, which itself credits
+https://github.com/zunoworks/gateguard (package `gateguard-ai`). No code was copied; the gate
+design (demand importers / API surface / schema / verbatim instruction before Edit, Write or a
+destructive command) is theirs.
+
+## mattpocock/skills — MIT
+
+`docs/SKILL-STANDARD.md` and `docs/SKILL.template.md` adopt the activation/predictability model
+from mattpocock/skills (`inspired_by` in the files). The "smart zone / dumb zone" vocabulary in
+`claude-code/SKILLS.md` is from mattpocock/dictionary-of-ai-coding.

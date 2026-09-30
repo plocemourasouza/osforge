@@ -1,0 +1,117 @@
+{
+  "$schema": "osforge/trigger-eval/v2",
+  "skill": "clean-code",
+  "rel": "clean-code",
+  "core": true,
+  "note": "Legibilidade e estrutura de código existente.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3",
+      "n7",
+      "n8"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5",
+      "n6"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "clean-code",
+      "query": "Esse arquivo tem 900 linhas e ninguém entende mais. Ajuda a organizar?"
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "clean-code",
+      "query": "Tem lógica duplicada em quatro lugares do módulo de pedidos."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "clean-code",
+      "query": "Os nomes das funções aqui não dizem nada. Quero melhorar isso."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "clean-code",
+      "query": "Esse componente faz coisa demais. Como quebro sem quebrar o app?"
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "clean-code",
+      "query": "Herdei esse código e quero deixá-lo apresentável antes de mexer na feature."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "expect_route": "systematic-debugging",
+      "query": "Por que esse teste está falhando no CI?"
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "expect_route": "tdd-workflow",
+      "query": "Adiciona o campo telefone no formulário de cadastro."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Qual a complexidade do quicksort no pior caso?"
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Faz o build de produção e me diz o tamanho do bundle."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Escreve a documentação da API pública."
+    },
+    {
+      "id": "n6",
+      "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
+      "query": "Não mexe na estrutura nem nos nomes; só corrige o erro de digitação na mensagem de erro."
+    },
+    {
+      "id": "n7",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "code-review",
+      "query": "Revisa esse PR antes do merge."
+    },
+    {
+      "id": "n8",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "nextjs-react-expert",
+      "query": "Esse componente está lento para renderizar a lista de produtos."
+    }
+  ]
+}

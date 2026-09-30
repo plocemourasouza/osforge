@@ -98,8 +98,16 @@ When you're done, submit the feedback in the browser — I'll read it next.
 
 ### 4. Next turn — read feedback before continuing
 
-**Every time the user sends any message after an active artifact**, read
-`<DATA_DIR>/feedback/<slug>.json` before any other action.
+The Stop hook `hooks/canvas-feedback.py` enforces this: when you try to end a turn while
+feedback for one of **this project's** artifacts (id prefixed with the project slug) is
+still unread, the Stop is blocked once and the feedback content is handed to you (revision,
+decisions, checked items, form values, general comment). Respond to it — revise the artifact
+(`revision + 1`) or answer the user — and the next Stop goes through. The hook never loops
+(`stop_hook_active`), passes when the server is down, and can be disabled with
+`OSFORGE_CANVAS_FEEDBACK=off`.
+
+Still, **every time the user sends any message after an active artifact**, read
+`<DATA_DIR>/feedback/<slug>.json` before any other action — the hook only fires at Stop.
 
 Mandatory checks:
 - Does the file exist? If not: feedback not yet submitted — notify the user.
@@ -134,5 +142,4 @@ types, required fields, feedback format, and ID rules.
 
 - Interactive charts (`chart` block type)
 - Block-level streaming via SSE (send blocks as they are generated)
-- `UserPromptSubmit` hook to automatically inject feedback into the context
 - Standalone compiled binary for deploy without Bun installed

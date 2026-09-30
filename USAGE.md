@@ -22,6 +22,7 @@ Complete installation, configuration, and day-to-day usage instructions.
 12. [Smart Model Dispatch](#12-smart-model-dispatch)
 13. [Recommended MCPs](#13-recommended-mcps)
 14. [High-Risk Agents](#14-high-risk-agents)
+15. [Evals — medir em vez de achar](#15-evals--medir-em-vez-de-achar)
 
 ---
 
@@ -30,7 +31,7 @@ Complete installation, configuration, and day-to-day usage instructions.
 Novo no OSForge? Leia nesta ordem:
 
 1. **Este USAGE.md §1-2** — instalação e deploy
-2. **[`claude-code/SKILLS.md`](claude-code/SKILLS.md)** — índice de triggers das 169 skills
+2. **[`claude-code/SKILLS.md`](claude-code/SKILLS.md)** — índice de triggers das 177 skills
 3. **[`claude-code/CLAUDE.md`](claude-code/CLAUDE.md)** — orquestração de sessão, workflow de agentes, regras globais
 
 > **1 sessão = 1 projeto.** Nunca misture projetos em uma única sessão Claude Code — polui o contexto, duplica prompts de permissão e degrada a precisão do `resume`. Abra uma sessão-sede em `~/Development/osforge` para planejamento e uma sessão-satélite por projeto para execução. Detalhes completos em [§10](#10-operação-multi-projeto--sessão-sede-e-satélites).
@@ -76,7 +77,38 @@ cargo install llmfit
 ./deploy.sh --with-qdrant   # Also provision vector memory (Qdrant via Docker, opt-in)
 ./deploy.sh --no-qdrant     # Skip Qdrant; keep SQLite vector backend (no prompt)
 ./deploy.sh --no-archify    # Skip the pinned Archify install (system-diagrams falls back to Mermaid)
+./deploy.sh --doctor        # Report managed files that are missing/edited and hooks that drifted; writes nothing
+./deploy.sh --uninstall     # Remove what OSForge installed and you did not edit; restore settings (--dry-run to preview)
+./deploy.sh --restore=ID    # Put back the backups taken by run ID (see ~/.claude_backups/)
+./deploy.sh --force         # Overwrite managed files you edited (backup first)
+./deploy.sh --adopt         # Take over files of yours that collide with OSForge's (backup first)
+./deploy.sh --force-hooks   # Overwrite a managed hook entry you edited in settings.json
 ```
+
+### The deploy has a memory (ADR-015, stage 3)
+
+Everything the deploy writes is recorded in `~/.osforge/install-state.json` — one SHA-256 per
+file, each managed hook entry by id (`event|matcher|script`), the previous value of every
+settings key it sets, and the MCP servers it added. Every later run consults that record, so:
+
+- a file it wrote and you did not touch is updated; a file it wrote and **you edited** is kept
+  (your version is backed up to `~/.claude_backups/<run>/`; `--force` overwrites);
+- a file that exists and **is not OSForge's** is skipped with a warning (`--adopt` takes it
+  over, with backup). A file that matches an *older* revision of the repo is recognised as a
+  legacy install and simply updated;
+- a skill, agent or command that **left the repo** is removed — only if it is still byte-identical
+  to what was installed. Your own skills in `~/.claude/skills/` and the ones installed with
+  `install-skill --global` are never deleted (no more `rsync --delete`);
+- your hooks in `settings.json` — even under `~/.claude/hooks/` — are never touched. A managed
+  hook entry you edited by hand **aborts the deploy** with the diff (`--force-hooks` overrides);
+- a second run with nothing changed writes nothing and takes no backup (idempotent);
+- `--doctor` exits 1 and lists what drifted; `--uninstall` leaves only your files, removes the
+  managed hook entries, restores the settings keys it had set, removes the MCP servers it had
+  added, and keeps your data (`~/.osforge/osforge.db`, `config.json`).
+
+`tests/test-deploy-lifecycle.sh` runs the real `deploy.sh` against a seeded temporary HOME and
+checks all of the above by execution (61 checks, ~1 min, offline). `OSFORGE_DEPLOY_LEGACY=1`
+selects the old copy/rsync path for one release.
 
 ### What the deploy does
 
@@ -84,13 +116,13 @@ cargo install llmfit
 - Copies `CLAUDE.md` and `SKILLS.md`
 - Syncs 27 agents (orchestrator + 26 specialists) to `~/.claude/agents/`
 - Copies 9 `spec-*` commands to `~/.claude/commands/`
-- Installs 8 hooks to `~/.claude/hooks/`
-- Non-destructive MCP merge into `~/.claude.json` (hooks OSForge-managed refletem o repo; hooks de usuário preservados)
+- Installs 11 hooks to `~/.claude/hooks/` (plus the shared `hooks/lib/`)
+- Merges the managed hook entries into `~/.claude/settings.json` by id (yours are preserved) and the MCP servers into `~/.claude.json` (non-destructive)
 
 **Cursor (`~/.cursor/`)**
 - Copies `SKILLS.md`
 - Syncs agents to `~/.cursor/agents/`
-- Copies 13 rules (11 `.mdc` + 2 `.md`) to `~/.cursor/rules/`
+- Copies 14 rules (12 `.mdc` + 2 `.md`) to `~/.cursor/rules/`
 - Copies hook scripts
 
 **Archify (third-party, pinned)**
@@ -292,7 +324,7 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 
 ## 5. Always-On Rules (Cursor)
 
-The 13 rules (11 `.mdc` + 2 `.md`: `artifact-chain`, `orchestrator-awareness`) are automatically active in all Cursor sessions. No activation needed.
+The 14 rules (12 `.mdc` + 2 `.md`: `artifact-chain`, `orchestrator-awareness`) are active in Cursor sessions. Eleven are always on; the three **stack rules** — `nextjs-patterns`, `typescript-strict`, `code-style` — carry `alwaysApply: false` and load only when a file matching their `globs` is in context, so a Markdown-only or Python session does not pay for them (R-11, B-024). Taking them to Claude Code as `~/.claude/rules/` stays conditional on confirming, with `scripts/measure-context.py` in a real session, that `paths:` is honoured there.
 
 | Rule | Effect |
 |---|---|
@@ -452,27 +484,35 @@ cp hooks/*.py hooks/*.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*
 ```
 
-### What each hook does (8 hooks)
+### What each hook does (11 hooks)
 
 **`canvas-autostart.sh`** (SessionStart)
 - Inicia o OSForge Canvas em `localhost:4242` se ainda não estiver rodando
 - Permite que Claude escreva artefatos JSON e o viewer os renderize em tempo real via SSE
 
 **`session-resume.sh`** (SessionStart)
-- Detecta se o `cwd` é um projeto registrado no `osforge-db`
-- Injeta automaticamente `osforge-db resume <slug>` + `board` no início da sessão (~50 tokens)
+- Resolve o projeto com `hooks/lib/project_id.py`: `OSFORGE_PROJECT` → raiz git registrada
+  (`bind-project --root=.`; vale para subdiretórios e worktrees) → hash do remote → basename
+- Injeta o `resume` e as tarefas abertas **deste** projeto, num envelope explícito de dados
+  (não instruções), com teto (`OSFORGE_RESUME_MAX_CHARS`, 1200) e sem segredos (`hooks/lib/scrub.py`).
+  O board cross-project não é mais injetado (B-019)
 
 **`protect-tests.sh`** (PostToolUse — Write | Edit | MultiEdit)
-- Alerta e loga quando um arquivo de teste foi alterado
-- Lembrete: testes devem falhar por lógica de negócio, nunca ajustados para passar
+- No Claude Code, injeta `additionalContext` quando um arquivo de teste é alterado, lembrando a
+  Iron Law do TDD (teste só muda para descrever comportamento, nunca para passar); no Cursor só loga
+- Log em `~/.osforge/logs/hooks.log` (nunca em `/tmp`)
 
 **`observe-capture.py`** (PostToolUse — Edit | Write | MultiEdit | Bash)
 - Grava observações de comportamento do Claude para alimentar o ciclo `evolve`
 - Permite que padrões de sessão virem skills automaticamente
 
-**`scan-secrets.sh`** (PreToolUse — Bash)
-- Bloqueia commits que contenham segredos/secrets antes de chegar ao `git push`
-- Varre por padrões: API keys, tokens, senhas em variáveis, credentials hardcoded
+**`scan-secrets.sh` → `scan-secrets.py`** (PreToolUse — Bash; Cursor `beforeShellExecution`)
+- Bloqueia `git commit`/`git push` quando o **diff staged** adiciona algo com cara de credencial
+  (`sk-…`, `ghp_…`, `AKIA…`, token Slack, credencial em URL, bloco PEM, `password = …`), e
+  `rm -rf` apontado para `/`, `~`, `$HOME` ou diretório pai
+- Lê o payload dos dois harnesses (`tool_input.command` no Claude Code, `command` no Cursor) e
+  responde no contrato de cada um. Fixture com chave falsa: `osforge:allow-secret` na linha.
+  Kill-switch: `OSFORGE_SCAN_SECRETS=off`. Teste offline: `tests/test-scan-secrets.sh`
 
 **`gateguard.py`** (PreToolUse — Bash; UserPromptSubmit)
 - Fact-forcing: bloqueia **somente** o irreversível/compartilhado:
@@ -483,7 +523,11 @@ chmod +x ~/.claude/hooks/*
   responde com uma autorização explícita — "tem permissão", "pode executar/apagar", "autorizo",
   "vai em frente", "go ahead", "you have my permission" — ou com uma afirmativa curta como
   mensagem inteira ("sim", "pode", "ok", "vai", "yes"), o gate libera **até a sua próxima mensagem**
-  (teto de 15 min, `OSFORGE_GATEGUARD_GRANT_TTL` em segundos). O agente recebe um
+  (teto de 15 min, `OSFORGE_GATEGUARD_GRANT_TTL` em segundos). **A liberação só vale como
+  resposta a uma negação**: sem nada negado nos últimos 10 min na sessão, "ok"/"sim"/"proceed"
+  são conversa e não abrem o gate (B-001; `OSFORGE_GATEGUARD_LEGACY_GRANT=1` restaura o
+  comportamento antigo por uma versão). `gateguard: sessão liberada` continua explícito e não
+  precisa de negação. O agente recebe um
   `additionalContext` avisando que não precisa apresentar os fatos. Negações nunca liberam
   ("não pode apagar", "don't do it"); um afirmativo perdido numa mensagem longa também não.
   - `gateguard: sessão liberada` (ou `gateguard off`) → abre o gate até o fim da sessão
@@ -495,11 +539,28 @@ chmod +x ~/.claude/hooks/*
 - Testes: `tests/test-gateguard-sql.sh` (detector SQL) e `tests/test-gateguard-grant.sh` (liberação)
 
 **`notify-done.sh`** (Stop)
-- Envia notificação macOS via AppleScript ao término da sessão
+- Envia notificação macOS via AppleScript quando o agente para normalmente (`stop_hook_active=false`;
+  a versão anterior tinha a lógica invertida — B-007); silencioso fora do macOS; log em `~/.osforge/logs/hooks.log`
+
+**`context-threshold.py`** (UserPromptSubmit)
+- Lê o `message.usage` da última resposta no transcript (input + cache_read + cache_creation = o
+  contexto real enviado ao modelo) e injeta o aviso do Context Budget **uma vez por faixa por
+  sessão**: ≥120k "salve estado e termine o passo", ≥150k "PARE, handoff, compacte". Lê só o fim
+  do transcript (~1 ms). `OSFORGE_CONTEXT_BANDS=120000,150000`; kill-switch `OSFORGE_CONTEXT_THRESHOLD=off` (B-021)
+
+**`canvas-feedback.py`** (Stop)
+- Se o usuário enviou feedback no Canvas para um artefato **deste projeto** (id prefixado com o
+  slug) que o agente ainda não leu, bloqueia o Stop **uma vez** com o conteúdo (decisões,
+  checklist, form, comentário — sem segredos); o Stop seguinte passa. Respeita `stop_hook_active`,
+  passa se o servidor está fora do ar; entregas registradas em `<data dir>/.delivered.json`.
+  Kill-switch: `OSFORGE_CANVAS_FEEDBACK=off`. Padrão do `plan-canvas-pending.js` do ECC (MIT), reimplementado (B-020)
 
 **`session-save.py`** (Stop)
-- Parseia o transcript da sessão e grava `set-resume` automático no `osforge-db`
-- Garante que o contexto da sessão não se perde entre janelas
+- Lê o **fim** do transcript (últimos 4 MB) e grava `set-resume` com as últimas 8 mensagens,
+  arquivos editados e ferramentas — segredos removidos antes de gravar (B-019)
+- Mesma identidade de projeto do `session-resume` (B-018); só grava em projeto registrado
+- Grava também os tokens da sessão por modelo (`osforge-db add-usage`, uma vez por `message.id`);
+  `osforge-db usage <slug>`, `board` e `stats` mostram o total do projeto (B-022)
 
 ---
 
@@ -509,7 +570,18 @@ Persistent state management for OSForge projects via SQLite local database. No s
 
 ### How it works
 
-After deploy, `osforge-db` is available at `~/.local/bin/osforge-db`. The global database lives at `~/.osforge/osforge.db` and accumulates state across all projects on your machine.
+After deploy, `osforge-db` is available at `~/.local/bin/osforge-db`. The global database lives at `~/.osforge/osforge.db` (`OSFORGE_DB=<path>` overrides it — used by the tests) and accumulates state across all projects on your machine.
+
+**Bind a project to its folder once**, so every hook recognises it from any subdirectory,
+worktree or clone — and two folders with the same name never share state:
+```bash
+cd ~/Development/my-project
+osforge-db upsert-project my-project "Descrição" standard active --root=. --remote=auto
+# ou, para um projeto já registrado:
+osforge-db bind-project my-project --root=. --remote=auto
+```
+Projects registered before this still resolve by folder name; binding is what makes
+`My_Proj` ≠ `my_proj-clone` and `src/deep/` = the project root.
 
 ```bash
 # Add to ~/.zshrc or ~/.bashrc if not already there:
@@ -945,6 +1017,90 @@ Four agents from The Agency can execute autonomous actions with real-world impac
 4. Each action is timestamped for audit purposes
 
 To use without the checkpoint in a controlled context, remove the `---⚠️ HIGH-RISK AGENT---` block from the beginning of the corresponding `.md` file.
+
+---
+
+## 15. Evals — medir em vez de achar
+
+Três suítes. Todas exigem `--model` e rodam cada caso `--runs` vezes (padrão 3); todas
+aceitam `--dry`, que lista os casos, valida os arquivos e **não chama modelo nenhum** —
+é o `--dry` que roda no CI, a rodada paga é sempre decisão sua.
+
+| Suíte | Pergunta que responde | Comando |
+|---|---|---|
+| `scripts/run-trigger-eval.sh` | a skill dispara quando deve **e só quando deve**? (5 positivas + 5 negativas por skill, 15 skills) | `--model X --split eval` |
+| `scripts/test-orchestrator-routing.sh` | o orquestrador alcança agente, skill e tier? | `--model X --id r01` |
+| `scripts/test-skill-triggering.sh` | as skills core disparam sem o nome no prompt? | `--model X --skill tdd-workflow` |
+
+```bash
+./scripts/run-trigger-eval.sh --dry                  # 170 casos (73 no split eval); diz quanto custaria
+./scripts/run-trigger-eval.sh --model claude-sonnet-4-6 --split eval --runs 3     --report docs/evals/$(date +%F)-claude-sonnet-4-6-trigger.md
+```
+
+**PASS é `k = N`.** `0 < k < N` é **FLAKY** e reprova: um caso que acerta 2 de 3 não está
+verde, está instável — e é essa lista que o experimento de estabilidade consome.
+`--home DIR` roda contra um deploy limpo em vez do seu `~/.claude` vivo; `--report`
+grava o resultado em `docs/evals/` com SHA, modelo, comando, tokens e tempo
+(`docs/evals/README.md`). Sem `--report`, o resultado morre no terminal.
+
+**Custo:** cada caso são `--runs` chamadas de API. `--dry` imprime o total antes.
+A lógica de veredito roda offline em `./tests/test-assertions.sh` (67 casos, custo zero):
+é lá que se pega regressão de asserção sem depender de o modelo se comportar.
+
+### Qualidade e controle (Pacote 01, ADR-016)
+
+**Casos v2.** Cada caso de trigger tem `category` (`positivo` · `vizinho` · `irrelevante` ·
+`negacao`) e `critical`; o relatório agrega por categoria, então um FLAKY diz *onde* a skill
+falha. `--dry` agora reprova caso órfão (skill inexistente) ou malformado — antes isso só
+aparecia na rodada paga. Validação offline: `./tests/test-eval-cases.sh`.
+
+**O harness respeita a cota.** Uma rejeição de cota no meio da rodada não vira mais uma
+cascata de FLAKY/FAIL: o harness para, marca o resto como `NOT RUN`, sai com **exit 75** e
+grava `quota_at_start`/`quota_at_end` no relatório. Também para *antes* do próximo bloco
+se a janela já passou de `OSFORGE_EVAL_QUOTA_STOP` (padrão 85%). Suíte: `./tests/test-harness-quota.sh`.
+
+**Aviso de janela ao modelo.** O `context-threshold` também avisa o modelo quando a janela
+de 5 h passa de 80% e de 95% — uma vez por faixa por janela (`OSFORGE_QUOTA_BANDS`;
+desliga com `OSFORGE_QUOTA_THRESHOLD=off`). A fonte
+é `~/.osforge/quota.json`, alimentado por **uma linha opcional** no *seu* script de
+statusline (o OSForge não o gerencia):
+
+```bash
+printf '%s' "$input" | python3 "$HOME/.claude/hooks/quota-record.py" >/dev/null 2>&1 &
+```
+
+Sem essa linha (ou com auth por API key, onde `rate_limits` vem nulo) o aviso fica em
+silêncio — e também na extensão do VS Code, que não executa o statusline (visto em
+2026-09-29); lá sobra só a fonte do transcript, que registra a rejeição quando ela acontece. Rejeições registradas no transcript também alimentam o arquivo. Detalhes:
+`docs/HOOKS.md`. Suíte: `./tests/test-quota.sh`.
+
+**Auditoria por chamada.** Tabela `calls` no `osforge-db`, uma linha por chamada de modelo
+(sessão principal e subagentes). O custo equivalente em API é **derivado na consulta** a
+partir de `claude-code/pricing.json` (datado) — nunca armazenado, então corrigir o preço
+corrige o histórico.
+
+```bash
+osforge-db backfill-calls [slug]          # importa dos transcripts existentes
+osforge-db calls --project=osforge --since=7d --by=model
+osforge-db prune-calls --older-than=90d   # retenção
+```
+
+Suíte: `./tests/test-calls.sh`.
+
+**Juiz isolado** (`scripts/lib/judge.py`). Mede *qualidade* (review achou o problema certo?
+plano proporcional?), não trigger. Roda na assinatura — **nunca `--bare`**, que força
+cobrança por API key — sem ferramentas, sem MCP, sem o seu `CLAUDE.md`, num diretório vazio;
+o isolamento é verificado a cada chamada pelo evento `system/init`. Saída: uma linha JSON
+validada contra o schema; exit 75 em rejeição de cota. O contrato roda offline em
+`./tests/test-judge.sh`; o uso real espera o experimento **E-J0** (1–3 chamadas curtas,
+autorizadas à parte).
+
+**Os helpers que rodam na sua máquina** (`install-skill`, `install-mcp`, em `~/.local/bin`)
+têm a sua própria suíte, `./tests/test-installers.sh` (22 verificações), que inclui rodá-los
+num shell **sem os builtins do bash 4** — o `/bin/bash` do macOS é 3.2, e foi exatamente
+assim que um `mapfile` deixou o `install-skill` quebrado sem nenhum gate perceber (`bash -n`
+só faz o parse). `python3 scripts/check-portability.py`, no preflight do deploy e no CI,
+impede a classe inteira.
 
 ---
 

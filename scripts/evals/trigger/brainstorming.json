@@ -1,0 +1,109 @@
+{
+  "$schema": "osforge/trigger-eval/v2",
+  "skill": "brainstorming",
+  "rel": "brainstorming",
+  "core": true,
+  "note": "Refinamento socrático de uma ideia ANTES de spec ou código.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3",
+      "n7"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5",
+      "n6"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "brainstorming",
+      "query": "Tive uma ideia de um app que ajuda freelancer a cobrar cliente atrasado. O que acha?"
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "brainstorming",
+      "query": "Quero fazer alguma coisa com IA para a clínica da minha irmã, mas ainda tá vago."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "brainstorming",
+      "query": "Tô entre fazer um marketplace ou um SaaS de agendamento. Me ajuda a pensar?"
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "brainstorming",
+      "query": "Quero explorar formas de monetizar a base que já tenho, sem decidir nada ainda."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "brainstorming",
+      "query": "Pensei numa feature de comunidade dentro do produto. Vale a pena investigar?"
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "prd-builder",
+      "query": "Escreve o PRD da feature de comunidade que a gente já fechou o escopo."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "expect_route": "tdd-workflow",
+      "query": "Implementa o botão de compartilhar no card do produto."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Corrige o erro de tipagem no arquivo de rotas."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Quais são os planos e preços do Supabase hoje?"
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Faz o deploy da branch de staging."
+    },
+    {
+      "id": "n6",
+      "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
+      "query": "Não quero discutir a ideia, já está decidida; só me diz por onde começar a implementar."
+    },
+    {
+      "id": "n7",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "arch-builder",
+      "query": "Já decidi fazer o marketplace; agora quero definir a arquitetura."
+    }
+  ]
+}

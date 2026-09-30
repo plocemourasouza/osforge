@@ -1,0 +1,9 @@
+{
+ "hook_event_name": "PreToolUse",
+ "session_id": "c3",
+ "tool_name": "Bash",
+ "tool_input": {
+  "command": "ls -la"
+ },
+ "cwd": "__HOME__/proj"
+}

@@ -8,22 +8,37 @@ Regras:
 - Python stdlib exclusivamente (json, sys, subprocess, pathlib, os).
 - Silencioso e exit 0 se projeto não registrado, transcript ausente ou qualquer erro.
 - Caminhos absolutos.
-- Log de diagnóstico em /tmp/osforge-session-save.log (opcional, não bloqueia).
+- Log de diagnóstico em ~/.osforge/logs/session-save.log (OSFORGE_HOOK_DEBUG=1; nunca em /tmp).
 """
 
 import json
 import os
 import subprocess
 import sys
+import time
+from collections import deque
 from pathlib import Path
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib"))
+try:
+    from project_id import resolve as _resolve_project, find_db_cmd as _find_db_cmd   # B-018
+    from scrub import scrub as _scrub                                                  # B-019
+except Exception:                                   # pragma: no cover
+    _resolve_project = None
+    _find_db_cmd = None
+    _scrub = lambda t: t
+try:
+    from quota import record_rejection as _record_rejection                            # A2 (B-027)
+except Exception:                                   # pragma: no cover
+    _record_rejection = None
 
 # ── Configuração ──────────────────────────────────────────────────────────────
 
 MAX_STDIN     = 1024 * 1024  # 1 MB
-MAX_LINES     = 2000          # linhas máximas do transcript a processar
+TAIL_BYTES    = 4 * 1024 * 1024  # lê só o FIM do transcript (E-A22: antes lia as 2000 primeiras linhas)
 MAX_USR_MSGS  = 8             # últimas mensagens do usuário a incluir
 MAX_FILES     = 20            # arquivos modificados a incluir
-LOG_FILE      = "/tmp/osforge-session-save.log"
+LOG_FILE      = os.path.join(os.environ.get("OSFORGE_LOG_DIR", os.path.expanduser("~/.osforge/logs")), "session-save.log")
 ENABLE_LOG    = os.environ.get("OSFORGE_HOOK_DEBUG", "") == "1"
 
 
@@ -31,6 +46,7 @@ def _log(msg: str) -> None:
     if not ENABLE_LOG:
         return
     try:
+        os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
         with open(LOG_FILE, "a", encoding="utf-8") as f:
             f.write(f"{msg}\n")
     except Exception:
@@ -41,45 +57,74 @@ def _log(msg: str) -> None:
 
 def _find_osforge_db() -> list[str]:
     """Retorna o comando (lista de strings) para invocar osforge-db."""
+    if _find_db_cmd:
+        return _find_db_cmd()
     home = Path.home()
-    candidates = [
-        home / ".local" / "bin" / "osforge-db",
-        home / "Development" / "osforge" / "scripts" / "osforge-db.py",
-        Path(__file__).resolve().parent.parent / "scripts" / "osforge-db.py",
-    ]
-    for c in candidates:
+    for c in (home / ".local" / "bin" / "osforge-db",
+              Path(__file__).resolve().parent.parent / "scripts" / "osforge-db.py"):
         if c.exists():
-            if c.suffix == ".py":
-                return ["python3", str(c)]
-            return [str(c)]
+            return ["python3", str(c)] if c.suffix == ".py" else [str(c)]
     return []
 
 
 # ── Resolve slug do projeto ───────────────────────────────────────────────────
 
 def _resolve_slug(db_cmd: list[str]) -> str | None:
-    """
-    Deriva o slug a partir do basename do cwd (lowercase, underscores → hífens)
-    e verifica se existe no banco global.
-    """
-    cwd = os.getcwd()
-    slug = Path(cwd).name.lower().replace("_", "-")
-    if not slug:
+    """Identidade única (B-018): OSFORGE_PROJECT → root_path → remote_hash → basename.
+    Só grava resume para projeto REGISTRADO (status conhecido)."""
+    if not _resolve_project:
         return None
-
     try:
-        result = subprocess.run(
-            db_cmd + ["list-projects", "--status=all", "--json"],
-            capture_output=True, text=True, timeout=5
-        )
-        projects = json.loads(result.stdout) if result.stdout.strip() else []
-        match = next((p for p in projects if p.get("slug") == slug), None)
-        if match:
-            return slug
+        res = _resolve_project(db_cmd=db_cmd)
     except Exception as exc:
         _log(f"[session-save] slug resolve error: {exc}")
-
+        return None
+    if res and res.get("status") not in (None, "unregistered"):
+        return res["slug"]
     return None
+
+
+# ── A2: rejeição de cota pelo transcript (B-027, SPEC-L01, EV-C04) ────────────
+
+def _detect_rejection(transcript_path: str) -> None:
+    """Lê o MESMO fim do transcript (EV-O07) já lido pelo Stop e procura a linha de rejeição de
+    cota: `quotaLimits.status == "rejected"` (EV-C04). Formato exato não-documentado e sujeito a
+    mudança — leitura tolerante, campo ausente = nada a fazer. Independe de projeto registrado
+    (a cota é da conta, não do projeto) e roda antes de qualquer checagem de slug/osforge-db."""
+    if _record_rejection is None:
+        return
+    if os.environ.get("OSFORGE_QUOTA_THRESHOLD", "").strip().lower() in ("off", "0", "false"):
+        return
+    try:
+        p = Path(transcript_path)
+        size = p.stat().st_size
+        with open(p, "rb") as fb:
+            if size > TAIL_BYTES:
+                fb.seek(size - TAIL_BYTES)
+                fb.readline()
+            data = fb.read().decode("utf-8", errors="replace")
+    except OSError:
+        return
+    for line in reversed(data.splitlines()):
+        line = line.strip()
+        if not line or "quotaLimits" not in line:
+            continue
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(entry, dict):
+            continue
+        ql = entry.get("quotaLimits")
+        if not isinstance(ql, dict):
+            msg = entry.get("message")
+            ql = msg.get("quotaLimits") if isinstance(msg, dict) else None
+        if isinstance(ql, dict) and ql.get("status") == "rejected":
+            try:
+                _record_rejection(ql)
+            except Exception as exc:
+                _log(f"[session-save] record_rejection error: {exc}")
+        return   # only the most recent quotaLimits line matters
 
 
 # ── Extrai resumo do transcript JSONL ────────────────────────────────────────
@@ -98,68 +143,74 @@ def _extract_summary(transcript_path: str) -> str | None:
             _log(f"[session-save] transcript não encontrado: {transcript_path}")
             return None
 
-        user_messages: list[str] = []
+        user_messages: deque = deque(maxlen=MAX_USR_MSGS)   # só as ÚLTIMAS N (E-A22)
         files_modified: set[str] = set()
         tools_used: set[str] = set()
         parse_errors = 0
 
-        with open(p, encoding="utf-8", errors="replace") as f:
-            for i, line in enumerate(f):
-                if i >= MAX_LINES:
-                    break
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    entry = json.loads(line)
-                except json.JSONDecodeError:
-                    parse_errors += 1
-                    continue
+        # Lê o fim do arquivo: uma sessão longa tem o que importa nas últimas linhas.
+        size = p.stat().st_size
+        with open(p, "rb") as fb:
+            if size > TAIL_BYTES:
+                fb.seek(size - TAIL_BYTES)
+                fb.readline()                       # descarta a linha cortada
+            data = fb.read().decode("utf-8", errors="replace")
 
-                role = (entry.get("role") or
-                        entry.get("type") or
-                        entry.get("message", {}).get("role", ""))
+        for line in data.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                parse_errors += 1
+                continue
 
-                # Mensagens do usuário
-                if role == "user":
-                    raw = (entry.get("message", {}).get("content")
-                           or entry.get("content") or "")
-                    if isinstance(raw, str):
-                        text = raw.strip()
-                    elif isinstance(raw, list):
-                        text = " ".join(
-                            b.get("text", "") for b in raw
-                            if isinstance(b, dict) and b.get("type") == "text"
-                        ).strip()
-                    else:
-                        text = ""
-                    if text:
-                        # Remove system-reminder injections para não poluir o resumo
-                        first_line = text.split("\n")[0][:200]
-                        if first_line and not first_line.startswith("<system-reminder"):
-                            user_messages.append(first_line)
+            role = (entry.get("role") or
+                    entry.get("type") or
+                    entry.get("message", {}).get("role", ""))
 
-                # Tool uses diretos
-                if role in ("tool_use",) or entry.get("type") == "tool_use":
-                    tool_name = entry.get("tool_name") or entry.get("name") or ""
-                    if tool_name:
-                        tools_used.add(tool_name)
-                    file_path = (entry.get("tool_input", {}) or {}).get("file_path") or ""
-                    if file_path and tool_name in ("Edit", "Write", "MultiEdit"):
-                        files_modified.add(file_path)
+            # Mensagens do usuário
+            if role == "user":
+                raw = (entry.get("message", {}).get("content")
+                       or entry.get("content") or "")
+                if isinstance(raw, str):
+                    text = raw.strip()
+                elif isinstance(raw, list):
+                    text = " ".join(
+                        b.get("text", "") for b in raw
+                        if isinstance(b, dict) and b.get("type") == "text"
+                    ).strip()
+                else:
+                    text = ""
+                if text:
+                    # Remove system-reminder injections para não poluir o resumo;
+                    # limpa segredos ANTES de persistir (E-A23).
+                    first_line = _scrub(text.split("\n")[0][:200])
+                    if first_line and not first_line.startswith("<system-reminder"):
+                        user_messages.append(first_line)
 
-                # Content blocks dentro de mensagens assistant (formato Claude Code JSONL)
-                if role in ("assistant",):
-                    for block in (entry.get("message", {}).get("content") or []):
-                        if not isinstance(block, dict):
-                            continue
-                        if block.get("type") == "tool_use":
-                            tool_name = block.get("name") or ""
-                            if tool_name:
-                                tools_used.add(tool_name)
-                            fp = (block.get("input") or {}).get("file_path") or ""
-                            if fp and tool_name in ("Edit", "Write", "MultiEdit"):
-                                files_modified.add(fp)
+            # Tool uses diretos
+            if role in ("tool_use",) or entry.get("type") == "tool_use":
+                tool_name = entry.get("tool_name") or entry.get("name") or ""
+                if tool_name:
+                    tools_used.add(tool_name)
+                file_path = (entry.get("tool_input", {}) or {}).get("file_path") or ""
+                if file_path and tool_name in ("Edit", "Write", "MultiEdit"):
+                    files_modified.add(file_path)
+
+            # Content blocks dentro de mensagens assistant (formato Claude Code JSONL)
+            if role in ("assistant",):
+                for block in (entry.get("message", {}).get("content") or []):
+                    if not isinstance(block, dict):
+                        continue
+                    if block.get("type") == "tool_use":
+                        tool_name = block.get("name") or ""
+                        if tool_name:
+                            tools_used.add(tool_name)
+                        fp = (block.get("input") or {}).get("file_path") or ""
+                        if fp and tool_name in ("Edit", "Write", "MultiEdit"):
+                            files_modified.add(fp)
 
         if parse_errors > 0:
             _log(f"[session-save] {parse_errors} linhas não parseáveis no transcript")
@@ -170,8 +221,7 @@ def _extract_summary(transcript_path: str) -> str | None:
 
         parts: list[str] = []
 
-        last_msgs = user_messages[-MAX_USR_MSGS:]
-        parts.append("tarefas: " + " | ".join(last_msgs))
+        parts.append("tarefas: " + " | ".join(user_messages))
 
         if files_modified:
             sorted_files = sorted(files_modified)[:MAX_FILES]
@@ -188,11 +238,163 @@ def _extract_summary(transcript_path: str) -> str | None:
         return None
 
 
+# ── Tokens por sessão e por modelo (B-022) ────────────────────────────────────
+
+MAX_USAGE_BYTES = 64 * 1024 * 1024   # transcript maior que isso: uso não computado (nunca trava o Stop)
+
+
+def _build_call_row(e: dict, msg: dict, u: dict, model: str, session_id: str) -> dict | None:
+    """Uma linha para a tabela `calls` (B-028), a partir de uma entrada de transcript já validada
+    (tem message.usage). None quando falta timestamp ou message.id (ambos NOT NULL no schema).
+    Sem conteúdo de mensagem — só metadados/tokens (privacidade)."""
+    ts = e.get("timestamp")
+    if not isinstance(ts, str) or not ts:
+        return None
+    mid = msg.get("id") or e.get("uuid")
+    if not mid:
+        return None
+    cache_creation = u.get("cache_creation")
+    if isinstance(cache_creation, dict):
+        cw5 = cache_creation.get("ephemeral_5m_input_tokens") or 0
+        cw1h = cache_creation.get("ephemeral_1h_input_tokens") or 0
+    else:
+        cw5 = u.get("cache_creation_input_tokens") or 0
+        cw1h = 0
+    # Tolerante como _detect_rejection (quotaLimits): isApiErrorMessage/error podem estar no
+    # nível da entrada OU dentro de message.
+    is_err = e.get("isApiErrorMessage") or msg.get("isApiErrorMessage")
+    error = (e.get("error") or msg.get("error") or "unknown") if is_err else None
+    return {
+        "message_id": str(mid),
+        "session_id": session_id,
+        "ts": ts,
+        "model": model,
+        "input": int(u.get("input_tokens") or 0),
+        "output": int(u.get("output_tokens") or 0),
+        "cache_read": int(u.get("cache_read_input_tokens") or 0),
+        "cache_write_5m": int(cw5),
+        "cache_write_1h": int(cw1h),
+        "sidechain": 1 if e.get("isSidechain") else 0,
+        "stop_reason": msg.get("stop_reason"),
+        "error": _scrub(error) if error else None,
+    }
+
+def _extract_usage_and_calls(transcript_path: str, session_id: str) -> tuple[dict, list]:
+    """Passada única sobre o transcript: mantém os totais por modelo (B-022, inalterado) e, além
+    disso, monta uma linha por `message.id` único para a tabela `calls` (B-028) — evita ler o
+    transcript duas vezes. Mesmo teto de tamanho e mesma regra de dedup de antes."""
+    totals: dict = {}
+    calls_rows: list = []
+    seen: set = set()
+    try:
+        p = Path(transcript_path)
+        if p.stat().st_size > MAX_USAGE_BYTES:
+            _log("[session-save] transcript grande demais para computar uso")
+            return {}, []
+        with open(p, encoding="utf-8", errors="replace") as f:
+            for line in f:
+                if '"usage"' not in line:
+                    continue
+                try:
+                    e = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                msg = e.get("message") if isinstance(e, dict) else None
+                if not isinstance(msg, dict) or msg.get("role") != "assistant":
+                    continue
+                u = msg.get("usage")
+                if not isinstance(u, dict):
+                    continue
+                mid = msg.get("id") or e.get("uuid")
+                if mid in seen:
+                    continue
+                seen.add(mid)
+                model = str(msg.get("model") or "unknown")
+                t = totals.setdefault(model, {"input": 0, "output": 0, "cache_read": 0, "cache_create": 0, "turns": 0})
+                for key, field in (("input", "input_tokens"), ("output", "output_tokens"),
+                                   ("cache_read", "cache_read_input_tokens"), ("cache_create", "cache_creation_input_tokens")):
+                    v = u.get(field)
+                    if isinstance(v, (int, float)):
+                        t[key] += int(v)
+                t["turns"] += 1
+                row = _build_call_row(e, msg, u, model, session_id)
+                if row:
+                    calls_rows.append(row)
+    except Exception as exc:
+        _log(f"[session-save] erro ao computar uso: {exc}")
+    return totals, calls_rows
+
+
+def _save_usage(db_cmd: list[str], slug: str, session_id: str, totals: dict) -> None:
+    for model, t in totals.items():
+        try:
+            subprocess.run(db_cmd + ["add-usage", slug, f"--session={session_id}", f"--model={model}",
+                                     f"--input={t['input']}", f"--output={t['output']}", f"--cache-read={t['cache_read']}",
+                                     f"--cache-create={t['cache_create']}", f"--turns={t['turns']}"],
+                           capture_output=True, text=True, timeout=10)
+        except Exception as exc:
+            _log(f"[session-save] add-usage error: {exc}")
+
+# ── Auditoria por chamada (B-028) ─────────────────────────────────────────────
+
+def _calls_enabled() -> bool:
+    return os.environ.get("OSFORGE_CALLS", "").strip().lower() not in ("off", "0", "false")
+
+def _save_calls(db_cmd: list[str], slug: str, calls_rows: list) -> None:
+    """Envia todas as linhas de uma vez via --stdin (um subprocess para a sessão inteira, não
+    um por chamada) para `add-calls` (B-028)."""
+    if not calls_rows:
+        return
+    payload = "\n".join(json.dumps(r) for r in calls_rows)
+    try:
+        result = subprocess.run(db_cmd + ["add-calls", slug, "--stdin"],
+                                 input=payload, capture_output=True, text=True, timeout=15)
+        if result.returncode != 0:
+            _log(f"[session-save] add-calls falhou: {result.stderr.strip()}")
+    except Exception as exc:
+        _log(f"[session-save] add-calls error: {exc}")
+
+def _prune_marker_path() -> str:
+    return os.environ.get("OSFORGE_CALLS_PRUNE_MARKER") or os.path.expanduser("~/.osforge/calls-pruned-at")
+
+def _maybe_prune_calls(db_cmd: list[str]) -> None:
+    """No máximo uma vez por dia (marcador em arquivo), pede ao osforge-db para podar linhas de
+    `calls` mais antigas que a janela de retenção. OSFORGE_CALLS_RETENTION_DAYS sobrescreve o
+    padrão (90); '0' desabilita a poda (B-028)."""
+    retention = os.environ.get("OSFORGE_CALLS_RETENTION_DAYS", "90").strip()
+    if retention == "0":
+        return
+    try:
+        days = int(retention)
+    except ValueError:
+        days = 90
+    marker = _prune_marker_path()
+    today = time.strftime("%Y-%m-%d", time.gmtime())
+    try:
+        if os.path.exists(marker):
+            with open(marker, encoding="utf-8") as f:
+                if f.read().strip() == today:
+                    return
+    except OSError:
+        pass
+    try:
+        subprocess.run(db_cmd + ["prune-calls", f"--older-than={days}d"],
+                        capture_output=True, text=True, timeout=15)
+    except Exception as exc:
+        _log(f"[session-save] prune-calls error: {exc}")
+    try:
+        os.makedirs(os.path.dirname(marker), exist_ok=True)
+        with open(marker, "w", encoding="utf-8") as f:
+            f.write(today)
+    except OSError:
+        pass
+
+
 # ── Persiste o resumo ─────────────────────────────────────────────────────────
 
 def _save_resume(db_cmd: list[str], slug: str, summary: str) -> None:
-    # Trunca para evitar resumos gigantes no banco
-    truncated = summary[:800]
+    # Trunca para evitar resumos gigantes no banco; última passada de limpeza.
+    truncated = _scrub(summary)[:800]
     try:
         result = subprocess.run(
             db_cmd + ["set-resume", slug, truncated],
@@ -213,11 +415,17 @@ def main() -> None:
     stdin_data = sys.stdin.read(MAX_STDIN)
 
     transcript_path: str | None = None
+    session_id = ""
     try:
         hook_input = json.loads(stdin_data)
+        if not isinstance(hook_input, dict):
+            hook_input = {}
         tp = hook_input.get("transcript_path")
         if isinstance(tp, str) and tp:
             transcript_path = tp
+        sid = hook_input.get("session_id")
+        if isinstance(sid, str):
+            session_id = sid
     except Exception:
         pass  # stdin ausente ou malformado — continua sem transcript
 
@@ -236,6 +444,10 @@ def main() -> None:
         except Exception:
             transcript_path = None
 
+    # A2: independente de projeto registrado — a janela de cota é da conta, não do projeto.
+    if transcript_path:
+        _detect_rejection(transcript_path)
+
     db_cmd = _find_osforge_db()
     if not db_cmd:
         _log("[session-save] osforge-db não encontrado")
@@ -249,6 +461,16 @@ def main() -> None:
     if not transcript_path:
         _log("[session-save] transcript_path ausente — nada a fazer")
         return
+
+    sid_for_usage = session_id or Path(transcript_path).stem
+    usage, calls_rows = _extract_usage_and_calls(transcript_path, sid_for_usage)
+    if usage:
+        _save_usage(db_cmd, slug, sid_for_usage, usage)
+    if _calls_enabled():
+        _save_calls(db_cmd, slug, calls_rows)
+        _maybe_prune_calls(db_cmd)
+    else:
+        _log("[session-save] OSFORGE_CALLS=off — calls não gravadas")
 
     summary = _extract_summary(transcript_path)
     if not summary:

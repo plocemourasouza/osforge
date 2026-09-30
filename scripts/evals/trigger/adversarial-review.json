@@ -1,0 +1,101 @@
+{
+  "$schema": "osforge/trigger-eval/v2",
+  "skill": "adversarial-review",
+  "rel": "quality/adversarial-review",
+  "core": true,
+  "note": "Crítica cínica de um artefato, procurando o que falta.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5",
+      "n6"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "adversarial-review",
+      "query": "Esse spec parece completo demais. Destrói ele para mim."
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "adversarial-review",
+      "query": "Quero a leitura mais pessimista possível desse documento."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "adversarial-review",
+      "query": "Assume que quem escreveu isso foi descuidado e me mostra onde."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "adversarial-review",
+      "query": "O que um revisor implicante acharia de errado aqui?"
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "adversarial-review",
+      "query": "Procura o que está FALTANDO nesse desenho, não o que está escrito errado."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "code-review",
+      "query": "Revisa meu PR seguindo o checklist normal do time."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "spec-builder",
+      "query": "Escreve o spec da feature de notificações."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Formata esse documento em markdown."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Traduz o documento para inglês."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Resume esse spec em cinco bullets."
+    },
+    {
+      "id": "n6",
+      "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
+      "query": "Não precisa criticar nada, só confere se o spec tem todas as seções do template."
+    }
+  ]
+}

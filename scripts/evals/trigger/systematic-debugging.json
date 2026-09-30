@@ -1,0 +1,102 @@
+{
+  "$schema": "osforge/trigger-eval/v2",
+  "skill": "systematic-debugging",
+  "rel": "systematic-debugging",
+  "core": true,
+  "note": "Loop de feedback determinístico antes de mexer no código.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5",
+      "n6"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "systematic-debugging",
+      "query": "Minha API devolve 500 em produção mas funciona local. Como investigo isso sem chutar?"
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "systematic-debugging",
+      "query": "O teste passa sozinho e falha quando roda a suíte inteira. Não faço ideia do porquê."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "category": "positivo",
+      "critical": true,
+      "expect_route": "systematic-debugging",
+      "query": "O upload falha de vez em quando, uma vez a cada vinte. Já mexi em três lugares e piorou."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "systematic-debugging",
+      "query": "Tem um vazamento de memória no worker e eu não consigo reproduzir na minha máquina."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "systematic-debugging",
+      "query": "Depois do deploy de ontem os webhooks pararam. Preciso achar a causa, não remendar."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "expect_route": "tdd-workflow",
+      "query": "Escreve um teste unitário para essa função de formatação de data."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "category": "vizinho",
+      "query": "Como configuro o debugger do VS Code para Next.js?"
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "expect_route": "clean-code",
+      "query": "Refatora esse componente em dois menores."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "category": "vizinho",
+      "query": "Qual a diferença entre erro 502 e 504?"
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Adiciona um log de auditoria quando o usuário troca a senha."
+    },
+    {
+      "id": "n6",
+      "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
+      "query": "Não precisa investigar a causa, só reverte o último commit que eu resolvo depois."
+    }
+  ]
+}

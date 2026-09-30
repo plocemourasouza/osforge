@@ -1,0 +1,110 @@
+{
+  "$schema": "osforge/trigger-eval/v2",
+  "skill": "frontend-design",
+  "rel": "frontend-design",
+  "core": true,
+  "note": "Decisões visuais e de interface de alto nível.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3",
+      "n7"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5",
+      "n6"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "frontend-design",
+      "query": "Essa tela está feia e eu não sei dizer por quê."
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "frontend-design",
+      "query": "Quero que a landing pareça profissional, hoje parece template genérico."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "frontend-design",
+      "query": "O dashboard tem informação demais e ninguém acha o que importa."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "frontend-design",
+      "query": "Preciso definir a cara do produto antes de sair montando componente."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "frontend-design",
+      "query": "A hierarquia visual dessa página está confusa para o usuário novo."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "expect_route": "nextjs-react-expert",
+      "query": "Por que o useEffect está rodando duas vezes?"
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "tailwind-patterns",
+      "query": "Configura o Tailwind com o preset da empresa."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Escreve o texto do e-mail de boas-vindas."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Otimiza as imagens do diretório public."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "expect_route": "nextjs-react-expert",
+      "query": "Corrige o erro de hidratação no Next."
+    },
+    {
+      "id": "n6",
+      "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
+      "query": "Não quero opinião de design; só troca a cor do botão para o azul da marca."
+    },
+    {
+      "id": "n7",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "ui-audit",
+      "query": "Audita essa tela contra as regras de acessibilidade e contraste."
+    }
+  ]
+}

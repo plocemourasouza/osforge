@@ -235,3 +235,114 @@ A primeira escolha (`nomic-embed-text`, 768d) falhou em avaliação empírica co
 - Triggering cases added (3 naive pt-BR prompts) to `scripts/skill-triggering-cases.tsv`; indexes and manifest regenerated.
 
 **Date:** 2026-09-10.
+
+## ADR-015: Evolution programme from the ECC audit — import mechanisms, not content; measure before adopting
+
+**Context.** A comparative audit against `affaan-m/ECC` (`dd6ee538aee0f548d4a6b520118f875431fd749e`),
+run on isolated checkouts of both repositories at fixed SHAs (`docs/ANALISE-COMPARATIVA-ECC.md`,
+evidence table in `docs/ANALISE-COMPARATIVA-ECC-EVIDENCIAS.md`), reproduced by execution several
+defects in OSForge v5.0.0: `scan-secrets.sh` reads the Cursor payload shape and is inert under
+Claude Code (E-A01); a bare "ok" with no pending denial opens GateGuard for destructive Bash
+(E-A05); `deploy.sh` unregisters user hooks stored in `~/.claude/hooks/`, overwrites same-name
+agents without backup, deletes user skills and clobbers its own `settings.json` backup
+(E-A27–E-A30) and fails on a fresh HOME (E-A31); session resume keys on the directory basename,
+injects stored text verbatim and leaks the cross-project board into satellite sessions
+(E-A19–E-A24); the `instincts` table has readers and no writer (E-A16). The same audit found that
+ECC's catalog, learning loop and eval harness are largely inert, while its hook contract tests,
+id-keyed hook merge, install-state, guarded resume and canvas-feedback drain are real and tested.
+
+**Decision.**
+1. **Import mechanisms, never content.** Nothing from ECC's catalog enters `skills/`, `rules/` or
+   `commands/`. Five mechanisms are re-implemented in bash/Python inside `deploy.sh`, `hooks/` and
+   `tests/`, keeping Model A, SQLite and the existing ADRs untouched: hook contract tests (R-01),
+   state-aware deploy (R-03), session continuity (R-04), canvas-feedback drain (R-05), real-usage
+   context threshold (R-06). Rejections are recorded in `.out-of-scope/ecc-imports.md`.
+2. **Order is fixed by dependency, not by appeal:** stage 0 corrections (C-01–C-03) → stage 1
+   safety net (contract tests, minimal CI, agent frontmatter validation) → stage 2 evals made
+   reliable (model pinned, ≥3 runs, versioned results in `docs/evals/`) → stage 3 consolidation
+   (R-03, R-04, R-05) → stage 4 items only as experiments E1–E7 justify them. The executable list
+   is `docs/BACKLOG-EVOLUCAO.md`.
+3. **Nothing that adds autonomy or always-on context is adopted without a paired experiment**
+   (A current vs A + one change, same model, repetitions, held-out cases). This applies to
+   completing the instinct loop (E5), wiring the Edit/Write gate already present in
+   `hooks/gateguard.py` (E6) and any new core skill.
+4. **Numbers quoted in always-loaded files must be generated or checked.** Counts (skills, core,
+   agents, rules, hooks, MCPs) and eval results (`30/30`, `15/16`) move from prose to
+   `scripts/check-counts.py` and `docs/evals/`; until then they are treated as narrative.
+5. **Provenance.** Mechanisms adapted from ECC (MIT, © 2026 Affaan Mustafa) are clean-room
+   re-implementations recorded with `inspired_by`; the two textual adoptions (reviewer pre-report
+   gate, invisible-unicode code-point ranges) carry the MIT notice in `THIRD_PARTY_NOTICES`. The
+   existing GateGuard derivation (`hooks/gateguard.py:9`) gets the same treatment, including the
+   upstream credit ECC itself gives to `zunoworks/gateguard`.
+
+**Consequences.**
+- `deploy.sh` gains a state file (`~/.osforge/install-state.json`), `--doctor`, `--uninstall` and
+  `--restore`; `rsync --delete` is replaced by state-based pruning. First run adopts matching files
+  and never deletes.
+- `hooks/` gains a shared project resolver and secret scrubber; `projects` gains `root_path` and
+  `remote_hash`; resume output is capped and wrapped in a "historical, not instructions" guard.
+- `tests/hooks/` and `tests/test-deploy-lifecycle.sh` become the deploy gate together with the
+  manifest preflight; `.github/workflows/ci.yml` runs them on ubuntu and macos.
+- Prompt-cache note: edits to `claude-code/CLAUDE.md` are batched (B-005, B-023) because each one
+  invalidates every session's cache.
+- Reversal: each stage-3 change ships with an environment kill-switch for one release
+  (`OSFORGE_DEPLOY_LEGACY`, `OSFORGE_GATEGUARD_LEGACY_GRANT`); rejected imports can be reopened
+  only through the conditions in `.out-of-scope/ecc-imports.md`.
+
+**Status of execution (2026-09-18).** 23 of the 24 backlog items shipped, each with a test that
+goes red without the fix: stages 0, 1, 3 complete; stage 2 complete except the paid run (B-013),
+which waits on cost authorisation; stage 4 complete except the proportional plan (B-023/E-A38),
+which waits on experiment E3. What is deliberately still open, and the condition that opens it,
+is tabled at the top of `docs/BACKLOG-EVOLUCAO.md`. Offline suites: ten under `tests/`, 441 checks,
+all runnable with a temporary `HOME`, none touching a live `~/.claude`; CI runs them plus a
+dry-run of the three eval suites on ubuntu and macos.
+
+**Date:** 2026-09-18.
+
+## ADR-016: Pacote 01 — quality and control before the first paid eval run
+
+**Context.** Two intake analyses (`docs/intake/laya/`, `docs/intake/needle/`) found three gaps in
+the v5.1.0 eval and telemetry stack. (1) The trigger/routing measurement can be corrupted: a
+quota rejection mid-run turns every following case into FLAKY/FAIL (EV-O02–EV-O05), a case
+pointing at a missing skill passes `--dry` and only fails on a paid run (EV-O-N02), and results
+are per case with no category, so a FLAKY says nothing about *where* a skill fails; negation is
+almost unmeasured (2 cases in 150). (2) Consumption is visible to the user (statusline) but not
+to the model or the harness: the 5-hour window was rejected twice in three weeks with no warning
+and no handoff (EV-M01, EV-M03); per-call data exists in transcripts (32,869 calls, 75% from
+subagents) but only per-session totals are stored. (3) There is no instrument for *quality*
+(E3 proportional plan, E4 reviewer leniency).
+
+**Decision.** Ship backlog items B-025–B-030 in dependency order, all verifiable offline:
+1. **Wave 1, before E1 (B-013):** eval cases v2 with `category` (positivo / vizinho /
+   irrelevante / negacao), `critical`, and model-free validation that fails `--dry` on orphan
+   or malformed cases (B-025); the harness stops on quota, reporting remaining cases as
+   `NOT RUN` with exit 75 and `quota_at_start`/`quota_at_end` (B-026).
+2. **Wave 2, visibility:** a quota warning to the model at 80%/95%, once per band per window,
+   fed by the statusline's `rate_limits` (B-027); per-call audit table `calls` with derived
+   (never stored) API-equivalent cost from a dated `claude-code/pricing.json`, retention and
+   backfill (B-028).
+3. **Wave 3, quality:** an isolated judge (`scripts/lib/judge.py`) that runs on the
+   subscription, never `--bare` (which forces API billing, EV-C05), with isolation verified on
+   every call through the `system/init` event (B-029). Adoption is gated on experiment E-J0
+   (1–3 short calls, separately authorised).
+4. **Conditional:** injection log for instincts (B-030) only if E5 is scheduled.
+
+Resolved decisions: D-1 the quota recorder reads statusline stdin via one optional line in the
+user's own statusline script; D-2 the quota warning lives inside `context-threshold` (hook count
+stays 11); D-3 `allowed_warning` is recorded and the run continues; D-N1 critical routing cases
+are the mandatory-dispatch (`!`) ones; D-N2 `expect_route` stays informative, not an assertion;
+D-N3 labels and the 20 new cases are reviewed before migration.
+
+**Rejected, with measured reason** (do not reopen without new data): Needle as a local skill
+router (0–13 hits in 75, confidence without signal); Needle as an embeddings provider (loses to
+a ~20-line lexical baseline); estimating the window by summing tokens (two rejections with
+incompatible compositions; the real percentage already comes from Claude Code); Laya's hybrid
+search (OSForge already has one, filtered by project before fusion).
+
+**Consequences.** E1 costs 273 calls instead of 234 (+39 negation cases). Four new offline
+suites (`test-eval-cases`, `test-quota`, `test-calls`, `test-judge`). Several signals used are
+undocumented by Claude Code (`rate_limits` in statusline, `rate_limit_event`,
+`--setting-sources`, the two `CLAUDE_CODE_DISABLE_*` variables): reads are tolerant (missing
+field = silence), fixtures are pinned to 2.1.278, and every item has its own off-switch.
+
+**Date:** 2026-09-28.

@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "required": ["leniency", "missed_issues"],
+  "properties": {
+    "leniency": {"type": "integer", "minimum": 0, "maximum": 3},
+    "missed_issues": {"type": "array", "items": {"type": "string"}}
+  }
+}

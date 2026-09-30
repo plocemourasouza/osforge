@@ -8,7 +8,8 @@ description: >
   decompose the implementation into executable steps.
   Triggers: "how should I structure", "design the architecture", "refactor the codebase",
   "clean up folder structure", "evaluate this design", "system design".
-model: sonnet
+tools: Read, Grep, Glob, Bash
+model: opus
 color: blue
 ---
 

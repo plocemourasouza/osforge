@@ -1,14 +1,14 @@
 # 🔨 OSForge
 
-[![Version](https://img.shields.io/badge/version-5.0.0-blue)](CHANGELOG.md) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Archify](https://img.shields.io/badge/diagrams-Archify_v2.16.0-8A2BE2)](docs/ANALISE-ARCHIFY.md)
+[![Version](https://img.shields.io/badge/version-5.1.0-blue)](CHANGELOG.md) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Archify](https://img.shields.io/badge/diagrams-Archify_v2.16.0-8A2BE2)](docs/ANALISE-ARCHIFY.md)
 
 **An AI-powered development framework: skills, agents, rules, hooks, commands, and a full library of specialists — the single source of truth for your global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration.**
 
-27 specialized agents · 177 on-demand skills · 14 always-on rules · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
+27 specialized agents · 177 on-demand skills · 14 rules (Cursor: 11 always-on, 3 stack rules by file glob) · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
 
 > *"Forging the development environment for AI-powered teams."*
 
-📖 **[Usage guide → USAGE.md](USAGE.md)** · 🗒️ **[Changelog → CHANGELOG.md](CHANGELOG.md)** · 💡 **[Examples → docs/EXAMPLES.md](docs/EXAMPLES.md)** · 🧭 **[Skill standard → docs/SKILL-STANDARD.md](docs/SKILL-STANDARD.md)** · 🗺️ **[Decisions → docs/DECISIONS.md](docs/DECISIONS.md)**
+🔍 **[ECC audit & evolution backlog → docs/ANALISE-COMPARATIVA-ECC.md](docs/ANALISE-COMPARATIVA-ECC.md)** · 📖 **[Usage guide → USAGE.md](USAGE.md)** · 🗒️ **[Changelog → CHANGELOG.md](CHANGELOG.md)** · 💡 **[Examples → docs/EXAMPLES.md](docs/EXAMPLES.md)** · 🧭 **[Skill standard → docs/SKILL-STANDARD.md](docs/SKILL-STANDARD.md)** · 🗺️ **[Decisions → docs/DECISIONS.md](docs/DECISIONS.md)**
 
 ---
 
@@ -33,7 +33,7 @@
 
 AI coding agents are only as good as the context they receive. OSForge solves five problems:
 
-1. **Context efficiency** — 177 skills in a ~12K-token base (~6% of a 200K window). Everything else loads on demand.
+1. **Context efficiency** — 177 skills reachable from a fixed base (≈21k tokens by bytes/4 over the deployed files: `CLAUDE.md`, `SKILLS.md`, `CONTEXT.md`, core descriptions, agent descriptions — measured baseline in `scripts/measure-context.py`). Everything else loads on demand.
 2. **Stack-specific patterns** — skills tuned for Next.js App Router + Prisma + Supabase + shadcn/ui, with broad coverage for mobile, game dev, Rust, Python, and cross-platform.
 3. **Built-in quality gates** — TDD enforcement, security auditing, red-team tactics, insecure-defaults detection, a Reality Check + Quality Control loop in every agent, and zero-token Python hooks.
 4. **Local SQLite state** — `osforge-db` persists project state, decisions, blockers, and a task board (waves, dependencies, priorities) with a cross-project view. Session resume in ~50 tokens.
@@ -81,11 +81,11 @@ flowchart LR
     AG["27 agents"]
     RU["14 rules"]
     CM["9 spec commands"]
-    HK["hooks"]
-    MC["8 MCP servers"]
+    HK["11 hooks"]
+    MC["1 global MCP + per-project stacks"]
     DBCLI["osforge-db CLI"]
   end
-  REPO -->|"./deploy.sh (rsync --delete)"| HOME["~/.claude/ + ~/.cursor/"]
+  REPO -->|"./deploy.sh (com estado: nada seu é sobrescrito)"| HOME["~/.claude/ + ~/.cursor/"]
   HOME --> CC["Claude Code"]
   HOME --> CU["Cursor"]
   DBCLI -->|"~/.local/bin"| STATE[("~/.osforge/osforge.db<br/>SQLite + vector memory")]
@@ -211,7 +211,7 @@ Full index with triggers in [claude-code/SKILLS.md](claude-code/SKILLS.md). Main
 - **Meta & Context** — Systematic Debugging, Performance Profiling, Smart Model Dispatch, llmfit Advisor, Context Distillator, osforge-db, OSForge Canvas, System Diagrams (Archify), Stuck Recovery, Config Critique, Context Compact, Tool Safety Classifier, Evolve/Instinct.
 - **The Agency** — 121 AI specialists across 10 divisions + 32 marketing execution workflows.
 
-### 14 always-on rules (Cursor)
+### 14 rules (Cursor: 11 always-on, 3 stack rules by file glob)
 
 TypeScript Strict, Code Style, Product Thinking (PDD), TDD Enforcement, Next.js Patterns, Security Mindset, Intelligent Routing, Anti-AI-Slop, Commit Conventions, Agent Skills Reference, Memory Hierarchy, Artifact Chain, Orchestrator Awareness, Plan Mode. (Claude Code equivalents live inside `claude-code/CLAUDE.md`.)
 
@@ -223,8 +223,8 @@ TypeScript Strict, Code Style, Product Thinking (PDD), TDD Enforcement, Next.js 
 
 Run by the runtime — they consume no context tokens:
 
-- **GateGuard** (`gateguard.py`, PreToolUse Bash + UserPromptSubmit) — blocks only the irreversible/shared (`rm -rf`, `git push --force`, `reset --hard`, `clean -f`, SQL `DROP/TRUNCATE/DELETE`). An explicit confirmation from the user ("tem permissão", "pode executar", "go ahead", or a bare "sim"/"yes") opens the gate until the user's next message (15 min cap, `OSFORGE_GATEGUARD_GRANT_TTL`); `gateguard: sessão liberada` opens it for the whole session; negations never count. Kill-switch `OSFORGE_GATEGUARD=off`.
-- **scan-secrets** (`scan-secrets.sh`) — blocks secrets before they reach a commit.
+- **GateGuard** (`gateguard.py`, PreToolUse Bash + UserPromptSubmit) — blocks only the irreversible/shared (`rm -rf`, `git push --force`, `reset --hard`, `clean -f`, SQL `DROP/TRUNCATE/DELETE`). An explicit confirmation from the user ("tem permissão", "pode executar", "go ahead", or a bare "sim"/"yes") opens the gate until the user's next message (15 min cap, `OSFORGE_GATEGUARD_GRANT_TTL`); `gateguard: sessão liberada` opens it for the whole session; negations never count. Kill-switch `OSFORGE_GATEGUARD=off`. A turn grant is only accepted as an answer to a denial in the last 10 min; a bare "ok" with nothing denied does not open the gate.
+- **scan-secrets** (`scan-secrets.sh` → `scan-secrets.py`) — blocks a commit/push whose staged diff adds a credential-looking line, and `rm -rf` aimed at `/`, `~` or a parent directory; reads both the Claude Code and the Cursor payload shapes.
 - **protect-tests** (`protect-tests.sh`) — warns when a test file is altered.
 - **observe → evolve** (`observe-capture.py`) — records session observations for `osforge-db evolve`.
 - **Auto-resume** (`session-resume.sh` / `session-save.py`) — SessionStart injects `osforge-db resume`; Stop writes `set-resume` automatically.
@@ -247,7 +247,7 @@ OSForge separates **authoring language** from **runtime language**:
 - **Authoring = English.** All repository content (skills, agents, rules, `CLAUDE.md`, `SKILLS.md`, commands, ADRs, comments) is written in English — one language maximizes the model's predictability and removes mixed-language drift.
 - **Runtime = the user's language**, via the orchestrator translation boundary (see [Architecture §2](#2-orchestration--the-language-boundary)).
 
-New skills follow a single standard — [`docs/SKILL-STANDARD.md`](docs/SKILL-STANDARD.md) — built from [`docs/SKILL.template.md`](docs/SKILL.template.md). It merges OSForge's activation pattern (`Use when` / `Keywords` / `Do NOT use for`) and execution-routing frontmatter (`model` / `context` / `agent` / `allowed-tools`) with an explicit invocation axis (orchestrator vs. discipline), leading words, checkable completion criteria, and a failure-mode audit. Activation is validated with `scripts/test-skill-triggering.sh`.
+New skills follow a single standard — [`docs/SKILL-STANDARD.md`](docs/SKILL-STANDARD.md) — built from [`docs/SKILL.template.md`](docs/SKILL.template.md). It merges OSForge's activation pattern (`Use when` / `Keywords` / `Do NOT use for`) and execution-routing frontmatter (`model` / `context` / `agent` / `allowed-tools`) with an explicit invocation axis (orchestrator vs. discipline), leading words, checkable completion criteria, and a failure-mode audit. Activation is validated by measurement, not by eye: `scripts/run-trigger-eval.sh` runs 5 queries where the skill **must** fire and 5 where it **must not** (a description that fires at everything costs context in every session), each 3 times, and writes the result to [`docs/evals/`](docs/evals/README.md).
 
 ### Bundled subsystems
 
@@ -279,7 +279,7 @@ New skills follow a single standard — [`docs/SKILL-STANDARD.md`](docs/SKILL-ST
 
 **Accessory libraries** (commonly paired across the skills) — data/state: TanStack Query, SWR · forms: React Hook Form (+ Zod resolver) · charts: Recharts · theming: next-themes · icons: lucide-react · motion: Framer Motion, GSAP.
 
-**MCP servers** — 8 configured (Context7, GitHub, Supabase, Shadcn, Browsermcp, next-devtools, Prisma-Local, Prisma-Remote). See `mcp/claude-code.json`.
+**MCP servers** — 1 global (Context7, `mcp/claude-code.json`); GitHub, Supabase, Shadcn, Browsermcp, next-devtools and Prisma are per-project stacks in `mcp/stacks/`, installed with `scripts/install-mcp.sh`.
 
 ---
 

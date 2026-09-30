@@ -1,0 +1,77 @@
+# Minimal CI (B-008, ADR-015). Everything here is offline: no API calls, no Docker, no
+# global installs. Deliberately no version matrix and no coverage gate — one job per OS
+# is what a single-maintainer bash/python repo needs. macOS runs to catch bash 3.2.
+name: ci
+on:
+  push:
+    branches: [main, "audit/**", "feat/**", "fix/**"]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # test-deploy-lifecycle anda o histórico (instalação legada)
+      - name: Syntax (bash -n, py_compile, JSON)
+        run: |
+          set -e
+          for f in $(git ls-files '*.sh'); do bash -n "$f"; done
+          for f in $(git ls-files '*.py'); do python3 -m py_compile "$f"; done
+          # tests/hooks/fixtures/ fica de fora: há payloads malformados DE PROPÓSITO lá
+          # (payload-garbage.json), que é justamente o que run-contracts.sh usa para provar
+          # que os hooks falham abertos. Validá-los reprovaria o que deve ser inválido.
+          for f in $(git ls-files '*.json' | grep -v '^tests/hooks/fixtures/'); do \
+            python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; done
+      - name: Manifest and indexes are fresh
+        run: |
+          set -e
+          python3 scripts/_generate_manifest.py --check
+          python3 scripts/_extract_index.py >/dev/null
+          python3 scripts/_generate_index_md.py >/dev/null
+          git diff --exit-code -- INDICE-SKILLS.json docs/INDICE-SKILLS.md
+      - name: Agents and counts
+        run: |
+          set -e
+          python3 scripts/check-agents.py
+          python3 scripts/check-counts.py
+          python3 scripts/check-unicode.py
+          python3 scripts/check-portability.py
+      - name: Offline tests
+        run: |
+          set -e
+          ./tests/test-assertions.sh
+          ./tests/test-gateguard-grant.sh
+          ./tests/test-gateguard-sql.sh
+          ./tests/test-scan-secrets.sh
+          ./tests/hooks/run-contracts.sh
+          ./tests/test-session-continuity.sh
+          ./tests/test-canvas-feedback.sh
+          ./tests/test-context-usage.sh
+          ./tests/test-installers.sh
+          ./tests/test-eval-cases.sh
+          ./tests/test-trigger-detect.sh
+          ./tests/test-harness-quota.sh
+          ./tests/test-quota.sh
+          ./tests/test-calls.sh
+          ./tests/test-judge.sh
+      - name: Dry-run deploy on an empty HOME creates nothing
+        run: |
+          set -e
+          H="$(mktemp -d)"
+          HOME="$H" ./deploy.sh --dry-run --no-qdrant --no-archify
+          test "$(find "$H" -type f | wc -l | tr -d ' ')" = "0"
+      - name: Eval suites are listable and valid (dry-run, no API calls)
+        run: |
+          set -e
+          ./scripts/test-skill-triggering.sh --dry >/dev/null
+          ./scripts/test-orchestrator-routing.sh --dry >/dev/null
+          ./scripts/run-trigger-eval.sh --dry >/dev/null
+      - name: Deploy lifecycle (state, drift, prune, uninstall, restore) in a seeded HOME
+        run: ./tests/test-deploy-lifecycle.sh

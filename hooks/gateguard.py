@@ -6,8 +6,11 @@ Forces investigation before Edit/Write/Bash. Instead of asking "are you sure?"
 (which LLMs always answer "yes"), this hook demands concrete facts.
 The act of investigation creates awareness that self-evaluation never did.
 
-Based on the ecc GateGuard mechanism (+2.25 pts vs ungated, two independent A/B tests).
-Adapted for OSForge: Python stdlib only, zero dependencies, minimalista.
+Based on the GateGuard mechanism as shipped in affaan-m/ECC (scripts/hooks/gateguard-fact-force.js,
+MIT, © 2026 Affaan Mustafa), which itself credits https://github.com/zunoworks/gateguard
+(package `gateguard-ai`). Re-implemented for OSForge: Python stdlib only, zero dependencies,
+minimalista; no code copied. See THIRD_PARTY_NOTICES. ECC reports +2.25 pts vs ungated in two
+A/B tests — their number, not ours; OSForge measures it in experiment E6 (docs/BACKLOG-EVOLUCAO.md).
 
 ── Gates ──────────────────────────────────────────────────────────────────────
   Edit/Write   : first touch per file per session → demand importers, API surface,
@@ -35,7 +38,10 @@ Adapted for OSForge: Python stdlib only, zero dependencies, minimalista.
   hook grava um grant no estado da sessão; enquanto ativo, os gates permitem a
   operação e registram GRANT-ALLOW em denials.log. O grant vale até a próxima
   mensagem do usuário que não seja autorização, com teto GRANT_TTL_S
-  (OSFORGE_GATEGUARD_GRANT_TTL, segundos, padrão 900).
+  (OSFORGE_GATEGUARD_GRANT_TTL, segundos, padrão 900). Um grant de turno só é
+  aceito se houver uma NEGAÇÃO PENDENTE (últimos PENDING_DENIAL_TTL_S = 10 min)
+  na mesma sessão — "ok" sem nada negado é conversa, não autorização.
+  OSFORGE_GATEGUARD_LEGACY_GRANT=1 restaura o comportamento anterior por uma versão.
   "gateguard: sessão liberada" abre o gate até o fim da sessão;
   "gateguard: ativa" / "revogo a permissão" fecham na hora.
 
@@ -50,7 +56,7 @@ Adapted for OSForge: Python stdlib only, zero dependencies, minimalista.
   The scan-secrets.sh convention uses {"continue": false, "permission": "deny", ...}
   This hook uses the newer hookSpecificOutput format (same effect, more structured).
 
-Usage (PreToolUse, matcher Edit|Write|Bash — e também UserPromptSubmit):
+Usage (PreToolUse, matcher Bash — os gates Edit/Write existem mas não estão conectados; e UserPromptSubmit):
   python3 ~/.claude/hooks/gateguard.py
 O evento é detectado pelo campo hook_event_name do payload.
 """
@@ -81,6 +87,16 @@ def _grant_ttl_s() -> int:
 
 GRANT_TTL_S         = _grant_ttl_s()
 GRANT_SESSION_TTL_S = 12 * 60 * 60   # "gateguard: sessão liberada" — teto de segurança
+
+# A turn grant only means something as an ANSWER to a denial. Without a denial
+# pending, "ok" / "sim" / "proceed" are ordinary conversation and must not open
+# the gate (audit 2026-09-18, E-A05: a bare "ok" released `git reset --hard`).
+# A denial stays "pending" for this long; a session grant ("gateguard: sessão
+# liberada") is explicit and never needs one.
+PENDING_DENIAL_TTL_S = 10 * 60
+# Escape hatch for one release: restore the pre-audit behaviour (any affirmative
+# opens the gate). Remove after B-001 has been in use for a release.
+LEGACY_GRANT = os.environ.get("OSFORGE_GATEGUARD_LEGACY_GRANT", "").strip().lower() in {"1", "true", "on", "yes"}
 
 DISABLE_VALUES = {"0", "false", "off", "disabled", "disable"}
 
@@ -412,13 +428,66 @@ def _active_grant(state: dict):
     return None
 
 
+def _record_denial(state: dict, key: str, detail: str) -> dict:
+    """Marca uma negação como pendente: só ela autoriza um grant de turno."""
+    state["last_denial"] = {
+        "key": key,
+        "at": time.time(),
+        "excerpt": (detail or "").replace("\n", " ")[:120],
+    }
+    state["deny_streak"] = int(state.get("deny_streak", 0) or 0) + 1
+    return state
+
+
+ATTENUATE_AFTER = 3   # R-02: 3 negações com o bloco completo; da 4ª em diante, uma linha
+
+
+def _attenuate(msg: str, state: dict) -> str:
+    """Repetir o mesmo bloco de 12 linhas a cada negação induz o agente a repetir a
+    mesma tentativa (laço observado no upstream, ECC #2142). Depois de ATTENUATE_AFTER
+    negações consecutivas sem grant, a mensagem vira uma linha com o ordinal."""
+    n = int(state.get("deny_streak", 0) or 0)
+    if n <= ATTENUATE_AFTER:
+        return msg
+    return (f"[GateGuard] {n}ª negação nesta sessão sem os fatos pedidos — mesmos requisitos "
+            "da mensagem anterior (importadores/alvos, superfície afetada ou rollback, instrução "
+            "textual do usuário). Apresente-os, ou peça ao usuário uma confirmação explícita. "
+            "OSFORGE_GATEGUARD=off desliga o gate.")
+
+
+def _pending_denial(state: dict):
+    """Negação recente o bastante para que uma afirmativa do usuário seja
+    resposta a ela. None se não houver ou se já passou PENDING_DENIAL_TTL_S."""
+    d = state.get("last_denial")
+    if not isinstance(d, dict):
+        return None
+    try:
+        if time.time() - float(d.get("at", 0)) <= PENDING_DENIAL_TTL_S:
+            return d
+    except (TypeError, ValueError):
+        pass
+    return None
+
+
 def apply_prompt_to_state(state: dict, prompt: str) -> tuple:
-    """Aplica a classificação do prompt ao estado. Retorna (state, verdict)."""
+    """Aplica a classificação do prompt ao estado. Retorna (state, verdict).
+
+    Vereditos: "grant" (turno) · "session" · "revoke" · "none" · "stale"
+    ("stale" = afirmativa/autorização sem negação pendente: ignorada, nada é
+    liberado e nenhum contexto é injetado)."""
     verdict = classify_prompt(prompt)
     now = time.time()
+    if verdict == "grant" and not LEGACY_GRANT and _pending_denial(state) is None:
+        # Nada foi negado: "ok" é conversa, não autorização. Um grant de turno
+        # antigo, se houver, cai como em qualquer prompt comum.
+        g = state.get("grant")
+        if isinstance(g, dict) and g.get("scope") != "session":
+            state.pop("grant", None)
+        return state, "stale"
     if verdict == "revoke":
         state.pop("grant", None)
     elif verdict in ("grant", "session"):
+        state["deny_streak"] = 0
         ttl = GRANT_SESSION_TTL_S if verdict == "session" else GRANT_TTL_S
         state["grant"] = {
             "granted_at": now,
@@ -675,10 +744,12 @@ def _handle_user_prompt(data: dict) -> None:
     state_path  = _state_path(session_key)
     state       = _load_state(state_path)
     state, verdict = apply_prompt_to_state(state, prompt)
-    if verdict == "none":
+    if verdict in ("none", "stale"):
         # Só toca o disco se havia algo a limpar.
         if state_path.exists():
             _save_state(state_path, state)
+        if verdict == "stale":
+            _log_denial("GRANT-IGNORED-NO-PENDING-DENIAL", prompt)
         return
     _save_state(state_path, state)
     _log_denial(f"GRANT-{verdict.upper()}", prompt)
@@ -707,11 +778,15 @@ def main():
 
     # Read hook input from stdin.
     try:
-        raw = sys.stdin.read()
+        raw = sys.stdin.read(1024 * 1024)
         data = json.loads(raw)
     except (json.JSONDecodeError, ValueError):
         # FAIL-OPEN: if we can't parse the input, allow (don't permanently block).
         _warn_stderr("could not parse hook input (fail-open); allowing.")
+        _allow()
+    if not isinstance(data, dict):
+        # B-007: a JSON list/scalar is not a hook payload — fail-open instead of a traceback.
+        _warn_stderr("hook input is not an object (fail-open); allowing.")
         _allow()
 
     # ── UserPromptSubmit: classificar confirmação do usuário ──────────────────
@@ -767,7 +842,9 @@ def main():
                 )
                 _allow()
             msg = _edit_gate_msg(file_path) if tool_name == "Edit" else _write_gate_msg(file_path)
-            _deny(msg)
+            _record_denial(state, file_path, f"{tool_name} {file_path}")
+            _save_state(state_path, state)
+            _deny(_attenuate(msg, state))
 
         _allow()
 
@@ -828,6 +905,7 @@ def main():
                     _allow()
                 _log_denial("BASH-DESTRUCTIVE", command)
                 state = _mark_checked(state, destructive_key)
+                state = _record_denial(state, destructive_key, command)
                 ok = _save_state(state_path, state)
                 if not ok:
                     # FAIL-CLOSED for destructive: deny even on state I/O failure.
@@ -835,8 +913,8 @@ def main():
                         "state could not be persisted for destructive command; "
                         "blocking to enforce fact-forcing gate."
                     )
-                    _deny(_destructive_bash_msg())
-                _deny(_destructive_bash_msg())
+                    _deny(_attenuate(_destructive_bash_msg(), state))
+                _deny(_attenuate(_destructive_bash_msg(), state))
             _allow()
 
         _allow()

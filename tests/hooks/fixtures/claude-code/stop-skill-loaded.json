@@ -1,0 +1,7 @@
+{
+ "hook_event_name": "Stop",
+ "session_id": "t5",
+ "stop_hook_active": false,
+ "transcript_path": "__FIXTURES__/transcripts/skill-loaded.jsonl",
+ "cwd": "__HOME__/proj"
+}

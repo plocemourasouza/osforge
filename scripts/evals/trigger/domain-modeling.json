@@ -1,0 +1,99 @@
+{
+  "$schema": "osforge/trigger-eval/v2",
+  "skill": "domain-modeling",
+  "rel": "domain-modeling",
+  "core": true,
+  "note": "Modelar entidades, invariantes e linguagem do domínio.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5",
+      "n6"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "domain-modeling",
+      "query": "Preciso modelar assinatura, plano e cobrança. As regras estão se misturando."
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "domain-modeling",
+      "query": "Não sei se 'pedido' e 'carrinho' deviam ser a mesma coisa no meu sistema."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "domain-modeling",
+      "query": "Cada parte do time chama a mesma coisa por um nome diferente. Como organizo isso?"
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "domain-modeling",
+      "query": "Quero deixar explícito no código quais estados de contrato são válidos."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "domain-modeling",
+      "query": "As regras de negócio estão espalhadas pelos controllers. Onde elas deviam morar?"
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "category": "vizinho",
+      "query": "Cria a migration com as tabelas que a gente já definiu."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Otimiza essa query que está lenta."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "category": "vizinho",
+      "query": "Instala o Zod e configura o schema do formulário."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Qual ORM tem melhor suporte a Postgres?"
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Arruma o import quebrado no arquivo de tipos."
+    },
+    {
+      "id": "n6",
+      "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
+      "query": "Não quero repensar o modelo; só adiciona a coluna status na tabela pedidos."
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "$schema": "osforge/trigger-eval/v2",
+  "skill": "prd-builder",
+  "rel": "planning/prd-builder",
+  "core": true,
+  "note": "Documento de requisitos de produto com escopo fechado.",
+  "split": {
+    "tune": [
+      "p1",
+      "p2",
+      "p3",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "eval": [
+      "p4",
+      "p5",
+      "n4",
+      "n5",
+      "n6"
+    ],
+    "policy": "60/40 — ajuste a description olhando só 'tune'; 'eval' mede."
+  },
+  "cases": [
+    {
+      "id": "p1",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "prd-builder",
+      "query": "Preciso documentar a feature de onboarding para o time inteiro entender o escopo."
+    },
+    {
+      "id": "p2",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "prd-builder",
+      "query": "O que exatamente entra e o que fica de fora do módulo de relatórios? Quero isso escrito."
+    },
+    {
+      "id": "p3",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "prd-builder",
+      "query": "Quero um documento de produto dessa iniciativa para apresentar aos stakeholders."
+    },
+    {
+      "id": "p4",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "prd-builder",
+      "query": "Já decidimos a ideia; agora quero requisitos e critérios de aceite formalizados."
+    },
+    {
+      "id": "p5",
+      "should_trigger": true,
+      "category": "positivo",
+      "expect_route": "prd-builder",
+      "query": "Preciso alinhar produto e engenharia sobre o que é a versão 1 disso."
+    },
+    {
+      "id": "n1",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "brainstorming",
+      "query": "Ainda estou pensando na ideia, nem sei se faz sentido."
+    },
+    {
+      "id": "n2",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "story-executor",
+      "query": "Implementa o onboarding conforme o documento aprovado."
+    },
+    {
+      "id": "n3",
+      "should_trigger": false,
+      "category": "vizinho",
+      "expect_route": "epic-decomposer",
+      "query": "Quebra o épico em tarefas com dependências."
+    },
+    {
+      "id": "n4",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "expect_route": "system-diagrams",
+      "query": "Faz um diagrama de sequência do login."
+    },
+    {
+      "id": "n5",
+      "should_trigger": false,
+      "category": "irrelevante",
+      "query": "Qual o preço do plano enterprise do Linear?"
+    },
+    {
+      "id": "n6",
+      "should_trigger": false,
+      "category": "negacao",
+      "critical": true,
+      "query": "Não precisa de documento formal; é uma mudança de uma linha no texto do rodapé."
+    }
+  ]
+}

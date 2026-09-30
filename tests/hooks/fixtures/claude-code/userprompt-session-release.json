@@ -1,0 +1,6 @@
+{
+ "hook_event_name": "UserPromptSubmit",
+ "session_id": "u2",
+ "prompt": "gateguard: sessão liberada",
+ "cwd": "__HOME__/proj"
+}

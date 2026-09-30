@@ -23,6 +23,15 @@
         "hooks": [
           {
             "type": "command",
+            "command": "python3 $HOME/.claude/hooks/context-threshold.py",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
             "command": "python3 $HOME/.claude/hooks/gateguard.py"
           }
         ]
@@ -82,6 +91,15 @@
           {
             "type": "command",
             "command": "python3 $HOME/.claude/hooks/session-save.py"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $HOME/.claude/hooks/canvas-feedback.py",
+            "timeout": 5
           }
         ]
       },

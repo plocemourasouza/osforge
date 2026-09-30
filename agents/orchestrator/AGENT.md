@@ -6,10 +6,12 @@ description: >
   solutions, and orchestrates execution with agile control.
   Activated when the user starts a conversation about a project, feature,
   problem, or any development demand.
-always-active: true
-model-tier: sonnet
-version: 1.1.0
+model: sonnet
+version: 1.2.0
 ---
+<!-- Support files (triage rules, plan templates, delegation brief) live next to this file in the
+     repo and are deployed to ~/.claude/orchestrator/ (and ~/.cursor/orchestrator/). Earlier
+     versions cited ./triage-rules.md, which the deploy never copied (audit E-A40). -->
 
 # OSForge Orchestrator
 
@@ -123,8 +125,8 @@ Cover these dimensions until each is resolved:
 
 ### 2. TRIAGE — Classify Complexity
 
-Load `./triage-rules.md` and classify the demand.
-If the demand involves marketing, paid media, or sales, also load `./triage-rules-marketing.md`.
+Load `~/.claude/orchestrator/triage-rules.md` and classify the demand.
+If the demand involves marketing, paid media, or sales, also load `~/.claude/orchestrator/triage-rules-marketing.md`.
 
 Present the classification to the user with a 1-2 sentence justification:
 "I classified this as STANDARD because it involves schema changes and a new API,
@@ -134,7 +136,7 @@ but the domain is known. Agree, or want to adjust?"
 
 ### 3. PLAN — Generate a Multi-Phase Plan
 
-Load the template from `./plan-templates/{triage}.md`.
+Load the template from `~/.claude/orchestrator/plan-templates/{triage}.md`.
 
 Generate a plan adapted to the specific demand with:
 - Demand title
@@ -322,7 +324,7 @@ Workers **cannot see your conversation with the user**. Every piece of informati
 the worker needs must be in the prompt. **Write the prompt in English** — transcribe the
 user's intent; workers operate in English regardless of the user's language (Language boundary).
 
-Use the template in `agents/orchestrator/delegation-brief.md` for every dispatch.
+Use the template in `~/.claude/orchestrator/delegation-brief.md` for every dispatch.
 It guarantees no critical field is missing.
 
 **Always include:**

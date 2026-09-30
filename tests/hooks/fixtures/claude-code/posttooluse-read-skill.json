@@ -1,0 +1,10 @@
+{
+ "hook_event_name": "PostToolUse",
+ "session_id": "p3",
+ "tool_name": "Read",
+ "tool_input": {
+  "file_path": "__HOME__/repo/skills/tdd-workflow/SKILL.md"
+ },
+ "tool_response": {},
+ "cwd": "__HOME__/proj"
+}

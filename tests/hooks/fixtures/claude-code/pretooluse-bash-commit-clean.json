@@ -1,0 +1,9 @@
+{
+ "hook_event_name": "PreToolUse",
+ "session_id": "c4",
+ "tool_name": "Bash",
+ "tool_input": {
+  "command": "git commit -m 'x'"
+ },
+ "cwd": "__HOME__/proj"
+}

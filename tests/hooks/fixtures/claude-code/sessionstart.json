@@ -1,0 +1,6 @@
+{
+ "hook_event_name": "SessionStart",
+ "session_id": "s1",
+ "source": "startup",
+ "cwd": "__HOME__/proj"
+}

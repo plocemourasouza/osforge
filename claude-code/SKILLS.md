@@ -140,6 +140,10 @@ split it: hand off at a natural boundary and let a fresh session take the next p
 **Mandatory action:** STOP the current task → write the handoff artifact (`osforge-db set-resume`
 or a plan doc) → compact or new session → resume from the artifact.
 
+**Measured, not guessed:** the `context-threshold` hook reads the real usage of the last turn from
+the transcript and injects one warning when the session crosses 120k and one when it crosses 150k.
+Treat the warning as the signal — do not wait to *feel* the dumb zone.
+
 _Vocabulary: smart zone / dumb zone / attention degradation — mattpocock/dictionary-of-ai-coding._
 
 ---

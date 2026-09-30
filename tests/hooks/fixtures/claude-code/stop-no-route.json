@@ -1,0 +1,7 @@
+{
+ "hook_event_name": "Stop",
+ "session_id": "t1",
+ "stop_hook_active": false,
+ "transcript_path": "__FIXTURES__/transcripts/no-route.jsonl",
+ "cwd": "__HOME__/proj"
+}
