@@ -14,14 +14,15 @@ uma decisão de gasto ou do resultado de um experimento.
 |---|---|---|
 | 0 — Correções imediatas | B-001 … B-005 | ✅ |
 | 1 — Rede de segurança | B-006 … B-009 | ✅ |
-| 2 — Evals confiáveis | B-010, B-011, B-012 | ✅ · B-013 ⏸ aguarda autorização de custo |
+| 2 — Evals confiáveis | B-010, B-011, B-012 | ✅ · B-013 ◐ E1 rodado; E2 liberado, E3/E4 aguardam correção do instrumento |
 | 3 — Consolidação | B-014 … B-020 | ✅ |
 | 4 — Conforme os experimentos | B-021, B-022, B-024 | ✅ · B-023 ◐ (arquivos feitos; plano proporcional depende do E3) |
 
 Aberto, e por quê:
 
-- **B-013 (E1, estabilidade)** — infraestrutura pronta, falta a rodada paga. Piloto de 6
-  chamadas, roteamento 48, trigger 180. Comandos no próprio B-013.
+- **B-013 (E1, estabilidade)** — rodado em 2026-09-29: roteamento 1/16 PASS (skill
+  declarada e não carregada é comportamento real), trigger 1/30 positivos. E2 liberado;
+  E3/E4 esperam `max-turns`, `r11`/`r15` e visibilidade do `route-guard`. Detalhe no próprio B-013.
 - **B-023 (plano proporcional)** — os arquivos do orquestrador já são deployados; mudar o
   "todo plano precisa de Roster/User stories/Task manifest" depende do E3, que depende do E1.
 - **R-11 condicionada** (`~/.claude/rules/`) — precisa confirmar em sessão real, com
@@ -142,7 +143,7 @@ e `scripts/check-portability.py` no preflight e no CI para impedir a classe inte
 - **Esforço:** P.
 - **Resultado:** `docs/evals/README.md` (formato, como nasce um arquivo, como ler, custo) + `scripts/lib/eval_report.py`, chamado pelo `--report` das três suítes: carimba SHA, versão, árvore suja, modelo, HOME, comando exato, tokens somados dos streams (uma vez por `message.id`), duração e a tabela de k de N, com a lista de instáveis separada para o E1. Os quatro números soltos (CLAUDE.md ×3, route-guard.py ×1) passaram a dizer que são de 2026-08 e não versionados, e estão tabelados em **Pendentes de versionamento** com o comando que os refaz.
 
-### B-013 · Rodar E1 (estabilidade) e decidir E2–E4 — ⏸ pronto para rodar; aguarda autorização de custo
+### B-013 · Rodar E1 (estabilidade) e decidir E2–E4 — ◐ E1 rodado (2026-09-29); E2 liberado, E3/E4 aguardam correção do instrumento
 - **Recomendação:** §8.2 do relatório. **Dependências:** B-003, B-010, B-012 — **todas fechadas**. **Custo:** API — fazer piloto de 2 casos antes. **Saída:** lista de casos instáveis e ruído por suíte, que vira o limiar de decisão dos demais experimentos.
 - **Pronto para rodar** (o FLAKY do relatório já é a saída que o E1 pede). Piloto e rodada, em ordem de custo:
 
@@ -158,6 +159,54 @@ e `scripts/check-portability.py` no preflight e no CI para impedir a classe inte
 # E1 trigger (split de avaliação): 60 × 3 = 180 chamadas
 ./scripts/run-trigger-eval.sh --model <id> --runs 3 --split eval --report docs/evals/$(date +%F)-<id>-trigger.md
 ```
+
+**Resultado E1 (2026-09-29, `claude-sonnet-5`, 3 execuções por caso).** Relatórios:
+[`routing`](evals/2026-09-29-claude-sonnet-5-routing.md) e [`trigger`](evals/2026-09-29-claude-sonnet-5-trigger.md).
+Antes da rodada, três defeitos do próprio harness foram achados e corrigidos com teste
+(`3979cc0`, `c8d8b84`): ERROR passava a suíte; o trigger eval só contava o clone da skill e
+rodava dentro do repo hub (as regras do hub sequestravam a resposta); ERROR de um caso
+escondia misses medidos nas outras execuções (`case_verdict`, assertions 60 → 67).
+
+- **Roteamento, 16 × 3:** PASS 1 · FLAKY 6 · FAIL 8 · ERROR 1. A dimensão *agente* acerta em
+  14/16; o que reprova é a *skill*.
+- **O miss de skill é comportamento real, não asserção errada.** Conferido nos streams: em
+  `r03` e `r06` a linha de rota declara a skill esperada do manifest nas 3 execuções
+  (`security-threat-model`, `aws-deploy`/`deployment-procedures`) e o `SKILL.md` nunca é
+  lido; `r14` declara `spec-builder` 3/3 e não carrega; `r12` declara `offensive-*` e nunca
+  despacha o `penetration-tester` (crítico, 0/3). É exatamente o padrão que o
+  `claude-code/CLAUDE.md` descreve ("declarada e nunca aberta") — agora medido.
+- **Instabilidade (entrada do E1):** `r01 r02 r04 r05 r08 r10` variam na dimensão skill ou
+  por ERROR. Os 6 ERRORs da rodada são todos `error_max_turns` com `--max-turns 8`: o limite
+  pune justamente quem carrega a skill (ler `SKILL.md` + referências gasta turnos).
+- **Casos com defeito de desenho:** `r15` é pergunta ("como estruturo…?") e o contrato isenta
+  pergunta pura da linha de rota — o modelo respondeu direto 3/3, coerente com a regra.
+  `r11` pede "monta o plano" e 2/3 execuções foram para o `osforge-canvas` (a regra da casa
+  para planos) sem linha de rota; o miss de linha é real, mas o conjunto de skills aceitas
+  não inclui a skill que a própria regra manda usar.
+- **Trigger, split `eval`, 73 casos × 3:** positivos **1/30**, negativos 43/43. Sondagem
+  manual confirma: pedidos implícitos em pt-BR são respondidos direto, sem ferramenta — as
+  descriptions não disparam. Os negativos passarem não diz nada enquanto quase nenhum
+  positivo dispara (um detector que nunca dispara tira 100% em negativo).
+- **Lacuna do instrumento:** o `stream-json` só registra hooks de `SessionStart`; se o
+  `route-guard` (Stop) bloqueou e forçou a carga, isso não aparece no log. A rodada mede o
+  modelo **com** o guard ligado, mas não mostra quanto o guard contribuiu.
+
+**Decisão E2–E4:**
+
+| Exp. | Decisão | Por quê |
+|---|---|---|
+| E2 (guarda do resume) | **Liberado** — piloto de 2 × 2 antes dos 10 × 2 | Não usa o harness de roteamento nem de trigger; a guarda é adotada de qualquer forma (custo ≈ 0) |
+| E3 (plano proporcional) | **Adiado** até a correção abaixo + piloto de 2 tarefas | Não há fixtures com teste oculto ainda; com 6/16 casos instáveis no E1, n = 10 × 3 só detecta diferença grande — o limiar precisa vir de uma rodada sem os ERRORs de `max-turns` |
+| E4 (gate do revisor) | **Adiado**, mesma condição do E3 | Rubrica existe (`scripts/evals/judge/e4/rubric-v1.md`), os 20 diffs não |
+
+**Antes de E3/E4 (barato, sem API):** (1) subir `OSFORGE_TEST_MAX_TURNS` do roteamento de 8
+para 12 e remedir só os casos que deram ERROR; (2) reescrever `r15` como demanda de ação e
+aceitar `osforge-canvas` em `r11`; (3) expor no relatório se o `route-guard` bloqueou
+(ex.: o hook grava um marcador que o harness lê). **Achados de produto, fora do E1** — viram
+itens próprios, cada um com eval antes/depois: (a) reescrever descriptions das skills core
+para pedido implícito em pt-BR (1/30 positivos); (b) garantir carga da skill de manifest
+declarada (`r03`, `r06`, `r14`: declarada 3/3, lida 0/3); (c) despacho obrigatório do
+`penetration-tester` (`r12`).
 
 ## Etapa 3 — Consolidação
 
