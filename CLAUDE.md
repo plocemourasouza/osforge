@@ -28,8 +28,8 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Suítes offline (634 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
-./tests/test-assertions.sh              # Lógica de veredito dos harnesses de eval (60)
+# Suítes offline (644 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
+./tests/test-assertions.sh              # Lógica de veredito dos harnesses de eval (67)
 ./tests/hooks/run-contracts.sh          # Contratos de hook: comandos reais × fixtures, dois harnesses (62; gate do deploy)
 ./tests/test-gateguard-grant.sh         # Ciclo de vida do grant do GateGuard + atenuação de negações (84)
 ./tests/test-deploy-lifecycle.sh        # Deploy com estado: nada seu se perde, idempotente, doctor/uninstall/restore (64; ~1 min; CI)
@@ -41,6 +41,7 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-installers.sh              # install-skill/install-mcp: os helpers que rodam na SUA máquina (22)
 ./tests/test-judge.sh                   # Juiz isolado: argv/env/isolamento/exit codes com claude falso (77)
 ./tests/test-eval-cases.sh              # Casos de eval v2: categoria, críticos, órfãos reprovam o --dry (42)
+./tests/test-trigger-detect.sh          # Trigger eval conta a skill real (não só o clone) e roda fora do repo (3)
 ./tests/test-quota.sh                   # quota.json: gravação, frescor, aviso 80/95% uma vez por faixa (30)
 ./tests/test-calls.sh                   # Tabela calls: ingestão, custo derivado, retenção, backfill (26)
 ./tests/test-harness-quota.sh           # Harness para na cota: NOT RUN, exit 75, quota_at_start/end (15)

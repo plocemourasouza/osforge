@@ -309,7 +309,7 @@ run_case() {
         log_warn "FLAKY ${hits}/${RUNS}: $skill_name"; return 3
     elif [ "$timeouts" -gt 0 ]; then
         log_warn "TIMEOUT 0/${RUNS}: $skill_name"; return 2
-    elif [ "$errors" -gt 0 ]; then
+    elif [ "$(case_verdict "$hits" "$RUNS" "$timeouts" "$errors")" = "ERROR" ]; then
         # B2: is_error sem ser cota -- fora do k de N, não é FAIL do harness.
         log_warn "ERROR ${errors}/${RUNS} execuções com is_error (não-cota): $skill_name"; return 4
     else

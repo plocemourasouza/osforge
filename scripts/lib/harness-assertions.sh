@@ -197,6 +197,23 @@ print(json.dumps({"id": sys.argv[1], "k": 0, "n": int(sys.argv[2]), "verdict": "
 ' "$id" "$n" "$detail" "$critical" >> "$case_json"
 }
 
+# ── Veredito por caso ───────────────────────────────────────────────────────
+# ERROR (is_error não-cota) só quando nenhuma execução foi medida: uma execução
+# completa sem hit é miss, e um erro ao lado dela não a apaga. E1 routing
+# 2026-09-29, r16: 2 misses + 1 error_max_turns saíam ERROR → suíte INCOMPLETE.
+#
+# case_verdict <hits> <runs> <timeouts> <errors>  → stdout PASS|FLAKY|TIMEOUT|FAIL|ERROR
+case_verdict() {
+    local hits="$1" runs="$2" timeouts="$3" errors="$4"
+    local misses=$((runs - hits - timeouts - errors))
+    if [ "$hits" = "$runs" ]; then echo PASS
+    elif [ "$hits" -gt 0 ]; then echo FLAKY
+    elif [ "$timeouts" -gt 0 ]; then echo TIMEOUT
+    elif [ "$misses" -gt 0 ]; then echo FAIL
+    elif [ "$errors" -gt 0 ]; then echo ERROR
+    else echo FAIL; fi
+}
+
 # ── Veredito da suíte com casos críticos (N-01 / B-025) ─────────────────────
 # Um caso `critical` (negação, ou positivo caro de errar) pesa mais que os
 # outros: reprova a suíte mesmo com --allow-flaky, e se ele nem chegou a

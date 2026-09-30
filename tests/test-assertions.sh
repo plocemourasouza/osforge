@@ -306,6 +306,19 @@ set -e
 check "caso sem negativas reprova a validação" "1" "$tg_bad"
 check "e diz qual é o problema" "PASS" "$(grep -q 'negativas (mínimo 5+5)' "$WORK/tg-bad.log" && echo PASS || echo FAIL)"
 
+# ── Veredito por caso: ERROR não mascara miss medido ────────────────────────
+# E1 routing, 2026-09-29, r16: 2 execuções completas sem a skill + 1
+# error_max_turns saía ERROR (→ suíte INCOMPLETE) em vez de FAIL.
+echo ""
+echo "── case_verdict <hits> <runs> <timeouts> <errors>"
+check "3/3 hits → PASS"                           PASS    "$(case_verdict 3 3 0 0)"
+check "1 hit → FLAKY"                             FLAKY   "$(case_verdict 1 3 0 2)"
+check "0 hits, sem timeout/erro → FAIL"           FAIL    "$(case_verdict 0 3 0 0)"
+check "0 hits, 2 misses medidos + 1 erro → FAIL"  FAIL    "$(case_verdict 0 3 0 1)"
+check "0 hits, todas com erro → ERROR"            ERROR   "$(case_verdict 0 3 0 3)"
+check "0 hits, timeout → TIMEOUT"                 TIMEOUT "$(case_verdict 0 3 1 0)"
+check "0 hits, timeout + erros, nada medido → TIMEOUT" TIMEOUT "$(case_verdict 0 3 1 2)"
+
 # ── Resultado ───────────────────────────────────────────────────────────────
 echo ""
 echo "============================================================"

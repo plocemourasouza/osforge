@@ -350,11 +350,14 @@ while IFS=$'\t' read -r cid exp_agents exp_skill exp_tier critico prompt; do
         break
     fi
 
-    if [ "$hits" = "$RUNS" ]; then verdict="PASS"; PASSED=$((PASSED+1))
-    elif [ "$hits" -gt 0 ]; then verdict="FLAKY"; FLAKY=$((FLAKY+1))
-    elif [ "$timeouts" -gt 0 ]; then verdict="TIMEOUT"; TIMED_OUT=$((TIMED_OUT+1))
-    elif [ "$errors" -gt 0 ] && [ "$hits" = 0 ] && [ "$timeouts" = 0 ]; then verdict="ERROR"; ERRORED=$((ERRORED+1))
-    else verdict="FAIL"; FAILED=$((FAILED+1)); fi
+    verdict="$(case_verdict "$hits" "$RUNS" "$timeouts" "$errors")"
+    case "$verdict" in
+        PASS)    PASSED=$((PASSED+1)) ;;
+        FLAKY)   FLAKY=$((FLAKY+1)) ;;
+        TIMEOUT) TIMED_OUT=$((TIMED_OUT+1)) ;;
+        ERROR)   ERRORED=$((ERRORED+1)) ;;
+        *)       FAILED=$((FAILED+1)) ;;
+    esac
 
     printf '%s/%s\n' "$hits" "$RUNS" > "$out/result.txt"
     echo "  → $verdict ${hits}/${RUNS}"

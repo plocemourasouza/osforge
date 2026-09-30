@@ -251,6 +251,11 @@ command -v claude >/dev/null 2>&1 || { echo "[ERRO] claude CLI não encontrado n
 
 OUT_BASE="$(mktemp -d)"
 CASE_JSON="$OUT_BASE/cases.json"; : > "$CASE_JSON"
+# Neutral project for `claude -p`: run_eval.py writes its command clone under the
+# first `.claude/` above the cwd. From inside this repo the OSForge project rules
+# (hub session: "never execute another repo's code here") answered the query
+# before any skill was considered — first paid pilot, 2026-09-29: 0/15 triggers.
+EVAL_PROJECT="$OUT_BASE/project"; mkdir -p "$EVAL_PROJECT/.claude/commands"
 START_EPOCH=$(date +%s)
 TOTAL_PASS=0; TOTAL_FAIL=0
 QUOTA_STOPPED=0
@@ -293,7 +298,7 @@ PY
     res="$OUT_BASE/${skill//\//-}.result.json"
     # PYTHONPATH: run_eval.py imports `scripts.utils`; `python3 <file>` puts the script's
     # own dir on sys.path, not the cwd (first real E1 run, 2026-09-29: 15/15 rc=1).
-    ( cd "$REPO_ROOT/skills/skill-creator" && \
+    ( cd "$EVAL_PROJECT" && \
       env ${HOME_OVERRIDE:+HOME="$HOME_OVERRIDE"} PYTHONPATH="$REPO_ROOT/skills/skill-creator" python3 "$RUN_EVAL" \
         --eval-set "$set_file" \
         --skill-path "$REPO_ROOT/skills/$rel" \

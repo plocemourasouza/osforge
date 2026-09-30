@@ -32,6 +32,22 @@ def find_project_root() -> Path:
     return current
 
 
+def is_skill_trigger(tool_name: str, tool_input: dict, clean_name: str, real_name: str) -> bool:
+    """True when a tool call loads the skill under test.
+
+    Counts the temporary clone AND the real skill: when the skill is already
+    installed natively (a core skill), a model that invokes the real one did
+    trigger — scoring it as a miss makes positives fail and negatives pass for free.
+    """
+    if tool_name == "Skill":
+        skill = tool_input.get("skill", "")
+        return clean_name in skill or skill == real_name or skill.endswith(":" + real_name)
+    if tool_name == "Read":
+        path = tool_input.get("file_path", "")
+        return clean_name in path or path.endswith(f"/skills/{real_name}/SKILL.md")
+    return False
+
+
 def run_single_query(
     query: str,
     skill_name: str,
@@ -149,7 +165,11 @@ def run_single_query(
 
                         elif se_type in ("content_block_stop", "message_stop"):
                             if pending_tool_name:
-                                return clean_name in accumulated_json
+                                try:
+                                    tool_input = json.loads(accumulated_json or "{}")
+                                except json.JSONDecodeError:
+                                    tool_input = {}
+                                return is_skill_trigger(pending_tool_name, tool_input, clean_name, skill_name)
                             if se_type == "message_stop":
                                 return False
 
@@ -161,10 +181,7 @@ def run_single_query(
                                 continue
                             tool_name = content_item.get("name", "")
                             tool_input = content_item.get("input", {})
-                            if tool_name == "Skill" and clean_name in tool_input.get("skill", ""):
-                                triggered = True
-                            elif tool_name == "Read" and clean_name in tool_input.get("file_path", ""):
-                                triggered = True
+                            triggered = is_skill_trigger(tool_name, tool_input, clean_name, skill_name)
                             return triggered
 
                     elif event.get("type") == "result":

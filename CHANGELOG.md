@@ -45,9 +45,20 @@ Pacote 01 — quality and control before the first paid eval run (ADR-016, B-025
 - **Suite verdict ignored `ERROR`**: a run where every case errored (not logged in, API
   down) reported the suite as PASS. `suite_verdict` now returns INCOMPLETE (exit 2) when any
   case is ERROR and nothing measured failed. Found by the E1 pilot. `test-eval-cases` 39 → 42.
+- **Trigger eval scored a real-skill call as a miss**: `run_eval.py` counted only its
+  temporary clone `<skill>-skill-<uuid>`; a core skill is already native under the same
+  description, so a model that invoked the real one failed every positive and passed every
+  negative for free. `is_skill_trigger` now accepts clone and real skill in both the stream and
+  the fallback path. The harness also ran `claude -p` from the OSForge repo, whose hub-session
+  rules answered the query before any skill was considered; it now runs from a neutral temporary
+  project. Found by the E1 trigger pilot (0/15). `tests/test-trigger-detect.sh` (3).
+- **Case verdict `ERROR` masked measured misses**: `0 hits · 2 completed misses · 1 error` was
+  ERROR (→ suite INCOMPLETE) instead of FAIL. `case_verdict` in `harness-assertions.sh`, shared
+  by the routing and skill-triggering harnesses, returns ERROR only when no run was measured.
+  E1 routing `r16`. `test-assertions` 60 → 67.
 
 ### Changed
-- Offline suites: 441 → 634 checks; CI runs the five new suites.
+- Offline suites: 441 → 644 checks; CI runs the six new suites.
 
 ## [5.1.0] — 2026-09-18
 

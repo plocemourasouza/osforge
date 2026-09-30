@@ -1044,7 +1044,7 @@ grava o resultado em `docs/evals/` com SHA, modelo, comando, tokens e tempo
 (`docs/evals/README.md`). Sem `--report`, o resultado morre no terminal.
 
 **Custo:** cada caso são `--runs` chamadas de API. `--dry` imprime o total antes.
-A lógica de veredito roda offline em `./tests/test-assertions.sh` (60 casos, custo zero):
+A lógica de veredito roda offline em `./tests/test-assertions.sh` (67 casos, custo zero):
 é lá que se pega regressão de asserção sem depender de o modelo se comportar.
 
 ### Qualidade e controle (Pacote 01, ADR-016)
