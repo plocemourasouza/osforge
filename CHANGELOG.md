@@ -10,6 +10,8 @@ All notable changes to OSForge are recorded here. The format follows
 
 ## [Unreleased]
 
+## [5.2.0] — 2026-09-29
+
 Pacote 01 — quality and control before the first paid eval run (ADR-016, B-025–B-029).
 
 ### Added
@@ -56,6 +58,10 @@ Pacote 01 — quality and control before the first paid eval run (ADR-016, B-025
   ERROR (→ suite INCOMPLETE) instead of FAIL. `case_verdict` in `harness-assertions.sh`, shared
   by the routing and skill-triggering harnesses, returns ERROR only when no run was measured.
   E1 routing `r16`. `test-assertions` 60 → 67.
+- **`db-state-sync` ran its own example on load**: the documented shell-injection example
+  (`!` + backticked `osforge-db resume PROJECT_SLUG`) sat inside a fenced block, and the skill
+  loader executes that syntax even there — every load ran `resume` for a literal `PROJECT_SLUG`.
+  The example now spells the bang as `<BANG>`.
 
 ### Changed
 - Offline suites: 441 → 644 checks; CI runs the six new suites.
@@ -421,5 +427,6 @@ Orchestrator layer + 14 planning/quality/context skills (`arch-builder`, `prd-bu
 31 skills, 7 agents, 4 rules, first Python hooks; repository established as the single source
 of truth for `~/.claude/` and `~/.cursor/` (ADR-001).
 
+[5.2.0]: https://github.com/plocemourasouza/osforge/releases/tag/v5.2.0
 [5.1.0]: https://github.com/plocemourasouza/osforge/releases/tag/v5.1.0
 [5.0.0]: https://github.com/plocemourasouza/osforge/releases/tag/v5.0.0
