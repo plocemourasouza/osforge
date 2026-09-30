@@ -45,10 +45,12 @@ osforge-db status <slug>
 osforge-db list-projects
 ```
 
-**Shell injection in SKILL.md** (use inside any planning skill):
+**Shell injection in SKILL.md** (use inside any planning skill) — replace `<BANG>` with an exclamation mark:
 ```
-!`osforge-db resume PROJECT_SLUG`
+<BANG>`osforge-db resume PROJECT_SLUG`
 ```
+The exclamation mark is spelled `<BANG>` here because the skill loader executes that syntax
+wherever it appears, fenced code blocks included.
 
 ### TRACK — update progress
 
