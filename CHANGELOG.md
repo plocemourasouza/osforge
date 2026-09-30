@@ -10,6 +10,13 @@ All notable changes to OSForge are recorded here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- **`route-guard` demanded a skill reload every turn**: load evidence was collected only from
+  the last response, so a skill loaded in an earlier turn of the same session still blocked the
+  Stop with "declared but not loaded". Evidence now spans every turn in the transcript window;
+  the route-line check stays on the last response. Contract case CC-51; `run-contracts` 62 → 63.
+
 ## [5.2.0] — 2026-09-29
 
 Pacote 01 — quality and control before the first paid eval run (ADR-016, B-025–B-029).

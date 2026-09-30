@@ -28,9 +28,9 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Suítes offline (644 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
+# Suítes offline (645 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
 ./tests/test-assertions.sh              # Lógica de veredito dos harnesses de eval (67)
-./tests/hooks/run-contracts.sh          # Contratos de hook: comandos reais × fixtures, dois harnesses (62; gate do deploy)
+./tests/hooks/run-contracts.sh          # Contratos de hook: comandos reais × fixtures, dois harnesses (63; gate do deploy)
 ./tests/test-gateguard-grant.sh         # Ciclo de vida do grant do GateGuard + atenuação de negações (84)
 ./tests/test-deploy-lifecycle.sh        # Deploy com estado: nada seu se perde, idempotente, doctor/uninstall/restore (64; ~1 min; CI)
 ./tests/test-session-continuity.sh      # Uma identidade de projeto; resume com escopo, teto e limpeza (35)
