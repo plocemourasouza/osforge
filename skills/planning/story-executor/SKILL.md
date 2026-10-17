@@ -69,12 +69,11 @@ done — not assumed done because the wave scheduler dispatched this story.
 For each task in the story:
 
 **a) Identify the most appropriate OSForge skill:**
-- Schema change → prisma skills
-- UI component → shadcn/ui, nextjs skills
-- API route → server-actions, api-routes skills
-- Validation → zod-validation skill
-- RLS → supabase-rls skill
-- Test → testing skills
+- Schema change → `prisma-expert`
+- UI component → `frontend-ui-system`, `nextjs-react-expert`
+- API route → `api-patterns`
+- Auth / RLS → `nextjs-supabase-auth`
+- Test → `testing-patterns`, `e2e-testing-patterns`
 
 **b) Execute the task** using the identified skill
 

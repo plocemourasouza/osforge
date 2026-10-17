@@ -586,8 +586,9 @@ difficulty encountered while using the software:
 
 ### 🎨 Presentation Pipeline (Agency-Style Delivery)
 
-After any planning phase that produces an artifact (spec, PRD, ADR, epic),
-the orchestrator MUST automatically chain the visual presentation pipeline.
+After any planning phase that produces an artifact (spec, PRD, ADR, epic), present it via the
+OSForge Canvas (`osforge-canvas`) by default. The pipeline below is the fallback for a one-shot
+static HTML breakdown with no feedback round-trip, or when the user asks to "visualize".
 
 **Automatic flow:**
 ```

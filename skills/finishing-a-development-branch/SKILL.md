@@ -135,12 +135,12 @@ git checkout main
 git branch -D {branch}
 ```
 
-### 5. Update STATUS.md
+### 5. Record completion
 
 After merge or PR:
 ```bash
-# Mark the feature as complete in .osforge/status.yaml
-# Archive specs in .osforge/archive/
+osforge-db set-phase <slug> "<phase>" complete
+osforge-db set-resume <slug> "Merged <branch>; next: ..."
 ```
 
 ---
@@ -150,5 +150,4 @@ After merge or PR:
 - **Not checking tests before merging**: a merge with failing tests breaks main for the whole team. The pre-finalization check is mandatory, not optional.
 - **Discard without a checkpoint**: discarding a branch is irreversible. Always confirm with the user explicitly before running `git branch -D`.
 - **Merge without --no-ff on feature branches**: `--no-ff` preserves the branch's history in the commit graph. Without it, feature commits appear as a direct part of main, making rollback and bisect harder.
-- **Not archiving specs**: specs of completed features should go to `.osforge/archive/` after merge. Without archiving, `.osforge/` accumulates specs of old features with no state distinction.
 - **PR without a description**: PRs without a description reach the reviewer with no context. Always include: what changed, why it changed, how to test.

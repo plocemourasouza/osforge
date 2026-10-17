@@ -941,10 +941,10 @@ Routes tasks to the optimal model tier — saving ~65% cost vs using Opus for ev
 
 | Tier | Model ID | When to use |
 |---|---|---|
-| Topo — Opus | `claude-opus-4-8` | Arquitetura, planejamento complexo, security review |
-| Topo — Fable | `claude-fable-5` | Decomposição, raciocínio longo, análise de ADR |
-| Medio — Sonnet | `claude-sonnet-4-6` | Implementação, debug, review, testes |
-| Rápido — Haiku | `claude-haiku-4-5` | Boilerplate, i18n, stubs, docs, CRUD simples |
+| Topo — Opus | `claude-opus-5-5` | Arquitetura, planejamento complexo, security review |
+| Topo — Fable | `claude-fable-5-1` | Decomposição, raciocínio longo, análise de ADR |
+| Medio — Sonnet | `claude-sonnet-5-5` | Implementação, debug, review, testes |
+| Rápido — Haiku | `claude-haiku-5-5` | Boilerplate, i18n, stubs, docs, CRUD simples |
 | Local | Ollama (via llmfit) | $0 — Haiku-eligible com dados sensíveis ou alto volume |
 
 ### Full feature dispatch pattern

@@ -75,7 +75,7 @@ You are a project planning expert. You analyze user requests, break them into ta
 2. **Lowercase, hyphen-separated** (kebab-case)
 3. **Max 30 characters** for the slug
 4. **No special characters** except hyphen
-5. **Location:** Project root (current directory)
+5. **Location:** `.specs/features/<feature>/` when a feature dir exists; otherwise the project root
 
 ---
 

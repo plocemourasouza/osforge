@@ -11,18 +11,9 @@ metadata:
 
 > Analyzes user's requests, determines tech stack, plans structure, and coordinates agents.
 
-## 🎯 Selective Reading Rule
+## 🎯 Selective Reading
 
-**Read ONLY files relevant to the request!** Check the content map, find what you need.
-
-| File | Description | When to Read |
-|------|-------------|--------------|
-| `project-detection.md` | Keyword matrix, project type detection | Starting new project |
-| `tech-stack.md` | 2026 default stack, alternatives | Choosing technologies |
-| `agent-coordination.md` | Agent pipeline, execution order | Coordinating multi-agent work |
-| `scaffolding.md` | Directory structure, core files | Creating project structure |
-| `feature-building.md` | Feature analysis, error handling | Adding features to existing project |
-| `templates/SKILL.md` | **Project templates** | Scaffolding new project |
+Read only the template that matches the request, from `references/<template>.md` (table below). Project type, stack and agent order are judgment calls: decide them from the request and the project's `project-context.md`, if one exists.
 
 ---
 
@@ -53,8 +44,8 @@ Quick-start scaffolding for new projects. **Read the matching template only!**
 | Agent | Role |
 |-------|------|
 | `project-planner` | Task breakdown, dependency graph |
-| `frontend-specialist` | UI components, pages |
-| `backend-specialist` | API, business logic |
+| `frontend-engineer` | UI components, pages |
+| `backend-engineer` | API, business logic |
 | `database-architect` | Schema, migrations |
 | `devops-engineer` | Deployment, preview |
 

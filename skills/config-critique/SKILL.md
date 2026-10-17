@@ -84,10 +84,10 @@ Look for:
 - Hooks that block a command another hook allows
 - CLAUDE.md section overrides that invalidate `alwaysApply` rules
 
-**Cross-reference against the 122 existing skills:**
+**Cross-reference against the existing skills (core descriptions + the SKILLS.md manifest):**
 ```bash
-# Grep similar triggers
-grep -r "your-new-trigger" skills/*/SKILL.md
+# Grep similar triggers — skills are nested (skills/quality/*, skills/planning/*), so recurse
+grep -rn "your-new-trigger" claude-code/SKILLS.md skills --include=SKILL.md
 ```
 
 ### 4. Actionability
@@ -230,16 +230,6 @@ Before delivering:
 ```
 User: "review this skill I wrote: skills/my-thing/SKILL.md"
 Claude: [loads config-critique skill] [applies the 4 axes] [returns structured output]
-```
-
-### Automatic mode (pre-commit hook)
-Add to `.husky/pre-commit` or to the OSForge hook:
-```bash
-# If files in skills/, rules/, agents/ were modified:
-modified=$(git diff --cached --name-only | grep -E '^(skills|rules|agents)/')
-for file in $modified; do
-  osforge-db critique "$file" || exit 1
-done
 ```
 
 ### PR mode (CI gate)

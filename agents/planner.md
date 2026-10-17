@@ -146,7 +146,7 @@ produce contextualized stories where each story contains
 - Does NOT make architectural decisions — if the task requires structural/design decisions,
   invoke system-architect first and plan from the outcome
 - "Architecture changes" means executing a plan already designed, not designing the architecture
-- Save plan to `tasks/todo.md`
+- Save the plan under `.specs/features/<feature>/` (`tasks/todo.md` only for QUICK work with no feature) and present it via the OSForge Canvas
 - Wait for user approval before anyone starts executing
 - If a requirement is ambiguous, ask — don't assume
 - Consider multi-tenancy implications in every database task

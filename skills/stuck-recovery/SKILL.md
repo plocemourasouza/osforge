@@ -26,7 +26,7 @@ allowed-tools: Read, Bash, Glob, Grep
 
 This skill depends on two external pieces (via Bash, listed in `allowed-tools`):
 
-- **`osforge-db`** (CLI) — state/blocker/resume persistence in Phases 2 and 4. Verify with `osforge-db --version`. Without it, SAVE degrades to a WIP commit + a local notes file.
+- **`osforge-db`** (CLI) — state/blocker/resume persistence in Phases 2 and 4. Verify with `command -v osforge-db`. Without it, SAVE degrades to a WIP commit + a local notes file.
 - **`context-compact`** (OSForge skill) — used in Option B (compact reset). Without it, skip straight to Option A or C.
 
 ## Signs of being stuck (detection)
@@ -45,7 +45,7 @@ This skill depends on two external pieces (via Bash, listed in `allowed-tools`):
 | Same tool failing consecutively | ≥ 3 times |
 | Same file being read with no action | ≥ 5 times in 10 turns |
 | No measurable progress | 10+ turns without completing an atomic task |
-| Context > 85% without closing a phase | imminent saturation |
+| Past ~150k tokens without closing a phase | deep in the dumb zone |
 | "verify → fail → retry" loop with no change of approach | ≥ 2 cycles |
 | Drift from the original scope | topic diverges without user approval |
 | Tool errors growing (not shrinking) | error rate > 30% in the last 10 calls |
@@ -60,7 +60,7 @@ When stuck is detected:
 🛑 STUCK DETECTED
 
 Sign: <which sign fired>
-Context: <X% / 200k>
+Context: <N k tokens>
 Last completed atomic task: <how many turns ago>
 Observed pattern: <1-line description>
 
@@ -77,9 +77,8 @@ I'll pause and propose recovery before spending more context.
 Save the COMPLETE state to `osforge-db` before the reset:
 
 ```bash
-osforge-db set-phase <project-slug> "<current-phase>" in_progress \
-  --resume "<precise description of the stopping point>" \
-  --artifacts "<modified files, paths>"
+osforge-db set-phase <project-slug> "<current-phase>" in-progress
+osforge-db set-resume <project-slug> "<precise stopping point; modified files>"
 
 osforge-db add-blocker <project-slug> "<description of what is blocking>"
 
@@ -138,13 +137,13 @@ If context is not saturated and the cause is diagnosable:
 - Continue
 
 #### Option B: Compact reset (same session, compacted context)
-If context > 70% but you want to continue:
+If context is ~120–150k tokens but you want to continue:
 1. Invoke the `context-compact` skill
 2. Compact everything up to the stuck point
 3. Restart with summary + new approach
 
 #### Option C: Hard reset (new session)
-If context > 90% or the approach is fundamentally wrong:
+If context is past ~150k tokens or the approach is fundamentally wrong:
 1. `osforge-db set-resume <slug> "<specific next step>"`
 2. Tell the user: "I'll ask you to open a new session"
 3. The new session starts with `osforge-db resume <slug>` → 50 tokens
@@ -154,15 +153,15 @@ If context > 90% or the approach is fundamentally wrong:
 ```
 Detected stuck
     │
-    ├─ Context < 70%?
+    ├─ Context < ~120k tokens?
     │   ├─ YES → Option A (soft reset)
     │   └─ NO  ↓
     │
-    ├─ Context 70-90%?
+    ├─ Context ~120–150k tokens?
     │   ├─ YES → Option B (compact reset)
     │   └─ NO  ↓
     │
-    └─ Context > 90% OR approach fundamentally wrong?
+    └─ Context > ~150k tokens OR approach fundamentally wrong?
         └─ Option C (hard reset via osforge-db)
 ```
 

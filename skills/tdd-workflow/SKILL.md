@@ -11,7 +11,7 @@ Write the test first. Watch it fail. Write minimal code to pass.
 
 ## When NOT to Use TDD
 
-TDD applies to behavior and logic. Skip it (without guilt) for:
+TDD applies to behavior and logic. These are the only exceptions — state which one applies before skipping, and ask the user if it is not obvious:
 - **UI prototypes / throwaway spikes** — exploratory code meant to be deleted; testing it first wastes the exploration
 - **Pure styling changes** — CSS/Tailwind tweaks, spacing, colors, typography with zero logic
 - **Static content** — copy changes, markdown, layout-only markup
@@ -60,7 +60,7 @@ refactoring is the one phase where stopping early leaves the code worse than not
 
 ### 4. COMMIT
 - Commit after each complete RED-GREEN-REFACTOR cycle
-- Message format: `test: add test for X` → `feat: implement X`
+- One commit per cycle with test + implementation (`feat: implement X`); split into `test:` then `feat:` only if each commit leaves the tree buildable
 
 **Done when:** the commit contains the test and its implementation together, and the behaviour is
 named in the project's glossary vocabulary — not in whatever word came to mind.
@@ -73,14 +73,7 @@ named in the project's glossary vocabulary — not in whatever word came to mind
 | "CRUD for entity" | "Create returns 201 with new entity" | "Variable is defined" |
 | "Payment flow" | "Charge fails with invalid card number" | "Function is callable" |
 
-## Exceptions (Ask Before Skipping)
-
-- Throwaway prototypes explicitly labeled as such
-- Generated code (Prisma Client, shadcn components)
-- Configuration files (next.config, biome.json)
-- Pure UI styling changes with no logic
-
-If thinking "skip TDD just this once" → **Stop. That's rationalization. Follow the process.**
+Anything outside the "When NOT to Use TDD" list goes test-first: "just this once" is not an exception.
 
 ## Stack-Specific Patterns
 

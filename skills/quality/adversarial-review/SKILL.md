@@ -54,9 +54,8 @@ Areas of attack (adapt to the content type):
 - RLS: policies covering all access scenarios
 - Migrations: backward compatibility, data loss risk
 
-There is **no quota of findings**. The previous version demanded "a minimum of 10 issues" and
-treated zero findings as suspicious; the audit (E-A42) found that this is exactly what makes an LLM
-reviewer manufacture findings. Depth comes from working every area of attack, not from a number.
+There is **no quota of findings**: a target count is exactly what makes a reviewer manufacture
+findings. Depth comes from working every area of attack, not from a number.
 
 **Done when:** every area of attack listed for this content type has been worked through, and each
 finding that survives the gate below names the file, line or section it attacks.

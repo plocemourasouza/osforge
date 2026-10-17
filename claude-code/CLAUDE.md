@@ -21,11 +21,11 @@ Four layers decide WHO/WITH-WHAT executes each demand. Don't skip triage.
 ### 1. Model routing (by task complexity)
 Tier principle — pick the smallest model that solves it well:
 
-| Tier | When | Model (current, Jun/2026) |
-|------|--------|--------------------------|
-| Top | planning, architecture, security audit, PRD, synthesis | `claude-opus-4-8` / `claude-fable-5` |
-| Mid | implementation, debugging, code review, story execution | `claude-sonnet-4-6` |
-| Fast | tests, docs, boilerplate, i18n, mechanical renames | `claude-haiku-4-5` |
+| Tier | When | Agent `model:` alias |
+|------|------|----------------------|
+| Top | planning, architecture, security audit, PRD, synthesis | `opus` / `fable` |
+| Mid | implementation, debugging, code review, story execution | `sonnet` |
+| Fast | tests, docs, boilerplate, i18n, mechanical renames | `haiku` |
 
 When dispatching subagents (Agent tool `model:`), assign the tier per task — don't run everything at the top.
 **Canonical source for the IDs** (which change): the `smart-model-dispatch` skill. Don't hardcode IDs in prose.
@@ -46,14 +46,12 @@ Rules: the tokens (`@agent-name`, skill name, tier) are **language-invariant** �
 whatever language the reply is in. `skill:` names the discipline about to be applied (or `none`,
 stated explicitly — silence is not an option). One line, then proceed. This is not ceremony: it is
 the DETECT decision made visible, which (a) forces agent/skill/model to be DECIDED before the work
-starts instead of implied after, and (b) makes routing auditable — measured without it, 12 of 16
-demands were answered with no identifiable routing at all (medição de 2026-08, anterior ao formato
-versionado; refazer com `./scripts/test-orchestrator-routing.sh --report` → `docs/evals/`).
+starts instead of implied after, and (b) makes routing auditable — without it, most demands in the routing eval ran with no
+identifiable routing at all (`./scripts/test-orchestrator-routing.sh --report` → `docs/evals/`).
 
 **Declaring a skill OBLIGES loading it** before the work: a core skill by invoking it (Skill tool),
 a manifest skill by reading its `SKILL.md`, a heavy one by dispatching the subagent that reads it.
-Measured (mesma rodada de 2026-08, ainda não versionada — ver `docs/evals/README.md`):
-5 of 7 routing failures were the right skill DECLARED on the route line and then never
+In the same eval, most routing failures were the right skill DECLARED on the route line and then never
 opened — the discipline never actually informed the answer. A declaration without the load is the
 exact failure the route line exists to expose; if you will not load it, write `skill: none` and own
 the choice.
@@ -69,7 +67,7 @@ resolve it on demand (`buscar-skill.py <term>` → `Read` the `SKILL.md` path) r
 
 Complexity triage: **QUICK** (1–3 files, zero ambiguity) · **STANDARD** (multi-file, known domain) ·
 **COMPLEX** (new system / ambiguous requirements). Roster of the 27 agents and "when to use which"
-→ `USAGE.md §Agents`. Invoke the orchestrator with `"Read agents/orchestrator/AGENT.md"` or just by describing the demand.
+→ `USAGE.md §Agents`. Invoke the orchestrator by dispatching the `orchestrator` agent, or just by describing the demand.
 
 ### 3. Skill triggers (two channels, one protocol)
 Skills reach you through two channels, and confusing them is how a capability goes missing:
@@ -82,10 +80,8 @@ Skills reach you through two channels, and confusing them is how a capability go
 
 **Resolution protocol** — runs in TWO situations, and the second is the one skipped in practice:
 (a) a capability seems missing; (b) **you are about to produce a multi-step deliverable you feel
-able to write unaided** — a review, an audit, a flow, a plan. Feeling able is not the test
-(medido em 2026-08, pendente de versionamento em `docs/evals/`: "create a customer service flow"
-and "check for SQL injection/XSS" were both answered competently with the matching skill never
-consulted). Scan the manifest before starting, then:
+able to write unaided** — a review, an audit, a flow, a plan. Feeling able is not the test:
+a competent unaided answer is exactly the case that skips the matching skill. Scan the manifest before starting, then:
 1. **Lexical** — a manifest trigger matches → `Read` the skill's `SKILL.md` and follow it.
 2. **Semantic** — no trigger matches but the intent is clear → `osforge-db search-semantic "<intent>"`,
    then `buscar-skill.py <term>`. Cross-lingual: the user prompts in pt-BR, descriptions are English.

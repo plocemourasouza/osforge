@@ -68,7 +68,7 @@ allowed-tools: Read, Write, Edit
 | Situation | Action |
 |-----------|--------|
 | User asks for feature | Write it directly |
-| User reports bug | Fix it, don't explain |
+| User reports bug | Fix it, then state the root cause in a sentence or two |
 | No clear requirement | Ask, don't assume |
 
 ---
@@ -117,12 +117,12 @@ File to edit: UserService.ts
 |----|--------|
 | Write code directly | Write tutorials |
 | Let code self-document | Add obvious comments |
-| Fix bugs immediately | Explain the fix first |
+| Fix bugs directly | Write a tutorial before fixing |
 | Inline small things | Create unnecessary files |
 | Name things clearly | Use abbreviations |
 | Keep functions small | Write 100+ line functions |
 
-> **Remember: The user wants working code, not a programming lesson.**
+> The user wants working code plus enough context to trust it.
 
 ---
 
@@ -142,64 +142,8 @@ File to edit: UserService.ts
 
 ---
 
-## Verification Scripts (MANDATORY)
+## Validation output
 
-> **CRITICAL:** Each agent runs ONLY their own skill's scripts after completing work.
-
-### Agent → Script Mapping
-
-| Agent | Script | Command |
-|-------|--------|---------|
-| **frontend-specialist** | UX Audit | `python .agent/skills/frontend-design/scripts/ux_audit.py .` |
-| **frontend-specialist** | A11y Check | `python .agent/skills/frontend-design/scripts/accessibility_checker.py .` |
-| **backend-specialist** | API Validator | `python .agent/skills/api-patterns/scripts/api_validator.py .` |
-| **mobile-developer** | Mobile Audit | `python .agent/skills/mobile-design/scripts/mobile_audit.py .` |
-| **database-architect** | Schema Validate | `python .agent/skills/database-design/scripts/schema_validator.py .` |
-| **security-auditor** | Security Scan | `python .agent/skills/vulnerability-scanner/scripts/security_scan.py .` |
-| **seo-specialist** | SEO Check | `python .agent/skills/seo-fundamentals/scripts/seo_checker.py .` |
-| **seo-specialist** | GEO Check | `python .agent/skills/geo-fundamentals/scripts/geo_checker.py .` |
-| **performance-optimizer** | Lighthouse | `python .agent/skills/performance-profiling/scripts/lighthouse_audit.py <url>` |
-| **test-engineer** | Test Runner | `python .agent/skills/testing-patterns/scripts/test_runner.py .` |
-| **test-engineer** | Playwright | `python .agent/skills/webapp-testing/scripts/playwright_runner.py <url>` |
-| **Any agent** | Lint Check | `python .agent/skills/lint-and-validate/scripts/lint_runner.py .` |
-| **Any agent** | Type Coverage | `python .agent/skills/lint-and-validate/scripts/type_coverage.py .` |
-| **Any agent** | i18n Check | `python .agent/skills/i18n-localization/scripts/i18n_checker.py .` |
-
-> ❌ **WRONG:** `test-engineer` running `ux_audit.py`
-> ✅ **CORRECT:** `frontend-specialist` running `ux_audit.py`
-
----
-
-### Script Output Handling (READ → SUMMARIZE → ASK)
-
-**When running a validation script, you MUST:**
-
-1. **Run the script** and capture ALL output
-2. **Parse the output** - identify errors, warnings, and passes
-3. **Summarize to user** in this format:
-
-```markdown
-## Script Results: [script_name.py]
-
-### Errors Found (X items)
-- [File:Line] Error description 1
-- [File:Line] Error description 2
-
-### Warnings (Y items)
-- [File:Line] Warning description
-
-### Passed (Z items)
-- Check 1 passed
-- Check 2 passed
-
-**Should I fix the X errors?**
-```
-
-4. **Wait for user confirmation** before fixing
-5. **After fixing** → Re-run script to confirm
-
-> **VIOLATION:** Running script and ignoring output = FAILED task.
-> **VIOLATION:** Auto-fixing without asking = Not allowed.
-> **Rule:** Always READ output → SUMMARIZE → ASK → then fix.
+Run the project's own lint, type-check and test commands. Read the full output and report errors, warnings and passes with file:line. Fix errors in the files you changed; ask before fixing anything outside the requested scope, then re-run to confirm.
 
 **Exhaustiveness bar** — a review under this skill is done when every rule section (Naming, Function, Structure, AI Coding Style, Anti-Patterns) was swept against the artifact and each violation carries file+line. Three sections checked reads exactly like six; the skipped one is where the debt lives.

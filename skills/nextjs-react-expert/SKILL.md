@@ -217,21 +217,10 @@ Before shipping to production:
 
 ---
 
-## 🔍 Validation Script
-
-| Script                                 | Purpose                     | Command                                                      |
-| -------------------------------------- | --------------------------- | ------------------------------------------------------------ |
-| `scripts/react_performance_checker.py` | Automated performance audit | `python scripts/react_performance_checker.py <project_path>` |
-
----
-
 ## 📖 Section Reference
 
 See the `references/` directory for detailed content on each optimization category.
 
-**Source:** Vercel Engineering
-**Date:** January 2026
-**Version:** 1.0.0
-**Total Rules:** 57 across 8 categories
+**Source:** Vercel Engineering.
 
 **Exhaustiveness bar** — a performance pass is done when the Quick Decision Tree routed the problem, the relevant sections per the Selective Reading Rule were read IN FULL, and every item of the Performance Review Checklist carries a verdict for the touched code.

@@ -13,7 +13,7 @@ Wrote code before the test? **Delete it. Start over.**
 1. **RED** — Write ONE test for smallest behavior. Run it. Confirm it FAILS.
 2. **GREEN** — Write MINIMUM code to pass. Nothing more.
 3. **REFACTOR** — Clean up while green. Extract, rename, deduplicate.
-4. **COMMIT** — `test: add test for X` → `feat: implement X`
+4. **COMMIT** — one commit per cycle with test + implementation (`feat: implement X`)
 
 ### Right Size
 - Too big: "User authentication system"

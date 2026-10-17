@@ -54,12 +54,12 @@ Build interfaces using shadcn/ui as foundation + extended registries for animati
 | Text animation | **Magic UI** | TextAnimate, TypingAnimation, NumberTicker |
 | Background effect | **Magic UI** or **Aceternity** | FlickeringGrid, BackgroundBeams |
 | 3D card / hover effect | **Aceternity** | 3DCard, CardHoverEffect, SpotlightCard |
-| Hero section background | **Aceternity** | AuroraBackground, Vortex, Meteors |
+| Hero section background | **Aceternity** | BackgroundBeams, Spotlight — only when the design direction calls for it (see `frontend-design` for defaults to avoid) |
 | Marquee / scroll animation | **Magic UI** | Marquee, ScrollBasedVelocity |
 | Interactive map | **mapcn** | Map, MapMarker, MapPopup, MapRoute |
 | Device mockup | **Magic UI** | Safari, iPhone, Android |
 | Button with effect | **Magic UI** | ShimmerButton, RainbowButton |
-| Bento grid layout | **Magic UI** | BentoGrid |
+| Grid layout | **shadcn/ui** | Card grid; Magic UI BentoGrid only for genuinely tile-shaped content |
 | Floating dock nav | **Aceternity** | FloatingDock |
 
 ## MCP Workflow
@@ -148,10 +148,10 @@ export default async function LandingPage() {
 
 ### Landing Page Stack
 ```
-Background:    Aceternity → AuroraBackground or BackgroundBeams
+Background:    per the chosen design direction (no default)
 Hero text:     Magic UI → TextAnimate or TypingAnimation
 CTA button:    Magic UI → ShimmerButton or RainbowButton
-Features:      Magic UI → BentoGrid + shadcn/ui Cards
+Features:      shadcn/ui Cards
 Testimonials:  Magic UI → Marquee + shadcn/ui Avatar
 Pricing:       shadcn/ui → Card + Table
 Footer nav:    shadcn/ui → NavigationMenu
