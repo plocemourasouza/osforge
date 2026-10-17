@@ -51,6 +51,7 @@ jobs:
           ./tests/test-gateguard-sql.sh
           ./tests/test-scan-secrets.sh
           ./tests/hooks/run-contracts.sh
+          ./tests/test-route-guard-race.sh
           ./tests/test-session-continuity.sh
           ./tests/test-canvas-feedback.sh
           ./tests/test-context-usage.sh

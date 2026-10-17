@@ -31,16 +31,20 @@ import json
 import os
 import re
 import sys
+import time
 from pathlib import Path
 
 MAX_STDIN = 1024 * 1024
 MAX_LINES = 4000
 MIN_ACTIONABLE_CHARS = 700   # resposta menor e sem tools = conversa/QUESTION
+RACE_RETRIES = 4             # re-reads before blocking: the final text may not be on disk yet
+RACE_WAIT_S = 0.15           # × RACE_RETRIES = 0.6 s worst case, only on the would-block path
 LOG = os.path.join(os.environ.get("OSFORGE_LOG_DIR", os.path.expanduser("~/.osforge/logs")), "route-guard.log")
 DEBUG = os.environ.get("OSFORGE_HOOK_DEBUG", "") == "1"
 
 ROUTE_RE = re.compile(r"🤖\s*route:", re.I)
 SKILL_DECL_RE = re.compile(r"skill:\s*((?:`[^`]+`|\S+)(?:\s*\+\s*`[^`]+`)*)", re.I)
+SKILL_EXPANSION_RE = re.compile(r"Base directory for this skill: \S*/([^/\s]+)/?\s")
 
 
 def log(msg):
@@ -62,28 +66,15 @@ def block(reason):
     sys.exit(0)
 
 
-def main():
-    if os.environ.get("OSFORGE_ROUTEGUARD", "") == "off":
-        allow()
-    try:
-        payload = json.loads(sys.stdin.read(MAX_STDIN))
-    except Exception:
-        allow()
-    if not isinstance(payload, dict):   # B-007: payload que não é objeto → fail-open, sem traceback
-        allow()
+def read_turn(tp):
+    """Parse the transcript tail → (texts, tools, skills_invoked, files_touched, last_user_seen).
 
-    # Nunca bloquear duas vezes — evita loop de Stop hook.
-    if payload.get("stop_hook_active"):
-        allow()
-
-    tp = payload.get("transcript_path", "")
-    if not tp or not Path(tp).exists():
-        allow()
-
+    None when the file cannot be read.
+    """
     try:
         lines = Path(tp).read_text(errors="replace").splitlines()[-MAX_LINES:]
     except OSError:
-        allow()
+        return None
 
     # Reconstituir a ÚLTIMA resposta do assistant (blocos de texto + tools usadas).
     # Evidência de carga de skill vale para a sessão inteira: uma skill carregada num
@@ -99,7 +90,20 @@ def main():
         except Exception:
             continue
         t = e.get("type")
-        if t == "user" and not e.get("isMeta"):
+        if t == "user" and e.get("isMeta"):
+            # A slash command (e.g. `/doctor prompt-audit`) expands its skill as a
+            # harness-written meta message that STARTS with this header. Only the
+            # meta entry counts: a human message quoting the phrase is not a load.
+            content = (e.get("message") or {}).get("content") or []
+            if isinstance(content, str):
+                content = [{"type": "text", "text": content}]
+            for c in content:
+                if isinstance(c, dict) and c.get("type") == "text":
+                    m = SKILL_EXPANSION_RE.match(c.get("text", ""))
+                    if m:
+                        skills_invoked.add(m.group(1))
+            continue
+        if t == "user":
             # paramos na última mensagem humana: tudo acima já é outra rodada
             content = (e.get("message") or {}).get("content")
             if isinstance(content, str) or (isinstance(content, list) and any(
@@ -139,8 +143,54 @@ def main():
                         # skill no prompt, não por uma menção solta ao nome
                         files_touched.append(" ".join(re.findall(r"skills/[a-zA-Z0-9_/-]+/SKILL\.md", inp)))
 
+    return texts, tools, skills_invoked, files_touched, last_user_seen
+
+
+
+def main():
+    if os.environ.get("OSFORGE_ROUTEGUARD", "") == "off":
+        allow()
+    try:
+        payload = json.loads(sys.stdin.read(MAX_STDIN))
+    except Exception:
+        allow()
+    if not isinstance(payload, dict):   # B-007: payload que não é objeto → fail-open, sem traceback
+        allow()
+
+    # Nunca bloquear duas vezes — evita loop de Stop hook.
+    if payload.get("stop_hook_active"):
+        allow()
+
+    tp = payload.get("transcript_path", "")
+    if not tp or not Path(tp).exists():
+        allow()
+
+    turn = read_turn(tp)
+    if turn is None:
+        allow()
+    texts, tools, skills_invoked, files_touched, last_user_seen = turn
     if not last_user_seen and not texts:
         allow()
+
+    # The Stop hook can fire before the final assistant text reaches the
+    # transcript (measured 2026-10-08: hook ran 79–87 ms after the entry's
+    # timestamp and read the file without it, blocking replies that DID start
+    # with the route line). Two defences, cheapest first:
+    #   1. the payload's own copy of the final message, when the harness sends it;
+    #   2. a short, bounded re-read of the transcript — only on the would-block path.
+    last_msg = payload.get("last_assistant_message")
+    if isinstance(last_msg, str) and last_msg.strip():
+        texts = [last_msg] + texts
+    for _ in range(RACE_RETRIES):
+        if ROUTE_RE.search("\n".join(texts)) or not (tools or len("\n".join(texts)) >= MIN_ACTIONABLE_CHARS):
+            break
+        time.sleep(RACE_WAIT_S)
+        again = read_turn(tp)
+        if again is None:
+            break
+        texts, tools, skills_invoked, files_touched, last_user_seen = again
+        if isinstance(last_msg, str) and last_msg.strip():
+            texts = [last_msg] + texts
 
     response = "\n".join(reversed(texts))
 

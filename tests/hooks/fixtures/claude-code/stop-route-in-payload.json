@@ -1,0 +1,8 @@
+{
+ "hook_event_name": "Stop",
+ "session_id": "t-race",
+ "stop_hook_active": false,
+ "transcript_path": "__FIXTURES__/transcripts/no-route.jsonl",
+ "last_assistant_message": "🤖 route: @debugger · skill: none · model: sonnet\n\nCorrigi o off-by-one em utils/paginate.ts.",
+ "cwd": "__HOME__/proj"
+}
