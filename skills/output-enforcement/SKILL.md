@@ -18,47 +18,19 @@ allowed-tools: Read, Write, Edit
 # Output Enforcement — OSForge Enhancement Layer
 
 > **Compose stack:**
-> 1. Read `~/.claude/skills/full-output-enforcement/SKILL.md` — upstream anti-truncation rules
-> 2. Apply **this skill** — PT triggers + OSForge verification + TDD test protection
+> 1. If the base rules are needed, resolve `full-output-enforcement` via the SKILLS.md manifest
+> 2. Apply **this skill** — trigger phrases + OSForge verification + TDD test protection
 > 3. Before claiming done: run **Verification Before Completion** (Skill 2 in SKILLS.md)
 
 ## Baseline
 
 Treat every task as production-critical. A partial output is a broken output.
-Do NOT optimize for brevity — optimize for completeness.
+Write every requested deliverable in full. If you must stop at the output limit, stop at a clean boundary and emit the [PAUSED — X of Y complete …] marker.
 
 - User asks for full file → deliver full file.
 - User asks for 5 components → deliver 5 components.
 - User asks for refactor of 10 functions → refactor all 10.
 - No exceptions.
-
-## Banned Output Patterns (HARD FAILURES)
-
-### In code blocks
-- `// ...`
-- `// rest of code`
-- `// implement here`
-- `// TODO` (unless explicitly part of the deliverable)
-- `/* ... */`
-- `// similar to above`
-- `// continue pattern`
-- `// add more as needed`
-- bare `...` standing in for omitted code
-
-### In prose
-- "Let me know if you want me to continue"
-- "I can provide more details if needed"
-- "for brevity"
-- "the rest follows the same pattern"
-- "similarly for the remaining"
-- "and so on" (when replacing actual content)
-- "I'll leave that as an exercise"
-
-### Structural shortcuts
-- Outputting a skeleton when the request was for a full implementation
-- Showing first and last section while skipping the middle
-- Replacing repeated logic with one example + a description
-- Describing what code should do instead of writing it
 
 ## Execution Process
 

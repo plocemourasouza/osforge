@@ -15,6 +15,7 @@ judge calls run in shuffled order.
   python3 driver.py --pilot --model <id>       # 1 executor + 1 judge call, print parsed results
   python3 driver.py --run --model <id> [--runs 3] [--concurrency 4]
   python3 driver.py --report <out.md> --model <id>
+  ... --round r2 [--budget 40]                 # round 2: everything under r2/ (default round r1)
 
 Real calls (--pilot/--run) are a human decision. Results are cached under results/ (gitignored)
 and a re-run resumes: cached ok calls are not repeated. A quota rejection (judge exit 75, or the
@@ -41,6 +42,7 @@ LIB = os.path.join(REPO, "scripts", "lib")
 sys.path.insert(0, LIB)
 import judge as J  # noqa: E402  (parse_stream, find_init, find_result, ..., build_env)
 
+BASE = HERE  # round root: tasks/ rubrics/ schemas/ variants/ results/ live under it
 RESULTS = os.path.join(HERE, "results")
 QUOTA_FILE = os.path.expanduser("~/.osforge/quota.json")
 QUOTA_STOP_PCT = 80
@@ -85,6 +87,24 @@ TASKS = {
     },
 }
 SKILL_EXTRA_RUBRIC = {"frontend-design": "_fd_tells.md", "adversarial-review": "_ar_counts.md"}
+VARIANT_ARMS = {s: ("B", "C") for s in TASKS}  # arms whose system prompt comes from variants/
+TRUTH_IN_RUBRIC = False  # r2: tasks/<target>/<task>.truth.md is appended to the judge rubric
+PILOT = ("clean-code", "cc3")
+ROUND = "r1"
+
+
+def configure(round_name):
+    """Point every path and table at one round. r1 = the committed round-1 layout, unchanged."""
+    global BASE, RESULTS, TASKS, SKILL_EXTRA_RUBRIC, VARIANT_ARMS, TRUTH_IN_RUBRIC, PILOT, ROUND
+    ROUND = round_name
+    if round_name == "r1":
+        return
+    sys.path.insert(0, HERE)
+    import tasks_r2 as R  # noqa: E402
+    BASE = os.path.join(HERE, round_name)
+    RESULTS = os.path.join(BASE, "results")
+    TASKS, SKILL_EXTRA_RUBRIC, VARIANT_ARMS = R.TASKS, R.EXTRA_RUBRIC, R.VARIANT_ARMS
+    TRUTH_IN_RUBRIC, PILOT = True, R.PILOT
 
 STOP = threading.Event()
 STOP_REASON = []
@@ -99,26 +119,29 @@ def read(path):
 
 
 def task_prompt(skill, task):
-    return read(os.path.join(HERE, "tasks", skill, task + ".md"))
+    return read(os.path.join(BASE, "tasks", skill, task + ".md"))
 
 
 def system_prompt(skill, arm):
-    if arm == "A":
+    if arm not in VARIANT_ARMS[skill]:
         return NEUTRAL_NOTE
-    body = read(os.path.join(HERE, "variants", "%s.%s.md" % (skill, arm)))
+    body = read(os.path.join(BASE, "variants", "%s.%s.md" % (skill, arm)))
     return NEUTRAL_NOTE + "\n\n# Guidance for this kind of task\n\n" + body
 
 
 def rubric_text(skill, task):
-    parts = [read(os.path.join(HERE, "rubrics", "_common.md")),
-             read(os.path.join(HERE, "rubrics", task + ".md"))]
+    parts = [read(os.path.join(BASE, "rubrics", "_common.md")),
+             read(os.path.join(BASE, "rubrics", task + ".md"))]
+    if TRUTH_IN_RUBRIC:
+        parts.append("## Ground truth for this task\n\n"
+                     + read(os.path.join(BASE, "tasks", skill, task + ".truth.md")))
     if skill in SKILL_EXTRA_RUBRIC:
-        parts.append(read(os.path.join(HERE, "rubrics", SKILL_EXTRA_RUBRIC[skill])))
+        parts.append(read(os.path.join(BASE, "rubrics", SKILL_EXTRA_RUBRIC[skill])))
     return "\n\n".join(p.strip() for p in parts) + "\n"
 
 
 def schema_path(skill):
-    return os.path.join(HERE, "schemas", skill + ".json")
+    return os.path.join(BASE, "schemas", skill + ".json")
 
 
 def exec_argv(model, prompt, sysprompt):
@@ -341,17 +364,21 @@ def check_verdict(skill, task, verdict):
 def do_dry(runs):
     problems = []
     for skill, tasks in TASKS.items():
-        for arm in ARMS:
-            if arm != "A" and not os.path.exists(os.path.join(HERE, "variants", "%s.%s.md" % (skill, arm))):
-                problems.append("missing variant %s.%s (run build_variants.py)" % (skill, arm))
+        for arm in VARIANT_ARMS[skill]:
+            if not os.path.exists(os.path.join(BASE, "variants", "%s.%s.md" % (skill, arm))):
+                problems.append("missing variant %s.%s (run build_variants.py --round %s)" % (skill, arm, ROUND))
         if not os.path.exists(schema_path(skill)):
             problems.append("missing schema " + skill)
         json.loads(read(schema_path(skill)))
         for task, spec in tasks.items():
-            for f in (os.path.join(HERE, "tasks", skill, task + ".md"), os.path.join(HERE, "rubrics", task + ".md")):
-                if not os.path.exists(f):
-                    problems.append("missing " + f)
-            rub = read(os.path.join(HERE, "rubrics", task + ".md"))
+            need = [os.path.join(BASE, "tasks", skill, task + ".md"), os.path.join(BASE, "rubrics", task + ".md")]
+            if TRUTH_IN_RUBRIC:
+                need.append(os.path.join(BASE, "tasks", skill, task + ".truth.md"))
+            missing = [f for f in need if not os.path.exists(f)]
+            problems.extend("missing " + f for f in missing)
+            if missing:
+                continue
+            rub = read(os.path.join(BASE, "rubrics", task + ".md"))
             for cid in spec["criteria"]:
                 if "`%s`" % cid not in rub:
                     problems.append("%s: criterion %s not in rubric" % (task, cid))
@@ -367,7 +394,7 @@ def do_dry(runs):
         print("  %-20s sys-prompt chars  A=%d  B=%d  C=%d" % (skill, *(len(system_prompt(skill, a)) for a in ARMS)))
     print("example executor argv (prompt/system elided):",
           json.dumps([a if len(a) < 60 else "<%d chars>" % len(a) for a in exec_argv("MODEL", "P" * 99, "S" * 99)]))
-    rec = run_judge("MODEL", "clean-code", "cc3", "B", 1, dry=True)
+    rec = run_judge("MODEL", PILOT[0], PILOT[1], "B", 1, dry=True)
     j = rec["judge"]
     print("judge.py --dry ok=%s isolation-argv has --tools '': %s" % (
         j.get("ok"), "--tools" in (j.get("argv") or [])))
@@ -377,12 +404,12 @@ def do_dry(runs):
 
 
 def do_pilot(model):
-    ex = run_executor(model, "clean-code", "cc3", "B", 1)
+    ex = run_executor(model, PILOT[0], PILOT[1], "B", 1)
     print(json.dumps({k: v for k, v in ex.items() if k != "output"}, indent=1, ensure_ascii=False))
     print("--- output head ---\n" + (ex.get("output") or "")[:1200])
     if ex.get("status") != "ok":
         return 1
-    jr = run_judge(model, "clean-code", "cc3", "B", 1)
+    jr = run_judge(model, PILOT[0], PILOT[1], "B", 1)
     print(json.dumps(jr, indent=1, ensure_ascii=False))
     return 0 if jr.get("status") == "ok" else 1
 
@@ -407,6 +434,51 @@ def do_run(model, runs, conc, seed):
     return 0
 
 
+def spent_usd(runs):
+    tot = 0.0
+    for job in jobs(runs):
+        e, j = load(exec_path(*job)) or {}, load(judge_path(*job)) or {}
+        tot += e.get("cost_usd_equiv") or 0
+        tot += (j.get("judge") or {}).get("total_cost_usd_equivalent") or 0
+    return tot
+
+
+def do_run_phased(model, runs, conc, seed, budget):
+    """Round 2+: one target at a time, executor phase then judge phase, each shuffled. Stops on
+    quota (exit 75 / rejected), on 5h utilization >= QUOTA_STOP_PCT, or when the cumulative
+    USD-equivalent of cached + new calls exceeds the budget."""
+    rng = random.Random(seed)
+    targets = list(TASKS)
+    t0 = time.time()
+
+    def guarded(fn):
+        def call(job):
+            if STOP.is_set():
+                return {"status": "not_run"}
+            with LOCK:
+                over = budget is not None and spent_usd(runs) > budget
+            if over:
+                stop("budget: spent > US$%.2f" % budget)
+                return {"status": "not_run"}
+            return fn(model, *job)
+        return call
+
+    for target in targets:
+        js = [j for j in jobs(runs) if j[0] == target]
+        for phase, fn in (("executor", run_executor), ("judge", run_judge)):
+            order = js[:]
+            rng.shuffle(order)
+            t1 = time.time()
+            with cf.ThreadPoolExecutor(max_workers=conc) as pool:
+                list(pool.map(guarded(fn), order))
+            print("%s %s phase done in %.0fs (spent so far US$%.2f)" % (target, phase, time.time() - t1,
+                                                                      spent_usd(runs)), flush=True)
+    print("all phases done in %.0fs" % (time.time() - t0), flush=True)
+    if STOP_REASON:
+        print("stopped early: " + "; ".join(STOP_REASON))
+    return 0
+
+
 # --------------------------------------------------------------------------- report
 
 def fmt(x, nd=1):
@@ -415,6 +487,14 @@ def fmt(x, nd=1):
 
 def do_report(out_path, model, runs, cmdline):
     sys.path.insert(0, HERE)
+    if ROUND != "r1":
+        from report_r2 import build_report_r2  # noqa: E402
+        text = build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, REPO, cmdline,
+                               {a: {s: len(system_prompt(s, a)) for s in TASKS} for a in ARMS}, BASE)
+        with open(out_path, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        print("wrote " + out_path)
+        return 0
     from report import build_report  # noqa: E402
     text = build_report(TASKS, ARMS, runs, model, load, exec_path, judge_path, REPO, cmdline,
                         {a: {s: len(system_prompt(s, a)) for s in TASKS} for a in ARMS})
@@ -434,7 +514,10 @@ def main(argv):
     p.add_argument("--runs", type=int, default=3)
     p.add_argument("--concurrency", type=int, default=4)
     p.add_argument("--seed", type=int, default=20261017)
+    p.add_argument("--round", default="r1", choices=("r1", "r2"))
+    p.add_argument("--budget", type=float, help="r2+: stop when cached+new USD-equivalent exceeds this")
     a = p.parse_args(argv)
+    configure(a.round)
     if a.dry:
         return do_dry(a.runs)
     if not a.model:
@@ -444,7 +527,9 @@ def main(argv):
     if a.pilot:
         return do_pilot(a.model)
     if a.run:
-        return do_run(a.model, a.runs, a.concurrency, a.seed)
+        if a.round == "r1":
+            return do_run(a.model, a.runs, a.concurrency, a.seed)
+        return do_run_phased(a.model, a.runs, a.concurrency, a.seed, a.budget)
     if a.report:
         return do_report(a.report, a.model, a.runs, "python3 scripts/evals/outcome/driver.py " + " ".join(argv))
     p.error("pick one of --dry, --pilot, --run, --report")

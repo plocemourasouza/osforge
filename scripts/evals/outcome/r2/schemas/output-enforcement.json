@@ -1,0 +1,68 @@
+{
+ "type": "object",
+ "required": [
+  "criteria",
+  "score",
+  "rationale",
+  "deliverables_expected",
+  "deliverables_complete",
+  "placeholders",
+  "over_length"
+ ],
+ "properties": {
+  "criteria": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "result",
+     "note"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "result": {
+      "enum": [
+       "pass",
+       "fail",
+       "na"
+      ]
+     },
+     "note": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "score": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 10
+  },
+  "rationale": {
+   "type": "string"
+  },
+  "deliverables_expected": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "deliverables_complete": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "placeholders": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "over_length": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  }
+ }
+}

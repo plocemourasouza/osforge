@@ -1,0 +1,1 @@
+We run a B2B invoicing SaaS (Next.js + Postgres, ~2,000 tenant companies, each with 10–5,000 end customers). Product wants "customers get told when an invoice is overdue". Before we commit to anything, help me think through the options.

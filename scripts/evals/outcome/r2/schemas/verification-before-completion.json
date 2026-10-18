@@ -1,0 +1,68 @@
+{
+ "type": "object",
+ "required": [
+  "criteria",
+  "score",
+  "rationale",
+  "unverified_claims",
+  "gaps_in_truth",
+  "gaps_surfaced",
+  "false_unverified"
+ ],
+ "properties": {
+  "criteria": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "result",
+     "note"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "result": {
+      "enum": [
+       "pass",
+       "fail",
+       "na"
+      ]
+     },
+     "note": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "score": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 10
+  },
+  "rationale": {
+   "type": "string"
+  },
+  "unverified_claims": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "gaps_in_truth": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "gaps_surfaced": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "false_unverified": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  }
+ }
+}
