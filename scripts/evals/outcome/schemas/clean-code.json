@@ -1,0 +1,44 @@
+{
+ "type": "object",
+ "required": [
+  "criteria",
+  "score",
+  "rationale"
+ ],
+ "properties": {
+  "criteria": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "result",
+     "note"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "result": {
+      "enum": [
+       "pass",
+       "fail",
+       "na"
+      ]
+     },
+     "note": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "score": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 10
+  },
+  "rationale": {
+   "type": "string"
+  }
+ }
+}

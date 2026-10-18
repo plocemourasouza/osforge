@@ -11,7 +11,7 @@ allowed-tools: Read, Write, Edit
 
 # Clean Code - Pragmatic AI Coding Standards
 
-> **CRITICAL SKILL** - Be **concise, direct, and solution-focused**.
+Be concise, direct, and solution-focused.
 
 ---
 
@@ -19,7 +19,7 @@ allowed-tools: Read, Write, Edit
 
 | Principle | Rule |
 |-----------|------|
-| **SRP** | Single Responsibility - each function/class does ONE thing |
+| **SRP** | Single Responsibility - each function/class does one thing |
 | **DRY** | Don't Repeat Yourself - extract duplicates, reuse |
 | **KISS** | Keep It Simple - simplest solution that works |
 | **YAGNI** | You Aren't Gonna Need It - don't build unused features |
@@ -88,9 +88,9 @@ allowed-tools: Read, Write, Edit
 
 ---
 
-## Before Editing ANY File (THINK FIRST!)
+## Before Editing a File
 
-**Before changing a file, ask yourself:**
+Before changing a file, check:
 
 | Question | Why |
 |----------|-----|
@@ -106,29 +106,17 @@ File to edit: UserService.ts
 └── Do they need changes too? → Check function signatures
 ```
 
-> **Rule:** Edit the file + all dependent files in the SAME task.
-> **Never leave broken imports or missing updates.**
+Edit the file and its dependents in the same task, so no import or caller is left broken.
 
 ---
 
-## Summary
-
-| Do | Don't |
-|----|--------|
-| Write code directly | Write tutorials |
-| Let code self-document | Add obvious comments |
-| Fix bugs directly | Write a tutorial before fixing |
-| Inline small things | Create unnecessary files |
-| Name things clearly | Use abbreviations |
-| Keep functions small | Write 100+ line functions |
-
-> The user wants working code plus enough context to trust it.
+The user wants working code plus enough context to trust it.
 
 ---
 
-## Self-Check Before Completing (MANDATORY)
+## Self-Check Before Completing
 
-**Before saying "task complete", verify:**
+Before saying the task is complete, verify:
 
 | Check | Question |
 |-------|----------|
@@ -138,7 +126,7 @@ File to edit: UserService.ts
 | ✅ **No errors?** | Lint and TypeScript pass? |
 | ✅ **Nothing forgotten?** | Any edge cases missed? |
 
-> **Rule:** If ANY check fails, fix it before completing.
+If a check fails, fix it before completing.
 
 ---
 
@@ -146,4 +134,4 @@ File to edit: UserService.ts
 
 Run the project's own lint, type-check and test commands. Read the full output and report errors, warnings and passes with file:line. Fix errors in the files you changed; ask before fixing anything outside the requested scope, then re-run to confirm.
 
-**Exhaustiveness bar** — a review under this skill is done when every rule section (Naming, Function, Structure, AI Coding Style, Anti-Patterns) was swept against the artifact and each violation carries file+line. Three sections checked reads exactly like six; the skipped one is where the debt lives.
+**Exhaustiveness bar** — a review under this skill is done when every rule section (Naming, Function, Structure, AI Coding Style, Anti-Patterns) was swept against the artifact and each violation carries file+line. 

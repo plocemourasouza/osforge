@@ -15,13 +15,13 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ---
 
-## Selective Reading Rule (MANDATORY)
+## Selective Reading
 
-**Read REQUIRED files always, OPTIONAL only when needed:**
+Read the required file first; read the optional ones only when the task needs them:
 
 | File | Status | When to Read |
 |------|--------|--------------|
-| [references/ux-psychology.md](references/ux-psychology.md) | **REQUIRED** | Always read first! |
+| [references/ux-psychology.md](references/ux-psychology.md) | Required | Read first |
 | [references/color-system.md](references/color-system.md) | Optional | Color/palette decisions |
 | [references/typography-system.md](references/typography-system.md) | Optional | Font selection/pairing |
 | [references/visual-effects.md](references/visual-effects.md) | Optional | Glassmorphism, shadows, gradients |
@@ -29,26 +29,15 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 | [references/motion-graphics.md](references/motion-graphics.md) | Optional | Lottie, GSAP, 3D |
 | [references/decision-trees.md](references/decision-trees.md) | Optional | Context templates |
 
-> **ux-psychology.md = ALWAYS READ. Others = only if relevant.**
 
 ---
 
-## CRITICAL: ASK BEFORE ASSUMING (MANDATORY)
+## Clarify Before Assuming
 
-> **STOP! If the user's request is open-ended, DO NOT default to your favorites.**
+If the request leaves brand, audience or style open, ask one or two short questions — or state
+the assumptions you are making and proceed. Do not fill the gap with your usual defaults.
 
-### When User Prompt is Vague, ASK:
-
-**Color not specified?** Ask:
-> "What color palette do you prefer? (blue/green/orange/neutral/other?)"
-
-**Style not specified?** Ask:
-> "What style are you going for? (minimal/bold/retro/futuristic/organic?)"
-
-**Layout not specified?** Ask:
-> "Do you have a layout preference? (single column/grid/asymmetric/full-width?)"
-
-### DEFAULT TENDENCIES TO AVOID (ANTI-SAFE HARBOR):
+### Default Tendencies to Avoid
 
 | AI Default Tendency | Why It's Bad | Think Instead |
 |---------------------|--------------|---------------|
@@ -56,18 +45,23 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 | **Hero Split (Left/Right)** | Predictable & Boring | How about Massive Typography or Vertical Narrative? |
 | **Mesh/Aurora Gradients** | The "new" lazy background | What's a radical color pairing? |
 | **Glassmorphism** | AI's idea of "premium" | How about solid, high-contrast flat? |
-| **Deep Cyan / Fintech Blue** | Safe harbor from purple ban | Why not Red, Black, or Neon Green? |
+| **Deep Cyan / Fintech Blue** | Safe harbor from purple ban | Derive the palette from the brand |
 | **"Orchestrate / Empower"** | AI-generated copywriting | How would a human say this? |
 | Dark background + neon glow | Overused, "AI look" | What does the BRAND actually need? |
-| **Rounded everything** | Generic/Safe | Where can I use sharp, brutalist edges? |
+| **Rounded everything** | Generic/Safe | Derive the shape language from the brand |
+| **Cream / beige / off-white page background** | Current default "tasteful" look | Use the brand's own neutrals |
+| **One italic or serif accent word in the headline** | Signature AI-landing tell | Keep the headline in one voice |
+| **01 / 02 / 03 numbered section labels** | Decorative numbering with no meaning | Label sections by content |
+| **Monospace uppercase eyebrow labels** | Borrowed dev-tool aesthetic | Only if the brand is technical |
+| **Pill-shaped buttons and badges everywhere** | Default rounding | Match the brand's shape language |
 
-> **"Every 'safe' structure you choose brings you one step closer to a generic template. TAKE RISKS."**
+Each safe default you pick moves the design closer to a generic template.
 
 ---
 
-## 1. Constraint Analysis (ALWAYS FIRST)
+## 1. Constraint Analysis (first)
 
-Before any design work, ANSWER THESE or ASK USER:
+Before design work, answer these from the brief, or ask:
 
 | Constraint | Question | Why It Matters |
 |------------|----------|----------------|
@@ -180,7 +174,7 @@ All spacing and sizing in multiples of 8:
 1. **What's the industry?** (narrows options)
 2. **What's the emotion?** (picks primary)
 3. **Light or dark mode?** (sets foundation)
-4. **ASK USER** if not specified
+4. Ask the user if not specified
 
 For detailed color theory: [references/color-system.md](references/color-system.md)
 
@@ -324,11 +318,11 @@ For animation patterns: [references/animation-guide.md](references/animation-gui
 - Walls of text without hierarchy
 - Inaccessible contrast
 
-### AI Tendency Patterns (AVOID!)
+### AI Tendency Patterns
 
 - **Same colors every project**
 - **Dark + neon as default**
-- **Purple/violet everything (PURPLE BAN)**
+- **Purple/violet everything**
 - **Bento grids for simple landing pages**
 - **Mesh Gradients & Glow Effects**
 - **Same layout structure / Vercel clone**
@@ -351,7 +345,7 @@ For EVERY design task:
 
 1. CONSTRAINTS
    └── What's the timeline, brand, tech, audience?
-   └── If unclear → ASK
+   └── If unclear → ask
 
 2. CONTENT
    └── What content exists?
@@ -359,7 +353,7 @@ For EVERY design task:
 
 3. STYLE DIRECTION
    └── What's appropriate for context?
-   └── If unclear → ASK (don't default!)
+   └── If unclear → ask or state assumptions
 
 4. EXECUTION
    └── Apply principles above
@@ -391,8 +385,8 @@ For deeper guidance on specific areas:
 
 > LLMs converge toward generic designs because high-probability tokens dominate sampling.
 > "Safe" fonts, "universal" palettes, and "works-for-everything" layouts are overrepresented
-> in the training data. This skill exists to **break that convergence**. Every design MUST
-> be a unique expression of the context — not a variation of the statistical center.
+> in the training data. This skill exists to break that convergence. Each design should
+> be an expression of the context — not a variation of the statistical center.
 
 ### Second-Order Anti-Convergence
 
@@ -403,12 +397,12 @@ convergence** — equally generic, just less obvious.
 **Rule:** If you already used a font/color/layout in a previous generation IN THIS SESSION,
 do not repeat it. Each output must be aesthetically distinct from the previous one.
 
-### Complexity Matching (MANDATORY)
+### Complexity Matching
 
-Code complexity MUST mirror the aesthetic vision:
+Code complexity should mirror the aesthetic vision:
 - **Maximalist designs** → elaborate code, extensive animations, layered effects
 - **Minimalist designs** → extreme restraint, precision in spacing/typography, subtle details
-- **NEVER:** a minimalist design with unnecessary complex code, or an ambitious design with lazy code
+- Avoid a minimalist design with unnecessarily complex code, or an ambitious design with lazy code
 - Elegance comes from executing the vision with precision, not from intensity
 
 > **Theoretical inspiration:** [Anthropic Blog — Improving Frontend Design Through Skills](https://claude.com/blog/improving-frontend-design-through-skills)
@@ -432,7 +426,6 @@ After implementing your design, run the audit:
 
 ## Next.js 16+ Modern Form Patterns
 
-> **IMPORTANT**
 > For Next.js 16+ projects, use the native `next/form` component instead of standard HTML `<form>` for all GET-based search/filter operations.
 
 ### The `<Form>` Component Advantage
@@ -464,6 +457,6 @@ export default function SearchBar() {
 
 ---
 
-> **Remember:** Design is THINKING, not copying. Every project deserves fresh consideration based on its unique context and users. **Avoid the Modern SaaS Safe Harbor!**
+> **Remember:** Design is THINKING, not copying. Every project deserves fresh consideration based on its unique context and users. Avoid the modern SaaS safe harbor.
 
-**Exhaustiveness bar** — applied when Constraint Analysis ran FIRST (always), the ASK-BEFORE-ASSUMING questions were asked when the prompt was vague, and each principle family the deliverable touches (UX, Layout, Color, Typography, Effects) was consulted per the Selective Reading Rule — only the relevant families, but ALL of the relevant ones.
+**Exhaustiveness bar** — applied when constraint analysis ran first, open questions were asked (or assumptions stated) when the prompt was vague, and each principle family the deliverable touches (UX, Layout, Color, Typography, Effects) was consulted.

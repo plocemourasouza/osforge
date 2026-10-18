@@ -1,0 +1,3 @@
+Seeded defect (ground truth, 1):
+D1. Authorization bypass (IDOR): the delete uses only `id`, never checks that the payment method belongs to `session.userId`. Any logged-in user can delete any other user's payment method by guessing/obtaining its uuid. Fix: `deleteMany({ where: { id, userId: session.userId } })` (or findFirst + 404), return 404 when count is 0.
+Secondary legitimate issues (real if raised): Prisma `delete` throws on a missing record -> unhandled 500 instead of 404; CSRF on a cookie-authenticated DELETE route handler (Route Handlers need manual CSRF protection / SameSite reliance).
