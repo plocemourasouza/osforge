@@ -155,7 +155,7 @@
 | **agency-sales** | 📦 skills | Index of the Agency's 8 Sales agents and 3 workflows (Outbound Strategist, Discovery Coach, Deal Strategist, Proposal Strategist, Pipeline Analyst, Ac… | `skills/agency/sales/` |
 | **architecture** | 📦 skills | Architectural decision framework with requirements analysis, trade-off evaluation, and documentation in ADRs. Use when: deciding between X and Y (mono… | `skills/architecture/` |
 | **behavioral-modes** | 📦 skills | Operational **modes** that reshape how the agent works for the task at hand. Use when: the user asks to \"switch to brainstorm mode\", \"just implemen… | `skills/behavioral-modes/` |
-| **claude-api-typescript** | 📦 skills | Build apps with the Claude API, Anthropic TypeScript SDK, and Agent SDK. TRIGGER when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent… | `skills/claude-api-typescript/` |
+| **claude-api-typescript** | 📦 skills | Build apps with the Claude API (Anthropic TypeScript SDK) and the Claude Agent SDK. Use when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claud… | `skills/claude-api-typescript/` |
 | **clean-code** | 📦 skills | Pragmatic clean-code standards: concise, direct, no over-engineering, and no unnecessary comments. Use when: code is over-engineered or has premature … | `skills/clean-code/` |
 | **coding-guidelines** | 📦 skills | Apply when writing, modifying, or reviewing code. Behavioral guidelines to reduce common LLM coding mistakes. Triggers on implementation tasks, code c… | `skills/coding-guidelines/` |
 | **config-critique** | 📦 skills | LLM-powered lint of user customizations in OSForge — validates new SKILL.md, .mdc rules, custom hooks, additional agents, and CLAUDE.md overrides acro… | `skills/config-critique/` |
@@ -270,7 +270,7 @@
 |-------|--------|-----------|-----------|
 | **agency-support** | 📦 skills | Index of the Agency's 6 Support and Operations agents (Support Responder, Analytics Reporter, Executive Summary Generator, Finance Tracker, Legal Comp… | `skills/agency/support/` |
 | **aws-deploy** | 📦 skills | Deploy to AWS — pick the right service (Amplify, App Runner, ECS/Fargate, Lambda, S3+CloudFront), with least-privilege IAM, managed secrets, and rollb… | `skills/aws-deploy/` |
-| **claude-ci-actions** | 📦 skills | Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. TRIGGER when: setting up @claude in PRs/issues, configuring automat… | `skills/claude-ci-actions/` |
+| **claude-ci-actions** | 📦 skills | Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. Use when: setting up @claude in PRs/issues, configuring automated c… | `skills/claude-ci-actions/` |
 | **deployment-procedures** | 📦 skills | Safe production deployment workflows with backup, post-deploy verification, and rollback for Vercel, Railway, VPS+PM2, Docker, and Kubernetes. Use whe… | `skills/deployment-procedures/` |
 | **server-management** | 📦 skills | Server operations principles: process management (PM2, systemd, Docker), monitoring, logs, scaling, health checks, and troubleshooting. Use when: app … | `skills/server-management/` |
 

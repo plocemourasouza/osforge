@@ -281,7 +281,7 @@
   },
   {
     "name": "claude-api-typescript",
-    "description": "Build apps with the Claude API, Anthropic TypeScript SDK, and Agent SDK. TRIGGER when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent-sdk`, user asks to use Claude API, build AI-powered features, create agents programmatically, implement tool use, streaming, batches, or structured o",
+    "description": "Build apps with the Claude API (Anthropic TypeScript SDK) and the Claude Agent SDK. Use when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent-sdk`, building AI-powered features, tool use, streaming, batches, structured outputs, prompt caching, Managed Agents, or migrating to a newer ",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -291,7 +291,7 @@
   },
   {
     "name": "claude-ci-actions",
-    "description": "Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. TRIGGER when: setting up @claude in PRs/issues, configuring automated code review, CI/CD integration with Claude, GitHub Actions workflow with Claude, or debugging Claude-powered automation pipelines.",
+    "description": "Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. Use when: setting up @claude in PRs/issues, configuring automated code review, CI/CD integration with Claude, GitHub Actions workflow with Claude, or debugging Claude-powered automation pipelines. Keywords: claude-cod",
     "category": "☁️ Infrastructure / DevOps",
     "source": "skills",
     "source_emoji": "📦",
