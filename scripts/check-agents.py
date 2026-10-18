@@ -28,7 +28,7 @@ KNOWN_KEYS = {"name", "description", "tools", "model", "skills", "color", "role"
               "always-active", "model-tier"}
 # Roles whose body says they do not change code. Keep in sync with claude-code/CLAUDE.md §2.
 READ_ONLY = {"planner", "code-reviewer", "security-auditor", "validator", "explorer-agent",
-             "system-architect", "product-manager", "product-owner"}
+             "system-architect", "product-owner"}
 
 
 def frontmatter(text):

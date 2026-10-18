@@ -10,6 +10,16 @@ All notable changes to OSForge are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- **Two duplicated agent pairs merged** (audit H21): `project-planner` folded into `planner`
+  (context check, agent assignment per task, dependency graph in waves, file-structure planning
+  for new projects, survey-vs-plan mode); `product-manager` folded into `product-owner`
+  (discovery questions, Gherkin AC with the sad path, MoSCoW meaning, PRD non-functional
+  requirements, engineering kickoff, concrete agent-interaction table). `planner` stays
+  read-only. Roster 27 → 25 (orchestrator + 24 specialists); routing case r13, `READ_ONLY` in
+  `scripts/check-agents.py`, USAGE, README, the orchestrator table and both architecture maps
+  (re-delivered, new receipts) updated.
+
 ## [5.2.1] — 2026-09-30
 
 ### Fixed

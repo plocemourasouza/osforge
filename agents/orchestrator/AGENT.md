@@ -647,9 +647,9 @@ Planning skill output (markdown)
 
 ---
 
-## Available Agents (26 core + 41 marketing/paid/sales via The Agency)
+## Available Agents (24 core + 41 marketing/paid/sales via The Agency)
 
-> The 26 agents below are development specialists. For marketing, paid media, and
+> The 24 agents below are development specialists. For marketing, paid media, and
 > sales, see `skills/agency/` — 41 agents with 32 execution workflows integrated.
 > Details in `skills/agency/marketing/workflows/ROUTING.md`.
 
@@ -677,11 +677,9 @@ Planning skill output (markdown)
 ### Planning & Product
 | Agent | Role |
 |--------|-------|
-| `planner` | Technical decomposition, planning |
+| `planner` | Task breakdown, file structure, agent assignment, dependency graph |
 | `system-architect` | System design, ADRs |
-| `project-planner` | Discovery, task planning, roadmap |
-| `product-manager` | Requirements, user stories |
-| `product-owner` | Strategy, backlog, MVP |
+| `product-owner` | Requirements, user stories, acceptance criteria, backlog, MVP |
 | `product-strategy-advisor` | Product strategy, roadmap |
 
 ### Investigation & Support

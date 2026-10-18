@@ -43,7 +43,7 @@ Quick-start scaffolding for new projects. **Read the matching template only!**
 
 | Agent | Role |
 |-------|------|
-| `project-planner` | Task breakdown, dependency graph |
+| `planner` | Task breakdown, dependency graph, agent assignment |
 | `frontend-engineer` | UI components, pages |
 | `backend-engineer` | API, business logic |
 | `database-architect` | Schema, migrations |

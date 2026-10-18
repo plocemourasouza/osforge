@@ -326,7 +326,7 @@ supabase
 | `test-engineer` | Test framework recommendations | Testability assessments |
 | `debugger` | Help with strange errors | Code archaeology context |
 | `database-architect` | SQL modernization strategy | Legacy schema analysis |
-| `project-planner` | Migration timelines | Complexity estimates |
+| `planner` | Migration timelines | Complexity estimates |
 
 ---
 
