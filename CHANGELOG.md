@@ -10,7 +10,40 @@ All notable changes to OSForge are recorded here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- **`osforge-db` memory recall works on natural questions.** The FTS query quoted every term
+  and FTS5 AND-ed them, so a question never matched (0/14 on a real-DB recall test). Terms are
+  now words only, pt-BR/English stopwords and words under 3 characters dropped, quoted, OR-ed
+  and ranked by bm25 (raw words as fallback), in `search` and the FTS leg of `search-hybrid`.
+  The index tokenizer is `unicode61 remove_diacritics 2` (accent-insensitive); older indexes
+  are rebuilt once, atomically and idempotently, by `migrate()`. Same recall test: 11/14 hit@5
+  FTS-only. `search-hybrid --json` rows no longer come out with `project: null` when the
+  embedder is down, and `search --json` rows now carry `id`.
+
+### Added
+- **Temporal recall:** `--since/--until=YYYY-MM-DD` on `search`, `search-hybrid` (both legs
+  filtered through the DB before RRF) and `list-decisions`. One JSON row shape for all three:
+  `id, project, category, created_at, content`.
+- **Embedding coverage and visible degradation:** `vec-status` reports coverage
+  (embedded/total) and embedder reachability; new `memory-health` prints one hint line when the
+  embedder is down or coverage is under 80%. `search-hybrid` without a query vector says so (a
+  `note:` line on stdout, `degraded` in each JSON row); `session-resume` adds the `memory:` hint
+  (0.3 s probe, fail-open); `add-decision` names `embed-backfill` when it could not embed;
+  `./deploy.sh` runs `embed-backfill` after the vector setup when the embedder answers.
+  `OSFORGE_OLLAMA_URL` (config `ollama_url`) overrides the Ollama endpoint.
+- **Versioned recall eval** `scripts/evals/memory/` (synthetic pt-BR/en fixture, hit@1/hit@5)
+  and `tests/test-memory-recall.sh` (53 checks, FTS-only floor hit@5 ≥ 80%, in CI).
+
 ### Changed
+- **Query-expansion guidance for memory recall.** Recall rests on OR-FTS5 (bm25, stopwords,
+  accent-insensitive); the agent is told to expand its query: 4-8 keywords, English plus the
+  user's pt-BR terms, code and file names, `--since/--until` for time questions, one retry with
+  synonyms (guidance in `db-state-sync` and `USAGE.md`). Measured on a real DB (14 private
+  questions, FTS only): natural 11/14 hit@5, keyword rewrites 14/14 (rewrites written knowing
+  the target: optimistic bound).
+- **Recall eval has two sets:** `run.py --set=natural|expanded` (`questions-expanded.tsv`,
+  agent-style keyword rewrites). `tests/test-memory-recall.sh` floors: natural hit@5 ≥ 80%,
+  expanded ≥ 95%.
 - **Two duplicated agent pairs merged** (audit H21): `project-planner` folded into `planner`
   (context check, agent assignment per task, dependency graph in waves, file-structure planning
   for new projects, survey-vs-plan mode); `product-manager` folded into `product-owner`

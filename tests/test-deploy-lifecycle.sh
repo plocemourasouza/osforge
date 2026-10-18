@@ -16,6 +16,8 @@
 #      e atualizada, não tratada como colisão
 #  10. --uninstall remove só o que é do OSForge e restaura settings; o seu fica
 #  11. --dry-run num HOME vazio não cria nada
+#  12. embedding coverage: deploy runs embed-backfill when the embedder answers, skips with a
+#      one-line note when it does not, never aborts for it; --dry-run only reports the step
 #
 # Tudo acontece em mktemp; nunca toca o $HOME real. Sem rede (--no-archify --no-qdrant).
 # Uso: tests/test-deploy-lifecycle.sh   (exit 0 = tudo verde; 1 = alguma garantia falhou)
@@ -233,6 +235,23 @@ deploy "$H2" --dry-run
 check "dry-run sai com 0" '[ $RC -eq 0 ]'
 check "nenhum arquivo criado" '[ -z "$(find "$H2" -type f)" ]'
 check "dry-run relata o que faria" 'grep -q "\[dry-run\] arquivos: copied=" <<<"$OUT"'
+
+# ─────────────────────────────────────────────────────────────────────────────
+section "Embedding coverage: embed-backfill after the vector setup"
+H4="$WORK/home-memory"; mkdir -p "$H4"
+export OSFORGE_OLLAMA_URL="http://127.0.0.1:9"          # embedder down: never the real Ollama
+deploy "$H4"
+check "embedder down → deploy exits 0" '[ $RC -eq 0 ]'
+check "embedder down → one-line skip note naming embed-backfill" '[ "$(grep -c "embed-backfill skipped" <<<"$OUT")" = 1 ]'
+deploy "$H4" --dry-run
+check "dry-run → reports the embed-backfill step without running it" 'grep -q "\[dry-run\] osforge-db embed-backfill" <<<"$OUT"'
+HOME="$H4" OSFORGE_EMBED=off python3 "$H4/.local/bin/osforge-db" upsert-project memproj "x" >/dev/null 2>&1
+HOME="$H4" OSFORGE_EMBED=off python3 "$H4/.local/bin/osforge-db" add-decision memproj "decision saved while the embedder was down" >/dev/null 2>&1
+export OSFORGE_EMBED=mock                                # deterministic offline embedder → "reachable"
+deploy "$H4"
+unset OSFORGE_EMBED OSFORGE_OLLAMA_URL
+VN="$(python3 -c 'import sqlite3,sys; print(sqlite3.connect(sys.argv[1]).execute("select count(*) from vec_memory where source_table=\"decisions\"").fetchone()[0])' "$H4/.osforge/osforge.db" 2>/dev/null)"
+check "embedder reachable → deploy backfills the missing embedding" '[ $RC -eq 0 ] && [ "$VN" = 1 ] && grep -q "embed-backfill" <<<"$OUT"'
 
 # ─────────────────────────────────────────────────────────────────────────────
 section "Deploy em HOME vazio + uninstall = HOME vazio (exceto dados)"

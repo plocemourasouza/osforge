@@ -816,6 +816,31 @@ PYEOF
   ok "Qdrant deploy completo"
 }
 
+# ── Embedding coverage (after the vector setup) ──────────────────────────
+# Embeds the decisions that have no vector for the active model. Idempotent and cheap when
+# coverage is full. Runs only when the embedder answers
+# (`memory-health`); otherwise one line says how to do it later. Never aborts the deploy.
+backfill_memory() {
+  local db_bin="$HOME/.local/bin/osforge-db"
+  echo ""
+  echo "🧠 Memory → embedding coverage"
+  if $DRY_RUN; then skip "osforge-db embed-backfill (only if the embedder answers)"; return 0; fi
+  [ -f "$db_bin" ] || { echo "  ℹ️  osforge-db missing — embed-backfill skipped"; return 0; }
+  local health reach
+  health="$(python3 "$db_bin" --json memory-health --timeout=2 2>/dev/null || true)"
+  reach="$(python3 -c 'import json,sys
+try: d=json.loads(sys.argv[1]); print({True:"yes",False:"no",None:"off"}[d.get("embedder_reachable")], d.get("reason") or "")
+except Exception: print("no osforge-db memory-health failed")' "$health")"
+  case "$reach" in
+    yes*)
+      if python3 "$db_bin" embed-backfill 2>&1 | sed 's/^/  /'; then :; else
+        echo "  ⚠️  embed-backfill failed — run it later: osforge-db embed-backfill"; fi ;;
+    off*) echo "  ℹ️  embed-backfill skipped: embedder off" ;;
+    *)    echo "  ℹ️  embed-backfill skipped: embedder unreachable (${reach#no }) — run it later: osforge-db embed-backfill" ;;
+  esac
+  return 0
+}
+
 # ── Deploy Archify (terceiro, pinado) ────────────────────────────────────
 # Instala o pacote da skill `archify/` do tarball da tag pinada em cada
 # <dst>/skills/archify. Slim: sem test/ (1,3 MB) e sem examples/*.html (3,6 MB);
@@ -1040,6 +1065,7 @@ if [ "$LEGACY_DEPLOY" != "1" ]; then
 fi
 deploy_archify || true  # terceiro, opcional; falha de rede não aborta o deploy
 deploy_qdrant || true   # Qdrant é opt-in; falha (Docker ausente etc.) não aborta o deploy
+backfill_memory || true # embedding coverage; never aborts the deploy
 
 echo ""
 echo "═══════════════════════════════════════════════════"

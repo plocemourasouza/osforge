@@ -21,12 +21,14 @@ Comandos:
   add-blocker <slug> <description> [--waiting=<what>]
   resolve-blocker <slug> <blocker_id>
   list-blockers <slug>
-  list-decisions <slug> [--category=<cat>] [--limit=10]
+  list-decisions <slug> [--category=<cat>] [--limit=5] [--since=YYYY-MM-DD] [--until=YYYY-MM-DD]
   add-task <slug> <title> [--phase=<name>] [--wave=N] [--depends=1,2] [--priority=p0|p1|p2]
   set-task <slug> <task_id> <status>   status: pending|in-progress|done|blocked|cancelled
   list-tasks <slug> [--status=<status>]
   board [--status=active|all]          Visão cross-project de tasks
-  search <query> [--project=<slug>] [--limit=5]
+  search <query> [--project=<slug>] [--limit=5] [--since=YYYY-MM-DD] [--until=YYYY-MM-DD]
+                                    FTS5: content words OR-ed (stopwords pt/en dropped),
+                                    accent-insensitive, bm25 order. since/until inclusive.
   list-projects [--status=active|all]
   import-yaml <yaml_path> <slug>    Migra status.yaml existente
   stats                             Resumo geral do banco
@@ -56,23 +58,30 @@ Comandos:
   search-semantic <query> [--top=5]
                                     Busca vetorial (Qdrant ou SQLite conforme backend).
                                     OSFORGE_EMBED=off → mensagem clara; exit 0.
-  search-hybrid <query> [--top=5]
-                                    RRF(FTS5 + vetor). Degrada para FTS5 se off.
-  vec-status                        Backend ativo, provider, modelo, contagem.
+  search-hybrid <query> [--project=<slug>] [--top=5] [--since=YYYY-MM-DD] [--until=YYYY-MM-DD]
+                                    RRF(FTS5 + vector), both legs filtered before the merge.
+                                    Embedder off = plain FTS5 search, no note.
+                                    Embedder unreachable → FTS5 only, with a stdout
+                                    note and `degraded` in each --json row.
+  vec-status                        Backend ativo, provider, modelo, contagem, coverage
+                                    (embedded/total decisions), embedder reachable.
                                     Se qdrant: mostra saúde + total de pontos.
+  memory-health [--timeout=0.3]     One-line hint when the embedder is down or coverage
+                                    is under 80%; silent otherwise (session-resume hook).
 
   Variáveis de ambiente:
     OSFORGE_EMBED       ollama (padrão) | off | mock | voyage | openai
     OSFORGE_EMBED_MODEL Modelo para o provider (default ollama: bge-m3 multilíngue; ex: nomic-embed-text, voyage-3-lite)
     OSFORGE_VECTOR      sqlite (padrão) | qdrant
     OSFORGE_QDRANT_URL  URL do Qdrant (padrão: http://localhost:6333)
+    OSFORGE_OLLAMA_URL  Ollama endpoint (default: http://localhost:11434; config: ollama_url)
     OSFORGE_COLLECTION  Nome da coleção Qdrant (padrão: osforge_memory)
     OSFORGE_CONFIG      Caminho alternativo para config.json (para testes isolados)
     VOYAGE_API_KEY      Chave para voyage
     OPENAI_API_KEY      Chave para openai
 """
 
-import sqlite3, sys, os, json, textwrap, math, hashlib, struct, re
+import sqlite3, sys, os, json, textwrap, math, hashlib, struct, re, unicodedata
 from array import array
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -108,7 +117,7 @@ def get_conn(scope="global"):
 
 # ── Memória vetorial: provider de embedding ───────────────────────────────
 #
-# OSFORGE_EMBED  = off (padrão) | mock | ollama | voyage | openai
+# OSFORGE_EMBED  = ollama (padrão) | off | mock | voyage | openai
 # OSFORGE_EMBED_MODEL = nome do modelo para o provider
 #
 # mock: embedding DETERMINÍSTICO offline usando hashlib.
@@ -164,6 +173,12 @@ _QDRANT_COLLECTION = (
     os.environ.get("OSFORGE_COLLECTION", "").strip()
     or _cfg("collection", "osforge_memory")
 )
+
+# Ollama endpoint: env > config > default (the override lets tests point at a dead port)
+_OLLAMA_URL = (
+    os.environ.get("OSFORGE_OLLAMA_URL", "").strip()
+    or _cfg("ollama_url", "http://localhost:11434")
+).rstrip("/")
 
 _DEFAULT_MODELS = {
     "ollama":  "bge-m3",
@@ -222,7 +237,7 @@ def _embed_mock(text, dim=64):
 
 def _embed_ollama(text, model):
     """Chama Ollama local (http://localhost:11434/api/embeddings)."""
-    url = "http://localhost:11434/api/embeddings"
+    url = _OLLAMA_URL + "/api/embeddings"
     payload = json.dumps({"model": model, "prompt": text}).encode()
     req = _urllib_request.Request(url, data=payload,
                                   headers={"Content-Type": "application/json"})
@@ -565,92 +580,127 @@ def _rrf_merge(ranked_a, ranked_b, k=60):
         scores[item_id] = scores.get(item_id, 0.0) + 1.0 / (k + rank)
     return sorted(scores, key=lambda x: scores[x], reverse=True)
 
-def cmd_search_hybrid(conn, query, top=5, project_slug=None):
-    """RRF(FTS5 + vetor). Degrada para FTS5 puro se OSFORGE_EMBED=off."""
+def cmd_search_hybrid(conn, query, top=5, project_slug=None, since=None, until=None):
+    """RRF(FTS5 + vector). Degrades to FTS5 only, and SAYS so, when no query vector exists.
+
+    Both legs are filtered by project/date before the merge. The vector store knows
+    neither (E-A24), so its candidates are filtered through the decisions table.
+    Provider off is plain FTS5: not degraded, no note. `degraded` (JSON field,
+    stdout note) is None | embedder-unreachable | no-embeddings.
+    """
     top = int(top)
-    if _EMBED_PROVIDER == "off":
-        print("[osforge-db] aviso: OSFORGE_EMBED=off — busca hibrida degradou para FTS5.",
-              file=sys.stderr)
-        cmd_search(conn, query, project_slug, top)
-        return
+    filtered = bool(project_slug or since or until)
+    fts_ranked = [str(i) for i in _fts_ids(conn, query, project_slug, since, until, top * 3)]
 
-    # Lista A: FTS5
-    fts_query = _fts_quote(query)
-    if project_slug:
-        fts_rows = conn.execute("""
-            SELECT decisions.id
-            FROM decisions_fts
-            JOIN decisions ON decisions.id = decisions_fts.rowid
-            JOIN projects  ON projects.id  = decisions.project_id
-            WHERE decisions_fts MATCH ? AND projects.slug=?
-            ORDER BY rank LIMIT ?
-        """, (fts_query, project_slug, top * 3)).fetchall()
-    else:
-        fts_rows = conn.execute("""
-            SELECT decisions.id
-            FROM decisions_fts
-            JOIN decisions ON decisions.id = decisions_fts.rowid
-            WHERE decisions_fts MATCH ?
-            ORDER BY rank LIMIT ?
-        """, (fts_query, top * 3)).fetchall()
-    fts_ranked = [str(r["id"]) for r in fts_rows]
+    degraded = None
+    q_vec = None
+    if _EMBED_PROVIDER != "off":
+        q_vec = compute_embedding(query)
+        if q_vec is None:
+            degraded = "embedder-unreachable"
 
-    # Lista B: vetor
-    q_vec = compute_embedding(query)
-    if q_vec is None:
-        print("[osforge-db] aviso: falha no embed da query — usando so FTS5.",
-              file=sys.stderr)
-        cmd_search(conn, query, project_slug, top)
-        return
-
-    vec_results = vstore_search(conn, q_vec, top * (10 if project_slug else 3))
-    vec_ranked = [sid for _, sid, _c, _s in
+    vec_ranked = []
+    if q_vec is not None:
+        vec_results = [r for r in vstore_search(conn, q_vec, top * (10 if filtered else 3))
+                       if r[0] == "decisions"]
+        if not vec_results:
+            degraded = "no-embeddings"
+        ranked = [str(sid) for _, sid, _c, _s in
                   sorted(vec_results, key=lambda x: x[3], reverse=True)]
-    if project_slug:
-        # A lista vetorial não sabe de projeto (E-A24): filtra pelo banco antes do RRF.
-        ids = [int(sid) for sid in vec_ranked if str(sid).isdigit()]
-        allowed = set()
-        if ids:
-            ph = ",".join("?" * len(ids))
-            allowed = {str(r[0]) for r in conn.execute(
-                f"SELECT d.id FROM decisions d JOIN projects p ON p.id=d.project_id "
-                f"WHERE p.slug=? AND d.id IN ({ph})", [project_slug] + ids).fetchall()}
-        vec_ranked = [sid for sid in vec_ranked if str(sid) in allowed]
-    vec_ranked = vec_ranked[:top * 3]
+        allowed = _filter_decision_ids(conn, ranked, project_slug, since, until)
+        vec_ranked = [sid for sid in ranked if sid in allowed][:top * 3]
 
-    # RRF
-    merged = _rrf_merge(fts_ranked, vec_ranked, k=60)[:top]
+    merged = _rrf_merge(fts_ranked, vec_ranked, k=60)[:top] if vec_ranked else fts_ranked[:top]
+    rows = _decision_rows(conn, merged)
 
+    if _json_mode:
+        print(json.dumps([_decision_json(rows[sid], degraded=degraded)
+                          for sid in merged if sid in rows], ensure_ascii=False))
+        return
+    if degraded:
+        _out(f"note: degraded to FTS-only ({_DEGRADED_WHY[degraded]}) — "
+             "vector leg skipped; see `osforge-db memory-health`.")
     if not merged:
         _out("Nenhum resultado encontrado.")
         return
-
-    placeholders = ",".join("?" * len(merged))
-    rows = conn.execute(
-        f"SELECT d.id, d.category, d.content, p.slug as proj "
-        f"FROM decisions d JOIN projects p ON p.id=d.project_id "
-        f"WHERE d.id IN ({placeholders})",
-        [int(m) for m in merged]
-    ).fetchall()
-    row_by_id = {str(r["id"]): r for r in rows}
-
-    if _json_mode:
-        out = []
-        for sid in merged:
-            r = row_by_id.get(sid)
-            if r:
-                out.append({"id": r["id"], "project": r["proj"],
-                            "category": r["category"], "content": r["content"]})
-        print(json.dumps(out, ensure_ascii=False))
-        return
-
-    _out(f"── Busca hibrida (RRF FTS5+vetor): '{query}' (top={top}) ──────────")
+    leg = "FTS5" if (degraded or _EMBED_PROVIDER == "off") else "RRF FTS5+vetor"
+    _out(f"── Busca hibrida ({leg}): '{query}' (top={top}) ──────────")
     for rank, sid in enumerate(merged, 1):
-        r = row_by_id.get(sid)
+        r = rows.get(sid)
         if not r:
             continue
         short = textwrap.shorten(r["content"], width=100, placeholder="...")
-        _out(f"  #{rank} [{r['proj']}] [{r['category']}]  {short}")
+        _out(f"  #{rank} #{r['id']} [{r['proj']}] [{r['category']}] ({r['created_at'][:10]})  {short}")
+
+_DEGRADED_WHY = {
+    "embedder-unreachable": "embedder unreachable",
+    "no-embeddings": "no decision embedded yet — run `osforge-db embed-backfill`",
+}
+
+
+def _coverage(conn):
+    """(embedded, total) decisions for the ACTIVE model — what embed-backfill would fill."""
+    total = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+    embedded = conn.execute("""
+        SELECT COUNT(*) FROM decisions d WHERE EXISTS (
+            SELECT 1 FROM vec_memory v WHERE v.source_table='decisions'
+              AND v.source_id=CAST(d.id AS TEXT) AND v.model=?)
+    """, (_embed_model(),)).fetchone()[0]
+    return embedded, total
+
+
+def _probe_embedder(timeout=2.0):
+    """(reachable: bool|None, reason: str). Cheap: never computes an embedding.
+    None = provider off (nothing to reach). ollama → GET /api/tags + model listed;
+    voyage/openai → API key present (no network call); mock → always reachable."""
+    provider = _EMBED_PROVIDER
+    if provider == "off":
+        return None, "off"
+    if provider == "mock":
+        return True, "mock"
+    if provider in ("voyage", "openai"):
+        key = "VOYAGE_API_KEY" if provider == "voyage" else "OPENAI_API_KEY"
+        return (True, provider) if os.environ.get(key) else (False, f"{key} not set")
+    if provider != "ollama":
+        return False, f"unknown provider '{provider}'"
+    try:
+        with _urllib_request.urlopen(_OLLAMA_URL + "/api/tags", timeout=timeout) as resp:
+            data = json.loads(resp.read().decode())
+    except Exception:
+        return False, f"ollama not answering at {_OLLAMA_URL}"
+    model = _embed_model()
+    names = {m.get("name", "") for m in data.get("models", []) if isinstance(m, dict)}
+    if not any(n == model or n.startswith(model + ":") for n in names):
+        return False, f"model {model} not pulled in ollama (ollama pull {model})"
+    return True, f"ollama {model}"
+
+
+# Below this share of embedded decisions, recall falls back mostly to FTS.
+_LOW_COVERAGE = 0.8
+
+
+def cmd_memory_health(conn, timeout=0.3):
+    """One-line hint for the agent when the memory is degraded, else silence.
+    Fast by design (session-resume hook): SQLite counts + one short embedder probe."""
+    embedded, total = _coverage(conn)
+    reachable, reason = _probe_embedder(timeout)
+    hint = ""
+    if total and reachable is not None:
+        if not reachable:
+            hint = (f"memory: embedder unreachable ({reason}) — search-hybrid is FTS-only "
+                    "until it is back; new decisions are saved without embedding.")
+        elif embedded < total * _LOW_COVERAGE:
+            hint = (f"memory: {embedded}/{total} decisions embedded — semantic recall is "
+                    "partial; run `osforge-db embed-backfill`.")
+    if _json_mode:
+        print(json.dumps({"provider": _EMBED_PROVIDER, "model": _embed_model(),
+                          "embedder_reachable": reachable, "reason": reason,
+                          "coverage": {"embedded": embedded, "total": total},
+                          "hint": hint or None}, ensure_ascii=False))
+        return
+    if hint:
+        print(hint)
+
 
 def cmd_vec_status(conn):
     """Imprime provider ativo, backend vetorial, modelo, contagem por source_table.
@@ -676,10 +726,16 @@ def cmd_vec_status(conn):
             except (KeyError, TypeError):
                 qdrant_points = None
 
+    embedded, total = _coverage(conn)
+    reachable, reason = _probe_embedder()
+
     if _json_mode:
         out = {
             "provider": provider,
             "model": model,
+            "coverage": {"embedded": embedded, "total": total},
+            "embedder_reachable": reachable,
+            "embedder_reason": reason,
             "vector_backend": _VECTOR_BACKEND,
             "qdrant_url": _QDRANT_URL if _VECTOR_BACKEND == "qdrant" else None,
             "qdrant_collection": _QDRANT_COLLECTION if _VECTOR_BACKEND == "qdrant" else None,
@@ -695,6 +751,15 @@ def cmd_vec_status(conn):
     _out(f"  provider       : {provider}")
     _out(f"  model          : {model}")
     _out(f"  vector_backend : {_VECTOR_BACKEND}")
+    if reachable is None:
+        _out("  embedder       : off")
+    else:
+        reach = {True: "ok", False: "UNREACHABLE"}[reachable]
+        _out(f"  embedder       : {reach} ({reason})")
+    pct = f" ({100 * embedded // total}%)" if total else ""
+    _out(f"  coverage       : {embedded}/{total} decisions embedded{pct}"
+         + ("  → run `osforge-db embed-backfill`"
+            if reachable is not None and total and embedded < total else ""))
     _out(f"  numpy          : {'sim (acelerador ativo)' if _HAS_NUMPY else 'nao (pure-Python)'}")
     if _VECTOR_BACKEND == "qdrant":
         _out(f"  qdrant_url     : {_QDRANT_URL}")
@@ -809,7 +874,8 @@ CREATE TABLE IF NOT EXISTS decisions (
 
 CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts
     USING fts5(content, project_slug, category,
-               content='decisions', content_rowid='id');
+               content='decisions', content_rowid='id',
+               tokenize='unicode61 remove_diacritics 2');
 
 CREATE TABLE IF NOT EXISTS blockers (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -926,12 +992,47 @@ _MIGRATIONS = [
     ("projects", "remote_hash", "TEXT"),
 ]
 
+_FTS_DDL = SCHEMA[SCHEMA.index("CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts"):]
+_FTS_DDL = _FTS_DDL[:_FTS_DDL.index(";") + 1]
+
+
+def _migrate_fts_tokenizer(conn):
+    """Rebuild decisions_fts with the accent-insensitive tokenizer when it predates it.
+
+    Idempotent (keyed on the stored DDL) and atomic (one transaction: a failure leaves the
+    old index untouched). The index is external-content but `project_slug` is not a column
+    of `decisions`, so FTS5 'rebuild' cannot be used: rows are re-inserted from a join."""
+    row = conn.execute("SELECT sql FROM sqlite_master WHERE name='decisions_fts'").fetchone()
+    if row is None or "remove_diacritics" in (row[0] or ""):
+        return
+    conn.commit()
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        # Re-check under the write lock: a concurrent process may have migrated meanwhile.
+        cur = conn.execute("SELECT sql FROM sqlite_master WHERE name='decisions_fts'").fetchone()
+        if cur is None or "remove_diacritics" in (cur[0] or ""):
+            conn.execute("COMMIT")
+            return
+        conn.execute("DROP TABLE decisions_fts")
+        conn.execute(_FTS_DDL)
+        conn.execute("""
+            INSERT INTO decisions_fts(rowid, content, project_slug, category)
+            SELECT d.id, d.content, p.slug, d.category
+            FROM decisions d LEFT JOIN projects p ON p.id = d.project_id
+        """)
+        conn.execute("COMMIT")
+    except Exception:
+        conn.execute("ROLLBACK")
+        raise
+
+
 def migrate(conn):
     for table, col, typ in _MIGRATIONS:
         cols = {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
         if col not in cols:
             conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {typ}")
     conn.commit()
+    _migrate_fts_tokenizer(conn)
 
 
 def cmd_init(conn, args):
@@ -1093,15 +1194,19 @@ def cmd_add_decision(conn, slug, content, category="arch"):
                  (_now(), p["id"]))
     conn.commit()
     _ok(f"Decisão ({category}) adicionada a '{slug}'")
-    # Auto-embed: best-effort, nunca falha a operação principal
+    # Auto-embed: best-effort, never fails the write (the decision is already committed)
+    if _EMBED_PROVIDER == "off" or cur is None:
+        return
     try:
-        if _EMBED_PROVIDER != "off" and cur is not None:
-            vec = compute_embedding(content)
-            if vec is not None:
-                upsert_vec_memory(conn, "decisions", str(cur[0]), content, vec)
+        vec = compute_embedding(content)
+        if vec is not None:
+            upsert_vec_memory(conn, "decisions", str(cur[0]), content, vec)
+            return
+        why = "embedder unavailable"
     except Exception as _auto_embed_exc:
-        print(f"[osforge-db] aviso: auto-embed falhou ({_auto_embed_exc})",
-              file=sys.stderr)
+        why = f"auto-embed failed ({_auto_embed_exc})"
+    print(f"[osforge-db] warning: decision #{cur[0]} saved WITHOUT embedding ({why}); "
+          "run `osforge-db embed-backfill` when the embedder is back.", file=sys.stderr)
 
 def cmd_add_blocker(conn, slug, description, waiting_for=None):
     p = _get_project(conn, slug)
@@ -1206,21 +1311,23 @@ def cmd_list_blockers(conn, slug):
         _out(f"#{r['id']} [{r['created_at'][:10]}] {r['description']}"
              + (f"\n   → esperando: {r['waiting_for']}" if r["waiting_for"] else ""))
 
-def cmd_list_decisions(conn, slug, category=None, limit=10):
+def cmd_list_decisions(conn, slug, category=None, limit=10, since=None, until=None):
     p = _get_project(conn, slug)
-    q = "SELECT id, category, content, created_at FROM decisions WHERE project_id=?"
-    params = [p["id"]]
+    flt, params = _decision_filters(None, since, until)
+    q = ("SELECT d.id, p.slug AS proj, d.category, d.content, d.created_at "
+         "FROM decisions d JOIN projects p ON p.id = d.project_id WHERE d.project_id=?" + flt)
+    params = [p["id"]] + params
     if category:
-        q += " AND category=?"
+        q += " AND d.category=?"
         params.append(category)
-    q += " ORDER BY created_at DESC LIMIT ?"
+    q += " ORDER BY d.created_at DESC LIMIT ?"
     params.append(int(limit))
     rows = conn.execute(q, params).fetchall()
     if _json_mode:
-        print(json.dumps([dict(r) for r in rows], ensure_ascii=False))
+        print(json.dumps([_decision_json(r) for r in rows], ensure_ascii=False))
         return
     for r in rows:
-        _out(f"[{r['category']}] ({r['created_at'][:10]}) {r['content']}")
+        _out(f"#{r['id']} [{r['category']}] ({r['created_at'][:10]}) {r['content']}")
 
 TASK_STATUSES = ("pending", "in-progress", "done", "blocked", "cancelled")
 TASK_PRIORITIES = ("p0", "p1", "p2")
@@ -1349,40 +1456,152 @@ def cmd_board(conn, status="active"):
                 wave = f" wave:{t['wave']}" if t["wave"] is not None else ""
                 _out(f"  [{s:11}] #{t['id']} {t['priority']}{wave} {t['title']}")
 
-def _fts_quote(query):
-    """Envolve cada termo em aspas para FTS5 — evita interpretação de - como operador."""
-    terms = query.strip().split()
-    return " ".join(f'"{t}"' for t in terms)
+# ── Lexical query building + shared decision filters ───────────────────────
 
-def cmd_search(conn, query, project_slug=None, limit=5):
-    query = _fts_quote(query)
+# pt-BR + English function words, plus words every decision shares ("decidimos", "decided").
+# Compared accent-folded, so "não" and "nao" are the same entry.
+_STOPWORDS = frozenset("""
+a o as os um uma uns umas de da do das dos dum duma em no na nos nas num numa por pelo pela
+pelos pelas para pra pro com sem sob sobre entre ate e ou mas nem que se nao sim ja so mais
+menos muito muita muitos muitas pouco ao aos este esta estes estas esse essa esses essas isso
+isto aquele aquela aquilo ele ela eles elas eu tu voce voces nos vos me te lhe meu minha seu
+sua nosso nossa qual quais quanto quantos quanta quantas quando onde como porque quem cujo
+foi foram era eram ser estar estao sao tem ter teve tinha havia fica ficou faz fez vai vamos
+deve pode depois antes entao tambem ainda assim cada todo toda todos todas outro outra mesmo
+mesma algum alguma
+the an and or but nor not yes of to in on at by for from with without into onto over under
+about as is are was were be been being am do does did done have has had having it its this
+that these those there here what which who whom whose when where why how than then so too
+very can could should would will shall may might must we us our you your they them their he
+she his her me my all any each some such only own same just also again now
+decisao decisoes decidimos decidiu decidir decidido decision decisions decide decided
+""".split())
+
+
+def _fold(term):
+    """Lowercase, accents stripped — the same folding unicode61 remove_diacritics applies."""
+    return "".join(c for c in unicodedata.normalize("NFKD", term.lower())
+                   if not unicodedata.combining(c))
+
+
+def _fts_quote(query):
+    """Natural-language query → FTS5 MATCH expression, or None when it has no word at all.
+
+    Words only (unicode-aware), each one quoted (so `-`, `:`, `*`, NEAR, AND/OR/NOT are
+    never operators) and OR-ed: a question matches on its content words, bm25 ranks.
+    Stopwords and words under 3 characters are dropped; if that leaves nothing, the raw
+    words are used (so "UI" alone still searches for "ui").
+    """
+    seen, raw, kept = set(), [], []
+    for m in re.finditer(r"\w+", query):
+        low = m.group(0).lower()
+        if low in seen:
+            continue
+        seen.add(low)
+        raw.append(low)
+        folded = _fold(low)
+        if folded not in _STOPWORDS and len(folded) >= 3:
+            kept.append(low)
+    terms = kept or raw
+    if not terms:
+        return None
+    return " OR ".join(f'"{t}"' for t in terms)
+
+
+def _parse_day(value, flag):
+    """'YYYY-MM-DD' → the same string; anything else is a usage error (never ignored)."""
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+    except (TypeError, ValueError):
+        _err(f"{flag} expects YYYY-MM-DD, got {value!r}")
+    return value
+
+
+def _decision_filters(project_slug=None, since=None, until=None):
+    """SQL fragment (starting with AND) + params over aliases d (decisions) and p (projects).
+    since/until are inclusive days; created_at is 'YYYY-MM-DD HH:MM:SS' (UTC)."""
+    sql, params = "", []
     if project_slug:
-        rows = conn.execute("""
-            SELECT d.category, d.content, d.created_at, p.slug
-            FROM decisions_fts f
+        sql += " AND p.slug = ?"
+        params.append(project_slug)
+    if since:
+        sql += " AND d.created_at >= ?"
+        params.append(since)
+    if until:
+        nxt = datetime.strptime(until, "%Y-%m-%d") + timedelta(days=1)
+        sql += " AND d.created_at < ?"
+        params.append(nxt.strftime("%Y-%m-%d"))
+    return sql, params
+
+
+def _fts_ids(conn, query, project_slug=None, since=None, until=None, limit=5):
+    """Decision ids for `query`, best bm25 first, filters applied inside the query."""
+    match = _fts_quote(query)
+    if match is None:
+        return []
+    flt, params = _decision_filters(project_slug, since, until)
+    try:
+        rows = conn.execute(f"""
+            SELECT d.id FROM decisions_fts f
             JOIN decisions d ON d.id = f.rowid
-            JOIN projects p ON p.id = d.project_id
-            WHERE decisions_fts MATCH ? AND p.slug = ?
-            ORDER BY rank LIMIT ?
-        """, (query, project_slug, int(limit))).fetchall()
-    else:
-        rows = conn.execute("""
-            SELECT d.category, d.content, d.created_at, p.slug
-            FROM decisions_fts f
-            JOIN decisions d ON d.id = f.rowid
-            JOIN projects p ON p.id = d.project_id
-            WHERE decisions_fts MATCH ?
-            ORDER BY rank LIMIT ?
-        """, (query, int(limit))).fetchall()
+            JOIN projects  p ON p.id = d.project_id
+            WHERE decisions_fts MATCH ? {flt}
+            ORDER BY bm25(decisions_fts) LIMIT ?
+        """, [match] + params + [int(limit)]).fetchall()
+    except sqlite3.OperationalError as exc:      # defensive: the query is built to be valid
+        print(f"[osforge-db] warning: FTS5 rejected the query ({exc})", file=sys.stderr)
+        return []
+    return [r[0] for r in rows]
+
+
+def _filter_decision_ids(conn, ids, project_slug=None, since=None, until=None):
+    """Subset of `ids` (str) that are existing decisions passing the filters."""
+    nums = [int(i) for i in ids if str(i).isdigit()]
+    if not nums:
+        return set()
+    flt, params = _decision_filters(project_slug, since, until)
+    ph = ",".join("?" * len(nums))
+    return {str(r[0]) for r in conn.execute(
+        f"SELECT d.id FROM decisions d JOIN projects p ON p.id = d.project_id "
+        f"WHERE d.id IN ({ph}) {flt}", nums + params).fetchall()}
+
+
+def _decision_rows(conn, ids):
+    """{id_str: row(id, proj, category, created_at, content)} for the given ids."""
+    nums = [int(i) for i in ids if str(i).isdigit()]
+    if not nums:
+        return {}
+    ph = ",".join("?" * len(nums))
+    rows = conn.execute(
+        f"SELECT d.id, p.slug AS proj, d.category, d.created_at, d.content "
+        f"FROM decisions d JOIN projects p ON p.id = d.project_id WHERE d.id IN ({ph})",
+        nums).fetchall()
+    return {str(r["id"]): r for r in rows}
+
+
+def _decision_json(r, **extra):
+    """One decision as JSON — the same keys in search, search-hybrid and list-decisions."""
+    out = {"id": r["id"], "project": r["proj"], "category": r["category"],
+           "created_at": r["created_at"], "content": r["content"]}
+    out.update(extra)
+    return out
+
+
+def cmd_search(conn, query, project_slug=None, limit=5, since=None, until=None):
+    ids = [str(i) for i in _fts_ids(conn, query, project_slug, since, until, limit)]
+    rows = _decision_rows(conn, ids)
     if _json_mode:
-        print(json.dumps([dict(r) for r in rows], ensure_ascii=False))
+        # `slug` kept as an alias of `project` for callers of the old shape
+        print(json.dumps([_decision_json(rows[i], slug=rows[i]["proj"]) for i in ids if i in rows],
+                         ensure_ascii=False))
         return
-    if not rows:
+    if not ids:
         _out("Nenhum resultado")
         return
-    for r in rows:
+    for i in ids:
+        r = rows[i]
         short = textwrap.shorten(r["content"], width=100, placeholder="…")
-        _out(f"[{r['slug']}][{r['category']}] {short}")
+        _out(f"#{r['id']} [{r['proj']}][{r['category']}] ({r['created_at'][:10]}) {short}")
 
 def cmd_list_projects(conn, status="active"):
     q = "SELECT slug, triage, status, description, root_path, remote_hash FROM projects"
@@ -2028,6 +2247,8 @@ def main():
     since_arg    = next((a for a in args if a.startswith("--since=")), None)
     by_arg       = next((a for a in args if a.startswith("--by=")), None)
     older_arg    = next((a for a in args if a.startswith("--older-than=")), None)
+    until_arg    = next((a for a in args if a.startswith("--until=")), None)
+    timeout_arg  = next((a for a in args if a.startswith("--timeout=")), None)
     _flags = [x for x in args if x.startswith("--")]      # capturado agora: `args` é filtrado adiante
     def _intflag(name, default=0):
         a = next((x for x in _flags if x.startswith(f"--{name}=")), None)
@@ -2058,6 +2279,11 @@ def main():
     since_flt  = since_arg.split("=",1)[1]    if since_arg     else None
     by_flt     = by_arg.split("=",1)[1]       if by_arg        else None
     older_flt  = older_arg.split("=",1)[1]    if older_arg     else "90d"
+    until_flt  = until_arg.split("=",1)[1]    if until_arg     else None
+    try:
+        timeout_flt = float(timeout_arg.split("=",1)[1]) if timeout_arg else 0.3
+    except ValueError:
+        timeout_flt = 0.3
     session_flt = session_arg.split("=",1)[1] if session_arg   else None
     model_flt  = model_arg.split("=",1)[1]    if model_arg     else None
     remote_flt = remote_arg.split("=",1)[1]   if remote_arg    else None
@@ -2069,6 +2295,12 @@ def main():
 
     cmd = args[0]
     rest = args[1:]
+
+    # Decision searches take whole days; `calls` keeps its own relative --since (5h/7d).
+    day_since = day_until = None
+    if cmd in ("search", "search-hybrid", "list-decisions"):
+        day_since = _parse_day(since_flt, "--since") if since_flt else None
+        day_until = _parse_day(until_flt, "--until") if until_flt else None
 
     conn = get_conn(scope)
     # Auto-init sempre
@@ -2119,8 +2351,9 @@ def main():
         cmd_list_blockers(conn, rest[0])
     elif cmd == "list-decisions":
         if not rest:
-            _err("Uso: list-decisions <slug> [--category=] [--limit=10]")
-        cmd_list_decisions(conn, rest[0], category, limit)
+            _err("Uso: list-decisions <slug> [--category=] [--limit=10] "
+                 "[--since=YYYY-MM-DD] [--until=YYYY-MM-DD]")
+        cmd_list_decisions(conn, rest[0], category, limit, day_since, day_until)
     elif cmd == "status":
         if not rest:
             _err("Uso: status <slug>")
@@ -2131,8 +2364,9 @@ def main():
         cmd_resume(conn, rest[0])
     elif cmd == "search":
         if not rest:
-            _err("Uso: search <query> [--project=slug] [--limit=5]")
-        cmd_search(conn, " ".join(rest), proj_flt, limit)
+            _err("Uso: search <query> [--project=slug] [--limit=5] "
+                 "[--since=YYYY-MM-DD] [--until=YYYY-MM-DD]")
+        cmd_search(conn, " ".join(rest), proj_flt, limit, day_since, day_until)
     elif cmd == "add-task":
         if len(rest) < 2:
             _err("Uso: add-task <slug> <title> [--phase=] [--wave=N] "
@@ -2200,10 +2434,13 @@ def main():
         cmd_search_semantic(conn, " ".join(rest), top_flt)
     elif cmd == "search-hybrid":
         if not rest:
-            _err("Uso: search-hybrid <query> [--project=slug] [--top=5]")
-        cmd_search_hybrid(conn, " ".join(rest), top_flt, proj_flt)
+            _err("Uso: search-hybrid <query> [--project=slug] [--top=5] "
+                 "[--since=YYYY-MM-DD] [--until=YYYY-MM-DD]")
+        cmd_search_hybrid(conn, " ".join(rest), top_flt, proj_flt, day_since, day_until)
     elif cmd == "vec-status":
         cmd_vec_status(conn)
+    elif cmd == "memory-health":
+        cmd_memory_health(conn, timeout_flt)
     elif cmd == "vec-init":
         cmd_vec_init(conn)
     else:

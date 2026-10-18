@@ -76,13 +76,25 @@ osforge-db add-decision <slug> "<decision>" --category=ux
 osforge-db add-decision <slug> "<decision>" --category=data
 osforge-db add-decision <slug> "<decision>" --category=security
 
-# List recent decisions
+# List recent decisions (optionally by period: whole days, inclusive, UTC)
 osforge-db list-decisions <slug> --category=arch --limit=10
+osforge-db list-decisions <slug> --since=2026-09-01 --until=2026-09-30
 
-# Cross-project FTS5 search (returns semantically related decisions)
-osforge-db search "Prisma RLS multi-tenant"
-osforge-db search "OAuth authentication" --project=<slug>
+# Recall = lexical search (FTS5): content words are OR-ed, stopwords dropped, accents
+# ignored, bm25 order. YOU expand the query — see "Query expansion" below.
+osforge-db search "oauth callback redirect_uri auth/callback.ts autenticação" [--project=<slug>] [--limit=5] [--since=YYYY-MM-DD] [--until=YYYY-MM-DD]
 ```
+
+**Query expansion.** Recall is lexical, so the words you search with decide what you find.
+Turn the question into 4–8 keywords: English plus the pt-BR terms the user used, plus code
+identifiers and file names (`rust-toolchain.toml`, `used_at`). Not the whole sentence. Measured
+on real decisions: natural questions hit@5 11/14, the same questions as keywords 14/14.
+`search` is FTS-only; `search-hybrid` adds the vector leg when the embedder answers. A time-bound
+question ("what did we decide in October?") maps to `--since`/`--until`, not to the word
+"October". When the first query misses, retry once with synonyms (cache, caching, cache layer)
+before reporting "nothing found". `--json` rows carry `id, project, category, created_at,
+content`. `search-hybrid` prints `note: degraded to FTS-only` when
+it is unreachable (JSON: `degraded` not null); see `osforge-db memory-health` / `vec-status`.
 
 ### TASKS — track tasks + cross-project board
 
@@ -171,7 +183,8 @@ osforge-db set-resume <slug> "Next: <phase> via <skill>"
 ## Gotchas
 
 - **Project slug**: use consistent kebab-case. The slug is the primary key for everything — `linkme-tur`, `essent-billing`, `rede-essent-portal`. Never change it after creating.
-- **FTS5 and hyphens**: the search already sanitizes hyphens automatically. No need to escape.
+- **FTS5 and hyphens**: the search already quotes every word, so `-`, `:`, `*` and `AND/OR/NOT` are never operators. No need to escape.
+- **Embedding coverage:** a decision saved while the embedder was down has no vector. The session-resume hook says so in one `memory:` line; `osforge-db embed-backfill` fills only what is missing.
 - **Global vs local database**: for projects with sensitive data (Essent, Rede Essent Jus), use `--scope=local` — the database stays in the project and can be `.gitignore`d. The global database holds only non-sensitive state and decisions.
 - **set-resume is mandatory when ending**: without an updated `set-resume`, the next session won't know where you stopped. Treat it like a git commit — always run it before closing the editor.
 - **import-yaml is idempotent**: it can be run multiple times on the same project without duplicating phases (uses `ON CONFLICT DO NOTHING`).

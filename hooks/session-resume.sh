@@ -11,6 +11,10 @@
 #        vai num envelope explícito, com teto de tamanho, sem segredos (lib/scrub.py) e
 #        restrito ao projeto atual (sem o board cross-project de antes, E-A21).
 #
+# Memory hint: one line when the embedder is down or few decisions are embedded
+# (`osforge-db memory-health`: SQLite counts + one embedder probe capped at
+# OSFORGE_RESUME_PROBE_TIMEOUT seconds, default 0.3). Fail-open: no hint on any error.
+#
 # Silencioso e exit 0 em qualquer caso de erro ou projeto não registrado.
 set -uo pipefail
 
@@ -20,6 +24,7 @@ LIB="$HERE/lib"
 
 MAX_RESUME_CHARS="${OSFORGE_RESUME_MAX_CHARS:-1200}"   # teto do resume injetado
 MAX_TASK_LINES="${OSFORGE_RESUME_MAX_TASKS:-12}"       # tarefas abertas do projeto
+PROBE_TIMEOUT="${OSFORGE_RESUME_PROBE_TIMEOUT:-0.3}"   # embedder probe (memory hint)
 
 # ── Identidade do projeto ─────────────────────────────────────────────────────
 IDENT="$(python3 "$LIB/project_id.py" 2>/dev/null || true)"
@@ -58,10 +63,13 @@ fi
 # ── Tarefas abertas DESTE projeto (escopo; sem board cross-project) ──────────
 TASKS_RAW="$(run_db list-tasks "$SLUG" 2>/dev/null | grep -vE '^\s*\[[0-9]+\] (done|cancelled) ' | grep -v '^Sem tasks' | head -n "$MAX_TASK_LINES" || true)"
 
+# ── Memory hint (one line or nothing) ────────────────────────────────────────
+MEM_HINT="$(run_db memory-health --timeout="$PROBE_TIMEOUT" | head -n 1 || true)"
+
 # ── Envelope + teto + limpeza ────────────────────────────────────────────────
-python3 - "$SLUG" "$STATUS" "$RESUME_RAW" "$TASKS_RAW" "$MAX_RESUME_CHARS" "$LIB" <<'PYEOF'
+python3 - "$SLUG" "$STATUS" "$RESUME_RAW" "$TASKS_RAW" "$MAX_RESUME_CHARS" "$LIB" "$MEM_HINT" <<'PYEOF'
 import json, sys
-slug, status, resume, tasks, max_chars, lib = sys.argv[1:7]
+slug, status, resume, tasks, max_chars, lib, mem_hint = sys.argv[1:8]
 sys.path.insert(0, lib)
 try:
     from scrub import scrub
@@ -80,6 +88,8 @@ ctx = (
 )
 if tasks.strip():
     ctx += f"\n--- tarefas abertas ({slug}) ---\n{tasks}"
+if mem_hint.startswith("memory: "):
+    ctx += "\n" + scrub(mem_hint[:300])
 print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart",
                                          "additionalContext": ctx}}, ensure_ascii=False))
 PYEOF

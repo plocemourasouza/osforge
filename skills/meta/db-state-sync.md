@@ -48,8 +48,10 @@ osforge-db resolve-blocker --id 1 --resolution "Discussed with team"
 
 ### Search Decisions
 ```bash
-# Full-text search across projects
-osforge-db search "authentication"
+# Lexical search across projects. Query 4-8 keywords: English + the user's pt-BR terms,
+# code identifiers and file names. --since/--until=YYYY-MM-DD for time questions;
+# on a miss, retry once with synonyms.
+osforge-db search "authentication auth autenticação login session" --since=2026-10-01
 
 # Search in current project only
 osforge-db search "authentication" --scope local

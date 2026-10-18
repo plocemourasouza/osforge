@@ -53,6 +53,7 @@ jobs:
           ./tests/hooks/run-contracts.sh
           ./tests/test-route-guard-race.sh
           ./tests/test-session-continuity.sh
+          ./tests/test-memory-recall.sh
           ./tests/test-canvas-feedback.sh
           ./tests/test-context-usage.sh
           ./tests/test-installers.sh

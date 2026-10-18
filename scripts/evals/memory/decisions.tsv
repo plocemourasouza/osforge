@@ -1,0 +1,17 @@
+# Synthetic decisions for the memory recall eval. NOT real project data.
+# Columns (TAB): key	project	category	created_at	content
+D01	acme-shop	data	2026-08-04 10:00:00	Paginação por cursor na listagem de produtos: 24 itens por página, ordenados por created_at e id para manter a ordem estável.
+D02	acme-shop	security	2026-08-11 14:30:00	Session cookie name lives in a single constant in lib/auth/cookies.ts so middleware and server actions never drift apart.
+D03	acme-shop	arch	2026-08-19 09:15:00	Funções de perfil devolvem Result<T, Erro> em vez de null: o chamador precisa distinguir registro inexistente de falha de rede.
+D04	acme-shop	ux	2026-09-02 16:00:00	Badge colour rule for members: green when active, amber for pending invitations, grey for archived accounts.
+D05	acme-shop	data	2026-09-15 11:20:00	Cache do catálogo no Redis com TTL de 10 minutos; invalidação explícita ao publicar um produto.
+D06	acme-shop	data	2026-10-06 08:45:00	Catalog cache moved from Redis to the Next.js data cache with tag-based revalidation; Redis removed from the stack.
+D07	nimbus-api	security	2026-08-07 13:00:00	O token de acesso de uso único é consumido com UPDATE ... WHERE used_at IS NULL RETURNING, o que evita condição de corrida entre duas abas.
+D08	nimbus-api	arch	2026-08-25 10:10:00	Rate limiting per API key with a sliding window of 60 requests per minute, stored in Postgres, no external service.
+D09	nimbus-api	data	2026-09-09 15:40:00	O espelho de leitura não guarda CPF nem telefone: o DTO de exportação remove os dados pessoais antes de gravar.
+D10	nimbus-api	arch	2026-09-23 17:05:00	Webhooks are retried with exponential backoff (1m, 5m, 30m, 2h) and moved to a dead letter table after five failures.
+D11	nimbus-api	security	2026-10-13 09:30:00	Chaves de API são rotacionadas a cada 90 dias; a chave antiga continua válida por 7 dias de sobreposição.
+D12	orbit-docs	arch	2026-08-14 12:00:00	Backups go to Drive under one subfolder per year and month (2026/08); the weekly snapshot is kept for 12 weeks.
+D13	orbit-docs	product	2026-09-04 10:30:00	A busca da documentação usa um índice estático gerado no build, sem serviço de busca hospedado.
+D14	orbit-docs	ux	2026-09-29 14:15:00	Dark mode follows the operating system preference by default, with a manual toggle persisted per user.
+D15	orbit-docs	arch	2026-10-09 11:00:00	Toolchain do Rust fixado via rust-toolchain.toml na versão estável 1.82, com rustfmt e clippy obrigatórios no CI.

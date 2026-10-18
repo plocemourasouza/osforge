@@ -621,12 +621,17 @@ osforge-db set-resume my-project \
 ### Search across all projects
 
 ```bash
-# Full-text search in all decisions (FTS5)
-osforge-db search "autenticação OAuth"
+# Full-text search in all decisions (FTS5). Agent rule: 4-8 keywords, English plus the
+# pt-BR terms the user used, code identifiers and file names; retry once with synonyms.
+osforge-db search "oauth autenticação callback redirect_uri auth/callback.ts"
 osforge-db search "Prisma RLS multi-tenant" --project=linkme-tur
 
-# List decisions by category
+# Temporal recall: whole days, both ends inclusive (UTC)
+osforge-db search "cache do catálogo" --since=2026-10-01 --until=2026-10-31
+
+# List decisions by category / period
 osforge-db list-decisions my-project --category=security --limit=10
+osforge-db list-decisions my-project --since=2026-09-01 --until=2026-09-30
 
 # Full status
 osforge-db status my-project
@@ -634,6 +639,18 @@ osforge-db status my-project
 # All active projects
 osforge-db list-projects
 ```
+
+**How the lexical search reads a query.** Words only (unicode-aware, lowercased); pt-BR and
+English stopwords, words every decision shares ("decidimos", "decided") and words under 3
+characters are dropped; each remaining word is quoted (so `-`, `:`, `*`, `NEAR`, `AND/OR/NOT`
+are never operators) and the words are **OR-ed**, ranked by bm25. A query made only of
+dropped words falls back to its raw words (`search "UI"` still works). Matching is
+accent-insensitive (`funcoes` finds "funções"): the index uses `unicode61 remove_diacritics 2`,
+and an index created before that is rebuilt once, automatically, on the next `osforge-db` call.
+
+**`--json` rows** of `search`, `search-hybrid` and `list-decisions` share one shape:
+`{id, project, category, created_at, content}` (`search` also keeps `slug`, an alias of
+`project`; `search-hybrid` adds `degraded`, below).
 
 ### Scopes
 
@@ -667,6 +684,13 @@ osforge-db import-yaml .osforge/status.yaml meu-projeto
 
 O `osforge-db` suporta busca semântica sobre decisões e contexto de projeto via embeddings. Degradação graciosa: sem embedder ativo, cai automaticamente para FTS5 lexical.
 
+**Query expansion (agent rule).** The lexical leg (OR-FTS5, bm25, stopwords, accent-insensitive)
+matches words, so the words you search with decide what you find: 4–8 keywords, English plus the
+pt-BR terms the user used, code identifiers and file names; `--since/--until` for time questions;
+if the first search misses, one retry with synonyms. Measured on real decisions (14 private
+questions, FTS only): natural questions hit@5 11/14, the same rewritten as keywords 14/14 (the
+rewrites were made knowing the target: an optimistic bound).
+
 **Subcomandos de embedding e busca:**
 
 ```bash
@@ -681,13 +705,38 @@ osforge-db search-semantic "autenticação multi-tenant" --top=5
 
 # Busca híbrida — RRF (Reciprocal Rank Fusion) combinando FTS5 + vetor
 osforge-db search-hybrid "RLS Supabase por organização" --top=5
+osforge-db search-hybrid "cache" --project=my-project --since=2026-10-01   # both legs filtered before RRF
 
 # Inicializar backend vetorial
 osforge-db vec-init
 
-# Ver status do backend (provider, modelo, coleção, contagem de vetores)
+# Ver status do backend (provider, modelo, coleção, contagem de vetores, cobertura)
 osforge-db vec-status
+
+# One-line hint when the memory is degraded; silent when healthy (the session-resume hook uses it)
+osforge-db memory-health [--timeout=0.3]
 ```
+
+**Coverage.** Only decisions with a vector for the active model take part in the vector leg.
+`vec-status` prints `coverage: <embedded>/<total> decisions embedded` (JSON: `coverage`,
+`embedder_reachable`). `add-decision` embeds the new decision when the embedder answers; when
+it does not, the decision is still saved and a warning names `embed-backfill`.
+`embed-backfill` embeds only what is missing (idempotent), and `./deploy.sh` runs it after the
+vector setup when the embedder answers — otherwise it prints one line
+(`embed-backfill skipped`) and carries on (`--dry-run` only reports the step).
+
+**Degradation is visible.** If the embedder is unreachable (or nothing is embedded yet),
+`search-hybrid` still answers from FTS5 and says so: a first line
+`note: degraded to FTS-only (<why>) …` in normal output, and a `degraded` field in every `--json`
+row — `null` when both legs ran (and with the provider `off`, which is a choice, not a
+degradation), else `embedder-unreachable` or `no-embeddings`. At session start the
+`session-resume` hook adds one `memory: …` line to the injected resume when the embedder is
+unreachable or under 80% of the decisions are embedded (probe capped at
+`OSFORGE_RESUME_PROBE_TIMEOUT`, default 0.3 s; fail-open). Provider `off` produces no hint.
+
+**Recall eval.** `scripts/evals/memory/` (synthetic fixture, hit@1/hit@5; README there).
+`tests/test-memory-recall.sh` runs it offline (FTS only) with two floors: natural questions
+hit@5 ≥ 80%, agent-style keyword rewrites (`--set=expanded`) hit@5 ≥ 95%.
 
 **Variáveis de ambiente:**
 
@@ -697,6 +746,7 @@ osforge-db vec-status
 | `OSFORGE_EMBED_MODEL` | `bge-m3` | qualquer modelo Ollama ou API |
 | `OSFORGE_VECTOR` | `sqlite` | `sqlite` \| `qdrant` |
 | `OSFORGE_QDRANT_URL` | `http://localhost:6333` | URL do Qdrant |
+| `OSFORGE_OLLAMA_URL` | `http://localhost:11434` | Ollama endpoint (config key `ollama_url`) |
 | `OSFORGE_COLLECTION` | `osforge_memory` | nome da coleção |
 
 **Contrato `~/.osforge/config.json`:**
@@ -728,7 +778,7 @@ ollama pull bge-m3
 # 2. Deploy com Qdrant via Docker (sobe container, cria coleção, escreve config.json)
 ./deploy.sh --with-qdrant
 
-# 3. Populando histórico existente
+# 3. Populando histórico existente (o deploy também roda isto quando o embedder responde)
 osforge-db embed-backfill --source=decisions
 
 # Alternativa sem Docker (SQLite brute-force, com aviso de performance)

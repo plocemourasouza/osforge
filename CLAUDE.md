@@ -28,12 +28,12 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Offline suites (664 checks; none touches the live ~/.claude, none spends API):
+# Offline suites (726 checks; none touches the live ~/.claude, none spends API):
 ./tests/test-assertions.sh              # Verdict logic of the eval harnesses (67)
 ./tests/hooks/run-contracts.sh          # Hook contracts: real commands × fixtures, both harnesses (66; deploy gate)
 ./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle + denial attenuation (84)
-./tests/test-deploy-lifecycle.sh        # Stateful deploy: nothing of yours is lost, idempotent, doctor/uninstall/restore (64; ~1 min; CI)
-./tests/test-session-continuity.sh      # One project identity; scoped resume, cap and cleanup (35)
+./tests/test-deploy-lifecycle.sh        # Stateful deploy: nothing of yours is lost, idempotent, doctor/uninstall/restore, embed-backfill step (68; ~1 min; CI)
+./tests/test-session-continuity.sh      # One project identity; scoped resume, cap, cleanup and memory hint (40)
 ./tests/test-canvas-feedback.sh         # Canvas feedback drain (Stop) + server-side validation (34; the server part needs bun)
 ./tests/test-scan-secrets.sh            # scan-secrets on both payload formats, temporary git repo (33)
 ./tests/test-context-usage.sh           # Context warning from real usage + tokens per session/project (27)
@@ -45,6 +45,7 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-quota.sh                   # quota.json: writes (statusline + harness streams), freshness, 80/95% warning once per band (37)
 ./tests/test-calls.sh                   # calls table: ingestion, derived cost, retention, backfill (26)
 ./tests/test-harness-quota.sh           # Harness stops on quota: NOT RUN, exit 75, quota_at_start/end, records the stream (20)
+./tests/test-memory-recall.sh           # osforge-db memory: OR-FTS, accents + migration, --since/--until, coverage, degraded note, eval floor (53)
 
 # Static gates (run in the deploy preflight and in CI):
 python3 scripts/_generate_manifest.py --check   # MANIFEST in claude-code/SKILLS.md is current
