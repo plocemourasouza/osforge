@@ -17,8 +17,9 @@ The output is not prose; it is a **dispatch manifest** that lets multiple agents
 - **Triage scales depth:** QUICK = 3–5 steps · STANDARD = full plan · COMPLEX = full plan + alternatives + risks.
 - **Language boundary (ADR-011):** the plan is an artifact → written in **English**; reply to the user in the user's language.
 
-## Plan shape (fixed)
-Author from `docs/PLAN.template.md`. The plan MUST contain:
+## Plan shape (STANDARD/COMPLEX)
+QUICK triage gets the change, the files and the verify command in a few lines — no manifest.
+Otherwise author from `docs/PLAN.template.md`. The plan MUST contain:
 
 1. **Objective** — 1–2 sentences.
 2. **Feature structure** — modules/seams (`codebase-design` vocabulary), data model, API surface.

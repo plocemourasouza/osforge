@@ -23,6 +23,7 @@ Complete installation, configuration, and day-to-day usage instructions.
 13. [Recommended MCPs](#13-recommended-mcps)
 14. [High-Risk Agents](#14-high-risk-agents)
 15. [Evals — medir em vez de achar](#15-evals--medir-em-vez-de-achar)
+16. [Session config reference](#16-session-config-reference)
 
 ---
 
@@ -114,7 +115,7 @@ selects the old copy/rsync path for one release.
 
 **Claude Code (`~/.claude/`)**
 - Copies `CLAUDE.md` and `SKILLS.md`
-- Syncs 27 agents (orchestrator + 26 specialists) to `~/.claude/agents/`
+- Syncs 25 agents (orchestrator + 24 specialists) to `~/.claude/agents/`
 - Copies 9 `spec-*` commands to `~/.claude/commands/`
 - Installs 11 hooks to `~/.claude/hooks/` (plus the shared `hooks/lib/`)
 - Merges the managed hook entries into `~/.claude/settings.json` by id (yours are preserved) and the MCP servers into `~/.claude.json` (non-destructive)
@@ -262,12 +263,12 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 "I want the debugger to investigate this bug"
 ```
 
-### Agent reference (27 agents: orchestrator + 26 specialists)
+### Agent reference (25 agents: orchestrator + 24 specialists)
 
 | Agent | When to use |
 |---|---|
 | `orchestrator` | **Start here** — intake, triage, multi-phase planning, routing, tracking, course correction |
-| `planner` | Start of any feature — decomposition, architecture, stories |
+| `planner` | New projects and major features — task breakdown, file structure, agent assignment, dependency graph (waves), stories |
 | `system-architect` | System design, ADRs, architecture decisions |
 | `backend-engineer` | Prisma schema, Server Actions, APIs, Supabase |
 | `frontend-engineer` | shadcn/ui components, Server/Client Components, UX |
@@ -286,9 +287,7 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 | `penetration-tester` | Offensive security, OWASP, red-team exercises |
 | `qa-automation-engineer` | Test strategy, Playwright, test pyramid, coverage |
 | `test-engineer` | Unit/integration tests, TDD guidance |
-| `product-manager` | Requirements, user stories, backlog, product process |
-| `product-owner` | Acceptance criteria, sprint goals, stakeholder alignment |
-| `project-planner` | Project timelines, milestones, risk tracking |
+| `product-owner` | Requirements, user stories, acceptance criteria, prioritization (MoSCoW/RICE), backlog, MVP scope, PRDs |
 | `seo-specialist` | Meta tags, structured data, Core Web Vitals for SEO, GEO |
 | `code-archaeologist` | Legacy code analysis, reverse-engineering undocumented systems |
 | `explorer-agent` | Open-ended research, technology evaluation, discovery |
@@ -545,7 +544,7 @@ chmod +x ~/.claude/hooks/*
 **`context-threshold.py`** (UserPromptSubmit)
 - Lê o `message.usage` da última resposta no transcript (input + cache_read + cache_creation = o
   contexto real enviado ao modelo) e injeta o aviso do Context Budget **uma vez por faixa por
-  sessão**: ≥120k "salve estado e termine o passo", ≥150k "PARE, handoff, compacte". Lê só o fim
+  sessão**: ≥120k "salve estado e termine o passo", ≥150k "pare de abrir trabalho novo, termine o passo, handoff, compacte". Lê só o fim
   do transcript (~1 ms). `OSFORGE_CONTEXT_BANDS=120000,150000`; kill-switch `OSFORGE_CONTEXT_THRESHOLD=off` (B-021)
 
 **`canvas-feedback.py`** (Stop)
@@ -827,7 +826,7 @@ SEDE (retomada):
 
 ## 11. The Agency — 121 Specialists
 
-The Agency é um catálogo de 121 especialistas de negócio (contábil, jurídico, marketing, financeiro, HR, operações) acessíveis via skill `agency`. Não confundir com os 27 agentes de engenharia (§4) — estes são especialistas de domínio para problemas de negócio, não de código.
+The Agency é um catálogo de 121 especialistas de negócio (contábil, jurídico, marketing, financeiro, HR, operações) acessíveis via skill `agency`. Não confundir com os 25 agentes de engenharia (§4) — estes são especialistas de domínio para problemas de negócio, não de código.
 
 ```
 "Read skills/meta/agency.md"
@@ -1101,6 +1100,44 @@ num shell **sem os builtins do bash 4** — o `/bin/bash` do macOS é 3.2, e foi
 assim que um `mapfile` deixou o `install-skill` quebrado sem nenhum gate perceber (`bash -n`
 só faz o parse). `python3 scripts/check-portability.py`, no preflight do deploy e no CI,
 impede a classe inteira.
+
+---
+
+## 16. Session config reference
+
+Reference material moved out of `claude-code/CLAUDE.md` (audit N3): it explains how the config is
+built, but it does not need to be in context on every turn to change behaviour. `claude-code/CLAUDE.md`
+keeps a one-line pointer here.
+
+### Memory hierarchy (load order; last wins)
+1. **Managed** `/etc/claude-code/CLAUDE.md` — corporate global.
+2. **User** `~/.claude/CLAUDE.md` — personal global (deployed from `claude-code/CLAUDE.md`).
+3. **Project** `<repo>/CLAUDE.md` or `<repo>/.claude/CLAUDE.md` — shared, versioned.
+4. **Local** `<repo>/CLAUDE.local.md` — private per-project, `.gitignore`-able.
+
+Supports `@include <file>` (composition) and `paths:` frontmatter (conditional injection by glob of touched files).
+Conflict = the more specific level wins. Details in the `memory-hierarchy.mdc` rule.
+
+### Prompt cache strategy
+
+To maximize cache hits on the Anthropic API, content splits into two blocks:
+
+- **🔒 Cacheable prefix (stable):** identity + safety (`~/.claude/CLAUDE.md`, top), `settings.json` (permissions/hooks),
+  the style spine inside `@SKILLS.md` (TypeScript strict, code style — the `.mdc` rules themselves reach Cursor only), the skills index (`@SKILLS.md`, 177 skills).
+  **Keep it stable** — changing it invalidates every session's cache.
+- **🌊 Dynamic suffix (changes per session):** on-demand loaded skills, memory (`CLAUDE.local.md`, `.osforge/`),
+  environment context (OS/dir/git), language preferences, active MCP instructions, context-window guidelines.
+
+### MCP servers (context-scoped)
+MCP tool schemas are the biggest context cost — scope them tightly.
+- **Global (loads every session):** only **Context7** (library docs) — transversal + cheap. `mcp/claude-code.json`.
+- **Per-project:** `github · supabase · prisma · nextjs · shadcn · browser` — connect only where used, via
+  `scripts/install-mcp.sh <stack>` (writes the project's `.mcp.json`). Templates in `mcp/stacks/`.
+- **Anti-bloat settings** (deployed from `claude-code/settings-base.json` → `~/.claude/settings.json`):
+  `disableClaudeAiConnectors: true` (keeps claude.ai account connectors — Gmail, Drive, Figma, Higgsfield… — **out** of
+  Claude Code) and `env.ENABLE_TOOL_SEARCH=true` (defers large tool schemas, loading them on demand — `true`, not `auto`, because of the local proxy; rationale and measurement in `claude-code/settings-base.json`).
+- **Cleanup:** deploy merges MCPs additively and never prunes; remove accumulated/dead globals with
+  `scripts/prune-global-mcps.sh` (`--dead` drops `MCP_DOCKER` + `Prisma-Remote`).
 
 ---
 

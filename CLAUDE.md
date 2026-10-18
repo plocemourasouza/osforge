@@ -7,7 +7,7 @@ maintain the framework; `claude-code/CLAUDE.md` = how to behave in a session.
 
 ## What this repo is
 
-OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **177 skills, 27 agents** (orchestrator + 26 specialists), **14 rules (deployed to Cursor), 9 `spec-*` commands, 1 global MCP server (Context7; the rest are per-project stacks in `mcp/stacks/`)**, 11 hooks, and the `osforge-db` SQLite state CLI (with local vector memory). There is no build or lint step; the offline test suite is `tests/` (see below) and the "build" is the deploy.
+OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **177 skills, 25 agents** (orchestrator + 24 specialists), **14 rules (deployed to Cursor), 9 `spec-*` commands, 1 global MCP server (Context7; the rest are per-project stacks in `mcp/stacks/`)**, 11 hooks, and the `osforge-db` SQLite state CLI (with local vector memory). There is no build or lint step; the offline test suite is `tests/` (see below) and the "build" is the deploy.
 
 **ADR-001 (docs/DECISIONS.md): never edit `~/.claude/` or `~/.cursor/` directly.** All changes happen here, get committed, then deployed via `./deploy.sh`.
 
@@ -28,37 +28,37 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Suítes offline (645 verificações; nenhuma toca o ~/.claude vivo, nenhuma gasta API):
-./tests/test-assertions.sh              # Lógica de veredito dos harnesses de eval (67)
-./tests/hooks/run-contracts.sh          # Contratos de hook: comandos reais × fixtures, dois harnesses (63; gate do deploy)
-./tests/test-gateguard-grant.sh         # Ciclo de vida do grant do GateGuard + atenuação de negações (84)
-./tests/test-deploy-lifecycle.sh        # Deploy com estado: nada seu se perde, idempotente, doctor/uninstall/restore (64; ~1 min; CI)
-./tests/test-session-continuity.sh      # Uma identidade de projeto; resume com escopo, teto e limpeza (35)
-./tests/test-canvas-feedback.sh         # Dreno do feedback do Canvas (Stop) + validação no servidor (34; parte do servidor precisa de bun)
-./tests/test-scan-secrets.sh            # scan-secrets nos dois formatos de payload, repo git temporário (33)
-./tests/test-context-usage.sh           # Aviso de contexto pelo uso real + tokens por sessão/projeto (27)
-./tests/test-gateguard-sql.sh           # Detector de SQL destrutivo do GateGuard (23)
-./tests/test-installers.sh              # install-skill/install-mcp: os helpers que rodam na SUA máquina (22)
-./tests/test-judge.sh                   # Juiz isolado: argv/env/isolamento/exit codes com claude falso (77)
-./tests/test-eval-cases.sh              # Casos de eval v2: categoria, críticos, órfãos reprovam o --dry (42)
-./tests/test-trigger-detect.sh          # Trigger eval conta a skill real (não só o clone) e roda fora do repo (3)
-./tests/test-quota.sh                   # quota.json: gravação, frescor, aviso 80/95% uma vez por faixa (30)
-./tests/test-calls.sh                   # Tabela calls: ingestão, custo derivado, retenção, backfill (26)
-./tests/test-harness-quota.sh           # Harness para na cota: NOT RUN, exit 75, quota_at_start/end (15)
+# Offline suites (664 checks; none touches the live ~/.claude, none spends API):
+./tests/test-assertions.sh              # Verdict logic of the eval harnesses (67)
+./tests/hooks/run-contracts.sh          # Hook contracts: real commands × fixtures, both harnesses (66; deploy gate)
+./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle + denial attenuation (84)
+./tests/test-deploy-lifecycle.sh        # Stateful deploy: nothing of yours is lost, idempotent, doctor/uninstall/restore (64; ~1 min; CI)
+./tests/test-session-continuity.sh      # One project identity; scoped resume, cap and cleanup (35)
+./tests/test-canvas-feedback.sh         # Canvas feedback drain (Stop) + server-side validation (34; the server part needs bun)
+./tests/test-scan-secrets.sh            # scan-secrets on both payload formats, temporary git repo (33)
+./tests/test-context-usage.sh           # Context warning from real usage + tokens per session/project (27)
+./tests/test-gateguard-sql.sh           # GateGuard destructive-SQL detector (23)
+./tests/test-installers.sh              # install-skill/install-mcp: the helpers that run on YOUR machine (22)
+./tests/test-judge.sh                   # Isolated judge: argv/env/isolation/exit codes with a fake claude (81)
+./tests/test-eval-cases.sh              # Eval cases v2: category, criticals, orphans fail --dry (42)
+./tests/test-trigger-detect.sh          # Trigger eval counts the real skill (not just the clone) and runs outside the repo (3)
+./tests/test-quota.sh                   # quota.json: writes (statusline + harness streams), freshness, 80/95% warning once per band (37)
+./tests/test-calls.sh                   # calls table: ingestion, derived cost, retention, backfill (26)
+./tests/test-harness-quota.sh           # Harness stops on quota: NOT RUN, exit 75, quota_at_start/end, records the stream (20)
 
-# Gates estáticos (rodam no preflight do deploy e no CI):
-python3 scripts/_generate_manifest.py --check   # MANIFEST de claude-code/SKILLS.md em dia
-python3 scripts/check-agents.py         # Frontmatter dos agentes: tools escalar, model no enum, papéis read-only
-python3 scripts/check-counts.py         # Números citados em README/CLAUDE.md/USAGE batem com a árvore
-python3 scripts/check-unicode.py        # Unicode invisível/bidi/tag no que chega ao contexto (--sources, --fix)
-python3 scripts/check-portability.py    # bash 4+ / GNU-only no que é deployado — `bash -n` não pega isso
+# Static gates (run in the deploy preflight and in CI):
+python3 scripts/_generate_manifest.py --check   # MANIFEST in claude-code/SKILLS.md is current
+python3 scripts/check-agents.py         # Agent frontmatter: scalar tools, model in the enum, read-only roles
+python3 scripts/check-counts.py         # Numbers quoted in README/CLAUDE.md/USAGE match the tree
+python3 scripts/check-unicode.py        # Invisible/bidi/tag Unicode in what reaches the context (--sources, --fix)
+python3 scripts/check-portability.py    # bash 4+ / GNU-only in what gets deployed — `bash -n` does not catch it
 
-# Evals (consomem API; --dry lista e valida sem chamar modelo — é o que o CI roda):
-./scripts/run-trigger-eval.sh --dry [--split eval]  # 15 skills × (5 positivas + 5 negativas)
-./scripts/test-orchestrator-routing.sh --dry        # roteamento: agente, skill, tier
-./scripts/test-skill-triggering.sh --dry            # triggering das skills core
-#   rodada real: --model <id> --runs 3 [--home DIR] --report docs/evals/<data>-<modelo>-<suite>.md
-#   PASS é k = N; 0 < k < N é FLAKY e reprova. Formato e pendências: docs/evals/README.md
+# Evals (spend API; --dry lists and validates without calling a model — that is what CI runs):
+./scripts/run-trigger-eval.sh --dry [--split eval]  # 15 skills × (5 positive + 5 negative)
+./scripts/test-orchestrator-routing.sh --dry        # routing: agent, skill, tier
+./scripts/test-skill-triggering.sh --dry            # core-skill triggering
+#   real run: --model <id> --runs 3 [--home DIR] --report docs/evals/<date>-<model>-<suite>.md
+#   PASS is k = N; 0 < k < N is FLAKY and fails. Format and open items: docs/evals/README.md
 
 python3 scripts/buscar-skill.py <query> # Search skills locally
 python3 scripts/osforge-db.py --help    # State CLI (deployed as `osforge-db` in ~/.local/bin)
@@ -70,7 +70,7 @@ Deploy behavior worth knowing:
 - Hooks (`hooks/hooks-claude-code.json` → `~/.claude/settings.json`) merge **by id** (`event|matcher|script`), three-way: a managed entry still equal to what was recorded is replaced, one **you edited** aborts the deploy with both versions (`--force-hooks`), an event the repo dropped disappears, and your own entries — including under `~/.claude/hooks/` — are never touched. MCPs (`mcp/claude-code.json` → `~/.claude.json`) merge non-destructively (union). Deploy reports MCP drift between repo and live config.
 - Backups go to `~/.claude_backups/<run_id>/<path relative to HOME>`, and only when something is actually overwritten or kept — an idempotent second run writes nothing and creates no backup. `./deploy.sh --restore=<run_id>` puts a run's backups back.
 - Pre-flight gates (abort the deploy): manifest drift, `tests/hooks/run-contracts.sh`, `scripts/check-agents.py`, `scripts/check-counts.py`, `scripts/check-unicode.py`, `scripts/check-portability.py`. CI (`.github/workflows/ci.yml`) runs the same set plus `bash -n`/`py_compile`, a dry-run deploy in an empty HOME and `tests/test-deploy-lifecycle.sh`.
-- Evals: `--model` é obrigatório fora de `--dry`, cada caso roda `--runs` vezes (padrão 3) e o relatório vai para `docs/evals/` (`docs/evals/README.md` explica o formato e lista o que ainda é narrativa). PASS é `k = N`; `0 < k < N` é FLAKY e reprova.
+- Evals: `--model` is required outside `--dry`, each case runs `--runs` times (default 3) and the report goes to `docs/evals/` (`docs/evals/README.md` explains the format and lists what is still narrative). PASS is `k = N`; `0 < k < N` is FLAKY and fails.
 - The deploy keeps state (`scripts/osforge-state.py`, `~/.osforge/install-state.json`): it never overwrites a file you edited, never deletes a skill/hook of yours, and can `--doctor`/`--uninstall`/`--restore`. `OSFORGE_DEPLOY_LEGACY=1` = old path, one release.
 
 ## Architecture

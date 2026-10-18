@@ -8,7 +8,7 @@
 > **ADR-001:** never edit `~/.claude/` directly. Edit `claude-code/CLAUDE.md` in the repo and run
 > `./deploy.sh`. Changing this file invalidates the prompt cache of every session — keep it stable.
 
-OSForge ships **177 skills**, **27 agents** (orchestrator + 26 specialists), **14** **rules** (Cursor only; 11 always-on, 3 stack rules — `nextjs-patterns`, `typescript-strict`, `code-style` — load only when a matching file is in context, R-11),
+OSForge ships **177 skills**, **25 agents** (orchestrator + 24 specialists), **14** **rules** (Cursor only; 11 always-on, 3 stack rules — `nextjs-patterns`, `typescript-strict`, `code-style` — load only when a matching file is in context, R-11),
 **9 `spec-*` commands**, hooks, and `osforge-db` (SQLite state + vector memory). Full rosters and
 operational reference live in the repo's `USAGE.md` — this file describes *how to orchestrate*, it doesn't catalog.
 
@@ -28,6 +28,10 @@ Tier principle — pick the smallest model that solves it well:
 | Fast | tests, docs, boilerplate, i18n, mechanical renames | `haiku` |
 
 When dispatching subagents (Agent tool `model:`), assign the tier per task — don't run everything at the top.
+**Effort is the first cost lever, tier the second.** For a subagent that does a narrow, well-specified job
+(locate, rename, run a suite, summarize a file), lower its `effort:` on the Agent tool before dropping a
+tier; leave effort at the default for planning, review and debugging. Escalate effort or tier only after
+an output fails its check.
 **Canonical source for the IDs** (which change): the `smart-model-dispatch` skill. Don't hardcode IDs in prose.
 
 ### 2. Agent selection
@@ -66,7 +70,7 @@ trigger→skill map. Native skill descriptions (auto-discovered from `~/.claude/
 resolve it on demand (`buscar-skill.py <term>` → `Read` the `SKILL.md` path) rather than assuming it is unavailable.
 
 Complexity triage: **QUICK** (1–3 files, zero ambiguity) · **STANDARD** (multi-file, known domain) ·
-**COMPLEX** (new system / ambiguous requirements). Roster of the 27 agents and "when to use which"
+**COMPLEX** (new system / ambiguous requirements). Roster of the 25 agents and "when to use which"
 → `USAGE.md §Agents`. Invoke the orchestrator by dispatching the `orchestrator` agent, or just by describing the demand.
 
 ### 3. Skill triggers (two channels, one protocol)
@@ -91,8 +95,8 @@ a competent unaided answer is exactly the case that skips the matching skill. Sc
 Heavy skills (`offensive-*`, `imagegen-*`, `agency/*`) declare `model:` / `context: fork` — dispatch a
 subagent to read them instead of loading them into the main context.
 
-Core disciplines (TDD, verification-before-completion, security, coding-guidelines) are inlined in
-`@SKILLS.md` above the manifest and are always active.
+Core disciplines (TDD, verification-before-completion, coding-guidelines) are core skills; their Iron
+Laws, plus the security layer, sit in `@SKILLS.md` above the manifest and are always active.
 
 ### 4. Spec workflow + parallel dispatch
 Non-trivial features go through the `spec-*` cycle: **discover → specify → design → tasks → implement → measure**
@@ -122,7 +126,9 @@ SHA-256). Mermaid inline is fine for a ≤4-node sketch in a reply; anything tha
 
 **Security review:** security-auditor (Trail of Bits, threat model) → fix → re-audit.
 
-**Rule:** don't skip steps. A trivial feature = a fast cycle; a complex feature = skipping costs more than following.
+**Rule:** scale the cycle to the triage. QUICK (1–3 files, zero ambiguity) = do it, verify it, report the
+evidence — no spec, no manifest. STANDARD/COMPLEX = the full cycle; there, skipping a step costs more than
+following it.
 
 ---
 
@@ -136,7 +142,10 @@ approval HALT. Understand and plan — never execute (no writes/edits/mutating c
 - **Planning tier:** the orchestrator (Sonnet, always-active) delegates STANDARD/COMPLEX planning to `planner`/`validator` on **Opus**; keeps intake/triage/synthesis on Sonnet. Per `smart-model-dispatch`.
 - **Language boundary:** plan in English; reply in the user's language. **Present via Canvas** by default.
 
-**Mandatory plan shape** — a plan missing the **Roster**, **User stories**, or the **Task manifest** is incomplete, *even for a single-file change* (then the manifest just has 1–4 tasks). Emit these sections, in order:
+**QUICK triage** (1–3 files, zero ambiguity): don't inflate a plan. Give the change, the files and the
+verify command in a few lines, then HALT — or suggest leaving Plan Mode.
+
+**Plan shape (STANDARD/COMPLEX)** — a plan missing the **Roster**, **User stories**, or the **Task manifest** is incomplete. Emit these sections, in order:
 
 1. **Objective** — 1–2 sentences.
 2. **Feature structure** — modules/seams, data model, API surface.
@@ -187,39 +196,10 @@ _Vocabulary: primary/secondary source, handoff artifact — mattpocock/dictionar
 - **Semantic recall:** `osforge-db search-hybrid "<query>"` (RRF of FTS5 + vector memory). Vector memory is
   3-tier (Qdrant → SQLite cosine → FTS5), opt-in at deploy; default embedder `bge-m3` via Ollama. Ref → `USAGE.md §osforge-db`.
 
-### Memory Hierarchy (load order; last wins)
-1. **Managed** `/etc/claude-code/CLAUDE.md` — corporate global.
-2. **User** `~/.claude/CLAUDE.md` — this file (personal global).
-3. **Project** `<repo>/CLAUDE.md` or `<repo>/.claude/CLAUDE.md` — shared, versioned.
-4. **Local** `<repo>/CLAUDE.local.md` — private per-project, `.gitignore`-able.
-
-Supports `@include <file>` (composition) and `paths:` frontmatter (conditional injection by glob of touched files).
-Conflict = the more specific level wins. Details in the `memory-hierarchy.mdc` rule.
-
----
-
-## Prompt Cache Strategy
-
-To maximize cache hits on the Anthropic API, content splits into two blocks:
-
-- **🔒 Cacheable prefix (stable):** identity + safety (this file, top), `settings.json` (permissions/hooks),
-  the style spine inside `@SKILLS.md` (TypeScript strict, code style — the `.mdc` rules themselves reach Cursor only), the skills index (`@SKILLS.md`, 177 skills).
-  **Keep it stable** — changing it invalidates every session's cache.
-- **🌊 Dynamic suffix (changes per session):** on-demand loaded skills, memory (`CLAUDE.local.md`, `.osforge/`),
-  environment context (OS/dir/git), language preferences, active MCP instructions, context-window guidelines.
-
----
-
-## MCP Servers (context-scoped)
-MCP tool schemas are the biggest context cost — scope them tightly.
-- **Global (loads every session):** only **Context7** (library docs) — transversal + cheap. `mcp/claude-code.json`.
-- **Per-project:** `github · supabase · prisma · nextjs · shadcn · browser` — connect only where used, via
-  `scripts/install-mcp.sh <stack>` (writes the project's `.mcp.json`). Templates in `mcp/stacks/`.
-- **Anti-bloat settings** (deployed from `claude-code/settings-base.json` → `~/.claude/settings.json`):
-  `disableClaudeAiConnectors: true` (keeps claude.ai account connectors — Gmail, Drive, Figma, Higgsfield… — **out** of
-  Claude Code) and `env.ENABLE_TOOL_SEARCH=true` (defers large tool schemas, loading them on demand — `true`, not `auto`, because of the local proxy; rationale and measurement in `claude-code/settings-base.json`).
-- **Cleanup:** deploy merges MCPs additively and never prunes; remove accumulated/dead globals with
-  `scripts/prune-global-mcps.sh` (`--dead` drops `MCP_DOCKER` + `Prisma-Remote`).
+### Reference (not repeated here)
+Memory hierarchy (managed → user → project → local; the more specific level wins), the prompt-cache
+split, and MCP scoping → `USAGE.md §16`. MCP rule of thumb: only Context7 is global; any other server
+is connected per project with `scripts/install-mcp.sh <stack>`.
 
 ---
 
@@ -245,7 +225,7 @@ After any significant feature/fix: record lessons in `tasks/lessons.md`
 - **Structured logs** `{ action, tenantId, userId, duration, error }` — never log PII.
 - **Smart zone:** the budget is TOKENS, not a share of the window — the dumb zone starts around
   125–150k regardless of how much window is left. Past ~120k: compress responses, diffs not whole
-  files, no recaps. Past ~150k: stop and hand off. **One task per session** — unrelated work spends
+  files, no recaps. Past ~150k: finish only the step in hand, then hand off — start nothing new. **One task per session** — unrelated work spends
   the same budget.
 
 ---

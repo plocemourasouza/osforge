@@ -4,14 +4,14 @@ context-threshold.py — UserPromptSubmit hook: aviso de contexto pelo USO REAL 
 aviso de janela de cota (B-027, SPEC-L01 Parte A3, D-2).
 
 `claude-code/SKILLS.md` § "Context Budget" define as faixas (120–150k: salve estado e
-termine o passo; >150k: PARE, compacte ou passe adiante) — mas até aqui a única fonte era a
+termine o passo; >150k: termine só o passo em andamento e passe adiante) — mas até aqui a única fonte era a
 intuição do modelo sobre o próprio contexto, que é ruim. Este hook lê o `message.usage` da
 última resposta do assistente no transcript (input + cache_read + cache_creation = o que
 realmente foi enviado ao modelo) e injeta o aviso da faixa UMA vez por faixa por sessão.
 
 Faixas (tokens, sobrepostas por OSFORGE_CONTEXT_BANDS="120000,150000"):
   ≥ banda 1 → "salve estado e termine o passo atual"
-  ≥ banda 2 → "PARE: handoff (osforge-db set-resume ou plano) e compacte / nova sessão"
+  ≥ banda 2 → "PARE de abrir trabalho novo: termine o passo, handoff e compacte / nova sessão"
 Estado por sessão: $OSFORGE_CONTEXT_STATE_DIR (padrão ~/.osforge/context-threshold/<session_id>.json).
 Lê só o FIM do transcript (últimos 512 KB) — < 40 ms mesmo em transcripts de dezenas de MB.
 Padrão de leitura do `usage` visto no ECC `transcript-context.js` (MIT, E-B19); código próprio.
@@ -44,9 +44,9 @@ STATE_DIR = os.environ.get("OSFORGE_CONTEXT_STATE_DIR") or os.path.expanduser("~
 MESSAGES = {
     1: ("Contexto em {tokens:,} tokens (faixa 120–150k do Context Budget): salve estado "
         "(`osforge-db set-resume` ou plano) e termine o passo atual; não comece tarefa nova nesta sessão."),
-    2: ("Contexto em {tokens:,} tokens (>150k, dumb zone): PARE o que está fazendo, escreva o handoff "
-        "(`osforge-db set-resume <slug> \"…\"` ou um plano) e compacte ou abra uma sessão nova. "
-        "Não empurre a tarefa adiante neste contexto."),
+    2: ("Contexto em {tokens:,} tokens (>150k, dumb zone): PARE de abrir trabalho novo. Termine só "
+        "o passo em andamento no seu limite natural, escreva o handoff (`osforge-db set-resume "
+        "<slug> \"…\"` ou um plano) e compacte ou abra uma sessão nova."),
 }
 
 

@@ -20,7 +20,7 @@ allowed-tools: Read, Write, Edit
 > **Compose stack:**
 > 1. If the base rules are needed, resolve `full-output-enforcement` via the SKILLS.md manifest
 > 2. Apply **this skill** — trigger phrases + OSForge verification + TDD test protection
-> 3. Before claiming done: run **Verification Before Completion** (Skill 2 in SKILLS.md)
+> 3. Before claiming done: run **Verification Before Completion** (core skill `verification-before-completion`)
 
 ## Baseline
 
@@ -107,6 +107,6 @@ Auto-activate for:
 
 ## Related Skills
 - `full-output-enforcement` — upstream anti-truncation authority
-- `verification-before-completion` — verify deliverables actually work (SKILLS.md Skill 2)
+- `verification-before-completion` — verify deliverables actually work (core skill)
 - `tdd-workflow` — TDD discipline including complete test suites
 - `clean-code` — code quality standards for the output

@@ -143,6 +143,7 @@ Per-token prices live in `claude-code/pricing.json` (the source `osforge-db call
 4. **Batch Haiku tasks** — Group multiple Haiku tasks (i18n + tests + docs) into a single subagent call.
 5. **Escalate on failure** — If Haiku produces low-quality output, retry with Sonnet. If Sonnet fails, escalate to Opus.
 6. **Context size matters** — Keep each subagent's brief small. Route by reasoning depth, not by window size: every current tier has a 1M window.
+7. **Effort before tier** — The Agent tool also takes `effort:`. For a narrow, well-specified subagent job (locate, rename, run a suite, summarize), lower effort first; drop a tier only if that is not enough. Keep the default effort for planning, review and debugging. Effort has not been swept against an eval here — treat the saving as unmeasured.
 
 ## Local Models Track (via llmfit-advisor)
 
