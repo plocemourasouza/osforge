@@ -36,7 +36,7 @@ def _util(e):
     return u * 100 if u <= 1 else u
 
 
-def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo, cmdline, sys_chars, base):
+def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo, cmdline, sys_chars, base, judge_model=None):
     sha = _sh(["git", "rev-parse", "--short", "HEAD"], repo)
     branch = _sh(["git", "rev-parse", "--abbrev-ref", "HEAD"], repo)
     dirty = _sh(["git", "status", "--porcelain", "--", "skills/", "agents/"], repo)
@@ -60,7 +60,7 @@ def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo,
     w("|---|---|")
     w("| Suite | `outcome` round 2 (`--round r2`): no-skill vs current vs reduced/previous; agents: without vs with the boilerplate block |")
     w("| Executor model | `%s` |" % model)
-    w("| Judge model | `%s` via `scripts/lib/judge.py` (blind, isolated) |" % model)
+    w("| Judge model | `%s` via `scripts/lib/judge.py` (blind, isolated) |" % (judge_model or model))
     w("| Repo | `%s` on `%s`; `skills/` + `agents/` %s; variants pinned to `656aaf0` (clean-code C from `0fb36cd`) |"
       % (sha, branch, "clean" if not dirty else "DIRTY"))
     w("| CLI | `%s` |" % cli)
@@ -284,7 +284,7 @@ def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo,
             _f(dBA, 2), _f(dCB, 2), verdict.split(" (")[0], cverdict, SECONDARY[target][1],
             " / ".join(_f(sec[a], 2) for a in ARMS)))
     w("")
-    analysis = os.path.join(base, "analysis.md")
+    analysis = os.path.join(base, ("analysis-%s.md" % judge_model if judge_model else "analysis.md"))
     if os.path.exists(analysis):
         w("## Interpretation and limitations (hand-written, from the tables above)")
         w("")

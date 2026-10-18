@@ -106,6 +106,31 @@ def configure(round_name):
     TASKS, SKILL_EXTRA_RUBRIC, VARIANT_ARMS = R.TASKS, R.EXTRA_RUBRIC, R.VARIANT_ARMS
     TRUTH_IN_RUBRIC, PILOT = True, R.PILOT
 
+JUDGE_MODEL = None   # --judge-model; None = same as --model
+JUDGE_DIR = "judge"  # results subdir for verdicts; a different judge model gets its own
+
+
+def configure_judge(judge_model, model):
+    """A second judge writes to results/judge-<model>/ so the original verdicts stay intact
+    and both judges grade the very same executor outputs."""
+    global JUDGE_MODEL, JUDGE_DIR
+    JUDGE_MODEL = judge_model or model
+    if judge_model and judge_model != model:
+        JUDGE_DIR = "judge-" + judge_model
+
+
+def configure_only(only):
+    """--only: restrict this process to some skills/targets (to split a run across processes)."""
+    global TASKS
+    if not only:
+        return
+    want = [x.strip() for x in only.split(",") if x.strip()]
+    unknown = [x for x in want if x not in TASKS]
+    if unknown:
+        raise SystemExit("--only: unknown target(s) %s; known: %s" % (unknown, ", ".join(TASKS)))
+    TASKS = {k: v for k, v in TASKS.items() if k in want}
+
+
 STOP = threading.Event()
 STOP_REASON = []
 LOCK = threading.Lock()
@@ -165,7 +190,7 @@ def exec_path(skill, task, arm, run):
 
 
 def judge_path(skill, task, arm, run):
-    return os.path.join(RESULTS, "judge", skill, task, "%s-r%d.json" % (arm, run))
+    return os.path.join(RESULTS, JUDGE_DIR, skill, task, "%s-r%d.json" % (arm, run))
 
 
 def load(path):
@@ -316,7 +341,7 @@ def run_judge(model, skill, task, arm, run, dry=False):
     rub_path = os.path.join(rub_dir, "%s.md" % task)
     with open(rub_path, "w", encoding="utf-8") as fh:
         fh.write(rubric_text(skill, task))
-    cmd = [sys.executable, os.path.join(LIB, "judge.py"), "--model", model, "--schema", schema_path(skill),
+    cmd = [sys.executable, os.path.join(LIB, "judge.py"), "--model", JUDGE_MODEL or model, "--schema", schema_path(skill),
            "--rubric", rub_path, "--input", in_path, "--timeout", str(JUDGE_TIMEOUT)]
     if dry:
         cmd.append("--dry")
@@ -490,14 +515,16 @@ def do_report(out_path, model, runs, cmdline):
     if ROUND != "r1":
         from report_r2 import build_report_r2  # noqa: E402
         text = build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, REPO, cmdline,
-                               {a: {s: len(system_prompt(s, a)) for s in TASKS} for a in ARMS}, BASE)
+                               {a: {s: len(system_prompt(s, a)) for s in TASKS} for a in ARMS}, BASE,
+                               judge_model=JUDGE_MODEL if JUDGE_DIR != "judge" else None)
         with open(out_path, "w", encoding="utf-8") as fh:
             fh.write(text)
         print("wrote " + out_path)
         return 0
     from report import build_report  # noqa: E402
     text = build_report(TASKS, ARMS, runs, model, load, exec_path, judge_path, REPO, cmdline,
-                        {a: {s: len(system_prompt(s, a)) for s in TASKS} for a in ARMS})
+                        {a: {s: len(system_prompt(s, a)) for s in TASKS} for a in ARMS},
+                        judge_model=JUDGE_MODEL if JUDGE_DIR != "judge" else None)
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write(text)
     print("wrote " + out_path)
@@ -516,8 +543,12 @@ def main(argv):
     p.add_argument("--seed", type=int, default=20261017)
     p.add_argument("--round", default="r1", choices=("r1", "r2"))
     p.add_argument("--budget", type=float, help="r2+: stop when cached+new USD-equivalent exceeds this")
+    p.add_argument("--judge-model", help="judge with a different model; verdicts go to results/judge-<id>/")
+    p.add_argument("--only", help="comma-separated skills/targets to run in this process")
     a = p.parse_args(argv)
     configure(a.round)
+    configure_only(a.only)
+    configure_judge(a.judge_model, a.model)
     if a.dry:
         return do_dry(a.runs)
     if not a.model:

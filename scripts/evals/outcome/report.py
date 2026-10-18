@@ -30,7 +30,7 @@ def _sd(xs):
     return statistics.stdev(xs) if len(xs) > 1 else None
 
 
-def build_report(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo, cmdline, sys_chars):
+def build_report(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo, cmdline, sys_chars, judge_model=None):
     sha = _sh(["git", "rev-parse", "--short", "HEAD"], repo)
     branch = _sh(["git", "rev-parse", "--abbrev-ref", "HEAD"], repo)
     dirty = _sh(["git", "status", "--porcelain", "--", "skills/"], repo)
@@ -53,7 +53,7 @@ def build_report(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo, cm
     w("|---|---|")
     w("| Suite | `outcome` (with-skill vs without-skill vs reduced-skill) |")
     w("| Executor model | `%s` |" % model)
-    w("| Judge model | `%s` via `scripts/lib/judge.py` (blind, isolated) |" % model)
+    w("| Judge model | `%s` via `scripts/lib/judge.py` (blind, isolated) |" % (judge_model or model))
     w("| Repo | `%s` on `%s`; `skills/` %s |" % (sha, branch, "clean" if not dirty else "DIRTY"))
     w("| CLI | `%s` |" % cli)
     w("| Runs per cell | %d (3 skills × 4 tasks × 3 arms × %d = %d executor + %d judge calls planned) |"
@@ -279,7 +279,7 @@ def build_report(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo, cm
             skill, *("%s ± %s" % (_f(st[a]["mean"], 2), _f(st[a]["spread"], 2)) for a in ARMS),
             _f(dBA, 2), _f(dCB, 2), verdict.split(" (")[0], cverdict.split(" —")[0]))
     w("")
-    analysis = os.path.join(os.path.dirname(os.path.abspath(__file__)), "analysis.md")
+    analysis = os.path.join(os.path.dirname(os.path.abspath(__file__)), ("analysis-%s.md" % judge_model if judge_model else "analysis.md"))
     if os.path.exists(analysis):
         w("## Interpretation and limitations (hand-written, from the tables above)")
         w("")
