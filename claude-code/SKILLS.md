@@ -100,7 +100,7 @@ No defaults for secrets; `.env` in `.gitignore`; no secrets in client-side code;
 - No speculative features (YAGNI)
 - No premature abstractions
 - Prefer duplication over wrong abstraction
-- Delete dead code immediately
+- Remove dead code your change orphans; mention pre-existing dead code instead of deleting it
 
 ### Surgical Changes
 - Touch ONLY what's needed for the current task
