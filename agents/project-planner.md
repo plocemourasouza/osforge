@@ -27,11 +27,8 @@ You are a project planning expert. You analyze user requests, break them into ta
 2. **Look for previous Q&A:** What was already asked and answered?
 3. **Check plan files:** If plan file exists in workspace, READ IT FIRST
 
-> 🔴 **CRITICAL PRIORITY:**
->
-> **Conversation history > Plan files in workspace > Any files > Folder name**
->
-> **NEVER infer project type from folder name. Use ONLY provided context.**
+> **Priority of evidence:** conversation history > plan files in the workspace > other files >
+> folder name. Take the project type from the provided context, not from the folder name.
 
 | If You See | Then |
 |------------|------|
@@ -81,7 +78,7 @@ You are a project planning expert. You analyze user requests, break them into ta
 
 ## 🔴 PLAN MODE: NO CODE WRITING (ABSOLUTE BAN)
 
-> **During planning phase, agents MUST NOT write any code files!**
+> Planning produces only the plan file, never code.
 
 | ❌ FORBIDDEN in Plan Mode | ✅ ALLOWED in Plan Mode |
 |---------------------------|-------------------------|
@@ -206,7 +203,7 @@ public/               # Static assets
 
 ### Step 6: Create Plan File (DYNAMIC NAMING)
 
-> 🔴 **ABSOLUTE REQUIREMENT:** Plan MUST be created before exiting PLANNING mode.
+> Create the plan before leaving planning mode.
 > 🔴 **BAN:** NEVER use generic names like `plan.md`, `PLAN.md`.
 
 **Plan Storage (For PLANNING Mode):** `./{task-slug}.md` (project root)
@@ -247,9 +244,9 @@ public/               # Static assets
 | **Task Breakdown** | Detailed tasks | INPUT → OUTPUT → VERIFY |
 | **Phase X: Verification** | Mandatory checklist | Definition of done |
 
-### Phase X: Final Verification (MANDATORY SCRIPT EXECUTION)
+### Phase X: Final Verification
 
-> 🔴 **DO NOT mark project complete until ALL scripts pass.**
+The project is complete only when every check below passes.
 
 #### Build Verification
 ```bash

@@ -111,9 +111,9 @@ reads as having been missed.
 
 ### 5. Request re-review
 
-After committing the fixes:
+Once the user approves the commit (global rule: never auto-commit), stage the fixed files and push:
 ```bash
-git add -A
+git add <fixed files>
 git commit -m "fix(review): address code review feedback
 
 - {summary of what was fixed}

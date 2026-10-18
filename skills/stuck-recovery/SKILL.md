@@ -54,23 +54,9 @@ This skill depends on two external pieces (via Bash, listed in `allowed-tools`):
 
 ### Phase 1: STOP — Stop before it gets worse
 
-When stuck is detected:
-
-```
-🛑 STUCK DETECTED
-
-Sign: <which sign fired>
-Context: <N k tokens>
-Last completed atomic task: <how many turns ago>
-Observed pattern: <1-line description>
-
-I'll pause and propose recovery before spending more context.
-```
-
-**DO NOT**:
-- Try one more time "just to see"
-- Jump to the next sub-task
-- Pretend you're making progress
+Stop before spending more context. Tell the user plainly which sign fired, how much context is
+in use, when the last atomic task was completed and what pattern you are repeating — then
+propose the recovery instead of trying once more "just to see" or moving on to the next sub-task.
 
 ### Phase 2: SAVE — Preserve the work
 
@@ -85,30 +71,13 @@ osforge-db add-blocker <project-slug> "<description of what is blocking>"
 # Persist the current summary via context-compact if applicable
 ```
 
-Ensure ALL modified files are committed (even in a WIP commit):
-```bash
-git add -A && git commit -m "wip: stuck recovery checkpoint at <task>"
-```
+List the modified files in the resume note. Propose a WIP commit if the work should be
+checkpointed, but make it only with the user's approval (global rule: never auto-commit).
 
 ### Phase 3: DIAGNOSE — Identify the root cause
 
-Apply the systematic-debugging skill (4 phases) **within the session itself**:
-
-#### Phase 1: Reproduce
-List exactly what was happening in the last 5-10 turns:
-- Which tools were called
-- Which errors they returned
-- What the agent tried to do
-- What the agent SHOULD have done
-
-#### Phase 2: Isolate
-Identify the EXACT turn where the agent started to derail:
-- Was it a wrong decision at which point?
-- Was it a false assumption about what?
-- Was it missing context about what?
-
-#### Phase 3: Understand
-Categorize the root cause:
+Replay what the last 5–10 turns did (tools called, errors returned, intent), find the turn
+where the work derailed, and categorize the cause:
 
 | Cause | Symptom | Fix |
 |---|---|---|
@@ -119,8 +88,7 @@ Categorize the root cause:
 | **Spec drift** | Agent left the original scope | Return to the spec, discard off-scope work |
 | **External blocker** | Server down, broken API, missing dep | Notify the user, stop until resolved |
 
-#### Phase 4: Fix
-Explicitly define what will be DIFFERENT on the next attempt:
+Then state explicitly what will be DIFFERENT on the next attempt:
 - Approach: <X instead of Y>
 - Context: <I'll load Z first>
 - Verification: <I'll check W before declaring it done>
@@ -167,7 +135,7 @@ Detected stuck
 
 ## Communication to the user
 
-**ALWAYS** be transparent:
+Be transparent about the loop, the diagnosis and the proposed recovery, then ask for approval. For example:
 ```
 🛑 I detected we've been in a loop for the last 6 messages (trying to run `tsc`, which fails because of an import that doesn't exist).
 
@@ -201,19 +169,10 @@ After the reset, the next turn should produce:
 ## Integration with OSForge
 
 `stuck-recovery` complements existing skills:
-- `systematic-debugging` (4 phases) — used inside Phase 3 (Diagnose)
+- `systematic-debugging` — for a reproducible bug found during Diagnose
 - `context-compact` — used in Option B (compact reset)
 - `osforge-db` — state persistence in all options
 - `verification-before-completion` — gate before declaring recovery successful
-
-## Expected frequency
-
-In a healthy session: **0-1 invocations per 2-3 hours of intense work**.
-
-More than that indicates:
-- A poorly defined spec (needs `spec-clarify`)
-- A poorly mapped codebase (needs `explorer-agent`)
-- A fundamentally wrong approach (needs `brainstorming`)
 
 ---
 

@@ -16,8 +16,8 @@ metadata:
 
 The most expensive failure in software is not bad code, it is building the right thing to the
 wrong specification. Nobody knows exactly what they want until they are made to say it out loud,
-branch by branch. **Relentless** is the operative word: the loop ends when the decision tree is
-exhausted, not when the user sounds satisfied.
+branch by branch. Keep going until every open decision is resolved or explicitly deferred: the
+loop ends when the decision tree is exhausted, not merely when the user sounds satisfied.
 
 ## When NOT to use
 

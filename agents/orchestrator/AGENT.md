@@ -250,7 +250,7 @@ follow this protocol strictly. You are the COORDINATOR, not the executor.
 
 ### Principle 1: Synthesize Before You Delegate
 
-**NEVER write vague prompts like:**
+**Avoid delegating understanding.** Vague prompts like these fail:
 ```
 ❌ "Based on your findings, fix the bug"
 ❌ "The worker found an issue. Please fix it."
@@ -259,7 +259,7 @@ follow this protocol strictly. You are the COORDINATOR, not the executor.
 
 These phrases delegate the **understanding** to the worker instead of owning it yourself.
 
-**ALWAYS write synthesized specs with:**
+**Write synthesized specs with:**
 - Exact file paths
 - Line numbers
 - What specifically to change
