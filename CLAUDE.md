@@ -28,11 +28,11 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Offline suites (726 checks; none touches the live ~/.claude, none spends API):
+# Offline suites (811 checks; none touches the live ~/.claude, none spends API):
 ./tests/test-assertions.sh              # Verdict logic of the eval harnesses (67)
 ./tests/hooks/run-contracts.sh          # Hook contracts: real commands × fixtures, both harnesses (66; deploy gate)
 ./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle + denial attenuation (84)
-./tests/test-deploy-lifecycle.sh        # Stateful deploy: nothing of yours is lost, idempotent, doctor/uninstall/restore, embed-backfill step (68; ~1 min; CI)
+./tests/test-deploy-lifecycle.sh        # Stateful deploy: nothing of yours is lost, idempotent, doctor/uninstall/restore, embed-backfill + brain steps (74; ~1 min; CI)
 ./tests/test-session-continuity.sh      # One project identity; scoped resume, cap, cleanup and memory hint (40)
 ./tests/test-canvas-feedback.sh         # Canvas feedback drain (Stop) + server-side validation (34; the server part needs bun)
 ./tests/test-scan-secrets.sh            # scan-secrets on both payload formats, temporary git repo (33)
@@ -46,6 +46,7 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-calls.sh                   # calls table: ingestion, derived cost, retention, backfill (26)
 ./tests/test-harness-quota.sh           # Harness stops on quota: NOT RUN, exit 75, quota_at_start/end, records the stream (20)
 ./tests/test-memory-recall.sh           # osforge-db memory: OR-FTS, accents + migration, --since/--until, coverage, degraded note, eval floor (53)
+./tests/test-brain.sh                   # Brain (ADR-017): journal before upsert, scrub, remember/recall/forget, filters, migrate, rebuild, degraded fallback (79; the 39 store checks need qdrant-client via OSFORGE_TEST_BRAIN_PYTHON, else SKIP)
 
 # Static gates (run in the deploy preflight and in CI):
 python3 scripts/_generate_manifest.py --check   # MANIFEST in claude-code/SKILLS.md is current
@@ -86,6 +87,7 @@ Deploy behavior worth knowing:
 - `claude-code/skills-core.txt` — the Model A allowlist: the only skills `deploy.sh` copies to `~/.claude/skills` (and `~/.cursor/skills`). Everything else is pulled per project via `scripts/install-skill.sh`. `--all-skills` restores the old deploy-everything behavior.
 - `mcp/claude-code.json` — MCP server definitions.
 - `scripts/osforge-db.py` — deployed to `~/.local/bin/osforge-db`; SQLite state at `~/.osforge/osforge.db` (global) or `.osforge/osforge.db` (per-project via `--scope=local`). Tracks projects, phases, tasks (`wave`/`depends_on` for parallel dispatch), decisions (FTS5), blockers; `board` = cross-project view. Also: **local vector memory** (`embed`, `embed-backfill`, `search-semantic`, `search-hybrid`, `vec-init`, `vec-status`; 3-tier Qdrant→SQLite→FTS5 selected via `~/.osforge/config.json`) and **observations/instincts** feeding `evolve`.
+- `scripts/osforge_brain.py` — the **brain** (ADR-017), deployed next to `osforge-db` in `~/.local/bin`: long-term memory (`remember`/`recall`/`forget`/`brain *`) in Qdrant collection `osforge_brain` (dense embeddinggemma-300m via fastembed + sparse BM25), journal `~/.osforge/brain.jsonl` as source of truth. Stdlib side imported by `osforge-db`; heavy side runs in `~/.osforge/venv` (created by `deploy.sh`, `--no-brain` skips). The SQLite side is the **workbench**.
 - `scripts/qdrant/` — `docker-compose.yml` (pinned `qdrant/qdrant:v1.18.2`, persistent volume at `~/.osforge/qdrant/storage`) + README for the opt-in vector backend. Provisioned by `./deploy.sh --with-qdrant`.
 - `scripts/canvas/` — OSForge Canvas: local generative-UI service (single-file Bun server + single-file viewer, zero deps). Claude writes JSON artifacts to `<cwd>/outputs/canvas/artifacts/`, the viewer renders them as interactive UI (SSE live-reload), feedback lands in `outputs/canvas/feedback/` (runtime scratch, gitignored). Schema: `skills/osforge-canvas/references/schema.md`.
 

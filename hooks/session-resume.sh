@@ -14,6 +14,8 @@
 # Memory hint: one line when the embedder is down or few decisions are embedded
 # (`osforge-db memory-health`: SQLite counts + one embedder probe capped at
 # OSFORGE_RESUME_PROBE_TIMEOUT seconds, default 0.3). Fail-open: no hint on any error.
+# Brain hint: one line only when the brain is degraded (`osforge-db brain health`: journal,
+# venv, model and store presence + at most one HTTP probe; never loads the model).
 #
 # Silencioso e exit 0 em qualquer caso de erro ou projeto não registrado.
 set -uo pipefail
@@ -65,11 +67,12 @@ TASKS_RAW="$(run_db list-tasks "$SLUG" 2>/dev/null | grep -vE '^\s*\[[0-9]+\] (d
 
 # ── Memory hint (one line or nothing) ────────────────────────────────────────
 MEM_HINT="$(run_db memory-health --timeout="$PROBE_TIMEOUT" | head -n 1 || true)"
+BRAIN_HINT="$(run_db brain health --timeout="$PROBE_TIMEOUT" | head -n 1 || true)"
 
 # ── Envelope + teto + limpeza ────────────────────────────────────────────────
-python3 - "$SLUG" "$STATUS" "$RESUME_RAW" "$TASKS_RAW" "$MAX_RESUME_CHARS" "$LIB" "$MEM_HINT" <<'PYEOF'
+python3 - "$SLUG" "$STATUS" "$RESUME_RAW" "$TASKS_RAW" "$MAX_RESUME_CHARS" "$LIB" "$MEM_HINT" "$BRAIN_HINT" <<'PYEOF'
 import json, sys
-slug, status, resume, tasks, max_chars, lib, mem_hint = sys.argv[1:8]
+slug, status, resume, tasks, max_chars, lib, mem_hint, brain_hint = sys.argv[1:9]
 sys.path.insert(0, lib)
 try:
     from scrub import scrub
@@ -90,6 +93,8 @@ if tasks.strip():
     ctx += f"\n--- tarefas abertas ({slug}) ---\n{tasks}"
 if mem_hint.startswith("memory: "):
     ctx += "\n" + scrub(mem_hint[:300])
+if brain_hint.startswith("brain: "):
+    ctx += "\n" + scrub(brain_hint[:300])
 print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart",
                                          "additionalContext": ctx}}, ensure_ascii=False))
 PYEOF

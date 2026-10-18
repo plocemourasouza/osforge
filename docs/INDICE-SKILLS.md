@@ -68,7 +68,7 @@
 | **best-practices** | 📦 skills | Apply modern web development best practices for security, compatibility, and code quality. Use when asked to "apply best practices", "security audit",… | `skills/best-practices/` |
 | **code-review-checklist** | 📦 skills | Code review checklist covering correctness, security, performance, quality, testing, and patterns specific to AI-generated code. Use when: asked to re… | `skills/code-review-checklist/` |
 | **database-design** | 📦 skills | Database design principles: database and ORM choice, schema, indexes, optimization, and migrations. Use when: a slow query or N+1 in production, choos… | `skills/database-design/` |
-| **db-state-sync** | 📦 skills | Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db). Use when: saving phase progress, recording an architectural decision… | `skills/context/db-state-sync/` |
+| **db-state-sync** | 📦 skills | Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db) and long-term memory in the brain (remember/recall). Use when: saving… | `skills/context/db-state-sync/` |
 | **differential-review** | 📦 skills | Security-focused code review of diffs and PRs. Trigger on PR security review, git diff analysis, change impact assessment, or when reviewing commits t… | `skills/differential-review/` |
 | **gdpr-data-handling** | 📦 skills | GDPR/LGPD compliance patterns for data handling. Trigger on consent management, data subject rights (access, deletion, portability), privacy policies,… | `skills/gdpr-data-handling/` |
 | **insecure-defaults** | 📦 skills | Detect fail-open patterns and insecure default configurations. Trigger on security hardening, env variable audit, default config review, permission ch… | `skills/insecure-defaults/` |

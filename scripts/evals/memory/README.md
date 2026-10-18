@@ -23,6 +23,12 @@ python3 scripts/evals/memory/run.py --mode=fts --set=expanded --floor=0.95 [--ve
 # Ollama not reachable → prints SKIP and exits 0 (nothing is started for you).
 python3 scripts/evals/memory/run.py --mode=hybrid
 
+# Brain (ADR-017): `brain migrate` into a temp qdrant LOCAL store, then `recall`.
+# Default embedder `fake` (deterministic, no model — what tests/test-brain.sh runs); with
+# OSFORGE_BRAIN_EMBED=gemma it uses the real model if cached (~/.osforge/models or
+# OSFORGE_BRAIN_MODELS) and the venv (~/.osforge/venv or OSFORGE_BRAIN_PYTHON); missing → SKIP.
+python3 scripts/evals/memory/run.py --mode=brain [--recall=dense|keyword|hybrid] [--db=... --questions=...]
+
 # Your own database: a COPY is queried (SQLite backup from a read-only handle);
 # the questions file holds numeric decision ids in the gold column.
 python3 scripts/evals/memory/run.py --mode=fts --db=/path/to/copy.db --questions=my-questions.tsv
@@ -37,6 +43,13 @@ layer when it searches FTS-only: it expands the question into keywords before it
 Real data (14 private questions, not in the repo): natural 11/14, expanded 14/14. The
 expansions were written knowing the target decision, so expanded is an optimistic bound, not a
 forecast of what an agent achieves cold.
+
+**Brain, measured (2026-10-18, embeddinggemma-300m, CPU).** Fixture: dense hit@1 15/16, hit@5
+15/16 (miss: the category-only question "which security decisions…"), keyword 14/16, hybrid
+15/16, expanded set dense 16/16. Real data (124 decisions, 14 private questions, gold via the
+`migrate:sqlite#<id>` source key): dense hit@1 14/14, hit@5 14/14; keyword (BM25 only) 8/14,
+11/14; hybrid (RRF) 14/14, 14/14. Median wall time per `recall` call ~1.3 s (fresh process,
+model load included); migrate of 124 decisions ~7 s, ~1.0 GB peak RSS (`batch_size=1`).
 
 **Floors.** `tests/test-memory-recall.sh` fails if FTS-only hit@5 on the fixture drops under
 80% (natural) or 95% (expanded). The one known lexical miss (D10: "webhook keeps failing" vs "Webhooks … failures", no

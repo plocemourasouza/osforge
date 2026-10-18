@@ -1,6 +1,6 @@
 ---
 name: db-state-sync
-description: "Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db). Use when: saving phase progress, recording an architectural decision, adding/resolving a blocker, tracking tasks, viewing the cross-project board, resuming a previous session, searching past decisions. Keywords: save state, record decision, add-decision, set-phase, add-task, set-task, list-tasks, board, resume session, search decision, osforge-db, project state."
+description: "Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db) and long-term memory in the brain (remember/recall). Use when: saving phase progress, recording an architectural decision, recording a technique or lesson to reuse, adding/resolving a blocker, tracking tasks, viewing the cross-project board, resuming a previous session, searching past decisions or knowledge. Keywords: save state, record decision, add-decision, remember, recall, set-phase, add-task, set-task, list-tasks, board, resume session, search decision, osforge-db, project state."
 model: haiku
 allowed-tools: Bash
 metadata:
@@ -96,6 +96,31 @@ before reporting "nothing found". `--json` rows carry `id, project, category, cr
 content`. `search-hybrid` prints `note: degraded to FTS-only` when
 it is unreachable (JSON: `degraded` not null); see `osforge-db memory-health` / `vec-status`.
 
+### KNOWLEDGE — remember and recall (the brain)
+
+The SQLite workbench is the execution log; the **brain** is long-term memory (Qdrant, journal
+`~/.osforge/brain.jsonl` as source of truth). `add-decision` already copies the decision into
+the brain. Use `remember` for what is not a decision but must survive the session:
+
+```bash
+osforge-db remember "<one self-contained sentence>" --kind=knowledge   --project=<slug> [--tags=a,b]
+osforge-db remember "<how to do X, and when>"       --kind=technique   --global
+osforge-db remember "<the process we follow>"       --kind=methodology --global
+# kinds: decision | knowledge | technique | methodology   ·  --global = not tied to a project
+
+osforge-db recall "<4-8 keywords>" [--kind=] [--project=<slug>|--global] [--since=YYYY-MM-DD] [--until=YYYY-MM-DD] [--top=5] [--json]
+osforge-db forget <id-prefix>        # wrong or obsolete memory: tombstone + removed from the index
+```
+
+**Recall queries.** Dense (semantic) first, BM25 keywords when nothing scores above the floor.
+Still give it 4–8 keywords: English plus the user's pt-BR terms, code identifiers and file
+names — not the whole sentence. Time questions → `--since`/`--until`, not the word "October".
+`--project=<slug>` returns only that project; ask `--global` separately for techniques and
+methodologies. A first line `note: brain degraded (…) — lexical fallback` (JSON: `degraded`
+not null) means the store or the model is unavailable and the answer came from a word scan of
+the journal: say so to the user, and suggest `osforge-db brain status`. Never paste secrets into
+`remember` — they are scrubbed, but the sentence loses its meaning.
+
 ### TASKS — track tasks + cross-project board
 
 ```bash
@@ -184,7 +209,8 @@ osforge-db set-resume <slug> "Next: <phase> via <skill>"
 
 - **Project slug**: use consistent kebab-case. The slug is the primary key for everything — `linkme-tur`, `essent-billing`, `rede-essent-portal`. Never change it after creating.
 - **FTS5 and hyphens**: the search already quotes every word, so `-`, `:`, `*` and `AND/OR/NOT` are never operators. No need to escape.
-- **Embedding coverage:** a decision saved while the embedder was down has no vector. The session-resume hook says so in one `memory:` line; `osforge-db embed-backfill` fills only what is missing.
+- **Brain degraded:** the session-resume hook adds one `brain:` line when the brain venv, model or store is missing, or some memory is journaled but not indexed; `osforge-db brain rebuild` re-indexes from the journal.
+- **Embedding coverage (legacy `search-hybrid`):** a decision saved while the embedder was down has no vector. The session-resume hook says so in one `memory:` line; `osforge-db embed-backfill` fills only what is missing.
 - **Global vs local database**: for projects with sensitive data (Essent, Rede Essent Jus), use `--scope=local` — the database stays in the project and can be `.gitignore`d. The global database holds only non-sensitive state and decisions.
 - **set-resume is mandatory when ending**: without an updated `set-resume`, the next session won't know where you stopped. Treat it like a git commit — always run it before closing the editor.
 - **import-yaml is idempotent**: it can be run multiple times on the same project without duplicating phases (uses `ON CONFLICT DO NOTHING`).

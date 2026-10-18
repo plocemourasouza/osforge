@@ -361,7 +361,7 @@
   },
   {
     "name": "db-state-sync",
-    "description": "Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db). Use when: saving phase progress, recording an architectural decision, adding/resolving a blocker, tracking tasks, viewing the cross-project board, resuming a previous session, searching past decisions. Keywords: save s",
+    "description": "Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db) and long-term memory in the brain (remember/recall). Use when: saving phase progress, recording an architectural decision, recording a technique or lesson to reuse, adding/resolving a blocker, tracking tasks, viewing th",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",

@@ -193,8 +193,8 @@ _Vocabulary: primary/secondary source, handoff artifact — mattpocock/dictionar
 - **Satellite session start:** the `session-resume` hook injects `osforge-db resume <slug>` + `board` (≈50 tokens).
 - **During:** `osforge-db set-phase / add-decision / add-task / set-task`.
 - **Session end:** the `session-save` hook writes `set-resume <slug> "..."` automatically (transcript parse).
-- **Semantic recall:** `osforge-db search-hybrid "<query>"` (RRF of FTS5 + vector memory). Vector memory is
-  3-tier (Qdrant → SQLite cosine → FTS5), opt-in at deploy; default embedder `bge-m3` via Ollama. Ref → `USAGE.md §osforge-db`.
+- **Recall (brain):** `osforge-db recall "<4-8 keywords, en + pt-BR>" [--project= --kind= --since= --until=]`; store
+  knowledge with `remember "<text>" --kind=knowledge|technique|methodology`. Ref → `USAGE.md §osforge-db`.
 
 ### Reference (not repeated here)
 Memory hierarchy (managed → user → project → local; the more specific level wins), the prompt-cache

@@ -680,7 +680,95 @@ osforge-db import-yaml .osforge/status.yaml meu-projeto
 | `data` | Schema, migration, data model decisions |
 | `security` | Auth, LGPD, security decisions |
 
-### Memória vetorial (3-tier)
+### Workbench vs brain (ADR-017)
+
+Memory is split in two, by what it is for:
+
+| | **Workbench** — SQLite `~/.osforge/osforge.db` | **Brain** — Qdrant collection `osforge_brain` |
+|---|---|---|
+| Holds | projects, phases, tasks, blockers, resume, usage, calls, board, observations/instincts, and `decisions` as the per-project execution log | long-term knowledge: `decision`, `knowledge`, `technique`, `methodology` |
+| Read by | `resume`, `board`, `status`, `list-decisions`, `search` | `recall` |
+| Runtime | `osforge-db` itself, stdlib only | `~/.osforge/venv` (fastembed + qdrant-client + onnxruntime, pinned) |
+| Source of truth | the SQLite file | the journal `~/.osforge/brain.jsonl` (append-only); the collection is a derived index |
+
+```bash
+# Record knowledge (journal first — secrets scrubbed by hooks/lib/scrub.py — then indexed)
+osforge-db remember "Partial indexes on deleted_at make soft-delete filters cheap" --kind=technique --global --tags=postgres
+osforge-db remember "Checkout keeps Stripe as the only gateway" --kind=decision --project=my-project
+# add-decision does this for you: SQLite row + brain record (kind=decision, source add-decision:<id>)
+
+# Query: 4-8 keywords, English plus the user's pt-BR terms; --since/--until for time questions
+osforge-db recall "rate limit API key chave limite requisições" --project=my-project
+osforge-db recall "cache catálogo catalog Redis" --since=2026-10-01 --until=2026-10-31 --json
+osforge-db recall "grill plan question" --kind=methodology --mode=keyword   # BM25 only
+
+osforge-db forget 3f2a91c0              # id or unique prefix: tombstone in the journal + delete the point
+osforge-db brain status                 # store, embedder, journal live/forgotten, indexed points
+osforge-db brain rebuild                # recreate the collection from the journal (batch_size=1)
+osforge-db brain migrate                # SQLite decisions → brain, idempotent (source key); deploy runs it
+osforge-db brain health [--timeout=0.3] # one `brain:` line when degraded, else silent (session-resume uses it)
+```
+
+**How `recall` ranks.** Dense first (embeddinggemma-300m, cosine): rows above the floor
+(`brain_min_score`, default 0.30 for gemma) are the answer. Nothing above the floor → the BM25
+sparse vector (fastembed `Qdrant/bm25`, Portuguese stemmer) answers instead. `--mode=keyword`
+is BM25 only; `--mode=hybrid` is RRF of both, opt-in only — the design bench measured plain RRF
+lowering gemma's hit@1 (14→12); this implementation's hybrid (dense floor inside its prefetch)
+tied dense at 14/14 on the same data, so it gains nothing and dense stays the default. Filters (`--kind`, `--project`, `--global`,
+`--since`, `--until`) go inside the query filter and inside each prefetch, never after ranking.
+`--project=x` returns x only; `--global` returns only project-less memories.
+JSON rows: `id, kind, project, tags, created_at, score, content` (+ `source`, `mode`, `degraded`).
+
+**Degradation is never silent.** No venv, model missing, store down, or the local store locked
+by another process → `recall` scans the journal lexically (same term builder as `search`:
+stopwords dropped, OR, accent-insensitive), prints `note: brain degraded (<reason>) — lexical
+fallback`, and sets `degraded` in every JSON row. `remember`/`forget` always journal first; if the
+index step fails they say so in one line and `brain rebuild` catches up. `add-decision` never
+fails because of the brain: one line, and the SQLite row is already committed.
+
+**Store selection** (`brain_store` in `~/.osforge/config.json`, or `OSFORGE_BRAIN_STORE`):
+`server` = Qdrant at `qdrant_url` (default `http://localhost:6333`); `local` = qdrant-client local
+mode at `~/.osforge/brain/qdrant` (`OSFORGE_BRAIN_PATH`; single process — a concurrent call falls
+back lexically; payload indexes are no-ops there). Unset → `server` when `./deploy.sh
+--with-qdrant` provisioned Qdrant or the URL answers within 300 ms, else `local`; the deploy
+writes the choice to config.json once so it never flips between runs.
+
+**Install.** `./deploy.sh` creates `~/.osforge/venv` (`python3 -m venv` + pinned
+`fastembed==0.9.0 qdrant-client==1.19.1 onnxruntime==1.31.0`), downloads the model once into
+`~/.osforge/models`, and runs `brain migrate`. Offline or pip failure → one skip line, the
+deploy goes on; `--no-brain` skips it; `--dry-run` only reports it. `osforge-db` re-runs brain
+work in that venv's python as a subprocess, so `osforge-db` stays stdlib-only and importable
+without any of it.
+
+**Model and license.** Default `brain_model: "gemma"` — `google/embeddinggemma-300m`, 768d,
+in-process ONNX on CPU, no Ollama. It is distributed under the **Gemma Terms of Use**, not an
+OSI licence. License-clean alternative: `"brain_model": "e5-large"` (`intfloat/multilingual-e5-large`,
+MIT, 1024d; set it, re-run `./deploy.sh` to fetch it, then `osforge-db brain rebuild`). Measured
+on 124 real decisions / 14 pt-BR questions: dense hit@1 14/14, hit@5 14/14; ~1.3 s per
+fresh-process `recall` (≈1.1 s of it import + model init); ~1.0 GB peak RSS; migrate of 124
+decisions ~7 s with `batch_size=1` (the default batch of 256 pads to 6.8 GB RSS). Disk: venv
+~240 MB + model ~1.2 GB (fp32 ONNX).
+
+| Variable | Default | |
+|---|---|---|
+| `OSFORGE_BRAIN` | `on` | `off` = add-decision stops remembering, health stays silent (config `brain`) |
+| `OSFORGE_BRAIN_STORE` | auto | `server` \| `local` (config `brain_store`) |
+| `OSFORGE_BRAIN_PATH` | `~/.osforge/brain/qdrant` | local store path (config `brain_path`) |
+| `OSFORGE_QDRANT_URL` | `http://localhost:6333` | server URL (config `qdrant_url`) |
+| `OSFORGE_BRAIN_EMBED` | `gemma` | `gemma` \| `e5-large` \| `fake` (deterministic hash, tests/CI) (config `brain_model`) |
+| `OSFORGE_BRAIN_PYTHON` | `~/.osforge/venv/bin/python` | brain interpreter |
+| `OSFORGE_BRAIN_MODELS` | `~/.osforge/models` | fastembed cache |
+| `OSFORGE_BRAIN_MIN_SCORE` | per model (gemma 0.30) | dense floor (config `brain_min_score`) |
+
+`--scope=local` decisions are not copied to the brain (their ids would collide with the global
+workbench's in the one global journal). Eval: `scripts/evals/memory/run.py --mode=brain`
+(README there); tests: `tests/test-brain.sh`.
+
+### Memória vetorial (3-tier) — legacy
+
+**Legacy.** The `vec_memory` table, the `osforge_memory` collection, `embed*`,
+`search-semantic`, `search-hybrid`, `vec-*` and `memory-health` below keep working unchanged for
+compatibility; nothing deletes them. New memory goes to the brain (above).
 
 O `osforge-db` suporta busca semântica sobre decisões e contexto de projeto via embeddings. Degradação graciosa: sem embedder ativo, cai automaticamente para FTS5 lexical.
 

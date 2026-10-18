@@ -11,6 +11,14 @@ Modes:
   hybrid  OSFORGE_EMBED=ollama, `search-hybrid` (RRF of FTS5 + vector). Needs a reachable
           Ollama with the embedding model; when it is not reachable the run is SKIPPED
           (exit 0, one line saying so). The fixture is embedded with `embed-backfill` first.
+  brain   `recall` against a temp qdrant LOCAL store filled by `brain migrate` (ADR-017).
+          Embedder from OSFORGE_BRAIN_EMBED (default fake: deterministic, no model, what CI
+          runs); `gemma`/`e5-large` use the real model when it is cached. Interpreter:
+          OSFORGE_BRAIN_PYTHON, else ~/.osforge/venv/bin/python; models: OSFORGE_BRAIN_MODELS,
+          else ~/.osforge/models (both only read). Missing interpreter, qdrant-client or
+          model → SKIP (exit 0). Gold matches the row's source key (sqlite decision id).
+          --recall=dense|keyword|hybrid picks the recall mode (default dense). Prints the
+          median wall time of one `osforge-db recall` call (fresh process, model load included).
 
 Sets (fixture only):
   natural   questions.tsv: questions as a person asks them.
@@ -18,7 +26,8 @@ Sets (fixture only):
             searching (4-8 keywords, English plus pt-BR terms, code/file names).
 
 Usage:
-  python3 scripts/evals/memory/run.py [--mode=fts|hybrid] [--set=natural|expanded] [--top=5] [--floor=0.8]
+  python3 scripts/evals/memory/run.py [--mode=fts|hybrid|brain] [--set=natural|expanded] [--top=5] [--floor=0.8]
+                                      [--recall=dense|keyword|hybrid]
                                       [--db=PATH --questions=PATH] [--verbose]
 Exit: 0 = hit@5 >= floor (or no floor), 1 = below floor, 2 = usage/setup error.
 """
@@ -29,15 +38,18 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 ODB = os.path.join(REPO, "scripts", "osforge-db.py")
+sys.path.insert(0, os.path.join(REPO, "scripts"))
+import osforge_brain  # noqa: E402  (stdlib side only: source keys, model markers)
 
 
 def parse_args(argv):
     opts = {"mode": "fts", "top": "5", "floor": None, "db": None,
-            "questions": None, "verbose": False, "set": "natural"}
+            "questions": None, "verbose": False, "set": "natural", "recall": "dense"}
     for a in argv:
         if a == "--verbose":
             opts["verbose"] = True
@@ -48,8 +60,10 @@ def parse_args(argv):
             opts[k] = v
         else:
             sys.exit(f"unknown argument {a!r}\n{__doc__}")
-    if opts["mode"] not in ("fts", "hybrid"):
-        sys.exit("--mode must be fts or hybrid")
+    if opts["mode"] not in ("fts", "hybrid", "brain"):
+        sys.exit("--mode must be fts, hybrid or brain")
+    if opts["recall"] not in ("dense", "keyword", "hybrid"):
+        sys.exit("--recall must be dense, keyword or hybrid")
     if opts["set"] not in ("natural", "expanded"):
         sys.exit("--set must be natural or expanded")
     if bool(opts["db"]) != bool(opts["questions"]):
@@ -79,7 +93,7 @@ def odb(env, *args):
 def build_fixture(env, db_file):
     """Fixture DB through the real CLI (embedding off), then pin created_at."""
     keys = {}
-    build_env = dict(env, OSFORGE_EMBED="off")
+    build_env = dict(env, OSFORGE_EMBED="off", OSFORGE_BRAIN="off")
     odb(build_env, "init")
     rows = read_tsv(os.path.join(HERE, "decisions.tsv"), 5)
     for proj in sorted({r[1] for r in rows}):
@@ -105,8 +119,35 @@ def embedder_ready(env):
         return False
 
 
+def brain_runtime():
+    """(python, models dir, embed, None) or (.., .., .., skip reason). Resolved from the REAL
+    home before HOME is swapped for the temp one; both paths are only read."""
+    home = os.path.expanduser("~")
+    py = os.environ.get("OSFORGE_BRAIN_PYTHON") or os.path.join(home, ".osforge", "venv", "bin", "python")
+    models = os.environ.get("OSFORGE_BRAIN_MODELS") or os.path.join(home, ".osforge", "models")
+    embed = (os.environ.get("OSFORGE_BRAIN_EMBED") or "fake").lower()
+    if embed not in osforge_brain.EMBEDDERS:
+        return py, models, embed, f"unknown OSFORGE_BRAIN_EMBED={embed!r}"
+    if not os.path.exists(py):
+        return py, models, embed, f"no brain interpreter at {py}"
+    r = subprocess.run([py, "-c", "import qdrant_client"], capture_output=True)
+    if r.returncode != 0:
+        return py, models, embed, f"qdrant-client not importable by {py}"
+    marker = osforge_brain.EMBEDDERS[embed][4]
+    if marker:
+        names = os.listdir(models) if os.path.isdir(models) else []
+        if not any(marker in n for n in names) or not any(osforge_brain.BM25_MARKER in n for n in names):
+            return py, models, embed, f"{embed} model not cached in {models}"
+    return py, models, embed, None
+
+
 def main():
     opts = parse_args(sys.argv[1:])
+    if opts["mode"] == "brain":
+        bpy, bmodels, bembed, why = brain_runtime()
+        if why:
+            print(f"SKIP mode=brain: {why}")
+            return 0
     work = tempfile.mkdtemp(prefix="osforge-recall-")
     try:
         db_file = os.path.join(work, "recall.db")
@@ -114,7 +155,13 @@ def main():
                    OSFORGE_CONFIG=os.path.join(work, "config.json"), OSFORGE_VECTOR="sqlite")
         env.pop("OSFORGE_PROJECT", None)
         os.makedirs(env["HOME"])
-        env["OSFORGE_EMBED"] = "off" if opts["mode"] == "fts" else "ollama"
+        env["OSFORGE_EMBED"] = "ollama" if opts["mode"] == "hybrid" else "off"
+        if opts["mode"] == "brain":
+            env.update(OSFORGE_BRAIN_PYTHON=bpy, OSFORGE_BRAIN_MODELS=bmodels,
+                       OSFORGE_BRAIN_EMBED=bembed, OSFORGE_BRAIN_STORE="local",
+                       OSFORGE_BRAIN_PATH=os.path.join(work, "brain-store"))
+            for k in ("OSFORGE_BRAIN", "OSFORGE_BRAIN_COLLECTION"):
+                env.pop(k, None)
 
         if opts["db"]:
             src = sqlite3.connect(f"file:{opts['db']}?mode=ro", uri=True)
@@ -139,9 +186,24 @@ def main():
             if keys is not None:
                 odb(env, "embed-backfill")
 
-        cmd = (["search"], "--limit=") if opts["mode"] == "fts" else (["search-hybrid"], "--top=")
+        if opts["mode"] == "brain":
+            t0 = time.perf_counter()
+            r = odb(env, "--json", "brain", "migrate")
+            try:
+                mig = json.loads(r.stdout)
+            except ValueError:
+                mig = {}
+            if r.returncode != 0 or mig.get("degraded") or not mig.get("indexed"):
+                print(f"FAIL mode=brain: brain migrate did not index ({(mig.get('degraded') or r.stderr.strip())[:200]})")
+                return 1
+            print(f"migrate: {mig['indexed']} decisions indexed in {time.perf_counter() - t0:.1f}s "
+                  f"(embed={bembed}, batch_size=1)")
+
+        cmd = {"fts": (["search"], "--limit="), "hybrid": (["search-hybrid"], "--top="),
+               "brain": (["recall", f"--mode={opts['recall']}"], "--top=")}[opts["mode"]]
         h1 = h5 = 0
         misses = []
+        walls = []
         for cols in qrows:
             gold_raw, question = cols[0], cols[1]
             gold = {keys[g] if keys else g for g in gold_raw.split("|")}
@@ -150,10 +212,19 @@ def main():
                 extra.append(f"--since={cols[2]}")
             if len(cols) > 3 and cols[3]:
                 extra.append(f"--until={cols[3]}")
+            t0 = time.perf_counter()
             r = odb(env, "--json", *cmd[0], question, f"{cmd[1]}{opts['top']}", *extra)
+            walls.append(time.perf_counter() - t0)
             try:
-                ids = [str(x.get("id")) for x in json.loads(r.stdout)]
-            except (ValueError, AttributeError):
+                rows = json.loads(r.stdout)
+                if opts["mode"] == "brain":
+                    if any(x.get("degraded") for x in rows):
+                        print(f"FAIL mode=brain: recall degraded ({rows[0]['degraded']})")
+                        return 1
+                    ids = [str(osforge_brain.decision_source_id(x.get("source"))) for x in rows]
+                else:
+                    ids = [str(x.get("id")) for x in rows]
+            except (ValueError, AttributeError, TypeError):
                 ids = []
             top_ids = ids[:int(opts["top"])]
             hit1 = bool(top_ids[:1]) and top_ids[0] in gold
@@ -168,8 +239,13 @@ def main():
 
         n = len(qrows)
         pct = (lambda k: f"{100 * k / n:.0f}%") if n else (lambda k: "n/a")
+        extra_info = ""
+        if opts["mode"] == "brain":
+            walls.sort()
+            med = walls[len(walls) // 2] if walls else 0.0
+            extra_info = f" embed={bembed} recall={opts['recall']} wall/call median={med:.2f}s"
         print(f"mode={opts['mode']} set={opts['set'] if keys else 'custom'} db={label} n={n} hit@1={h1}/{n} ({pct(h1)}) "
-              f"hit@5={h5}/{n} ({pct(h5)}) miss={misses}")
+              f"hit@5={h5}/{n} ({pct(h5)}) miss={misses}{extra_info}")
         if opts["floor"] is not None and n:
             floor = float(opts["floor"])
             if h5 / n < floor:

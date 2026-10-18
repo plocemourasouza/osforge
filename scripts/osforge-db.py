@@ -69,6 +69,20 @@ Comandos:
   memory-health [--timeout=0.3]     One-line hint when the embedder is down or coverage
                                     is under 80%; silent otherwise (session-resume hook).
 
+  Brain — long-term memory (Qdrant + journal ~/.osforge/brain.jsonl; scripts/osforge_brain.py):
+  remember "<text>" --kind=decision|knowledge|technique|methodology [--project=slug|--global] [--tags=a,b]
+                                    Journal first (scrubbed), then index (dense gemma + sparse BM25).
+  recall "<query>" [--kind=] [--project=slug|--global] [--since=YYYY-MM-DD] [--until=YYYY-MM-DD]
+                   [--top=5] [--mode=dense|keyword|hybrid] [--json]
+                                    Dense first; nothing above the floor → BM25. Store/embedder
+                                    down → lexical scan of the journal + `note: brain degraded`.
+  forget <id|prefix>                Tombstone in the journal + delete the point
+  brain status|rebuild|migrate|health
+                                    rebuild = collection from the journal; migrate = SQLite
+                                    decisions → brain (idempotent); health = one line or nothing
+    OSFORGE_BRAIN=off  OSFORGE_BRAIN_STORE=server|local  OSFORGE_BRAIN_PATH  OSFORGE_QDRANT_URL
+    OSFORGE_BRAIN_EMBED=gemma|e5-large|fake  OSFORGE_BRAIN_PYTHON  OSFORGE_BRAIN_MODELS  OSFORGE_BRAIN_MIN_SCORE
+
   Variáveis de ambiente:
     OSFORGE_EMBED       ollama (padrão) | off | mock | voyage | openai
     OSFORGE_EMBED_MODEL Modelo para o provider (default ollama: bge-m3 multilíngue; ex: nomic-embed-text, voyage-3-lite)
@@ -87,6 +101,12 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib import request as _urllib_request
 from urllib import error as _urllib_error
+
+# The brain (long-term memory) ships next to this file; stdlib-only at import time.
+# No bytecode: the deployed copy lives in ~/.local/bin, which must not grow a __pycache__.
+sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import osforge_brain as _brain  # noqa: E402
 
 # numpy é OPCIONAL — acelerador; resultado idêntico ao pure-Python
 try:
@@ -1184,7 +1204,7 @@ def cmd_set_resume(conn, slug, resume_point):
     conn.commit()
     _ok(f"Resume point salvo para '{slug}'")
 
-def cmd_add_decision(conn, slug, content, category="arch"):
+def cmd_add_decision(conn, slug, content, category="arch", scope="global"):
     p = _get_project(conn, slug)
     cur = conn.execute("""
         INSERT INTO decisions (project_id, content, category)
@@ -1194,19 +1214,44 @@ def cmd_add_decision(conn, slug, content, category="arch"):
                  (_now(), p["id"]))
     conn.commit()
     _ok(f"Decisão ({category}) adicionada a '{slug}'")
-    # Auto-embed: best-effort, never fails the write (the decision is already committed)
-    if _EMBED_PROVIDER == "off" or cur is None:
+    if cur is None:
+        return
+    _auto_embed_decision(conn, cur[0], content)
+    if scope == "global":           # local-scope ids would collide in the one global brain
+        _brain_remember_decision(cur[0], slug, content, category)
+
+
+def _auto_embed_decision(conn, decision_id, content):
+    """Legacy vector memory (vec_memory / osforge_memory): best-effort, never fails the write."""
+    if _EMBED_PROVIDER == "off":
         return
     try:
         vec = compute_embedding(content)
         if vec is not None:
-            upsert_vec_memory(conn, "decisions", str(cur[0]), content, vec)
+            upsert_vec_memory(conn, "decisions", str(decision_id), content, vec)
             return
         why = "embedder unavailable"
     except Exception as _auto_embed_exc:
         why = f"auto-embed failed ({_auto_embed_exc})"
-    print(f"[osforge-db] warning: decision #{cur[0]} saved WITHOUT embedding ({why}); "
+    print(f"[osforge-db] warning: decision #{decision_id} saved WITHOUT embedding ({why}); "
           "run `osforge-db embed-backfill` when the embedder is back.", file=sys.stderr)
+
+
+def _brain_remember_decision(decision_id, slug, content, category):
+    """Brain copy of a decision (kind=decision): best-effort. The SQLite row is already
+    committed; any brain failure prints ONE line and never changes the exit code."""
+    if not _brain.enabled():
+        return
+    try:
+        _rec, indexed, why = _brain.remember(content, "decision", slug, [category],
+                                             f"add-decision:{decision_id}")
+    except Exception as e:      # journal unwritable, scrub missing: nothing journaled
+        _out(f"note: brain skipped decision #{decision_id} ({e}) — run `osforge-db brain migrate` later")
+        return
+    if not indexed:
+        _out(f"note: brain degraded ({why}) — decision #{decision_id} journaled, "
+             "not indexed; run `osforge-db brain rebuild` later")
+
 
 def cmd_add_blocker(conn, slug, description, waiting_for=None):
     p = _get_project(conn, slug)
@@ -1460,28 +1505,10 @@ def cmd_board(conn, status="active"):
 
 # pt-BR + English function words, plus words every decision shares ("decidimos", "decided").
 # Compared accent-folded, so "não" and "nao" are the same entry.
-_STOPWORDS = frozenset("""
-a o as os um uma uns umas de da do das dos dum duma em no na nos nas num numa por pelo pela
-pelos pelas para pra pro com sem sob sobre entre ate e ou mas nem que se nao sim ja so mais
-menos muito muita muitos muitas pouco ao aos este esta estes estas esse essa esses essas isso
-isto aquele aquela aquilo ele ela eles elas eu tu voce voces nos vos me te lhe meu minha seu
-sua nosso nossa qual quais quanto quantos quanta quantas quando onde como porque quem cujo
-foi foram era eram ser estar estao sao tem ter teve tinha havia fica ficou faz fez vai vamos
-deve pode depois antes entao tambem ainda assim cada todo toda todos todas outro outra mesmo
-mesma algum alguma
-the an and or but nor not yes of to in on at by for from with without into onto over under
-about as is are was were be been being am do does did done have has had having it its this
-that these those there here what which who whom whose when where why how than then so too
-very can could should would will shall may might must we us our you your they them their he
-she his her me my all any each some such only own same just also again now
-decisao decisoes decidimos decidiu decidir decidido decision decisions decide decided
-""".split())
-
-
-def _fold(term):
-    """Lowercase, accents stripped — the same folding unicode61 remove_diacritics applies."""
-    return "".join(c for c in unicodedata.normalize("NFKD", term.lower())
-                   if not unicodedata.combining(c))
+# Stopwords, folding and the term list live in osforge_brain (one builder for the FTS
+# query here and for the brain's lexical fallback).
+_STOPWORDS = _brain.STOPWORDS
+_fold = _brain.fold
 
 
 def _fts_quote(query):
@@ -1492,17 +1519,7 @@ def _fts_quote(query):
     Stopwords and words under 3 characters are dropped; if that leaves nothing, the raw
     words are used (so "UI" alone still searches for "ui").
     """
-    seen, raw, kept = set(), [], []
-    for m in re.finditer(r"\w+", query):
-        low = m.group(0).lower()
-        if low in seen:
-            continue
-        seen.add(low)
-        raw.append(low)
-        folded = _fold(low)
-        if folded not in _STOPWORDS and len(folded) >= 3:
-            kept.append(low)
-    terms = kept or raw
+    terms = _brain.query_terms(query)
     if not terms:
         return None
     return " OR ".join(f'"{t}"' for t in terms)
@@ -2218,6 +2235,129 @@ def cmd_import_yaml(conn, yaml_path, slug):
 
 # ── Main ──────────────────────────────────────────────────────────────────
 
+# ── Brain (long-term memory, ADR-017) ────────────────────────────────────────
+# Commands that never need the SQLite workbench (except migrate, which reads it).
+
+_BRAIN_MODES = ("dense", "keyword", "hybrid")
+
+
+def _brain_short(rec):
+    proj = rec.get("project") or "global"
+    day = (rec.get("created_at") or "")[:10]
+    return f"#{(rec.get('id') or '')[:8]} [{rec.get('kind')}] {proj} ({day})"
+
+
+def cmd_remember(text, kind, project, is_global, tags):
+    if not kind:
+        _err(f"remember needs --kind={'|'.join(_brain.KINDS)}")
+    try:
+        rec, indexed, why = _brain.remember(text, kind, None if is_global else project, tags)
+    except _brain.BrainError as e:
+        _err(f"remember: {e}")
+    if _json_mode:
+        print(json.dumps({"id": rec["id"], "kind": rec["kind"], "project": rec["project"],
+                          "tags": rec["tags"], "created_at": rec["created_at"],
+                          "indexed": indexed, "degraded": why}, ensure_ascii=False))
+        return
+    _ok(f"remembered {_brain_short(rec)}")
+    if not indexed:
+        print(f"note: brain degraded ({why}) — journaled only; "
+              "`osforge-db brain rebuild` indexes it later")
+
+
+def cmd_recall(query, kind, project, is_global, since, until, top, mode):
+    if mode not in _BRAIN_MODES:
+        _err(f"--mode must be one of {', '.join(_BRAIN_MODES)}")
+    if kind and kind not in _brain.KINDS:
+        _err(f"--kind must be one of {', '.join(_brain.KINDS)}")
+    since_ts, until_ts = _brain.day_range(since, until)
+    flt = {"kind": kind, "project": None if is_global else project, "global": is_global,
+           "since_ts": since_ts, "until_ts": until_ts}
+    rows, degraded = _brain.recall(query, flt, top, mode)
+    if _json_mode:
+        print(json.dumps(rows, ensure_ascii=False, indent=2))
+        return
+    if degraded:
+        print(f"note: brain degraded ({degraded}) — lexical fallback")
+    if not rows:
+        _out(f"Nothing found for '{query}'")
+        return
+    for r in rows:
+        tags = f" {{{','.join(r['tags'])}}}" if r.get("tags") else ""
+        content = (r.get("content") or "").replace("\n", " ")
+        short = content if len(content) <= 160 else content[:157] + "..."
+        print(f"  {_brain_short(r)} score={r['score']}{tags} {short}")
+
+
+def cmd_forget(id_or_prefix):
+    try:
+        rec, deleted, why = _brain.forget(id_or_prefix)
+    except _brain.BrainError as e:
+        _err(f"forget: {e}")
+    if _json_mode:
+        print(json.dumps({"id": rec["id"], "deleted": deleted, "degraded": why}))
+        return
+    _ok(f"forgot {_brain_short(rec)}")
+    if not deleted:
+        print(f"note: brain degraded ({why}) — tombstone journaled; "
+              "`osforge-db brain rebuild` drops it from the index")
+
+
+def cmd_brain_status():
+    st = _brain.status()
+    if _json_mode:
+        print(json.dumps(st, indent=2))
+        return
+    where = st["url"] if st["store"] == "server" else st["path"]
+    print(f"brain store:  {st['store']} {where} (collection {st['collection']})")
+    print(f"embedder:     {st['embed']} ({st['model']})")
+    print(f"venv:         {st['venv']}")
+    print(f"journal:      {st['journal']} — {st['journal_live']} live, "
+          f"{st['journal_forgotten']} forgotten")
+    pts = st["points"] if st["points"] is not None else "?"
+    print(f"indexed:      {pts} points" + ("  (pending: run `osforge-db brain rebuild`)"
+                                           if st["pending"] else ""))
+    if st["degraded"]:
+        print(f"note: brain degraded ({st['degraded']}) — recall uses a lexical scan of the journal")
+
+
+def cmd_brain_rebuild():
+    ok, res = _brain.rebuild()
+    if not ok:
+        _err(f"brain rebuild failed: {res} (the journal is intact)")
+    if _json_mode:
+        print(json.dumps({"ok": True, "points": res.get("n")}))
+        return
+    _ok(f"brain rebuilt from the journal: {res.get('n')} points")
+
+
+def cmd_brain_migrate(conn):
+    rows = conn.execute("""
+        SELECT d.id, d.content, d.category, d.created_at, p.slug
+        FROM decisions d JOIN projects p ON p.id = d.project_id ORDER BY d.id
+    """).fetchall()
+    try:
+        added, indexed, why = _brain.migrate_decisions(
+            {"id": r["id"], "content": r["content"], "category": r["category"],
+             "created_at": r["created_at"], "slug": r["slug"]} for r in rows)
+    except _brain.BrainError as e:
+        _err(f"brain migrate: {e}")
+    if _json_mode:
+        print(json.dumps({"added": added, "indexed": indexed, "degraded": why}))
+        return
+    _ok(f"brain migrate: {added} new decision(s) of {len(rows)} journaled, {indexed} indexed")
+    if why:
+        print(f"note: brain degraded ({why}) — journaled only; `osforge-db brain rebuild` indexes them later")
+
+
+def cmd_brain_health(timeout):
+    ok, why = _brain.health(timeout)
+    if _json_mode:
+        print(json.dumps({"ok": ok, "reason": why}))
+    elif not ok:
+        print(f"brain: degraded ({why}) — `osforge-db recall` falls back to a lexical scan")
+
+
 def main():
     global _json_mode
     args = sys.argv[1:]
@@ -2249,6 +2389,10 @@ def main():
     older_arg    = next((a for a in args if a.startswith("--older-than=")), None)
     until_arg    = next((a for a in args if a.startswith("--until=")), None)
     timeout_arg  = next((a for a in args if a.startswith("--timeout=")), None)
+    kind_arg     = next((a for a in args if a.startswith("--kind=")), None)
+    tags_arg     = next((a for a in args if a.startswith("--tags=")), None)
+    mode_arg     = next((a for a in args if a.startswith("--mode=")), None)
+    is_global    = "--global" in args
     _flags = [x for x in args if x.startswith("--")]      # capturado agora: `args` é filtrado adiante
     def _intflag(name, default=0):
         a = next((x for x in _flags if x.startswith(f"--{name}=")), None)
@@ -2287,6 +2431,9 @@ def main():
     session_flt = session_arg.split("=",1)[1] if session_arg   else None
     model_flt  = model_arg.split("=",1)[1]    if model_arg     else None
     remote_flt = remote_arg.split("=",1)[1]   if remote_arg    else None
+    kind_flt   = kind_arg.split("=",1)[1]     if kind_arg      else None
+    tags_flt   = [t for t in tags_arg.split("=",1)[1].split(",") if t.strip()] if tags_arg else []
+    mode_flt   = mode_arg.split("=",1)[1]     if mode_arg      else "dense"
     args = [a for a in args if not a.startswith("--")]
 
     if not args:
@@ -2298,9 +2445,33 @@ def main():
 
     # Decision searches take whole days; `calls` keeps its own relative --since (5h/7d).
     day_since = day_until = None
-    if cmd in ("search", "search-hybrid", "list-decisions"):
+    if cmd in ("search", "search-hybrid", "list-decisions", "recall"):
         day_since = _parse_day(since_flt, "--since") if since_flt else None
         day_until = _parse_day(until_flt, "--until") if until_flt else None
+
+    # Brain commands that never touch the SQLite workbench
+    if cmd == "remember":
+        if not rest:
+            _err("Usage: remember \"<text>\" --kind=decision|knowledge|technique|methodology "
+                 "[--project=slug|--global] [--tags=a,b]")
+        cmd_remember(" ".join(rest), kind_flt, proj_flt, is_global, tags_flt)
+        return
+    if cmd == "recall":
+        if not rest:
+            _err("Usage: recall \"<query>\" [--kind=] [--project=slug|--global] [--since=YYYY-MM-DD] "
+                 "[--until=YYYY-MM-DD] [--top=5] [--mode=dense|keyword|hybrid] [--json]")
+        cmd_recall(" ".join(rest), kind_flt, proj_flt, is_global, day_since, day_until,
+                   top_flt, mode_flt)
+        return
+    if cmd == "forget":
+        if not rest:
+            _err("Usage: forget <id|id-prefix>")
+        cmd_forget(rest[0])
+        return
+    if cmd == "brain" and (rest[:1] or [""])[0] in ("status", "rebuild", "health"):
+        {"status": cmd_brain_status, "rebuild": cmd_brain_rebuild,
+         "health": lambda: cmd_brain_health(timeout_flt)}[rest[0]]()
+        return
 
     conn = get_conn(scope)
     # Auto-init sempre
@@ -2336,7 +2507,7 @@ def main():
         if len(rest) < 2:
             _err("Uso: add-decision <slug> <content> [--category=arch]")
         cmd_add_decision(conn, rest[0], " ".join(rest[1:]),
-                         category or "arch")
+                         category or "arch", scope)
     elif cmd == "add-blocker":
         if len(rest) < 2:
             _err("Uso: add-blocker <slug> <description> [--waiting=<what>]")
@@ -2443,6 +2614,12 @@ def main():
         cmd_memory_health(conn, timeout_flt)
     elif cmd == "vec-init":
         cmd_vec_init(conn)
+    elif cmd == "brain":
+        if rest[:1] != ["migrate"]:
+            _err("Usage: brain status|rebuild|migrate|health [--timeout=0.3]")
+        if scope != "global":
+            _err("brain migrate reads the global workbench only (drop --scope=local)")
+        cmd_brain_migrate(conn)
     else:
         _err(f"Comando desconhecido: '{cmd}'. Use 'osforge-db' sem args para ajuda.")
 
