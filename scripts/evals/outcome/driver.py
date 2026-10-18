@@ -41,6 +41,7 @@ REPO = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 LIB = os.path.join(REPO, "scripts", "lib")
 sys.path.insert(0, LIB)
 import judge as J  # noqa: E402  (parse_stream, find_init, find_result, ..., build_env)
+import stream_assert as SA  # noqa: E402  (record_rate_limit: persist rate-limit info to quota.json)
 
 BASE = HERE  # round root: tasks/ rubrics/ schemas/ variants/ results/ live under it
 RESULTS = os.path.join(HERE, "results")
@@ -277,6 +278,8 @@ def run_executor(model, skill, task, arm, run):
     rec["isolation"] = {"tools": tools, "mcp_servers": mcp}
     info = J.find_last_rate_limit(events)
     rec["rate_limit_info"] = info
+    with LOCK:
+        SA.record_rate_limit(info)  # no statusline runs under `claude -p`
     result = J.find_result(events)
     rec["usage"] = J.usage_out(result)
     rec["cost_usd_equiv"] = (result or {}).get("total_cost_usd")

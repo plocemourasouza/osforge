@@ -241,5 +241,59 @@ assert d['five_hour']['pct'] == 95, d
 assert d['rejected']['resets_at'] == $FUTURE_RESET, d
 \""
 
+section "11. record_rate_limit_info: stream rate-limit info -> quota.json (eval harnesses)"
+rec_info(){ # rec_info <quota_file> <info_json> [now] -> writes via the shared quota.py writer
+  OSFORGE_QUOTA_FILE="$1" python3 - "$REPO/hooks/lib" "$2" "${3:-}" <<'PYEOF'
+import sys, json
+sys.path.insert(0, sys.argv[1])
+import quota
+print(quota.record_rate_limit_info(json.loads(sys.argv[2]), float(sys.argv[3]) if sys.argv[3] else None))
+PYEOF
+}
+Q11="$WORK/q11/quota.json"
+INFO11='{"status":"allowed","resetsAt":2000000000,"unifiedWindows":{"five_hour":{"utilization":0.42,"resetsAt":2000000000},"seven_day":{"utilization":0.14,"resetsAt":2000500000}}}'
+rec_info "$Q11" "$INFO11" "$NOW" >/dev/null
+check "utilization 0.42 -> five_hour.pct 42, resets_at mantido, source=harness" "python3 -c \"
+import json
+d = json.load(open('$Q11'))
+assert d['schema'] == 'osforge.quota.v1' and d['source'] == 'harness', d
+assert abs(d['five_hour']['pct'] - 42) < 1e-6 and d['five_hour']['resets_at'] == 2000000000, d
+assert abs(d['seven_day']['pct'] - 14) < 1e-6, d
+\""
+read_state_json "$Q11" "$NOW" "$WORK/s11.json"
+check "o mesmo read_state() (fresco) enxerga o snapshot gravado" "python3 -c \"
+import json
+assert json.load(open('$WORK/s11.json'))['five_hour']['pct'] > 41
+\""
+rec_info "$Q11" '{"status":"allowed","unifiedWindows":{"five_hour":{"utilization":0.30,"resetsAt":2000000000}}}' "$NOW" >/dev/null
+check "mesma janela, pct menor: não rebaixa (monótono)" "python3 -c \"
+import json
+assert abs(json.load(open('$Q11'))['five_hour']['pct'] - 42) < 1e-6
+\""
+rec_info "$Q11" '{"status":"allowed","unifiedWindows":{"five_hour":{"utilization":0.99,"resetsAt":1900000000}}}' "$NOW" >/dev/null
+check "janela mais antiga (resets_at menor): ignorada" "python3 -c \"
+import json
+assert abs(json.load(open('$Q11'))['five_hour']['pct'] - 42) < 1e-6
+\""
+rec_info "$Q11" '{"status":"allowed","unifiedWindows":{"five_hour":{"utilization":0.05,"resetsAt":2018000000}}}' "$NOW" >/dev/null
+check "janela nova (resets_at maior): substitui, mesmo com pct menor" "python3 -c \"
+import json
+d = json.load(open('$Q11'))['five_hour']
+assert abs(d['pct'] - 5) < 1e-6 and d['resets_at'] == 2018000000, d
+\""
+rec_info "$Q11" '{"status":"rejected","resetsAt":2000000500,"rateLimitType":"five_hour"}' "$NOW" >/dev/null
+check "status rejected -> rejected.resets_at gravado; five_hour preservado" "python3 -c \"
+import json
+d = json.load(open('$Q11'))
+assert d['rejected']['resets_at'] == 2000000500, d
+assert abs(d['five_hour']['pct'] - 5) < 1e-6, d
+\""
+Q11B="$WORK/q11b.json"
+quota_file "$Q11B" "$NOW" 70 "$((NOW + 3600))"
+BEFORE11="$(cat "$Q11B")"
+rec_info "$Q11B" '{"status":"allowed"}' "$NOW" >/dev/null
+rec_info "$Q11B" 'null' "$NOW" >/dev/null
+check "info sem unifiedWindows nem rejeição: arquivo intacto" '[ "$(cat "$Q11B")" = "$BEFORE11" ]'
+
 echo ""; echo "══ quota: $PASS ok, $FAIL falha(s)"
 [ "$FAIL" -eq 0 ]

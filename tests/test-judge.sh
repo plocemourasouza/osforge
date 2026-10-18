@@ -83,6 +83,7 @@ def section(title):
 WORK = tempfile.mkdtemp(prefix="osforge-judge-test-")
 FAKE_BIN = os.path.join(WORK, "bin")
 os.makedirs(FAKE_BIN)
+QUOTA_FILE = os.path.join(WORK, "quota", "quota.json")
 RECORDS_ROOT = os.path.join(WORK, "records")
 os.makedirs(RECORDS_ROOT)
 
@@ -187,6 +188,7 @@ def run_judge(extra_args, stream_text=None, fake_exit=0, sleep_s=None, timeout=N
     env = dict(os.environ)
     env["PATH"] = FAKE_BIN + os.pathsep + env.get("PATH", "")
     env["OSFORGE_JUDGE_FAKE_RECORD_DIR"] = record_dir
+    env["OSFORGE_QUOTA_FILE"] = QUOTA_FILE  # never touch the real ~/.osforge/quota.json
     env["OSFORGE_JUDGE_FAKE_EXIT"] = str(fake_exit)
     if stream_text is not None:
         stream_path = os.path.join(record_dir, "stream.jsonl")
@@ -357,6 +359,40 @@ check("is_error + rate-limit wording, no event -> exit 75", proc.returncode == 7
 generic_error_stream = jsonl(INIT_CLEAN, result_event(is_error=True, text="internal server error"))
 proc, _ = run_judge([], stream_text=generic_error_stream)
 check("is_error without quota signal -> exit 3 (not 75)", proc.returncode == 3, proc.returncode)
+
+section("Case 4b -- rate-limit info from the stream is persisted to quota.json")
+
+if os.path.exists(QUOTA_FILE):
+    os.remove(QUOTA_FILE)
+windows_event = {"type": "rate_limit_event", "rate_limit_info": {
+    "status": "allowed", "resetsAt": 2000000000, "rateLimitType": "five_hour",
+    "unifiedWindows": {"five_hour": {"utilization": 0.37, "resetsAt": 2000000000},
+                       "seven_day": {"utilization": 0.11, "resetsAt": 2000500000}}}}
+proc, _ = run_judge([], stream_text=jsonl(INIT_CLEAN, windows_event,
+                                          result_event(structured_output=VALID_VERDICT)))
+check("successful judge run exits 0", proc.returncode == 0, proc.returncode)
+try:
+    with open(QUOTA_FILE, encoding="utf-8") as fh:
+        q = json.load(fh)
+except (OSError, ValueError) as exc:
+    q = {}
+    bad("quota.json written by the judge run", exc)
+else:
+    check("quota.json five_hour.pct == 37 (utilization 0.37), source harness",
+          abs(q.get("five_hour", {}).get("pct", -1) - 37) < 1e-6 and q.get("source") == "harness", q)
+    check("quota.json seven_day.pct == 11", abs(q.get("seven_day", {}).get("pct", -1) - 11) < 1e-6, q)
+
+if os.path.exists(QUOTA_FILE):
+    os.remove(QUOTA_FILE)
+proc, _ = run_judge([], stream_text=quota_stream)
+try:
+    with open(QUOTA_FILE, encoding="utf-8") as fh:
+        q = json.load(fh)
+except (OSError, ValueError) as exc:
+    q = {}
+    bad("quota.json written on a rejected judge run", exc)
+else:
+    check("rejected judge run records rejected.resets_at", (q.get("rejected") or {}).get("resets_at") == 1790000000, q)
 
 # =============================================================== Case 5: CLI timeout
 

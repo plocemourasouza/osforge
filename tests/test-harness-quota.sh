@@ -78,6 +78,15 @@ if reject_at and call_n == int(reject_at):
                      "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}})
     sys.exit(1)
 
+util = os.environ.get("OSFORGE_FAKE_UTIL")
+if util:
+    emit({"type": "rate_limit_event",
+          "rate_limit_info": {"status": "allowed", "resetsAt": 1790012345,
+                               "rateLimitType": "five_hour",
+                               "unifiedWindows": {
+                                   "five_hour": {"utilization": float(util), "resetsAt": 1790012345},
+                                   "seven_day": {"utilization": 0.14, "resetsAt": 1790500000}}}})
+
 emit({"type": "assistant", "message": {"role": "assistant",
       "content": [{"type": "tool_use", "id": "t1", "name": "Skill",
                     "input": {"skill": prompt}}]}})
@@ -219,6 +228,58 @@ set -e
 check "exit 0 (rodou normalmente, ignorando a cota)" "$([ "$EXIT8B" = "0" ] && echo 1 || echo 0)" "got $EXIT8B"
 check "3 PASS (todos os casos rodaram)" \
     "$(grep -Eq '^  PASS   : 3' "$OUT8B" && echo 1 || echo 0)" "$(grep '^  PASS' "$OUT8B" || echo '(sem linha PASS)')"
+
+# ── 9. harness runs persist the stream's rate-limit info to quota.json -------
+section "9. harness: rate_limit_event do stream -> quota.json (sem statusline)"
+
+Q9="$WORK/quota9/quota.json"
+set +e
+OSFORGE_FAKE_UTIL=0.42 run_harness "$Q9" > "$WORK/out9.txt" 2>&1
+EXIT9=$?
+set -e
+check "exit 0" "$([ "$EXIT9" = "0" ] && echo 1 || echo 0)" "got $EXIT9"
+check "quota.json criado a partir do stream: five_hour.pct=42, seven_day.pct=14, source=harness" \
+    "$(python3 -c '
+import json, sys
+d = json.load(open(sys.argv[1]))
+ok = (d["schema"] == "osforge.quota.v1" and d["source"] == "harness"
+      and abs(d["five_hour"]["pct"] - 42) < 1e-6 and d["five_hour"]["resets_at"] == 1790012345
+      and abs(d["seven_day"]["pct"] - 14) < 1e-6)
+print(1 if ok else 0)' "$Q9" 2>/dev/null || echo 0)" "$(cat "$Q9" 2>/dev/null || echo '(sem arquivo)')"
+
+Q9B="$WORK/quota9b/quota.json"
+set +e
+OSFORGE_FAKE_REJECT_AT=1 run_harness "$Q9B" > "$WORK/out9b.txt" 2>&1
+set -e
+check "rejeição no stream grava rejected.resets_at em quota.json" \
+    "$(python3 -c '
+import json, sys
+d = json.load(open(sys.argv[1]))
+print(1 if d.get("rejected", {}).get("resets_at") == 9999999999 else 0)' "$Q9B" 2>/dev/null || echo 0)" "$(cat "$Q9B" 2>/dev/null || echo '(sem arquivo)')"
+
+Q9C="$WORK/quota9c/quota.json"
+set +e
+OSFORGE_FAKE_UTIL=0.42 run_harness "$Q9C" --ignore-quota > "$WORK/out9c.txt" 2>&1
+set -e
+check "--ignore-quota ignora a guarda, mas ainda registra a cota observada" \
+    "$([ -f "$Q9C" ] && echo 1 || echo 0)"
+
+# Same window, lower pct than what is stored: must not downgrade the existing snapshot.
+Q9D="$WORK/quota9d.json"
+python3 -c '
+import json, sys, time
+json.dump({"schema": "osforge.quota.v1", "at": time.time(), "source": "statusline",
+           "five_hour": {"pct": 60.0, "resets_at": 1790012345},
+           "seven_day": {"pct": 20.0, "resets_at": 1790500000}, "rejected": None},
+          open(sys.argv[1], "w", encoding="utf-8"))' "$Q9D"
+set +e
+OSFORGE_FAKE_UTIL=0.42 run_harness "$Q9D" --ignore-quota > "$WORK/out9d.txt" 2>&1
+set -e
+check "pct menor na mesma janela não rebaixa o snapshot existente (60 fica)" \
+    "$(python3 -c '
+import json, sys
+d = json.load(open(sys.argv[1]))
+print(1 if d["five_hour"]["pct"] == 60.0 and d["seven_day"]["pct"] == 20.0 else 0)' "$Q9D" 2>/dev/null || echo 0)" "$(cat "$Q9D")"
 
 echo ""
 echo "══ quota harness (B-026, spec cases 6-8): $PASS ok, $FAIL falha(s) ══"

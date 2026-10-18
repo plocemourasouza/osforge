@@ -280,6 +280,7 @@ while IFS=$'\t' read -r cid exp_agents exp_skill exp_tier critico prompt; do
         # Guarda de cota (B-026, B1/B2): rejeição detectada NESTA execução para o
         # lote inteiro -- não conta como hit nem como miss, e os runs restantes
         # deste caso não rodam. --ignore-quota pula esta checagem por completo.
+        record_quota_of "$log"
         run_status="ok"
         if [ "$IGNORE_QUOTA" = "0" ]; then
             run_status="$(run_status_of "$log")"
