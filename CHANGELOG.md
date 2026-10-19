@@ -10,6 +10,8 @@ All notable changes to OSForge are recorded here. The format follows
 
 ## [Unreleased]
 
+## [5.3.0] — 2026-10-19
+
 ### Added
 - **Release flow from `main` (ADR-018).** `./deploy.sh` now refuses to deploy a branch other than
   `main`, a dirty tree, or a HEAD that is not exactly at a `v*` tag, unless `--force-branch`
