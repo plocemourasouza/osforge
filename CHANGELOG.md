@@ -59,8 +59,8 @@ All notable changes to OSForge are recorded here. The format follows
   (embedded/total) and embedder reachability; new `memory-health` prints one hint line when the
   embedder is down or coverage is under 80%. `search-hybrid` without a query vector says so (a
   `note:` line on stdout, `degraded` in each JSON row); `session-resume` adds the `memory:` hint
-  (0.3 s probe, fail-open); `add-decision` names `embed-backfill` when it could not embed;
-  `./deploy.sh` runs `embed-backfill` after the vector setup when the embedder answers.
+  (0.3 s probe, fail-open); `add-decision` names `embed-backfill` when it could not embed.
+  `embed-backfill` is manual — `./deploy.sh` does not run the legacy Ollama path.
   `OSFORGE_OLLAMA_URL` (config `ollama_url`) overrides the Ollama endpoint.
 - **Versioned recall eval** `scripts/evals/memory/` (synthetic pt-BR/en fixture, hit@1/hit@5)
   and `tests/test-memory-recall.sh` (53 checks, FTS-only floor hit@5 ≥ 80%, in CI).

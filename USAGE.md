@@ -809,9 +809,8 @@ osforge-db memory-health [--timeout=0.3]
 `vec-status` prints `coverage: <embedded>/<total> decisions embedded` (JSON: `coverage`,
 `embedder_reachable`). `add-decision` embeds the new decision when the embedder answers; when
 it does not, the decision is still saved and a warning names `embed-backfill`.
-`embed-backfill` embeds only what is missing (idempotent), and `./deploy.sh` runs it after the
-vector setup when the embedder answers — otherwise it prints one line
-(`embed-backfill skipped`) and carries on (`--dry-run` only reports the step).
+`embed-backfill` embeds only what is missing (idempotent). It is manual: `./deploy.sh` no
+longer runs it — the deploy indexes the brain (ADR-017), not this legacy Ollama path.
 
 **Degradation is visible.** If the embedder is unreachable (or nothing is embedded yet),
 `search-hybrid` still answers from FTS5 and says so: a first line
