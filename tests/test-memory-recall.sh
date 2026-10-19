@@ -197,7 +197,7 @@ echo "     $EVAL" | tail -2
 check "eval FTS expanded (agent keyword rewrite): hit@5 ≥ 95% on the fixture" '[ $RC -eq 0 ]'
 n_nat="$(grep -vc "^#\|^$" "$REPO/scripts/evals/memory/questions.tsv")"; n_exp="$(grep -vc "^#\|^$" "$REPO/scripts/evals/memory/questions-expanded.tsv")"
 check "expanded set mirrors the natural set (same count and gold column)" '[ "$n_nat" = "$n_exp" ] && [ "$(grep -v "^#" "$REPO/scripts/evals/memory/questions.tsv" | cut -f1)" = "$(grep -v "^#" "$REPO/scripts/evals/memory/questions-expanded.tsv" | cut -f1)" ]'
-check "eval fixture holds no real data (synthetic projects only)" '! grep -vE "^#|^D[0-9]+\t(acme-shop|nimbus-api|orbit-docs)\t" "$REPO/scripts/evals/memory/decisions.tsv" | grep -q .'
+check "eval fixture holds no real data (synthetic projects only)" '! grep -vE "^#|^D[0-9]+[[:space:]](acme-shop|nimbus-api|orbit-docs)[[:space:]]" "$REPO/scripts/evals/memory/decisions.tsv" | grep -q .'
 
 echo ""; echo "══ memory-recall: $PASS ok, $FAIL failure(s)"
 [ "$FAIL" -eq 0 ]
