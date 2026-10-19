@@ -32,7 +32,7 @@ RESTORE_ID=""
 RELEASE_MODE=false          # --release: deploy the latest v* tag from a detached worktree (ADR-018)
 FORCE_BRANCH=false          # --force-branch / OSFORGE_DEPLOY_FORCE_BRANCH=1: skip the deploy-source guard
 if [ "${OSFORGE_DEPLOY_FORCE_BRANCH:-0}" = "1" ]; then FORCE_BRANCH=true; fi
-IS_GIT=false; GIT_BRANCH=""; GIT_TAG=""; GIT_DIRTY=false; REF_LABEL=""; GUARD_REASONS=""
+IS_GIT=false; GIT_BRANCH=""; GIT_TAG=""; GIT_DIRTY=false; REF_LABEL=""; GUARD_REASONS=""; ON_MAIN=false; OFFICIAL_TAG=""
 MANIFEST_FILE=""            # lista (JSONL) de tudo que este run quer escrever
 STAGE_ROOT=""               # cópias temporárias (SKILLS.md renderizado, skills achatadas)
 PRUNE_UNDER=()              # raízes onde arquivos aposentados podem ser removidos
@@ -1092,17 +1092,30 @@ preflight_tests() {
 
 # ── Deploy source: released main, not whatever branch the clone is on (ADR-018) ─────
 # The deploy copies THIS checkout into ~/.claude, so a feature branch or a dirty tree
-# silently becomes your global config. The guard allows a clean `main` — or a detached
-# worktree (--release) — sitting exactly on a v* tag. Not a git checkout (tarball) = no guard.
+# silently becomes your global config. The source is always `main`: a clean `main` — or a
+# detached worktree (--release) whose tag is on main — sitting exactly on a v* tag. The
+# official release is the highest v* tag on main. Not a git checkout (tarball) = no guard.
+main_ref() {  # origin/main when the clone has it (what was released), else the local main
+  if git -C "$REPO" rev-parse -q --verify refs/remotes/origin/main >/dev/null 2>&1; then echo origin/main
+  elif git -C "$REPO" rev-parse -q --verify refs/heads/main >/dev/null 2>&1; then echo main; fi
+}
+
 resolve_git_ref() {
-  IS_GIT=false; GIT_BRANCH=""; GIT_TAG=""; GIT_DIRTY=false; REF_LABEL=""
+  IS_GIT=false; GIT_BRANCH=""; GIT_TAG=""; GIT_DIRTY=false; REF_LABEL=""; ON_MAIN=false; OFFICIAL_TAG=""
   [ -e "$REPO/.git" ] && command -v git >/dev/null 2>&1 || return 0
   git -C "$REPO" rev-parse --git-dir >/dev/null 2>&1 || return 0
   IS_GIT=true
   GIT_BRANCH="$(git -C "$REPO" symbolic-ref --short -q HEAD 2>/dev/null || true)"
   GIT_TAG="$(git -C "$REPO" describe --tags --exact-match --match 'v*' HEAD 2>/dev/null || true)"
   if [ -n "$(git -C "$REPO" status --porcelain 2>/dev/null)" ]; then GIT_DIRTY=true; fi
-  REF_LABEL="${GIT_BRANCH:-detached} @ ${GIT_TAG:-no v* tag}"
+  local mref; mref="$(main_ref)"
+  if [ "$GIT_BRANCH" = "main" ]; then ON_MAIN=true
+  elif [ -z "$GIT_BRANCH" ] && [ -n "$mref" ] && git -C "$REPO" merge-base --is-ancestor HEAD "$mref" 2>/dev/null; then ON_MAIN=true
+  fi
+  OFFICIAL_TAG="$(latest_release_tag)"
+  local src="${GIT_BRANCH:-detached}"; $ON_MAIN && src="main"
+  REF_LABEL="$src @ ${GIT_TAG:-no v* tag}"
+  [ -n "$OFFICIAL_TAG" ] && REF_LABEL="$REF_LABEL · official release $OFFICIAL_TAG"
   if $GIT_DIRTY; then REF_LABEL="$REF_LABEL (dirty)"; fi
 }
 
@@ -1113,6 +1126,8 @@ check_deploy_source() {
     [ "$GIT_BRANCH" = "main" ] || GUARD_REASONS="$GUARD_REASONS    - branch is '$GIT_BRANCH', not main"$'\n'
   elif [ -z "$GIT_TAG" ]; then
     GUARD_REASONS="$GUARD_REASONS    - HEAD is detached and not at a v* tag"$'\n'
+  elif ! $ON_MAIN; then
+    GUARD_REASONS="$GUARD_REASONS    - tag $GIT_TAG is not on main"$'\n'
   fi
   if $GIT_DIRTY; then GUARD_REASONS="$GUARD_REASONS    - working tree has uncommitted changes"$'\n'; fi
   if [ -z "$GIT_TAG" ]; then GUARD_REASONS="$GUARD_REASONS    - HEAD is not at a v* tag (not a release)"$'\n'; fi
@@ -1124,7 +1139,7 @@ enforce_deploy_source() {
   echo "🛡️  Deploy source guard"
   check_deploy_source
   if ! $IS_GIT; then log "not a git checkout — guard skipped"; return 0; fi
-  if [ -z "$GUARD_REASONS" ]; then ok "main at $GIT_TAG, clean tree"; return 0; fi
+  if [ -z "$GUARD_REASONS" ]; then ok "main @ $GIT_TAG (official release ${OFFICIAL_TAG:-?}), clean tree"; return 0; fi
   if $FORCE_BRANCH; then
     echo "  ⚠️  guard bypassed (--force-branch / OSFORGE_DEPLOY_FORCE_BRANCH=1) — would have refused:"
     printf '%s' "$GUARD_REASONS"; return 0
@@ -1140,9 +1155,11 @@ enforce_deploy_source() {
   exit 1
 }
 
-# Highest vMAJOR.MINOR.PAYLOAD tag in the local clone (prereleases ignored). bash 3.2/BSD safe.
+# Official release: highest vMAJOR.MINOR.PATCH tag reachable from main (prereleases and tags
+# cut on other branches ignored). bash 3.2/BSD safe.
 latest_release_tag() {
-  git -C "$REPO" tag -l 'v*' 2>/dev/null | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+  local mref; mref="$(main_ref)"; [ -n "$mref" ] || return 0
+  git -C "$REPO" tag -l 'v*' --merged "$mref" 2>/dev/null | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
     | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/'
 }
 

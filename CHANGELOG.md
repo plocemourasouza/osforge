@@ -10,6 +10,13 @@ All notable changes to OSForge are recorded here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- **Deploy source is always `main`.** A `--release` deploy reported `detached @ <tag>` (banner,
+  guard line, `install-state.json`). A detached worktree whose tag is on `main` now reads
+  `main @ <tag>`; a tag cut off `main` is refused (`tag vX is not on main`) and never picked by
+  `--release`. The banner and the guard name the **official release** — the highest `vX.Y.Z` on
+  `main`.
+
 ## [5.3.0] — 2026-10-19
 
 ### Added
