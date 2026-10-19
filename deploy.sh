@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # deploy.sh — Agent Skills Framework
 # Sincroniza agent-skills-consolidado/ → ~/.claude/ e ~/.cursor/
-# Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run | --doctor | --uninstall | --restore ID]
+# Uso: ./deploy.sh [--claude-only | --cursor-only | --dry-run | --release | --force-branch | --doctor | --uninstall | --restore ID]
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")" && pwd)"
@@ -29,6 +29,10 @@ ADOPT_FILES=false           # --adopt: assume arquivo seu que colide com um do O
 FORCE_HOOKS=false           # --force-hooks: sobrepõe hook gerenciado que você editou
 ACTION="deploy"             # deploy | doctor | uninstall | restore
 RESTORE_ID=""
+RELEASE_MODE=false          # --release: deploy the latest v* tag from a detached worktree (ADR-018)
+FORCE_BRANCH=false          # --force-branch / OSFORGE_DEPLOY_FORCE_BRANCH=1: skip the deploy-source guard
+if [ "${OSFORGE_DEPLOY_FORCE_BRANCH:-0}" = "1" ]; then FORCE_BRANCH=true; fi
+IS_GIT=false; GIT_BRANCH=""; GIT_TAG=""; GIT_DIRTY=false; REF_LABEL=""; GUARD_REASONS=""
 MANIFEST_FILE=""            # lista (JSONL) de tudo que este run quer escrever
 STAGE_ROOT=""               # cópias temporárias (SKILLS.md renderizado, skills achatadas)
 PRUNE_UNDER=()              # raízes onde arquivos aposentados podem ser removidos
@@ -61,6 +65,8 @@ for arg in "$@"; do
     --force)        FORCE_FILES=true ;;
     --adopt)        ADOPT_FILES=true ;;
     --force-hooks)  FORCE_HOOKS=true ;;
+    --force-branch) FORCE_BRANCH=true ;;
+    --release)      RELEASE_MODE=true ;;
     --doctor)       ACTION="doctor" ;;
     --uninstall)    ACTION="uninstall" ;;
     --restore=*)    ACTION="restore"; RESTORE_ID="${arg#--restore=}" ;;
@@ -76,6 +82,8 @@ for arg in "$@"; do
       echo "  --force         Sobrescreve arquivos gerenciados que você editou (backup em ~/.claude_backups/<run>)"
       echo "  --adopt         Assume arquivos seus que colidem com os do OSForge (backup idem)"
       echo "  --force-hooks   Sobrepõe hooks gerenciados que você editou em settings.json"
+      echo "  --release       Fetch tags and deploy the latest v* tag from a detached worktree in ~/.osforge/release/ (any branch)"
+      echo "  --force-branch  Deploy even if the checkout is not a clean main at a v* tag (also OSFORGE_DEPLOY_FORCE_BRANCH=1)"
       echo "  --doctor        Relata arquivos ausentes/alterados e hooks divergentes; não escreve nada"
       echo "  --uninstall     Remove o que o OSForge instalou e você não editou; restaura settings; --dry-run mostra"
       echo "  --restore=ID    Restaura os backups do run ID (veja ~/.claude_backups/)"
@@ -199,6 +207,7 @@ state_apply() {
   $DRY_RUN && args+=(--dry-run)
   $FORCE_FILES && args+=(--force)
   $ADOPT_FILES && args+=(--adopt)
+  [ -n "$REF_LABEL" ] && args+=(--ref "$REF_LABEL")
   local root; for root in "${PRUNE_UNDER[@]}"; do args+=(--prune-under "$root"); done
   echo ""
   echo "📦 Aplicando $(wc -l < "$MANIFEST_FILE" | tr -d ' ') arquivos com estado (run $RUN_ID)"
@@ -1081,21 +1090,127 @@ preflight_tests() {
   fi
 }
 
+# ── Deploy source: released main, not whatever branch the clone is on (ADR-018) ─────
+# The deploy copies THIS checkout into ~/.claude, so a feature branch or a dirty tree
+# silently becomes your global config. The guard allows a clean `main` — or a detached
+# worktree (--release) — sitting exactly on a v* tag. Not a git checkout (tarball) = no guard.
+resolve_git_ref() {
+  IS_GIT=false; GIT_BRANCH=""; GIT_TAG=""; GIT_DIRTY=false; REF_LABEL=""
+  [ -e "$REPO/.git" ] && command -v git >/dev/null 2>&1 || return 0
+  git -C "$REPO" rev-parse --git-dir >/dev/null 2>&1 || return 0
+  IS_GIT=true
+  GIT_BRANCH="$(git -C "$REPO" symbolic-ref --short -q HEAD 2>/dev/null || true)"
+  GIT_TAG="$(git -C "$REPO" describe --tags --exact-match --match 'v*' HEAD 2>/dev/null || true)"
+  if [ -n "$(git -C "$REPO" status --porcelain 2>/dev/null)" ]; then GIT_DIRTY=true; fi
+  REF_LABEL="${GIT_BRANCH:-detached} @ ${GIT_TAG:-no v* tag}"
+  if $GIT_DIRTY; then REF_LABEL="$REF_LABEL (dirty)"; fi
+}
+
+check_deploy_source() {
+  GUARD_REASONS=""
+  $IS_GIT || return 0
+  if [ -n "$GIT_BRANCH" ]; then
+    [ "$GIT_BRANCH" = "main" ] || GUARD_REASONS="$GUARD_REASONS    - branch is '$GIT_BRANCH', not main"$'\n'
+  elif [ -z "$GIT_TAG" ]; then
+    GUARD_REASONS="$GUARD_REASONS    - HEAD is detached and not at a v* tag"$'\n'
+  fi
+  if $GIT_DIRTY; then GUARD_REASONS="$GUARD_REASONS    - working tree has uncommitted changes"$'\n'; fi
+  if [ -z "$GIT_TAG" ]; then GUARD_REASONS="$GUARD_REASONS    - HEAD is not at a v* tag (not a release)"$'\n'; fi
+  return 0
+}
+
+enforce_deploy_source() {
+  echo ""
+  echo "🛡️  Deploy source guard"
+  check_deploy_source
+  if ! $IS_GIT; then log "not a git checkout — guard skipped"; return 0; fi
+  if [ -z "$GUARD_REASONS" ]; then ok "main at $GIT_TAG, clean tree"; return 0; fi
+  if $FORCE_BRANCH; then
+    echo "  ⚠️  guard bypassed (--force-branch / OSFORGE_DEPLOY_FORCE_BRANCH=1) — would have refused:"
+    printf '%s' "$GUARD_REASONS"; return 0
+  fi
+  if $DRY_RUN; then
+    skip "guard would REFUSE this deploy:"
+    printf '%s' "$GUARD_REASONS"; return 0
+  fi
+  echo "  ❌ Refusing to deploy from this checkout:" >&2
+  printf '%s' "$GUARD_REASONS" >&2
+  echo "     Deploy the latest release instead:  ./deploy.sh --release" >&2
+  echo "     Or deploy this checkout anyway:     ./deploy.sh --force-branch" >&2
+  exit 1
+}
+
+# Highest vMAJOR.MINOR.PAYLOAD tag in the local clone (prereleases ignored). bash 3.2/BSD safe.
+latest_release_tag() {
+  git -C "$REPO" tag -l 'v*' 2>/dev/null | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+    | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/'
+}
+
+# --release: re-run THIS script from a detached worktree of the latest tag, minus --release.
+release_reexec() {
+  [ -e "$REPO/.git" ] && command -v git >/dev/null 2>&1 || { echo "❌ --release needs a git checkout of OSForge" >&2; exit 1; }
+  echo "🏷️  Release deploy: fetching tags from origin"
+  if ! git -C "$REPO" fetch --tags origin >/dev/null 2>&1; then
+    echo "  ❌ git fetch --tags origin failed (offline, or no 'origin' remote)." >&2
+    echo "     --release needs the network to learn the latest tag. Offline: check out a tag and deploy it, or use --force-branch." >&2
+    exit 1
+  fi
+  local tag; tag="$(latest_release_tag)"
+  [ -n "$tag" ] || { echo "  ❌ no vX.Y.Z tag found after fetch" >&2; exit 1; }
+  local dir="$HOME/.osforge/release/$tag"
+  if $DRY_RUN; then
+    skip "would deploy $tag from a detached worktree at $dir"; exit 0
+  fi
+  git -C "$REPO" worktree prune >/dev/null 2>&1 || true
+  if [ -e "$dir/.git" ]; then
+    if [ "$(git -C "$dir" rev-parse HEAD 2>/dev/null)" != "$(git -C "$REPO" rev-parse "$tag^{commit}")" ]; then
+      echo "  ❌ $dir exists but is not at $tag — remove it (git worktree remove --force) and retry" >&2; exit 1
+    fi
+    log "reusing worktree $dir"
+  else
+    mkdir -p "$HOME/.osforge/release"
+    git -C "$REPO" worktree add --detach "$dir" "$tag" >/dev/null 2>&1 \
+      || { echo "  ❌ git worktree add $dir $tag failed" >&2; exit 1; }
+    log "created worktree $dir"
+  fi
+  local fwd=() a
+  for a in "$@"; do [ "$a" = "--release" ] || fwd+=("$a"); done
+  exec "$dir/deploy.sh" ${fwd[@]+"${fwd[@]}"}
+}
+
+# --doctor extra: what is installed vs the newest tag this clone knows (no network, writes nothing).
+doctor_release_line() {
+  [ -e "$REPO/.git" ] && command -v git >/dev/null 2>&1 || return 0
+  local latest installed
+  latest="$(latest_release_tag)"; [ -n "$latest" ] || return 0
+  installed="$(python3 -c "import json,os,sys
+try: print(json.load(open(os.path.expanduser('~/.osforge/install-state.json'))).get('version',''))
+except Exception: pass" 2>/dev/null)"
+  if [ -z "$installed" ]; then echo "  release: nothing installed yet · latest local tag $latest"
+  elif [ "v$installed" = "$latest" ]; then echo "  release: installed v$installed = latest local tag $latest ✅"
+  else echo "  release: installed v$installed · latest local tag $latest — run ./deploy.sh --release"; fi
+}
+
 # ── Main ─────────────────────────────────────────────────────────────────
+if $RELEASE_MODE && [ "$ACTION" = "deploy" ]; then release_reexec "$@"; fi
+resolve_git_ref
+
 echo "═══════════════════════════════════════════════════"
 echo " OSForge v$OSFORGE_VERSION — Deploy"
 echo " Repo: $REPO"
+[ -n "$REF_LABEL" ] && echo " Ref:  $REF_LABEL"
 $DRY_RUN && echo " Modo: DRY RUN (sem alterações reais)"
 echo "═══════════════════════════════════════════════════"
 
 # Ações de manutenção do estado: não passam pelo preflight nem tocam o repo.
 case "$ACTION" in
-  doctor)    python3 "$STATE_PY" doctor; exit $? ;;
+  doctor)    DRC=0; python3 "$STATE_PY" doctor || DRC=$?; doctor_release_line; exit $DRC ;;
   uninstall) if $DRY_RUN; then python3 "$STATE_PY" uninstall --dry-run; else python3 "$STATE_PY" uninstall; fi; exit $? ;;
   restore)   [ -n "$RESTORE_ID" ] || { echo "❌ --restore=<run_id> (veja ~/.claude_backups/)"; exit 1; }
              if $DRY_RUN; then python3 "$STATE_PY" restore --run-id "$RESTORE_ID" --dry-run; else python3 "$STATE_PY" restore --run-id "$RESTORE_ID"; fi; exit $? ;;
 esac
 
+enforce_deploy_source
 preflight_manifest
 preflight_tests
 

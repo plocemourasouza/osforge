@@ -401,3 +401,44 @@ is the documented alternative (rebuild after switching). Local mode is single-pr
 concurrent second call degrades to the lexical fallback instead of blocking.
 
 **Date:** 2026-10-18.
+
+## ADR-018: Deploys come from a released `main`, not from whatever branch is checked out
+
+**Context.** `deploy.sh` copies the working tree it runs from into `~/.claude`, `~/.cursor` and
+`~/.osforge`. It never looked at git: running it from a feature branch or a dirty tree installed
+that state as the user's global configuration, with the only trace being a `commit` hash in
+`install-state.json`. Releases (`VERSION`, `CHANGELOG.md`, tags `v5.0.x`..`v5.2.1`) were cut by
+hand, so a tag could lag `main` or never be pushed.
+
+**Decision.**
+1. **Guard.** Before the pre-flight, if the repo is a git checkout, the deploy refuses unless
+   the branch is `main` (or HEAD is detached — the `--release` worktree), the tree is clean
+   (`git status --porcelain` empty) and HEAD is exactly at a `v*` tag. The message names every
+   reason and the escape hatch. `--force-branch` / `OSFORGE_DEPLOY_FORCE_BRANCH=1` bypasses it
+   with a warning; `--dry-run` prints the verdict and continues; `--doctor`, `--uninstall` and
+   `--restore` are never guarded. Not a git checkout (tarball) = no guard. The banner shows
+   `branch @ tag`, and `install-state.json` records it (`ref`).
+2. **`--release`.** `git fetch --tags origin` (a failure is fatal and says so), pick the highest
+   `vMAJOR.MINOR.PATCH` by numeric sort, `git worktree add --detach ~/.osforge/release/<tag>`
+   (reused if present) and re-exec that worktree's `deploy.sh` with the other arguments. The
+   installed `repo-path` therefore points at the immutable release worktree, not at the clone
+   you keep developing in. `--doctor` adds installed-vs-latest-local-tag.
+3. **Release PR.** `scripts/release.sh <x.y.z>` (clean, up-to-date `main`; version greater than
+   `VERSION`) bumps `VERSION`, dates the `[Unreleased]` CHANGELOG section, commits on
+   `release/x.y.z` and opens a PR. It never tags.
+4. **Tag + Release.** `.github/workflows/release.yml` runs on `workflow_run` of `ci` completing
+   successfully on `main`: if `v$VERSION` does not exist it creates the tag and a GitHub Release
+   whose notes are that version's CHANGELOG section. A red `main` is never released, and an
+   unchanged `VERSION` is a no-op. The workflow, not a person, is the only thing that tags.
+
+**Alternatives rejected.** A `git tag` step inside `release.sh` (tags before CI is green, and a
+rejected PR leaves an orphan tag); a pre-push hook (does not cover tarballs or other clones);
+guarding on `main` alone (a `main` ahead of its last tag is still unreleased code).
+
+**Consequences.** The everyday `./deploy.sh` from a feature branch now needs `--force-branch`;
+contributors who want what is released run `--release`. Tests and CI's dry-run deploy pass
+`--force-branch` (CI checks out a detached merge ref). A release deploy runs the *tag's*
+`deploy.sh`, so fixes to the guard itself reach the machine only with the next release. Requires
+network for `--release` (fetch); offline, check out a tag and deploy it, or `--force-branch`.
+
+**Date:** 2026-10-19.

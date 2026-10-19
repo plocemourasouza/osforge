@@ -1,0 +1,45 @@
+# Release (ADR-018): tag + GitHub Release after a VERSION bump lands on main with green CI.
+# Triggered by the `ci` workflow finishing on main, so a red main never gets a release.
+# No VERSION change since the last release = the tag exists = this exits quietly.
+name: release
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  release:
+    # `branches: [main]` also matches a fork PR whose branch is named main — only pushes to this
+    # repo's main may tag, since the job holds a write token.
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_repository.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+      - name: Tag and publish if VERSION has no release yet
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          TAG="v$VERSION"
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "$TAG already exists — nothing to release"; exit 0
+          fi
+          # This version's CHANGELOG section: its heading up to (not including) the next `## [`.
+          awk -v v="$VERSION" '
+            /^## \[/ { if (on) exit; if (index($0, "## [" v "]") == 1) on = 1 }
+            on
+          ' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          if [ ! -s "$RUNNER_TEMP/notes.md" ]; then
+            echo "CHANGELOG.md has no '## [$VERSION]' section — refusing to release" >&2; exit 1
+          fi
+          gh release create "$TAG" --target "$SHA" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md"

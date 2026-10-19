@@ -11,6 +11,15 @@ All notable changes to OSForge are recorded here. The format follows
 ## [Unreleased]
 
 ### Added
+- **Release flow from `main` (ADR-018).** `./deploy.sh` now refuses to deploy a branch other than
+  `main`, a dirty tree, or a HEAD that is not exactly at a `v*` tag, unless `--force-branch`
+  (or `OSFORGE_DEPLOY_FORCE_BRANCH=1`); `--dry-run` reports the verdict and goes on. `./deploy.sh
+  --release` fetches tags and deploys the highest `v*` tag from a detached worktree in
+  `~/.osforge/release/<tag>`, whatever the clone has checked out. `--doctor` compares the
+  installed version with the latest local tag; `install-state.json` records the `branch @ tag`.
+  `scripts/release.sh <x.y.z>` prepares the release PR (VERSION bump + CHANGELOG dating) and
+  `.github/workflows/release.yml` creates the tag and GitHub Release once the bump is on `main`
+  with green CI. `ci.yml`'s dry-run deploy step passes `--force-branch` (CI checks out a merge ref).
 - **The brain — long-term memory split from the workbench (ADR-017).** SQLite keeps execution
   state (projects, phases, tasks, blockers, resume, usage, calls, board, the decision log);
   long-term knowledge (`decision`, `knowledge`, `technique`, `methodology`) lives in a Qdrant

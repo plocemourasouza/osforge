@@ -84,7 +84,27 @@ cargo install llmfit
 ./deploy.sh --force         # Overwrite managed files you edited (backup first)
 ./deploy.sh --adopt         # Take over files of yours that collide with OSForge's (backup first)
 ./deploy.sh --force-hooks   # Overwrite a managed hook entry you edited in settings.json
+./deploy.sh --release       # Fetch tags, deploy the latest v* tag from a detached worktree (any branch)
+./deploy.sh --force-branch  # Deploy this checkout even if it is not a clean main at a v* tag
 ```
+
+### Deploys come from a released `main` (ADR-018)
+
+`deploy.sh` copies the checkout it runs from, so it refuses unless that checkout is **`main`,
+with a clean tree, exactly at a `v*` tag**. The message lists each reason and the way out:
+
+- `./deploy.sh --release` — the normal path from any branch: `git fetch --tags origin`, picks the
+  highest `vX.Y.Z`, checks it out as a detached worktree in `~/.osforge/release/<tag>` (reused on
+  the next run) and deploys from there. Needs the network; `--doctor` shows installed version vs
+  latest local tag.
+- `./deploy.sh --force-branch` (or `OSFORGE_DEPLOY_FORCE_BRANCH=1`) — deploy the current checkout
+  anyway (feature branch, dirty tree). `--dry-run` never aborts: it prints the guard verdict and goes on.
+- `--doctor`, `--uninstall`, `--restore=` are not guarded; a tarball without `.git` is not guarded.
+
+Cutting a release: on an up-to-date `main`, `scripts/release.sh 5.3.0` bumps `VERSION`, dates the
+`[Unreleased]` section of `CHANGELOG.md`, commits on `release/5.3.0` and opens the PR (`--no-pr` to
+skip). Merging it makes `.github/workflows/release.yml` create tag `v5.3.0` and the GitHub Release
+once CI is green on `main`. Nobody tags by hand.
 
 ### The deploy has a memory (ADR-015, stage 3)
 
@@ -108,7 +128,7 @@ settings key it sets, and the MCP servers it added. Every later run consults tha
   added, and keeps your data (`~/.osforge/osforge.db`, `config.json`).
 
 `tests/test-deploy-lifecycle.sh` runs the real `deploy.sh` against a seeded temporary HOME and
-checks all of the above by execution (61 checks, ~1 min, offline). `OSFORGE_DEPLOY_LEGACY=1`
+checks all of the above by execution (92 checks, ~1 min, offline). `OSFORGE_DEPLOY_LEGACY=1`
 selects the old copy/rsync path for one release.
 
 ### What the deploy does
