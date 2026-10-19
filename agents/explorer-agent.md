@@ -89,8 +89,7 @@ When in discovery mode, you MUST NOT just report facts; you must engage the user
 3. **Implicit Knowledge**: If critical technology is missing (e.g., no tests, no TypeScript), ask:
    > "I see no test suite. Would you like me to recommend Jest/Vitest, or is testing out of current scope?"
 
-4. **Discovery Milestones**: After every 20% of exploration, summarize and ask:
-   > "So far I've mapped [structure X]. Should I dive deeper into [area Y] or stay at surface level?"
+4. **Checkpoint**: If the mapping splits into areas of very different depth, stop at that boundary, summarize what is mapped, and offer which area to go deeper on.
 
 ### Question Categories
 

@@ -18,12 +18,15 @@ Subcomandos (exit 0 = evidência encontrada, 1 = não; stdout vazio salvo em `--
   text             LOG                 imprime o texto do assistant concatenado
   tokens           LOG...              soma `usage` dos logs: "in out cache_read cache_create"
   run-status       LOG                 ok | error | quota (B-026, SPEC-L01 Parte B / B1)
+  record-quota     LOG...              grava o último `rate_limit_info` de cada log em quota.json
+                                       (hooks/lib/quota.py:record_rate_limit_info; sempre exit 0)
   quota            LOG                 imprime o último `rate_limit_info` (JSON numa linha) ou nada
 Uso pela biblioteca bash `harness-assertions.sh`; testado offline por tests/test-assertions.sh.
 Regra de quota (B1) também usada por scripts/lib/judge.py, que importa is_quota_result() daqui em
 vez de reimplementá-la -- as duas não podem divergir.
 """
 import json
+import os
 import re
 import sys
 
@@ -113,6 +116,22 @@ def _last_result_and_rate_limit(log_path):
             if isinstance(candidate, dict):
                 rate_limit_info = candidate
     return result, rate_limit_info
+
+
+def record_rate_limit(info):
+    """Persist a stream's `rate_limit_info` to quota.json through hooks/lib/quota.py (the one
+    writer, shared with the statusline recorder). Never raises; True when written. Honors
+    OSFORGE_QUOTA_FILE, like every other quota.py caller."""
+    try:
+        if not isinstance(info, dict):
+            return False
+        lib = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "hooks", "lib")
+        if lib not in sys.path:
+            sys.path.insert(0, lib)
+        from quota import record_rate_limit_info
+        return record_rate_limit_info(info)
+    except Exception:
+        return False
 
 
 def run_status(log_path):
@@ -276,6 +295,10 @@ def main(argv):
         return 0
     if cmd == "run-status":
         print(run_status(log))
+        return 0
+    if cmd == "record-quota":
+        for path in argv[1:]:
+            record_rate_limit(quota_info(path))
         return 0
     if cmd == "quota":
         info = quota_info(log)

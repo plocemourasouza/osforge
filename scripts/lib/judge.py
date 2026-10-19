@@ -60,7 +60,7 @@ import time
 # stream_assert.py lives next to this file (scripts/lib/); sys.path[0] is already that
 # directory when judge.py is run directly (`python3 .../judge.py`), same as every caller does.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from stream_assert import is_quota_result  # noqa: E402 -- the sys.path insert above must run first
+from stream_assert import is_quota_result, record_rate_limit  # noqa: E402 -- the sys.path insert above must run first
 
 DEFAULT_TIMEOUT = 120.0
 DEFAULT_CONCURRENCY = 1
@@ -404,6 +404,7 @@ def main(argv):
             return 3
 
         rate_limit_info = find_last_rate_limit(events)
+        record_rate_limit(rate_limit_info)  # no statusline runs under `claude -p`
         result_event = find_result(events)
         rate_limit = rate_limit_out(rate_limit_info)
         usage = usage_out(result_event)

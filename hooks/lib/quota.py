@@ -12,7 +12,8 @@ schema `osforge.quota.v1`:
      "seven_day": {"pct": 41.0, "resets_at": 1790500000},
      "rejected": null}
 
-Two writers feed it, both defined here:
+Three writers feed it, all defined here (a third, `record_rate_limit_info`, is fed by the eval
+harnesses from the `rate_limit_event`s of their own `claude -p` streams; see below):
   - `record_statusline(payload)` — A1, called by hooks/quota-record.py with the statusline's
     stdin JSON. No-op (keeps the existing file untouched) when `rate_limits` is missing or null
     (EV-C01: happens for API-key/Bedrock/Vertex auth).
@@ -46,6 +47,7 @@ Bands: OSFORGE_QUOTA_BANDS="80,95" (default), same overlapping-band idiom as con
 """
 import json
 import os
+import threading
 import time
 
 SCHEMA = "osforge.quota.v1"
@@ -120,7 +122,7 @@ def _atomic_write(path, data):
         d = os.path.dirname(path)
         if d:
             os.makedirs(d, exist_ok=True)
-        tmp = path + ".tmp"
+        tmp = "%s.%d.%d.tmp" % (path, os.getpid(), threading.get_ident())
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump(data, f)
         os.replace(tmp, path)
@@ -198,6 +200,63 @@ def record_rejection(quota_limits, now=None):
             "resets_at": resets_at,
             "at": now,
         }
+        return _atomic_write(quota_path(), record)
+    except Exception:
+        return False
+
+
+def record_rate_limit_info(info, now=None):
+    """A4. `info` is the `rate_limit_info` of a stream-json `rate_limit_event` (what `claude -p`
+    emits; the eval harnesses call this, since no statusline runs there). Reads
+    `unifiedWindows.five_hour|seven_day` (`utilization` is a 0-1 fraction, or already a percent
+    when > 1; `resetsAt`) and, when `status == "rejected"`, the rejection. `source` becomes
+    "harness". Monotonic: a window whose `resets_at` is older than the stored one is ignored, and
+    inside the same window `pct` never decreases, so a late, older event cannot overwrite a
+    newer snapshot. No-op (False) when nothing usable is present."""
+    try:
+        if not isinstance(info, dict):
+            return False
+        now = now if now is not None else time.time()
+        existing = _read_json(quota_path()) or {}
+        if existing.get("schema") not in (None, SCHEMA):
+            existing = {}
+        record = dict(existing)
+        changed = False
+        windows = info.get("unifiedWindows")
+        windows = windows if isinstance(windows, dict) else {}
+        for key in ("five_hour", "seven_day"):
+            sub = windows.get(key)
+            if not isinstance(sub, dict):
+                continue
+            util, resets_at = sub.get("utilization"), sub.get("resetsAt")
+            if not isinstance(util, (int, float)) or isinstance(util, bool):
+                continue
+            pct = util * 100 if util <= 1 else util
+            old = existing.get(key) if isinstance(existing.get(key), dict) else {}
+            old_reset, old_pct = old.get("resets_at"), old.get("pct")
+            if isinstance(resets_at, (int, float)) and isinstance(old_reset, (int, float)):
+                if resets_at < old_reset:
+                    continue
+                if resets_at == old_reset and isinstance(old_pct, (int, float)):
+                    pct = max(pct, old_pct)
+            entry = {"pct": pct}
+            if isinstance(resets_at, (int, float)):
+                entry["resets_at"] = resets_at
+            record[key] = entry
+            changed = True
+        if info.get("status") == "rejected" and isinstance(info.get("resetsAt"), (int, float)):
+            old_rej = existing.get("rejected")
+            old_rej_reset = old_rej.get("resets_at") if isinstance(old_rej, dict) else None
+            if not (isinstance(old_rej_reset, (int, float)) and old_rej_reset > info["resetsAt"]):
+                record["rejected"] = {"type": info.get("rateLimitType"),
+                                      "resets_at": info["resetsAt"], "at": now}
+                changed = True
+        if not changed:
+            return False
+        record["schema"] = SCHEMA
+        record["at"] = now
+        record["source"] = "harness"
+        record.setdefault("rejected", existing.get("rejected"))
         return _atomic_write(quota_path(), record)
     except Exception:
         return False

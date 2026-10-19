@@ -14,7 +14,7 @@ metadata:
 
 ## Project context
 !`[ -f project-context.md ] && head -20 project-context.md || echo "project-context.md not found — brainstorming without stack context"`
-!`[ -f .osforge/memory/constitution.md ] && echo "Constitution found" && head -10 .osforge/memory/constitution.md || echo "constitution.md not found"`
+!`[ -f .specs/memory/constitution.md ] && echo "Constitution found" && head -10 .specs/memory/constitution.md || echo "constitution.md not found"`
 
 # Brainstorming
 
@@ -51,7 +51,7 @@ Before exploring solutions, discover:
 3. **The success criterion**: how do we know we solved the problem?
 4. **The existing constraints**: what CANNOT change? What are the limits?
 
-Ask at most 3 questions at a time. Wait for answers before moving forward.
+Ask one question at a time. Wait for the answer before moving forward.
 
 ### Phase 2 — Explore alternatives
 

@@ -48,11 +48,27 @@ osforge-db resolve-blocker --id 1 --resolution "Discussed with team"
 
 ### Search Decisions
 ```bash
-# Full-text search across projects
-osforge-db search "authentication"
+# Lexical search across projects. Query 4-8 keywords: English + the user's pt-BR terms,
+# code identifiers and file names. --since/--until=YYYY-MM-DD for time questions;
+# on a miss, retry once with synonyms.
+osforge-db search "authentication auth autenticação login session" --since=2026-10-01
 
 # Search in current project only
 osforge-db search "authentication" --scope local
+```
+
+### Remember / Recall (long-term memory — the brain)
+```bash
+# Knowledge that is not a project decision: kind = decision|knowledge|technique|methodology
+osforge-db remember "Partial index on deleted_at keeps soft-delete filters cheap" --kind=technique --global
+osforge-db remember "Gateway webhooks retry 5x then dead-letter" --kind=knowledge --project=my-project --tags=payments
+
+# Recall: 4-8 keywords, English + the user's pt-BR terms; --since/--until for time questions
+osforge-db recall "webhook retry dead letter fila reprocessamento" --project=my-project
+osforge-db recall "soft delete index índice" --kind=technique --global --since=2026-10-01
+
+# `note: brain degraded (...) — lexical fallback` = store/model unavailable; report it
+osforge-db brain status
 ```
 
 ---

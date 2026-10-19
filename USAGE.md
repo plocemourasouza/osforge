@@ -23,6 +23,7 @@ Complete installation, configuration, and day-to-day usage instructions.
 13. [Recommended MCPs](#13-recommended-mcps)
 14. [High-Risk Agents](#14-high-risk-agents)
 15. [Evals — medir em vez de achar](#15-evals--medir-em-vez-de-achar)
+16. [Session config reference](#16-session-config-reference)
 
 ---
 
@@ -114,7 +115,7 @@ selects the old copy/rsync path for one release.
 
 **Claude Code (`~/.claude/`)**
 - Copies `CLAUDE.md` and `SKILLS.md`
-- Syncs 27 agents (orchestrator + 26 specialists) to `~/.claude/agents/`
+- Syncs 25 agents (orchestrator + 24 specialists) to `~/.claude/agents/`
 - Copies 9 `spec-*` commands to `~/.claude/commands/`
 - Installs 11 hooks to `~/.claude/hooks/` (plus the shared `hooks/lib/`)
 - Merges the managed hook entries into `~/.claude/settings.json` by id (yours are preserved) and the MCP servers into `~/.claude.json` (non-destructive)
@@ -262,12 +263,12 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 "I want the debugger to investigate this bug"
 ```
 
-### Agent reference (27 agents: orchestrator + 26 specialists)
+### Agent reference (25 agents: orchestrator + 24 specialists)
 
 | Agent | When to use |
 |---|---|
 | `orchestrator` | **Start here** — intake, triage, multi-phase planning, routing, tracking, course correction |
-| `planner` | Start of any feature — decomposition, architecture, stories |
+| `planner` | New projects and major features — task breakdown, file structure, agent assignment, dependency graph (waves), stories |
 | `system-architect` | System design, ADRs, architecture decisions |
 | `backend-engineer` | Prisma schema, Server Actions, APIs, Supabase |
 | `frontend-engineer` | shadcn/ui components, Server/Client Components, UX |
@@ -286,9 +287,7 @@ Agents are personalities with a defined mission. Activated explicitly or via the
 | `penetration-tester` | Offensive security, OWASP, red-team exercises |
 | `qa-automation-engineer` | Test strategy, Playwright, test pyramid, coverage |
 | `test-engineer` | Unit/integration tests, TDD guidance |
-| `product-manager` | Requirements, user stories, backlog, product process |
-| `product-owner` | Acceptance criteria, sprint goals, stakeholder alignment |
-| `project-planner` | Project timelines, milestones, risk tracking |
+| `product-owner` | Requirements, user stories, acceptance criteria, prioritization (MoSCoW/RICE), backlog, MVP scope, PRDs |
 | `seo-specialist` | Meta tags, structured data, Core Web Vitals for SEO, GEO |
 | `code-archaeologist` | Legacy code analysis, reverse-engineering undocumented systems |
 | `explorer-agent` | Open-ended research, technology evaluation, discovery |
@@ -545,7 +544,7 @@ chmod +x ~/.claude/hooks/*
 **`context-threshold.py`** (UserPromptSubmit)
 - Lê o `message.usage` da última resposta no transcript (input + cache_read + cache_creation = o
   contexto real enviado ao modelo) e injeta o aviso do Context Budget **uma vez por faixa por
-  sessão**: ≥120k "salve estado e termine o passo", ≥150k "PARE, handoff, compacte". Lê só o fim
+  sessão**: ≥120k "salve estado e termine o passo", ≥150k "pare de abrir trabalho novo, termine o passo, handoff, compacte". Lê só o fim
   do transcript (~1 ms). `OSFORGE_CONTEXT_BANDS=120000,150000`; kill-switch `OSFORGE_CONTEXT_THRESHOLD=off` (B-021)
 
 **`canvas-feedback.py`** (Stop)
@@ -622,12 +621,17 @@ osforge-db set-resume my-project \
 ### Search across all projects
 
 ```bash
-# Full-text search in all decisions (FTS5)
-osforge-db search "autenticação OAuth"
+# Full-text search in all decisions (FTS5). Agent rule: 4-8 keywords, English plus the
+# pt-BR terms the user used, code identifiers and file names; retry once with synonyms.
+osforge-db search "oauth autenticação callback redirect_uri auth/callback.ts"
 osforge-db search "Prisma RLS multi-tenant" --project=linkme-tur
 
-# List decisions by category
+# Temporal recall: whole days, both ends inclusive (UTC)
+osforge-db search "cache do catálogo" --since=2026-10-01 --until=2026-10-31
+
+# List decisions by category / period
 osforge-db list-decisions my-project --category=security --limit=10
+osforge-db list-decisions my-project --since=2026-09-01 --until=2026-09-30
 
 # Full status
 osforge-db status my-project
@@ -635,6 +639,18 @@ osforge-db status my-project
 # All active projects
 osforge-db list-projects
 ```
+
+**How the lexical search reads a query.** Words only (unicode-aware, lowercased); pt-BR and
+English stopwords, words every decision shares ("decidimos", "decided") and words under 3
+characters are dropped; each remaining word is quoted (so `-`, `:`, `*`, `NEAR`, `AND/OR/NOT`
+are never operators) and the words are **OR-ed**, ranked by bm25. A query made only of
+dropped words falls back to its raw words (`search "UI"` still works). Matching is
+accent-insensitive (`funcoes` finds "funções"): the index uses `unicode61 remove_diacritics 2`,
+and an index created before that is rebuilt once, automatically, on the next `osforge-db` call.
+
+**`--json` rows** of `search`, `search-hybrid` and `list-decisions` share one shape:
+`{id, project, category, created_at, content}` (`search` also keeps `slug`, an alias of
+`project`; `search-hybrid` adds `degraded`, below).
 
 ### Scopes
 
@@ -664,9 +680,104 @@ osforge-db import-yaml .osforge/status.yaml meu-projeto
 | `data` | Schema, migration, data model decisions |
 | `security` | Auth, LGPD, security decisions |
 
-### Memória vetorial (3-tier)
+### Workbench vs brain (ADR-017)
+
+Memory is split in two, by what it is for:
+
+| | **Workbench** — SQLite `~/.osforge/osforge.db` | **Brain** — Qdrant collection `osforge_brain` |
+|---|---|---|
+| Holds | projects, phases, tasks, blockers, resume, usage, calls, board, observations/instincts, and `decisions` as the per-project execution log | long-term knowledge: `decision`, `knowledge`, `technique`, `methodology` |
+| Read by | `resume`, `board`, `status`, `list-decisions`, `search` | `recall` |
+| Runtime | `osforge-db` itself, stdlib only | `~/.osforge/venv` (fastembed + qdrant-client + onnxruntime, pinned) |
+| Source of truth | the SQLite file | the journal `~/.osforge/brain.jsonl` (append-only); the collection is a derived index |
+
+```bash
+# Record knowledge (journal first — secrets scrubbed by hooks/lib/scrub.py — then indexed)
+osforge-db remember "Partial indexes on deleted_at make soft-delete filters cheap" --kind=technique --global --tags=postgres
+osforge-db remember "Checkout keeps Stripe as the only gateway" --kind=decision --project=my-project
+# add-decision does this for you: SQLite row + brain record (kind=decision, source add-decision:<id>)
+
+# Query: 4-8 keywords, English plus the user's pt-BR terms; --since/--until for time questions
+osforge-db recall "rate limit API key chave limite requisições" --project=my-project
+osforge-db recall "cache catálogo catalog Redis" --since=2026-10-01 --until=2026-10-31 --json
+osforge-db recall "grill plan question" --kind=methodology --mode=keyword   # BM25 only
+
+osforge-db forget 3f2a91c0              # id or unique prefix: tombstone in the journal + delete the point
+osforge-db brain status                 # store, embedder, journal live/forgotten, indexed points
+osforge-db brain rebuild                # recreate the collection from the journal (batch_size=1)
+osforge-db brain migrate                # SQLite decisions → brain, idempotent (source key); deploy runs it
+osforge-db brain health [--timeout=0.3] # one `brain:` line when degraded, else silent (session-resume uses it)
+```
+
+**How `recall` ranks.** Dense first (embeddinggemma-300m, cosine): rows above the floor
+(`brain_min_score`, default 0.30 for gemma) are the answer. Nothing above the floor → the BM25
+sparse vector (fastembed `Qdrant/bm25`, Portuguese stemmer) answers instead. `--mode=keyword`
+is BM25 only; `--mode=hybrid` is RRF of both, opt-in only — the design bench measured plain RRF
+lowering gemma's hit@1 (14→12); this implementation's hybrid (dense floor inside its prefetch)
+tied dense at 14/14 on the same data, so it gains nothing and dense stays the default. Filters (`--kind`, `--project`, `--global`,
+`--since`, `--until`) go inside the query filter and inside each prefetch, never after ranking.
+`--project=x` returns x only; `--global` returns only project-less memories.
+JSON rows: `id, kind, project, tags, created_at, score, content` (+ `source`, `mode`, `degraded`).
+
+**Degradation is never silent.** No venv, model missing, store down, or the local store locked
+by another process → `recall` scans the journal lexically (same term builder as `search`:
+stopwords dropped, OR, accent-insensitive), prints `note: brain degraded (<reason>) — lexical
+fallback`, and sets `degraded` in every JSON row. `remember`/`forget` always journal first; if the
+index step fails they say so in one line and `brain rebuild` catches up. `add-decision` never
+fails because of the brain: one line, and the SQLite row is already committed.
+
+**Store selection** (`brain_store` in `~/.osforge/config.json`, or `OSFORGE_BRAIN_STORE`):
+`server` = Qdrant at `qdrant_url` (default `http://localhost:6333`); `local` = qdrant-client local
+mode at `~/.osforge/brain/qdrant` (`OSFORGE_BRAIN_PATH`; single process — a concurrent call falls
+back lexically; payload indexes are no-ops there). Unset → `server` when `./deploy.sh
+--with-qdrant` provisioned Qdrant or the URL answers within 300 ms, else `local`; the deploy
+writes the choice to config.json once so it never flips between runs.
+
+**Install.** `./deploy.sh` creates `~/.osforge/venv` (`python3 -m venv` + pinned
+`fastembed==0.9.0 qdrant-client==1.19.1 onnxruntime==1.31.0`), downloads the model once into
+`~/.osforge/models`, and runs `brain migrate`. Offline or pip failure → one skip line, the
+deploy goes on; `--no-brain` skips it; `--dry-run` only reports it. `osforge-db` re-runs brain
+work in that venv's python as a subprocess, so `osforge-db` stays stdlib-only and importable
+without any of it.
+
+**Model and license.** Default `brain_model: "gemma"` — `google/embeddinggemma-300m`, 768d,
+in-process ONNX on CPU, no Ollama. It is distributed under the **Gemma Terms of Use**, not an
+OSI licence. License-clean alternative: `"brain_model": "e5-large"` (`intfloat/multilingual-e5-large`,
+MIT, 1024d; set it, re-run `./deploy.sh` to fetch it, then `osforge-db brain rebuild`). Measured
+on 124 real decisions / 14 pt-BR questions: dense hit@1 14/14, hit@5 14/14; ~1.3 s per
+fresh-process `recall` (≈1.1 s of it import + model init); ~1.0 GB peak RSS; migrate of 124
+decisions ~7 s with `batch_size=1` (the default batch of 256 pads to 6.8 GB RSS). Disk: venv
+~240 MB + model ~1.2 GB (fp32 ONNX).
+
+| Variable | Default | |
+|---|---|---|
+| `OSFORGE_BRAIN` | `on` | `off` = add-decision stops remembering, health stays silent (config `brain`) |
+| `OSFORGE_BRAIN_STORE` | auto | `server` \| `local` (config `brain_store`) |
+| `OSFORGE_BRAIN_PATH` | `~/.osforge/brain/qdrant` | local store path (config `brain_path`) |
+| `OSFORGE_QDRANT_URL` | `http://localhost:6333` | server URL (config `qdrant_url`) |
+| `OSFORGE_BRAIN_EMBED` | `gemma` | `gemma` \| `e5-large` \| `fake` (deterministic hash, tests/CI) (config `brain_model`) |
+| `OSFORGE_BRAIN_PYTHON` | `~/.osforge/venv/bin/python` | brain interpreter |
+| `OSFORGE_BRAIN_MODELS` | `~/.osforge/models` | fastembed cache |
+| `OSFORGE_BRAIN_MIN_SCORE` | per model (gemma 0.30) | dense floor (config `brain_min_score`) |
+
+`--scope=local` decisions are not copied to the brain (their ids would collide with the global
+workbench's in the one global journal). Eval: `scripts/evals/memory/run.py --mode=brain`
+(README there); tests: `tests/test-brain.sh`.
+
+### Memória vetorial (3-tier) — legacy
+
+**Legacy.** The `vec_memory` table, the `osforge_memory` collection, `embed*`,
+`search-semantic`, `search-hybrid`, `vec-*` and `memory-health` below keep working unchanged for
+compatibility; nothing deletes them. New memory goes to the brain (above).
 
 O `osforge-db` suporta busca semântica sobre decisões e contexto de projeto via embeddings. Degradação graciosa: sem embedder ativo, cai automaticamente para FTS5 lexical.
+
+**Query expansion (agent rule).** The lexical leg (OR-FTS5, bm25, stopwords, accent-insensitive)
+matches words, so the words you search with decide what you find: 4–8 keywords, English plus the
+pt-BR terms the user used, code identifiers and file names; `--since/--until` for time questions;
+if the first search misses, one retry with synonyms. Measured on real decisions (14 private
+questions, FTS only): natural questions hit@5 11/14, the same rewritten as keywords 14/14 (the
+rewrites were made knowing the target: an optimistic bound).
 
 **Subcomandos de embedding e busca:**
 
@@ -682,13 +793,37 @@ osforge-db search-semantic "autenticação multi-tenant" --top=5
 
 # Busca híbrida — RRF (Reciprocal Rank Fusion) combinando FTS5 + vetor
 osforge-db search-hybrid "RLS Supabase por organização" --top=5
+osforge-db search-hybrid "cache" --project=my-project --since=2026-10-01   # both legs filtered before RRF
 
 # Inicializar backend vetorial
 osforge-db vec-init
 
-# Ver status do backend (provider, modelo, coleção, contagem de vetores)
+# Ver status do backend (provider, modelo, coleção, contagem de vetores, cobertura)
 osforge-db vec-status
+
+# One-line hint when the memory is degraded; silent when healthy (the session-resume hook uses it)
+osforge-db memory-health [--timeout=0.3]
 ```
+
+**Coverage.** Only decisions with a vector for the active model take part in the vector leg.
+`vec-status` prints `coverage: <embedded>/<total> decisions embedded` (JSON: `coverage`,
+`embedder_reachable`). `add-decision` embeds the new decision when the embedder answers; when
+it does not, the decision is still saved and a warning names `embed-backfill`.
+`embed-backfill` embeds only what is missing (idempotent). It is manual: `./deploy.sh` no
+longer runs it — the deploy indexes the brain (ADR-017), not this legacy Ollama path.
+
+**Degradation is visible.** If the embedder is unreachable (or nothing is embedded yet),
+`search-hybrid` still answers from FTS5 and says so: a first line
+`note: degraded to FTS-only (<why>) …` in normal output, and a `degraded` field in every `--json`
+row — `null` when both legs ran (and with the provider `off`, which is a choice, not a
+degradation), else `embedder-unreachable` or `no-embeddings`. At session start the
+`session-resume` hook adds one `memory: …` line to the injected resume when the embedder is
+unreachable or under 80% of the decisions are embedded (probe capped at
+`OSFORGE_RESUME_PROBE_TIMEOUT`, default 0.3 s; fail-open). Provider `off` produces no hint.
+
+**Recall eval.** `scripts/evals/memory/` (synthetic fixture, hit@1/hit@5; README there).
+`tests/test-memory-recall.sh` runs it offline (FTS only) with two floors: natural questions
+hit@5 ≥ 80%, agent-style keyword rewrites (`--set=expanded`) hit@5 ≥ 95%.
 
 **Variáveis de ambiente:**
 
@@ -698,6 +833,7 @@ osforge-db vec-status
 | `OSFORGE_EMBED_MODEL` | `bge-m3` | qualquer modelo Ollama ou API |
 | `OSFORGE_VECTOR` | `sqlite` | `sqlite` \| `qdrant` |
 | `OSFORGE_QDRANT_URL` | `http://localhost:6333` | URL do Qdrant |
+| `OSFORGE_OLLAMA_URL` | `http://localhost:11434` | Ollama endpoint (config key `ollama_url`) |
 | `OSFORGE_COLLECTION` | `osforge_memory` | nome da coleção |
 
 **Contrato `~/.osforge/config.json`:**
@@ -729,7 +865,7 @@ ollama pull bge-m3
 # 2. Deploy com Qdrant via Docker (sobe container, cria coleção, escreve config.json)
 ./deploy.sh --with-qdrant
 
-# 3. Populando histórico existente
+# 3. Populando histórico existente (o deploy também roda isto quando o embedder responde)
 osforge-db embed-backfill --source=decisions
 
 # Alternativa sem Docker (SQLite brute-force, com aviso de performance)
@@ -827,7 +963,7 @@ SEDE (retomada):
 
 ## 11. The Agency — 121 Specialists
 
-The Agency é um catálogo de 121 especialistas de negócio (contábil, jurídico, marketing, financeiro, HR, operações) acessíveis via skill `agency`. Não confundir com os 27 agentes de engenharia (§4) — estes são especialistas de domínio para problemas de negócio, não de código.
+The Agency é um catálogo de 121 especialistas de negócio (contábil, jurídico, marketing, financeiro, HR, operações) acessíveis via skill `agency`. Não confundir com os 25 agentes de engenharia (§4) — estes são especialistas de domínio para problemas de negócio, não de código.
 
 ```
 "Read skills/meta/agency.md"
@@ -941,10 +1077,10 @@ Routes tasks to the optimal model tier — saving ~65% cost vs using Opus for ev
 
 | Tier | Model ID | When to use |
 |---|---|---|
-| Topo — Opus | `claude-opus-4-8` | Arquitetura, planejamento complexo, security review |
-| Topo — Fable | `claude-fable-5` | Decomposição, raciocínio longo, análise de ADR |
-| Medio — Sonnet | `claude-sonnet-4-6` | Implementação, debug, review, testes |
-| Rápido — Haiku | `claude-haiku-4-5` | Boilerplate, i18n, stubs, docs, CRUD simples |
+| Topo — Opus | `claude-opus-5-5` | Arquitetura, planejamento complexo, security review |
+| Topo — Fable | `claude-fable-5-1` | Decomposição, raciocínio longo, análise de ADR |
+| Medio — Sonnet | `claude-sonnet-5-5` | Implementação, debug, review, testes |
+| Rápido — Haiku | `claude-haiku-5-5` | Boilerplate, i18n, stubs, docs, CRUD simples |
 | Local | Ollama (via llmfit) | $0 — Haiku-eligible com dados sensíveis ou alto volume |
 
 ### Full feature dispatch pattern
@@ -1101,6 +1237,44 @@ num shell **sem os builtins do bash 4** — o `/bin/bash` do macOS é 3.2, e foi
 assim que um `mapfile` deixou o `install-skill` quebrado sem nenhum gate perceber (`bash -n`
 só faz o parse). `python3 scripts/check-portability.py`, no preflight do deploy e no CI,
 impede a classe inteira.
+
+---
+
+## 16. Session config reference
+
+Reference material moved out of `claude-code/CLAUDE.md` (audit N3): it explains how the config is
+built, but it does not need to be in context on every turn to change behaviour. `claude-code/CLAUDE.md`
+keeps a one-line pointer here.
+
+### Memory hierarchy (load order; last wins)
+1. **Managed** `/etc/claude-code/CLAUDE.md` — corporate global.
+2. **User** `~/.claude/CLAUDE.md` — personal global (deployed from `claude-code/CLAUDE.md`).
+3. **Project** `<repo>/CLAUDE.md` or `<repo>/.claude/CLAUDE.md` — shared, versioned.
+4. **Local** `<repo>/CLAUDE.local.md` — private per-project, `.gitignore`-able.
+
+Supports `@include <file>` (composition) and `paths:` frontmatter (conditional injection by glob of touched files).
+Conflict = the more specific level wins. Details in the `memory-hierarchy.mdc` rule.
+
+### Prompt cache strategy
+
+To maximize cache hits on the Anthropic API, content splits into two blocks:
+
+- **🔒 Cacheable prefix (stable):** identity + safety (`~/.claude/CLAUDE.md`, top), `settings.json` (permissions/hooks),
+  the style spine inside `@SKILLS.md` (TypeScript strict, code style — the `.mdc` rules themselves reach Cursor only), the skills index (`@SKILLS.md`, 177 skills).
+  **Keep it stable** — changing it invalidates every session's cache.
+- **🌊 Dynamic suffix (changes per session):** on-demand loaded skills, memory (`CLAUDE.local.md`, `.osforge/`),
+  environment context (OS/dir/git), language preferences, active MCP instructions, context-window guidelines.
+
+### MCP servers (context-scoped)
+MCP tool schemas are the biggest context cost — scope them tightly.
+- **Global (loads every session):** only **Context7** (library docs) — transversal + cheap. `mcp/claude-code.json`.
+- **Per-project:** `github · supabase · prisma · nextjs · shadcn · browser` — connect only where used, via
+  `scripts/install-mcp.sh <stack>` (writes the project's `.mcp.json`). Templates in `mcp/stacks/`.
+- **Anti-bloat settings** (deployed from `claude-code/settings-base.json` → `~/.claude/settings.json`):
+  `disableClaudeAiConnectors: true` (keeps claude.ai account connectors — Gmail, Drive, Figma, Higgsfield… — **out** of
+  Claude Code) and `env.ENABLE_TOOL_SEARCH=true` (defers large tool schemas, loading them on demand — `true`, not `auto`, because of the local proxy; rationale and measurement in `claude-code/settings-base.json`).
+- **Cleanup:** deploy merges MCPs additively and never prunes; remove accumulated/dead globals with
+  `scripts/prune-global-mcps.sh` (`--dead` drops `MCP_DOCKER` + `Prisma-Remote`).
 
 ---
 

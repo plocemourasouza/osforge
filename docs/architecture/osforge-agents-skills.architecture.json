@@ -110,7 +110,7 @@
    "id": "agents-plan",
    "type": "backend",
    "label": "Planning & product",
-   "sublabel": "6 agents \u00b7 planner, architect",
+   "sublabel": "4 agents \u00b7 planner, architect",
    "pos": [
     38,
     260
@@ -222,7 +222,7 @@
  "boundaries": [
   {
    "kind": "region",
-   "label": "27 agents \u2014 orchestrator + 26 specialists (agents/)",
+   "label": "25 agents \u2014 orchestrator + 24 specialists (agents/)",
    "wraps": [
     "agents-plan",
     "agents-eng",
@@ -354,10 +354,10 @@
  "cards": [
   {
    "dot": "amber",
-   "title": "Planning & product (6)",
+   "title": "Planning & product (4)",
    "items": [
-    "planner \u00b7 system-architect \u00b7 product-manager",
-    "product-owner \u00b7 project-planner \u00b7 product-strategy-advisor"
+    "planner \u00b7 system-architect",
+    "product-owner \u00b7 product-strategy-advisor"
    ]
   },
   {

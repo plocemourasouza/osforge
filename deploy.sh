@@ -41,6 +41,9 @@ PRUNE_UNDER=()              # raízes onde arquivos aposentados podem ser removi
 ARCHIFY_VERSION="2.16.0"    # tag upstream sem o "v"
 ARCHIFY_REPO="tt-a1i/archify"
 DEPLOY_ARCHIFY=true         # --no-archify desliga
+DEPLOY_BRAIN=true           # --no-brain skips the brain venv/model (ADR-017)
+# Must match VENV_PINS in scripts/osforge_brain.py (tests/test-brain.sh checks it).
+BRAIN_PINS="fastembed==0.9.0 qdrant-client==1.19.1 onnxruntime==1.31.0"
 
 # ── Flags ──────────────────────────────────────────────────────────────
 for arg in "$@"; do
@@ -53,6 +56,8 @@ for arg in "$@"; do
     --all-skills)  DEPLOY_ALL_SKILLS=true ;;
     --with-archify) DEPLOY_ARCHIFY=true ;;
     --no-archify)   DEPLOY_ARCHIFY=false ;;
+    --with-brain)   DEPLOY_BRAIN=true ;;
+    --no-brain)     DEPLOY_BRAIN=false ;;
     --force)        FORCE_FILES=true ;;
     --adopt)        ADOPT_FILES=true ;;
     --force-hooks)  FORCE_HOOKS=true ;;
@@ -67,6 +72,7 @@ for arg in "$@"; do
       echo "  --all-skills    Deploya TODAS as skills globalmente (default: só o core de claude-code/skills-core.txt)"
       echo "  --with-archify  Instala/atualiza o Archify pinado (v$ARCHIFY_VERSION) em ~/.claude/skills e ~/.cursor/skills (default)"
       echo "  --no-archify    Pula o Archify (a skill system-diagrams cai no fallback Mermaid)"
+      echo "  --no-brain      Skip the brain runtime (~/.osforge/venv + embedding model); recall stays lexical"
       echo "  --force         Sobrescreve arquivos gerenciados que você editou (backup em ~/.claude_backups/<run>)"
       echo "  --adopt         Assume arquivos seus que colidem com os do OSForge (backup idem)"
       echo "  --force-hooks   Sobrepõe hooks gerenciados que você editou em settings.json"
@@ -600,6 +606,7 @@ deploy_osforge_db() {
     printf '%s\n' "$REPO" > "$STAGE_ROOT/repo-path"
     enqueue "$STAGE_ROOT/repo-path" "$db_dir/repo-path"
     enqueue "$script_src" "$db_bin" false true
+    enqueue "$REPO/scripts/osforge_brain.py" "$HOME/.local/bin/osforge_brain.py"   # imported by osforge-db
     for helper in install-skill install-mcp; do
       [ -f "$REPO/scripts/${helper}.sh" ] && enqueue "$REPO/scripts/${helper}.sh" "$HOME/.local/bin/${helper}" false true
     done
@@ -611,6 +618,7 @@ deploy_osforge_db() {
   if $DRY_RUN; then
     skip "mkdir -p $db_dir"
     skip "cp osforge-db.py → $db_bin"
+    skip "cp osforge_brain.py → $HOME/.local/bin/osforge_brain.py"
     return
   fi
 
@@ -621,6 +629,7 @@ deploy_osforge_db() {
   printf '%s\n' "$REPO" > "$db_dir/repo-path"
   cp "$script_src" "$db_bin"
   chmod +x "$db_bin"
+  cp "$REPO/scripts/osforge_brain.py" "$HOME/.local/bin/osforge_brain.py"
   ok "osforge-db instalado em $db_bin"
 
   # O protocolo de resolução do MANIFEST manda rodar `install-skill.sh <nome>`
@@ -665,6 +674,74 @@ post_osforge_db() {
     echo "  ⚠️  ~/.local/bin não está no PATH"
     echo '     Adicione ao ~/.zshrc ou ~/.bashrc: export PATH="$HOME/.local/bin:$PATH"'
   fi
+}
+
+# ── Brain runtime (ADR-017): venv + embedding model + one-time SQLite import ──────
+# Never aborts the deploy: offline / pip failure / no model = one skip line, and recall
+# keeps working as a lexical scan of ~/.osforge/brain.jsonl until the next online deploy.
+deploy_brain() {
+  echo ""
+  echo "🧠 Brain → ~/.osforge/venv + embedding model (~/.osforge/models)"
+  local venv="$HOME/.osforge/venv" models="$HOME/.osforge/models"
+  local db_bin="$HOME/.local/bin/osforge-db" mod="$HOME/.local/bin/osforge_brain.py"
+  if ! $DEPLOY_BRAIN; then
+    echo "  ℹ️  brain runtime skipped (--no-brain) — recall uses a lexical scan of the journal"
+    return 0
+  fi
+  if $DRY_RUN; then
+    skip "python3 -m venv $venv + pip install $BRAIN_PINS"
+    skip "download the embedding model + Qdrant/bm25 → $models (once)"
+    skip "config.json brain_store (server if Qdrant is provisioned/answers, else local)"
+    skip "osforge-db brain migrate (SQLite decisions → brain, idempotent)"
+    return 0
+  fi
+  [ -f "$mod" ] || mod="$REPO/scripts/osforge_brain.py"
+  mkdir -p "$HOME/.osforge"
+  # 1. venv with the pinned runtime (skipped when already exact)
+  # shellcheck disable=SC2086
+  if "$venv/bin/python" - $BRAIN_PINS >/dev/null 2>&1 <<'PYEOF'
+import importlib.metadata as m, sys
+sys.exit(0 if all(m.version(n) == v for n, v in (p.split("==") for p in sys.argv[1:])) else 1)
+PYEOF
+  then
+    ok "brain venv up to date ($BRAIN_PINS)"
+  elif python3 -m venv "$venv" >/dev/null 2>&1 \
+       && "$venv/bin/python" -m pip install --disable-pip-version-check -q $BRAIN_PINS \
+          >"$HOME/.osforge/brain-pip.log" 2>&1; then
+    ok "brain venv: $BRAIN_PINS"
+  else
+    echo "  ℹ️  brain venv skipped (offline or pip failed — ~/.osforge/brain-pip.log); recall stays lexical until an online ./deploy.sh"
+    return 0
+  fi
+  # 2. model, downloaded once (fastembed cache under ~/.osforge/models)
+  if echo '{}' | OSFORGE_BRAIN_MODELS="$models" "$venv/bin/python" "$mod" fetch-model 2>/dev/null \
+       | grep -q '"ok": true'; then
+    ok "brain model ready in $models"
+  else
+    echo "  ℹ️  brain model download skipped (offline?) — recall stays lexical until an online ./deploy.sh"
+    return 0
+  fi
+  # 3. store choice, persisted once so it never flips between runs
+  python3 - "$(dirname "$mod")" <<'PYEOF'
+import json, pathlib, sys
+sys.path.insert(0, sys.argv[1])
+import osforge_brain as b
+p = pathlib.Path.home() / ".osforge" / "config.json"
+try:
+    cfg = json.loads(p.read_text())
+except (OSError, ValueError):
+    cfg = {}
+if cfg.get("brain_store") not in ("server", "local"):
+    cfg["brain_store"] = b.store_settings()["store"]
+    p.write_text(json.dumps(cfg, indent=2))
+print(f"  ✅ brain store: {cfg['brain_store']} (config.json brain_store)")
+PYEOF
+  # 4. SQLite decisions → brain (idempotent: only what is not journaled yet)
+  if [ -f "$db_bin" ]; then
+    python3 "$db_bin" brain migrate 2>&1 | sed 's/^/  /' \
+      || echo "  ⚠️  brain migrate failed — run it later: osforge-db brain migrate"
+  fi
+  return 0
 }
 
 # ── Deploy Qdrant (opcional) ─────────────────────────────────────────────
@@ -1040,6 +1117,7 @@ if [ "$LEGACY_DEPLOY" != "1" ]; then
 fi
 deploy_archify || true  # terceiro, opcional; falha de rede não aborta o deploy
 deploy_qdrant || true   # Qdrant é opt-in; falha (Docker ausente etc.) não aborta o deploy
+deploy_brain || true    # brain venv/model/migrate; never aborts the deploy
 
 echo ""
 echo "═══════════════════════════════════════════════════"

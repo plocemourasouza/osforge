@@ -5,7 +5,7 @@ description: Requires running verification commands and confirming output before
 
 # Verification Before Completion
 
-Claiming work is complete without verification is dishonesty, not efficiency.
+A completion claim is only as good as the output that backs it.
 
 **Core principle:** Evidence before claims, always.
 
@@ -29,7 +29,7 @@ Before claiming any status or expressing satisfaction:
    - If YES → State claim WITH evidence
 5. **ONLY THEN**: Make the claim
 
-Skip any step = lying, not verifying.
+A skipped step means the claim is unverified.
 
 ## Evidence Requirements
 
@@ -42,17 +42,9 @@ Skip any step = lying, not verifying.
 | "No regressions" | Full suite: all pass | Only new tests pass |
 | "Types correct" | `tsc --noEmit`: exit 0 | No red squiggles in editor |
 
-## Red Flags — STOP Immediately
+## Red Flags
 
-You are about to violate this skill if you catch yourself:
-
-- Using **"should"**, "probably", "seems to", "likely works"
-- Expressing satisfaction before verification: "Great!", "Perfect!", "Done!"
-- About to commit or push without running the test suite
-- Trusting a previous run as evidence for current state
-- Relying on partial verification ("lint passes so types must be fine")
-- Thinking "just this once" or "it's a small change"
-- Feeling tired and wanting to wrap up
+Treat as unverified: 'should work', 'probably', a previous run's result, partial checks (lint passing ≠ types pass).
 
 ## Verification Commands Reference
 
@@ -86,7 +78,7 @@ OSForge provides a directly invocable script template.
 ### Install in the project
 
 ```bash
-cp ~/.claude/hooks/validate.py .scripts/validate.py
+cp <osforge-repo>/hooks/validate.py .scripts/validate.py
 chmod +x .scripts/validate.py
 ```
 

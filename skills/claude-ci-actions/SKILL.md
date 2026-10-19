@@ -1,6 +1,6 @@
 ---
 name: claude-ci-actions
-description: "Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. TRIGGER when: setting up @claude in PRs/issues, configuring automated code review, CI/CD integration with Claude, GitHub Actions workflow with Claude, or debugging Claude-powered automation pipelines."
+description: "Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. Use when: setting up @claude in PRs/issues, configuring automated code review, CI/CD integration with Claude, GitHub Actions workflow with Claude, or debugging Claude-powered automation pipelines. Keywords: claude-code-action, github actions, @claude, PR review, CI, workflow, claude_args, --model. Do NOT use for: calling the Claude API from application code (claude-api-typescript) or non-GitHub CI systems."
 metadata:
   author: osforge
   version: '1.0'
@@ -79,7 +79,7 @@ jobs:
             4. Performance issues (N+1 queries, missing indexes)
           claude_args: |
             --max-turns 10
-            --model claude-sonnet-4-6
+            --model claude-sonnet-5-5
 ```
 
 ## Workflow — Structured Output (Flaky Test Detection)
@@ -145,7 +145,7 @@ jobs:
 - NEVER hardcode `ANTHROPIC_API_KEY` — always use `${{ secrets.* }}`
 - Limit `allowed_tools` to only what's needed: `"Bash(bun run test),Read,Edit"`
 - Set `--max-turns` to prevent runaway costs
-- Use `claude-sonnet-4-6` for review tasks (cheaper, fast enough)
+- Use `claude-sonnet-5-5` for review tasks (cheaper, fast enough); `claude-haiku-5-5` for high-volume triage; pin an exact ID in `--model`, never a guessed or date-suffixed one (current IDs: `claude-api-typescript` -> `shared/models.md`)
 - Review Claude's suggestions before merging — don't auto-merge
 - CLAUDE.md in repo root guides Claude's behavior in Actions
 
@@ -153,4 +153,4 @@ jobs:
 - GitHub Actions minutes consumed per run
 - API tokens per interaction (proportional to prompt + context)
 - Use `--max-turns 10` to cap costs
-- Sonnet 4.6 ($3/$15 per 1M tokens) for review, Opus 4.8 ($5/$25) for complex tasks
+- Sonnet 5.5 ($2/$10 per 1M tokens) for review, Haiku 5.5 ($0.10/$0.50) for high-volume triage, Opus 5.5 ($4/$20) for complex tasks; thinking is on by default on these models, so keep `--max-turns` set

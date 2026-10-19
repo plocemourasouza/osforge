@@ -281,7 +281,7 @@
   },
   {
     "name": "claude-api-typescript",
-    "description": "Build apps with the Claude API, Anthropic TypeScript SDK, and Agent SDK. TRIGGER when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent-sdk`, user asks to use Claude API, build AI-powered features, create agents programmatically, implement tool use, streaming, batches, or structured o",
+    "description": "Build apps with the Claude API (Anthropic TypeScript SDK) and the Claude Agent SDK. Use when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent-sdk`, building AI-powered features, tool use, streaming, batches, structured outputs, prompt caching, Managed Agents, or migrating to a newer ",
     "category": "🤖 AI / ML / Agents",
     "source": "skills",
     "source_emoji": "📦",
@@ -291,7 +291,7 @@
   },
   {
     "name": "claude-ci-actions",
-    "description": "Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. TRIGGER when: setting up @claude in PRs/issues, configuring automated code review, CI/CD integration with Claude, GitHub Actions workflow with Claude, or debugging Claude-powered automation pipelines.",
+    "description": "Automate PR review, issue triage, and CI/CD tasks with Claude Code GitHub Actions. Use when: setting up @claude in PRs/issues, configuring automated code review, CI/CD integration with Claude, GitHub Actions workflow with Claude, or debugging Claude-powered automation pipelines. Keywords: claude-cod",
     "category": "☁️ Infrastructure / DevOps",
     "source": "skills",
     "source_emoji": "📦",
@@ -361,7 +361,7 @@
   },
   {
     "name": "db-state-sync",
-    "description": "Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db). Use when: saving phase progress, recording an architectural decision, adding/resolving a blocker, tracking tasks, viewing the cross-project board, resuming a previous session, searching past decisions. Keywords: save s",
+    "description": "Manages project state in OSForge's local SQLite database (~/.osforge/osforge.db) and long-term memory in the brain (remember/recall). Use when: saving phase progress, recording an architectural decision, recording a technique or lesson to reuse, adding/resolving a blocker, tracking tasks, viewing th",
     "category": "🔒 Security",
     "source": "skills",
     "source_emoji": "📦",

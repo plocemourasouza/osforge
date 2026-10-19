@@ -252,6 +252,7 @@ run_case() {
         # Guarda de cota (B-026, B1/B2): rejeição detectada NESTA execução para o
         # lote inteiro -- não conta como hit nem como miss, e nem os runs restantes
         # deste caso rodam. --ignore-quota pula esta checagem por completo.
+        record_quota_of "$log_file"
         status="ok"
         if [ "$IGNORE_QUOTA" = "0" ]; then
             status="$(run_status_of "$log_file")"

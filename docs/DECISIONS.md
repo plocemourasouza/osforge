@@ -346,3 +346,58 @@ undocumented by Claude Code (`rate_limits` in statusline, `rate_limit_event`,
 field = silence), fixtures are pinned to 2.1.278, and every item has its own off-switch.
 
 **Date:** 2026-09-28.
+
+## ADR-017: Memory split — SQLite workbench, Qdrant brain with an in-process embedder
+
+**Context.** `osforge-db` kept everything in one SQLite file: execution state (projects,
+phases, tasks, blockers, resume, usage, calls) and the decisions the agent later needs to
+*recall*. Recall had two legs that each failed differently: FTS5 is lexical (natural questions
+hit@5 11/14 on 124 real decisions, keyword rewrites 14/14 only because the rewriter knew the
+target), and the vector leg depended on Ollama running `bge-m3` — when Ollama was down the
+search silently degraded, and nothing beyond decisions (techniques, methodologies, general
+knowledge) had a home. Measured alternatives (scratchpad bench, 124 real decisions, 14 pt-BR
+questions): `google/embeddinggemma-300m` through fastembed (ONNX, CPU, in-process) reached
+dense-only hit@1 14/14 and hit@5 14/14; ~1.25 s per fresh-process call (≈1.1 s import + init),
+17 ms per warm query, 0.97 GB RSS. Plain RRF with BM25 *lowered* gemma's hit@1 to 12/14. The
+English BM25 stemmer was worse than the Portuguese one on this data. Embedding with fastembed's
+default batch (256, padded to the longest text) took 6.8 GB RSS and 24 s for the backfill;
+`batch_size=1` took 0.97 GB and 6 s.
+
+**Decision.**
+1. **Workbench = SQLite**, unchanged role and stdlib-only: projects, phases, tasks, blockers,
+   state, usage, calls, board, observations/instincts, and `decisions` as the per-project
+   execution log that `resume`/`board` read.
+2. **Brain = Qdrant** collection `osforge_brain`: kinds `decision`, `knowledge`, `technique`,
+   `methodology`; payload `id, kind, project (null = global), tags, created_at, created_ts,
+   source, content`; named vectors `dense` (gemma, 768d, cosine) and `bm25` (sparse, IDF).
+   Store `server` (Qdrant URL) or `local` (qdrant-client local mode), chosen once at deploy.
+3. **Embeddings in-process** with fastembed in a dedicated venv `~/.osforge/venv` (pinned
+   fastembed 0.9.0, qdrant-client 1.19.1, onnxruntime 1.31.0), model cached once in
+   `~/.osforge/models`. No Ollama. Prompts are added by OSForge (fastembed does not for gemma):
+   `task: search result | query: <q>` / `title: none | text: <doc>`. Embedding always
+   `batch_size=1`. `osforge-db` stays stdlib-only and runs brain work as a subprocess of the
+   venv's python; without the venv everything still works lexically.
+4. **Dense is primary, not RRF.** Dense above a floor (0.30 for gemma; lowest true match on the
+   measurements 0.44, highest unrelated 0.55 only on an ambiguous pair) answers; nothing above
+   it → BM25 answers. `--mode=keyword` = BM25 only; `--mode=hybrid` (RRF) is opt-in — with the
+   dense floor inside its prefetch it tied dense (14/14) on the eval, so it adds a second signal
+   to reason about for no gain. Filters go inside the query filter / each prefetch.
+5. **The journal `~/.osforge/brain.jsonl` is the source of truth.** Every write appends to it
+   first (scrubbed by `hooks/lib/scrub.py`, fsynced), then upserts. `forget` appends a
+   tombstone. `brain rebuild` recreates the collection from it. An unwritable journal refuses
+   the write; a failed upsert after a journaled write is reported in one line and caught up by
+   `rebuild`. `recall` with no store/embedder scans the journal lexically and says so
+   (`note: brain degraded (…)`, `degraded` in JSON) — never silently.
+6. `add-decision` writes SQLite and then remembers best-effort (`source add-decision:<id>`);
+   `brain migrate` imports existing decisions idempotently via the same source key. The legacy
+   `vec_memory` table, `osforge_memory` collection and `search-hybrid` stay as they are.
+
+**Consequences.** Recall quality no longer depends on a daemon; the brain can hold knowledge
+that is not a decision. Costs: ~1.3 s per `recall` (model load per process), ~1 GB RSS while a
+brain command runs, ~1.5 GB on disk (venv ~240 MB + gemma fp32 ONNX ~1.2 GB), and a second store to keep consistent —
+mitigated by the journal (rebuild from it at any time). Licence: embeddinggemma is under the
+Gemma Terms of Use, not an OSI licence; `brain_model: "e5-large"` (multilingual-e5-large, MIT)
+is the documented alternative (rebuild after switching). Local mode is single-process: a
+concurrent second call degrades to the lexical fallback instead of blocking.
+
+**Date:** 2026-10-18.

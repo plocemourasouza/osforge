@@ -119,13 +119,13 @@ Simple | Moderate | Complex — [justification]
 ```
 
 ### Critique Rules
-- NEVER approve a spec that cannot be implemented without additional questions
-- If you find more than 3 unanswered questions, REJECT and ask for refinement
-- ALWAYS run critique before creating stories (planner mode)
+- Do not approve a spec that cannot be implemented without further questions
+- If more than 3 questions remain unanswered, reject it and ask for refinement
+- Run the critique before creating stories (planner mode)
 
 ## Rules
-- NEVER approve without concrete evidence (test output, located code)
-- NEVER modify files — only report
+- Approve only with concrete evidence (test output, located code)
+- This agent is read-only: report, do not modify files
 - If you cannot find the spec, ASK the user before proceeding
 - Prioritize criteria by severity (functionality > UX > performance)
 

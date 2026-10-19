@@ -129,6 +129,13 @@ run_status_of() {
     _stream_assert run-status "$1"
 }
 
+# Persiste o último rate_limit_info do stream em quota.json (mesmo escritor do statusline:
+# hooks/lib/quota.py). Sem statusline durante `claude -p`, é a única fonte de dado fresco para o
+# preflight B3 abaixo. Chamado por TODA execução, também com --ignore-quota. Nunca falha.
+record_quota_of() {
+    _stream_assert record-quota "$1" >/dev/null 2>&1 || true
+}
+
 # B3: preflight antes de CADA caso. Reusa hooks/lib/quota.py:read_state() -- o MESMO leitor
 # que a A3 usa -- em vez de reimplementar o parse de quota.json aqui. Fail-open por design: sem
 # quota.json, com dado stale, ou qualquer erro de leitura -> exit 1 (segue). Cota é parada

@@ -1,0 +1,19 @@
+# Agent-style keyword rewrites of questions.tsv, same order and same gold/since/until columns.
+# Rule: 4-8 keywords, English plus the pt-BR terms the user used, code identifiers and file
+# names included. Written knowing the target decision: an optimistic bound, not a forecast.
+D03	profile functions Result null error falha rede funções perfil devolvem
+D02	session cookie name constant lib/auth/cookies.ts middleware
+D01	pagination cursor paginação itens página listagem produtos
+D04	badge colour members green amber grey
+D07	access token one-time consumed race condition used_at condição corrida
+D08	rate limit API key sliding window requests
+D09	CPF telefone dados pessoais espelho DTO
+D10	webhook retry exponential backoff dead letter failures
+D11	API key rotation rotacionadas 90 dias chaves
+D12	backup Drive subfolder year month snapshot
+D13	documentação busca índice estático hosted search
+D14	dark mode system preference operating system toggle
+D15	rust-toolchain.toml Rust toolchain clippy rustfmt
+D05	catálogo cache Redis TTL	2026-09-01	2026-09-30
+D06	catalog cache Redis Next.js revalidation	2026-10-01	2026-10-31
+D02|D07	security segurança cookie token	2026-08-01	2026-08-31

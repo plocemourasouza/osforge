@@ -18,7 +18,8 @@ Use the most powerful model only where reasoning depth matters. Route mechanical
 
 ## Model Tiers
 
-### 🔴 Opus (`claude-opus-4-8`) — $5/$25 per 1M tokens
+### 🔴 Opus (`claude-opus-5-5`) — $4/$20 per 1M tokens
+For the hardest planning and synthesis, `claude-fable-5-1` ($10/$50) sits above it.
 **When:** Task requires deep reasoning, architectural decisions, or multi-step analysis where errors compound.
 
 | Agent/Skill | Use Opus When |
@@ -31,7 +32,7 @@ Use the most powerful model only where reasoning depth matters. Route mechanical
 | `nextjs-supabase-auth` | Multi-org RBAC design, auth flow architecture |
 | `stripe-integration` | Billing architecture, webhook flow design |
 
-### 🟡 Sonnet (`claude-sonnet-4-6`) — $3/$15 per 1M tokens
+### 🟡 Sonnet (`claude-sonnet-5-5`) — $2/$10 per 1M tokens
 **When:** Task requires solid implementation skills but the approach is already defined.
 
 | Agent/Skill | Use Sonnet When |
@@ -47,7 +48,7 @@ Use the most powerful model only where reasoning depth matters. Route mechanical
 | `mcp-builder` | Building MCP server tools and resources |
 | `claude-ci-actions` | Setting up GitHub Actions workflows |
 
-### 🟢 Haiku (`claude-haiku-4-5`) — $1/$5 per 1M tokens
+### 🟢 Haiku (`claude-haiku-5-5`) — $0.10/$0.50 per 1M tokens (prompts up to 100K)
 **When:** Task is mechanical, repetitive, or follows a clear template. No complex reasoning needed.
 
 | Task Type | Examples |
@@ -130,26 +131,19 @@ Use the Agent tool to spawn a subagent:
 
 The Agent tool accepts a `model` parameter that routes to the specified tier.
 
-## Cost Estimation Reference
+## Cost Reference
 
-| Task | Model | Est. Tokens | Est. Cost |
-|---|---|---|---|
-| Feature planning (opus) | opus | ~10K in / ~5K out | ~$0.18 |
-| Implementation (sonnet) | sonnet | ~15K in / ~8K out | ~$0.17 |
-| Boilerplate gen (haiku) | haiku | ~5K in / ~3K out | ~$0.02 |
-| Full feature (mixed) | mixed | ~50K total | ~$0.50 |
-| Same feature (all opus) | opus | ~50K total | ~$1.50 |
-
-**Savings:** ~65% cost reduction using mixed routing vs all-opus for typical feature work.
+Per-token prices live in `claude-code/pricing.json` (the source `osforge-db calls` uses). Cost scales with tier, but judge cost per task completed correctly, not per request: a cheaper tier that needs retries is not cheaper. No savings figure is claimed here until it is measured.
 
 ## Rules
 
-1. **Default to Sonnet** — When uncertain, Sonnet is the safe choice. It handles 70% of tasks well.
+1. **Default to Sonnet** — When uncertain, Sonnet is the safe choice for implementation work.
 2. **Never downgrade security** — Security-auditor and threat modeling always use Opus.
 3. **Opus for planning, Haiku for execution** — If the task is "decide WHAT to do", use Opus. If it's "do this specific thing", consider Haiku.
 4. **Batch Haiku tasks** — Group multiple Haiku tasks (i18n + tests + docs) into a single subagent call.
 5. **Escalate on failure** — If Haiku produces low-quality output, retry with Sonnet. If Sonnet fails, escalate to Opus.
-6. **Context size matters** — Opus has 200K (1M beta). For tasks requiring >100K context, prefer Opus for better long-context performance.
+6. **Context size matters** — Keep each subagent's brief small. Route by reasoning depth, not by window size: every current tier has a 1M window.
+7. **Effort before tier** — The Agent tool also takes `effort:`. For a narrow, well-specified subagent job (locate, rename, run a suite, summarize), lower effort first; drop a tier only if that is not enough. Keep the default effort for planning, review and debugging. Effort has not been swept against an eval here — treat the saving as unmeasured.
 
 ## Local Models Track (via llmfit-advisor)
 
@@ -168,7 +162,7 @@ Read skills/llmfit-advisor/SKILL.md
 | High-volume Haiku-eligible tasks | ✅ economical | 💰 cost accumulates |
 | Deep reasoning / architecture | ❌ no equivalent | ✅ Opus |
 | Offline environment / client without API | ✅ only path | ❌ unavailable |
-| Context >32K tokens | ⚠️ limited | ✅ 200K |
+| Large context | ⚠️ limited by local model | ✅ 1M window |
 | Latency-critical in production | ⚠️ depends on HW | ✅ consistent |
 
 ### Local model equivalents per tier
@@ -185,11 +179,9 @@ Read skills/llmfit-advisor/SKILL.md
 
 ## Gotchas
 
-- **Haiku with ambiguity**: never use Haiku on tasks with vague or ambiguous requirements — Haiku does not handle ambiguity well. If the requirements are not 100% clear, use Sonnet or clarify before dispatching.
+- **Haiku with ambiguity**: Haiku is for fully specified tasks. If the requirements are unclear, clarify first or use Sonnet.
 - **Do not split up Haiku tasks**: call Haiku once with all mechanical tasks batched instead of multiple individual calls. Multiple isolated calls accumulate context-loading overhead.
-- **Opus for review is wasteful**: code review and debugging are good quality with Sonnet. Reserve Opus only for architectural planning, threat modeling, and high-ambiguity decisions. Using Opus for review = 3x the cost with no proportional gain.
+- **Opus for review is rarely needed**: code review and debugging do well on Sonnet. Reserve Opus for architectural planning, threat modeling, and high-ambiguity decisions.
 - **Do not escalate too early**: if Sonnet produced an unsatisfactory result, check whether the problem is prompt clarity before escalating to Opus. Vague prompts produce poor results at any tier.
-- **Do not downgrade on security**: security-auditor and threat modeling ALWAYS use Opus, no exception — security mistakes cost far more than the API cost.
-- **Batch Haiku tasks**: group all mechanical tasks (i18n + test stubs + docs + boilerplate) into a single Haiku subagent instead of N separate subagents.
 
 **Exhaustiveness bar** — a dispatch decision is done when every subtask carries an explicit tier chosen from the Model Tiers table with the Rules applied — no task inherits the parent model by omission, which is how everything silently runs on the most expensive tier.

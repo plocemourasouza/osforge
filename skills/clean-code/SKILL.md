@@ -3,203 +3,80 @@ name: clean-code
 description: "Pragmatic clean-code standards: concise, direct, no over-engineering, and no unnecessary comments. Use when: code is over-engineered or has premature abstractions, a request to 'simplify this', reviewing names/functions/structure, a giant function or excessively deep nesting, removing redundant comments and dead code. Keywords: clean code, refactor, simplify, SRP, DRY, KISS, YAGNI, naming, over-engineering. Do NOT use for: system architecture decisions, performance optimization, or testing strategy."
 metadata:
   author: antigravity-kit (adapted)
-  version: "2.0"
-  priority: "CRITICAL"
+  version: "3.0"
   source: "antigravity-kit"
 allowed-tools: Read, Write, Edit
 ---
 
-# Clean Code - Pragmatic AI Coding Standards
+# Clean Code
 
-> **CRITICAL SKILL** - Be **concise, direct, and solution-focused**.
+What good code looks like in this portfolio, and the bar a review holds it to. How to *work* —
+assumptions, surgical scope, verification — lives in `coding-guidelines`; this skill covers the
+shape of the code itself. Where the two touch, `coding-guidelines` wins on scope: improve the
+code you were asked to change, not the code beside it.
 
----
+## Simplicity
 
-## Core Principles
+Write the least code that solves the stated problem. An abstraction earns its place when it has
+a second real caller or isolates something genuinely volatile (an external API, a storage
+backend); before that, inline it. The usual over-builds to undo:
 
-| Principle | Rule |
-|-----------|------|
-| **SRP** | Single Responsibility - each function/class does ONE thing |
-| **DRY** | Don't Repeat Yourself - extract duplicates, reuse |
-| **KISS** | Keep It Simple - simplest solution that works |
-| **YAGNI** | You Aren't Gonna Need It - don't build unused features |
-| **Boy Scout** | Leave code cleaner than you found it |
+| Over-build | Instead |
+|---|---|
+| Factory / strategy / registry for two cases | An `if` or a lookup object |
+| `utils.ts` holding one function | Put the function where it is used |
+| Wrapper that only forwards arguments | Call the underlying function |
+| Config option nobody asked for | Hard-code it; add the option when someone needs it |
+| Error handling for states the types already rule out | Trust the types; validate at the boundary instead |
 
----
+Duplication of two or three similar lines is cheaper than the wrong abstraction. Extract when
+the copies must change together, not when they merely look alike.
 
-## Naming Rules
+## Names
 
-| Element | Convention |
-|---------|------------|
-| **Variables** | Reveal intent: `userCount` not `n` |
-| **Functions** | Verb + noun: `getUserById()` not `user()` |
-| **Booleans** | Question form: `isActive`, `hasPermission`, `canEdit` |
-| **Constants** | SCREAMING_SNAKE: `MAX_RETRY_COUNT` |
+A name says what a thing is or does in the domain's words — use the project glossary
+(`CONTEXT.md`) when there is one. Functions read as verb + object (`getInvoiceById`), booleans
+as a question (`isOverdue`, `canRefund`), constants carry their unit (`TIMEOUT_MS`). If a name
+needs a comment to be understood, rename it.
 
-> **Rule:** If you need a comment to explain a name, rename it.
+## Functions and structure
 
----
+These are heuristics for judgment, not limits to enforce mechanically:
 
-## Function Rules
+- One function, one job at one level of abstraction. Split when a function mixes levels
+  (parsing + business rule + I/O), not when it crosses a line count.
+- Guard clauses and early returns instead of nested conditionals; nesting past two or three
+  levels is a signal to restructure.
+- Pass an options object once positional arguments stop being self-explanatory.
+- Do not mutate inputs; return new values. Side effects live at the edges (handlers, jobs,
+  repositories), pure logic in the middle where it is easy to test.
+- Keep related code together; colocate a component's types, helpers and tests with it.
 
-| Rule | Description |
-|------|-------------|
-| **Small** | Max 20 lines, ideally 5-10 |
-| **One Thing** | Does one thing, does it well |
-| **One Level** | One level of abstraction per function |
-| **Few Args** | Max 3 arguments, prefer 0-2 |
-| **No Side Effects** | Don't mutate inputs unexpectedly |
+## Errors and boundaries
 
----
+- Validate external input once, at the boundary (Zod in this stack), then work with typed data.
+- Fail visibly: a caught error is handled, rethrown with context, or logged with structured
+  fields (`{ action, tenantId, userId, duration, error }`, never PII) — never swallowed.
+- Generic messages to the client, detail in server logs.
 
-## Code Structure
+## Comments
 
-| Pattern | Apply |
-|---------|-------|
-| **Guard Clauses** | Early returns for edge cases |
-| **Flat > Nested** | Avoid deep nesting (max 2 levels) |
-| **Composition** | Small functions composed together |
-| **Colocation** | Keep related code close |
+Comment *why* — a constraint, a workaround, a non-obvious invariant — never *what* the next line
+does. Delete commented-out code and comments that restate the code. Keep doc comments on public
+APIs.
 
----
+## Stack conventions
 
-## AI Coding Style
+TypeScript strict with no `any`, `as const` instead of `enum`, named exports, path aliases and
+Server Components by default: these are defined once in the global spine (*TypeScript Strict
+Mode* and *Code Style*). Apply them; do not restate them here.
 
-| Situation | Action |
-|-----------|--------|
-| User asks for feature | Write it directly |
-| User reports bug | Fix it, don't explain |
-| No clear requirement | Ask, don't assume |
+## Reviewing against this skill
 
----
+Report each finding with file:line, the section above it violates, and the concrete fix. A
+finding that only restates personal taste, or that a linter already catches, is not a finding.
+Zero findings is a valid result once every section was checked.
 
-## Anti-Patterns (DON'T)
-
-| Pattern | Fix |
-|---------|-----|
-| Comment every line | Delete obvious comments |
-| Helper for one-liner | Inline the code |
-| Factory for 2 objects | Direct instantiation |
-| utils.ts with 1 function | Put code where used |
-| "First we import..." | Just write code |
-| Deep nesting | Guard clauses |
-| Magic numbers | Named constants |
-| God functions | Split by responsibility |
-
----
-
-## Before Editing ANY File (THINK FIRST!)
-
-**Before changing a file, ask yourself:**
-
-| Question | Why |
-|----------|-----|
-| **What imports this file?** | They might break |
-| **What does this file import?** | Interface changes |
-| **What tests cover this?** | Tests might fail |
-| **Is this a shared component?** | Multiple places affected |
-
-**Quick Check:**
-```
-File to edit: UserService.ts
-└── Who imports this? → UserController.ts, AuthController.ts
-└── Do they need changes too? → Check function signatures
-```
-
-> **Rule:** Edit the file + all dependent files in the SAME task.
-> **Never leave broken imports or missing updates.**
-
----
-
-## Summary
-
-| Do | Don't |
-|----|--------|
-| Write code directly | Write tutorials |
-| Let code self-document | Add obvious comments |
-| Fix bugs immediately | Explain the fix first |
-| Inline small things | Create unnecessary files |
-| Name things clearly | Use abbreviations |
-| Keep functions small | Write 100+ line functions |
-
-> **Remember: The user wants working code, not a programming lesson.**
-
----
-
-## Self-Check Before Completing (MANDATORY)
-
-**Before saying "task complete", verify:**
-
-| Check | Question |
-|-------|----------|
-| ✅ **Goal met?** | Did I do exactly what user asked? |
-| ✅ **Files edited?** | Did I modify all necessary files? |
-| ✅ **Code works?** | Did I test/verify the change? |
-| ✅ **No errors?** | Lint and TypeScript pass? |
-| ✅ **Nothing forgotten?** | Any edge cases missed? |
-
-> **Rule:** If ANY check fails, fix it before completing.
-
----
-
-## Verification Scripts (MANDATORY)
-
-> **CRITICAL:** Each agent runs ONLY their own skill's scripts after completing work.
-
-### Agent → Script Mapping
-
-| Agent | Script | Command |
-|-------|--------|---------|
-| **frontend-specialist** | UX Audit | `python .agent/skills/frontend-design/scripts/ux_audit.py .` |
-| **frontend-specialist** | A11y Check | `python .agent/skills/frontend-design/scripts/accessibility_checker.py .` |
-| **backend-specialist** | API Validator | `python .agent/skills/api-patterns/scripts/api_validator.py .` |
-| **mobile-developer** | Mobile Audit | `python .agent/skills/mobile-design/scripts/mobile_audit.py .` |
-| **database-architect** | Schema Validate | `python .agent/skills/database-design/scripts/schema_validator.py .` |
-| **security-auditor** | Security Scan | `python .agent/skills/vulnerability-scanner/scripts/security_scan.py .` |
-| **seo-specialist** | SEO Check | `python .agent/skills/seo-fundamentals/scripts/seo_checker.py .` |
-| **seo-specialist** | GEO Check | `python .agent/skills/geo-fundamentals/scripts/geo_checker.py .` |
-| **performance-optimizer** | Lighthouse | `python .agent/skills/performance-profiling/scripts/lighthouse_audit.py <url>` |
-| **test-engineer** | Test Runner | `python .agent/skills/testing-patterns/scripts/test_runner.py .` |
-| **test-engineer** | Playwright | `python .agent/skills/webapp-testing/scripts/playwright_runner.py <url>` |
-| **Any agent** | Lint Check | `python .agent/skills/lint-and-validate/scripts/lint_runner.py .` |
-| **Any agent** | Type Coverage | `python .agent/skills/lint-and-validate/scripts/type_coverage.py .` |
-| **Any agent** | i18n Check | `python .agent/skills/i18n-localization/scripts/i18n_checker.py .` |
-
-> ❌ **WRONG:** `test-engineer` running `ux_audit.py`
-> ✅ **CORRECT:** `frontend-specialist` running `ux_audit.py`
-
----
-
-### Script Output Handling (READ → SUMMARIZE → ASK)
-
-**When running a validation script, you MUST:**
-
-1. **Run the script** and capture ALL output
-2. **Parse the output** - identify errors, warnings, and passes
-3. **Summarize to user** in this format:
-
-```markdown
-## Script Results: [script_name.py]
-
-### Errors Found (X items)
-- [File:Line] Error description 1
-- [File:Line] Error description 2
-
-### Warnings (Y items)
-- [File:Line] Warning description
-
-### Passed (Z items)
-- Check 1 passed
-- Check 2 passed
-
-**Should I fix the X errors?**
-```
-
-4. **Wait for user confirmation** before fixing
-5. **After fixing** → Re-run script to confirm
-
-> **VIOLATION:** Running script and ignoring output = FAILED task.
-> **VIOLATION:** Auto-fixing without asking = Not allowed.
-> **Rule:** Always READ output → SUMMARIZE → ASK → then fix.
-
-**Exhaustiveness bar** — a review under this skill is done when every rule section (Naming, Function, Structure, AI Coding Style, Anti-Patterns) was swept against the artifact and each violation carries file+line. Three sections checked reads exactly like six; the skipped one is where the debt lives.
+**Exhaustiveness bar** — a review under this skill is done when every section (Simplicity,
+Names, Functions and structure, Errors and boundaries, Comments, Stack conventions) was swept
+against the artifact and each violation carries file+line.

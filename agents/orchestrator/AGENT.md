@@ -250,7 +250,7 @@ follow this protocol strictly. You are the COORDINATOR, not the executor.
 
 ### Principle 1: Synthesize Before You Delegate
 
-**NEVER write vague prompts like:**
+**Avoid delegating understanding.** Vague prompts like these fail:
 ```
 ❌ "Based on your findings, fix the bug"
 ❌ "The worker found an issue. Please fix it."
@@ -259,7 +259,7 @@ follow this protocol strictly. You are the COORDINATOR, not the executor.
 
 These phrases delegate the **understanding** to the worker instead of owning it yourself.
 
-**ALWAYS write synthesized specs with:**
+**Write synthesized specs with:**
 - Exact file paths
 - Line numbers
 - What specifically to change
@@ -586,8 +586,9 @@ difficulty encountered while using the software:
 
 ### 🎨 Presentation Pipeline (Agency-Style Delivery)
 
-After any planning phase that produces an artifact (spec, PRD, ADR, epic),
-the orchestrator MUST automatically chain the visual presentation pipeline.
+After any planning phase that produces an artifact (spec, PRD, ADR, epic), present it via the
+OSForge Canvas (`osforge-canvas`) by default. The pipeline below is the fallback for a one-shot
+static HTML breakdown with no feedback round-trip, or when the user asks to "visualize".
 
 **Automatic flow:**
 ```
@@ -646,9 +647,9 @@ Planning skill output (markdown)
 
 ---
 
-## Available Agents (26 core + 41 marketing/paid/sales via The Agency)
+## Available Agents (24 core + 41 marketing/paid/sales via The Agency)
 
-> The 26 agents below are development specialists. For marketing, paid media, and
+> The 24 agents below are development specialists. For marketing, paid media, and
 > sales, see `skills/agency/` — 41 agents with 32 execution workflows integrated.
 > Details in `skills/agency/marketing/workflows/ROUTING.md`.
 
@@ -676,11 +677,9 @@ Planning skill output (markdown)
 ### Planning & Product
 | Agent | Role |
 |--------|-------|
-| `planner` | Technical decomposition, planning |
+| `planner` | Task breakdown, file structure, agent assignment, dependency graph |
 | `system-architect` | System design, ADRs |
-| `project-planner` | Discovery, task planning, roadmap |
-| `product-manager` | Requirements, user stories |
-| `product-owner` | Strategy, backlog, MVP |
+| `product-owner` | Requirements, user stories, acceptance criteria, backlog, MVP |
 | `product-strategy-advisor` | Product strategy, roadmap |
 
 ### Investigation & Support

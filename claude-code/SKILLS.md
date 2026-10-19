@@ -3,66 +3,27 @@ Reference skills for Claude Code. Core skills always active; specialized skills 
 
 ---
 
-## Skill 1: TDD Workflow (RED-GREEN-REFACTOR)
-**Trigger:** Any feature, bugfix, or behavior change.
+## Core disciplines — Iron Laws (always active)
+Each is a **core skill**, native in every session: its full body (cycle, gate, examples) loads when
+it fires. The Iron Law is what must hold even before it fires.
 
-**Iron Law:** `NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST`
-Wrote code before the test? **Delete it. Start over.**
-
-### Cycle
-1. **RED** — Write ONE test for smallest behavior. Run it. Confirm it FAILS.
-2. **GREEN** — Write MINIMUM code to pass. Nothing more.
-3. **REFACTOR** — Clean up while green. Extract, rename, deduplicate.
-4. **COMMIT** — `test: add test for X` → `feat: implement X`
-
-### Right Size
-- Too big: "User authentication system"
-- Right: "Login returns JWT on valid credentials"
-
-### Exceptions (ask first)
-Throwaway prototypes, generated code (Prisma Client, shadcn), config files, pure UI styling.
-
-### Test Protection
-When tests FAIL, fix PRODUCTION CODE — NEVER modify tests to make them pass.
-- NEVER alter assertions to match wrong output
-- NEVER delete or `.skip` failing tests
-- NEVER change expected values to match actual
-- Only exception: genuine test bug or explicitly requested requirement change
+- **TDD** (`tdd-workflow`) — `NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST`. Wrote code before the
+  test? Delete it, start over. Exceptions (state which, ask if unclear): throwaway prototypes,
+  generated code, config files, pure styling.
+- **Test protection** — when tests FAIL, fix PRODUCTION CODE. Never alter assertions or expected
+  values to match wrong output, never delete or `.skip` a failing test. Only exception: a genuine
+  test bug or an explicitly requested requirement change.
+- **Verification** (`verification-before-completion`) — `NO COMPLETION CLAIMS WITHOUT FRESH
+  VERIFICATION EVIDENCE`. Before "done/fixed/passing", a commit or a PR: run the command that proves
+  it, read the output and exit code, then claim it WITH the evidence (`cmd` → result).
+- **Coding guidelines** (`coding-guidelines`) — think before coding (surface tradeoffs, ask when
+  unclear) · simplicity first (no speculative features or premature abstractions; prefer duplication
+  over the wrong abstraction) · surgical changes (touch only what the task needs; one logical change
+  per commit) · goal-driven (define "done" first, loop until verified).
 
 ---
 
-## Skill 2: Verification Before Completion
-**Trigger:** Before any completion claim, commit, or PR.
-
-**Iron Law:** `NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE`
-
-### Gate Function
-1. IDENTIFY → What command proves this claim?
-2. RUN → Execute full command (fresh, not cached)
-3. READ → Full output, check exit code
-4. VERIFY → Does output confirm claim?
-5. ONLY THEN → Make the claim WITH evidence
-
-### Evidence Table
-| Claim | Requires | NOT Sufficient |
-|-------|----------|----------------|
-| "Tests pass" | Test output: 0 failures | Previous run, "should pass" |
-| "Build succeeds" | Build command: exit 0 | "looks good" |
-| "Bug fixed" | Test original symptom: passes | Code changed, assumed fixed |
-| "No regressions" | Full suite: all pass | Only new tests pass |
-| "Types correct" | `tsc --noEmit`: exit 0 | No red squiggles |
-
-### Correct Format
-```
-Verified:
-- `bun run lint` → 0 errors, 0 warnings
-- `bun run test` → 14 tests passed, 0 failed
-- `bun tsc --noEmit` → exit 0
-```
-
----
-
-## Skill 3: Security Best Practices
+## Security Best Practices
 **Trigger:** Server Actions, API routes, auth, env handling, database queries, code review, deployment.
 
 ### Operating Modes
@@ -87,64 +48,21 @@ No defaults for secrets; `.env` in `.gitignore`; no secrets in client-side code;
 
 ---
 
-## Skill 4: Coding Guidelines (Karpathy Rules)
-**Trigger:** Always active — foundational coding discipline.
-
-### Think Before Coding
-- Surface all tradeoffs BEFORE implementation
-- When unclear, ASK — don't assume
-- Identify the simplest solution that meets requirements
-- Define success criteria upfront
-
-### Simplicity First
-- No speculative features (YAGNI)
-- No premature abstractions
-- Prefer duplication over wrong abstraction
-- Delete dead code immediately
-
-### Surgical Changes
-- Touch ONLY what's needed for the current task
-- One logical change per commit
-- Don't "improve" unrelated code while fixing a bug
-
-### Goal-Driven Execution
-- Define what "done" looks like before starting
-- Loop: implement → verify → adjust until criteria met
-- NEVER declare done without verification evidence (→ Skill 2)
-
----
-
 ## Context Budget — the smart zone
-**Always active.**
+**Always active.** The budget is TOKENS, not a share of the window: the dumb zone (see `CONTEXT.md`)
+commonly begins around **125–150k** however much window is left, and the decline is silent — a
+forgotten instruction, a corrected mistake repeated. Re-explaining adds context and makes it worse.
 
-Early in a session the agent is in the **smart zone**: sharp, good recall. As context grows it
-drifts into the **dumb zone** — sloppier, forgetful, more faithfulness hallucinations. Same model,
-same harness, just more context.
+**Budget:** <80k sharp | 80–120k fine | 120–150k write the handoff artifact and finish the current
+step | >150k finish only the step in hand at its natural boundary, then compact or hand off — don't
+start new work. **One task per session**; a task bigger than one smart zone is split at a natural boundary.
 
-**The budget is tokens, not a percentage of the window.** The zones do not track the window limit:
-a session can be deep in the dumb zone with most of the window still free. The window is where the
-harness refuses to continue; quality falls off long before that. On frontier models the dumb zone
-commonly begins around **125–150k tokens**. Plan around the smart zone, not the window.
+**At the boundary:** write the handoff artifact (`osforge-db set-resume` or a plan doc) → compact or
+new session → resume from the artifact. Never cut a deliverable mid-edit to obey the number: a
+half-applied change is worse than a finished step in a long context.
 
-**The decline is gradual, which is what makes it dangerous** — no error, no boundary. Signs: an
-instruction from twenty turns ago forgotten, a corrected mistake repeated, something asserted that
-the context contradicts. The instinct is to re-explain, which adds context and makes it worse.
-
-**One task per session.** The smart zone is a budget and unrelated work spends it — a second task
-in the same session starts closer to the dumb zone. When one task is bigger than one smart zone,
-split it: hand off at a natural boundary and let a fresh session take the next piece.
-
-**Budget (200k window, ~60k of it spent before the first message):** <80k sharp | 80–120k fine |
-120–150k save state and finish the current step | >150k STOP — compact or hand off, do not push through.
-
-**Mandatory action:** STOP the current task → write the handoff artifact (`osforge-db set-resume`
-or a plan doc) → compact or new session → resume from the artifact.
-
-**Measured, not guessed:** the `context-threshold` hook reads the real usage of the last turn from
-the transcript and injects one warning when the session crosses 120k and one when it crosses 150k.
-Treat the warning as the signal — do not wait to *feel* the dumb zone.
-
-_Vocabulary: smart zone / dumb zone / attention degradation — mattpocock/dictionary-of-ai-coding._
+**Measured, not guessed:** the `context-threshold` hook injects one warning at 120k and one at 150k
+(real usage of the last turn). Treat the warning as the signal — do not wait to *feel* the dumb zone.
 
 ---
 
@@ -313,8 +231,8 @@ The 130 skills below are **not** deployed to `~/.claude/skills` (Model A ships o
 ## 🤖 Claude & Agents
 
 - **agent-skills-search** — looking for specialized skills, best practices…
-- **claude-api-typescript** — when: code imports `@anthropic-ai/sdk` or `@anthropic-ai/claude-agent-sdk`…
-- **claude-ci-actions** — when: setting up @claude in PRs/issues, configuring automated code review…
+- **claude-api-typescript** — anthropic, claude api, messages.create, tool runner, betaZodTool, streaming…
+- **claude-ci-actions** — claude-code-action, github actions, @claude, PR review, CI, workflow…
 - **llm-structured-output** — structured output, Instructor, PydanticAI, Zod, schema, extraction…
 - **mcp-builder** — MCP, Model Context Protocol, MCP server, tool, resource, stdio, SSE…
 - **skill-creator** — users want to create a skill from scratch…

@@ -16,6 +16,7 @@
 #  10. observe-capture grava com o mesmo slug do resume e sem segredos no contexto
 #  11. search-hybrid --project não devolve decisão de outro projeto (leg vetorial com provider mock)
 #  12. hooks continuam silenciosos em projeto não registrado e com payload inválido
+#  13. session-resume adds a one-line memory hint (embedder down / low coverage), fast and fail-open
 # Offline, sem API, sem rede. Uso: tests/test-session-continuity.sh
 set -uo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
@@ -29,6 +30,7 @@ section(){ echo ""; echo "── $1"; }
 export HOME="$WORK/home"; mkdir -p "$HOME/.claude"
 export OSFORGE_DB="$WORK/db.sqlite"
 export OSFORGE_LOG_DIR="$WORK/logs"
+export OSFORGE_CONFIG="$WORK/config.json" OSFORGE_OLLAMA_URL="http://127.0.0.1:9"   # never the real config/Ollama
 unset OSFORGE_PROJECT
 DB=(python3 "$REPO/scripts/osforge-db.py")
 db(){ "${DB[@]}" "$@"; }
@@ -142,6 +144,25 @@ ONLY="$(db search-hybrid "postgres" --project=alpha --json 2>/dev/null)"
 check "sem filtro: decisões dos dois projetos" '[ "$(projs "$ALL")" = "alpha other" ]'
 check "--project=alpha: só alpha (leg vetorial filtrada)" '[ "$(projs "$ONLY")" = "alpha" ]'
 unset OSFORGE_EMBED OSFORGE_VECTOR
+
+section "session-resume.sh: memory hint (embedder down / low coverage)"
+ctx_of(){ python3 -c "import json,sys; print(json.load(sys.stdin)['hookSpecificOutput']['additionalContext'])" 2>/dev/null; }
+resume_ctx(){ (cd "$WORK/a/My_Proj" && echo '{}' | bash "$RESUME" | ctx_of); }
+export OSFORGE_VECTOR=sqlite
+C="$(OSFORGE_EMBED=mock resume_ctx)"
+check "mock, every decision embedded → resume without a memory hint" 'grep -q "projeto: alpha" <<<"$C" && ! grep -q "^memory:" <<<"$C"'
+C="$(OSFORGE_EMBED=ollama resume_ctx)"
+check "embedder down → one-line hint that search-hybrid is FTS-only" '[ "$(grep -c "^memory: embedder unreachable" <<<"$C")" = 1 ] && grep -q "FTS-only" <<<"$C"'
+for n in 1 2 3; do OSFORGE_EMBED=off db add-decision alpha "decisão sem vetor $n" >/dev/null 2>&1; done
+C="$(OSFORGE_EMBED=mock resume_ctx)"
+check "low coverage → hint naming embed-backfill" 'grep -q "^memory: .*embed-backfill" <<<"$C"'
+C="$(OSFORGE_EMBED=off resume_ctx)"
+check "provider off → no memory hint (deliberate choice)" 'grep -q "projeto: alpha" <<<"$C" && ! grep -q "^memory:" <<<"$C"'
+T0=$(python3 -c 'import time; print(time.time())')
+C="$(OSFORGE_EMBED=ollama OSFORGE_OLLAMA_URL="http://192.0.2.1:11434" resume_ctx)"
+DT=$(python3 -c "import time; print(round(time.time()-$T0, 2))")
+check "unroutable embedder → hook still injects the resume, fast (${DT}s < 2s)" 'grep -q "projeto: alpha" <<<"$C" && python3 -c "import sys; sys.exit(0 if $DT < 2 else 1)"'
+unset OSFORGE_VECTOR
 
 echo ""; echo "══ session-continuity: $PASS ok, $FAIL falha(s)"
 [ "$FAIL" -eq 0 ]

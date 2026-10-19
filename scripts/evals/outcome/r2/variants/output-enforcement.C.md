@@ -1,0 +1,95 @@
+# Output Enforcement — OSForge Enhancement Layer
+
+> **Compose stack:**
+> 1. If the base rules are needed, resolve `full-output-enforcement` via the SKILLS.md manifest
+> 2. Apply **this skill** — trigger phrases + OSForge verification + TDD test protection
+> 3. Before claiming done: run **Verification Before Completion** (Skill 2 in SKILLS.md)
+
+## Baseline
+
+Treat every task as production-critical. A partial output is a broken output.
+Write every requested deliverable in full. If you must stop at the output limit, stop at a clean boundary and emit the [PAUSED — X of Y complete …] marker.
+
+- User asks for full file → deliver full file.
+- User asks for 5 components → deliver 5 components.
+- User asks for refactor of 10 functions → refactor all 10.
+- No exceptions.
+
+## Execution Process
+
+### 1. SCOPE
+Read the full request. Count distinct deliverables expected (files, functions, sections, answers).
+Lock that number explicitly.
+
+> Example: "User asked for 3 React components + 1 test file + 1 README → SCOPE = 5 deliverables."
+
+**Done when:** the count is written down as a number. An unstated scope cannot be cross-checked in
+step 3, which is the whole mechanism this skill runs on.
+
+### 2. BUILD
+Generate every deliverable completely. No partial drafts. No "you can extend this later."
+
+**Done when:** each of the SCOPE deliverables exists in full. Exhaustive: N−1 complete deliverables
+plus an apology is the exact failure this skill exists to prevent.
+
+### 3. CROSS-CHECK
+Before output, re-read the original request. Compare deliverable count against SCOPE.
+If anything is missing → add it before responding.
+
+**Done when:** the delivered count equals SCOPE, checked against the original request rather than
+against your memory of it.
+
+## Handling Long Outputs (when token limit looms)
+
+When response approaches the token limit:
+
+1. Do NOT compress remaining sections to squeeze them in.
+2. Do NOT skip ahead to a conclusion.
+3. Write at FULL QUALITY up to a clean breakpoint (end of function, end of file, end of section).
+4. End with this exact marker:
+
+```
+[PAUSED — X of Y complete. Send "continue" to resume from: <next section name>]
+```
+
+On "continue" → pick up exactly where stopped. No recap. No repetition.
+
+## Pre-Output Verification
+
+Before finalizing ANY long response, verify:
+
+- [ ] No banned patterns from the lists above appear ANYWHERE
+- [ ] Every item the user requested is present and finished
+- [ ] Code blocks contain runnable code, not descriptions of code
+- [ ] Nothing was shortened to "save space"
+- [ ] SCOPE count matches deliverables count
+- [ ] If paused: clean breakpoint + exact resume marker
+
+## When This Skill Activates
+
+Auto-activate for:
+- Multi-file refactors / generations
+- Long code reviews where every issue must be addressed
+- Documentation generation (README, API docs, ADRs)
+- Multi-component generation (e.g., "create 5 components")
+- Full-page implementations
+- Migration tasks (rename, restructure, type-tighten)
+- Any task where the user uses words like "complete", "all", "entire", "exhaustive",
+  "don't truncate", "no placeholder", "no shortcuts"
+
+## Interaction with Other Skills
+
+- **`full-output-enforcement`** — **upstream base** (read first; banned patterns live there)
+- **`verification-before-completion`** — output-enforcement guarantees deliverables exist;
+  verification guarantees they work. **Both required before "done".**
+- **`tdd-workflow`** — output-enforcement applies to test files too. If 5 tests are needed,
+  write all 5 — no `// similar test for case Y`. **Never weaken tests to pass.**
+- **`technical-design-doc-creator`** — every required section in the TDD must be fully written.
+
+---
+
+## Related Skills
+- `full-output-enforcement` — upstream anti-truncation authority
+- `verification-before-completion` — verify deliverables actually work (SKILLS.md Skill 2)
+- `tdd-workflow` — TDD discipline including complete test suites
+- `clean-code` — code quality standards for the output

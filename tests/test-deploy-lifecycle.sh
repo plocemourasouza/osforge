@@ -16,8 +16,12 @@
 #      e atualizada, não tratada como colisão
 #  10. --uninstall remove só o que é do OSForge e restaura settings; o seu fica
 #  11. --dry-run num HOME vazio não cria nada
+#  12. legacy embedder (Ollama) is not a deploy step: no embed-backfill, even when it answers
+#  13. brain (ADR-017): osforge_brain.py lands next to osforge-db and imports from there;
+#      --no-brain = one skip line, no venv; --dry-run only reports the venv/model/migrate steps;
+#      an offline venv setup (pip unreachable) never aborts the deploy
 #
-# Tudo acontece em mktemp; nunca toca o $HOME real. Sem rede (--no-archify --no-qdrant).
+# Tudo acontece em mktemp; nunca toca o $HOME real. Sem rede (--no-archify --no-qdrant --no-brain).
 # Uso: tests/test-deploy-lifecycle.sh   (exit 0 = tudo verde; 1 = alguma garantia falhou)
 set -uo pipefail
 
@@ -54,7 +58,7 @@ set_core() {  # set_core add|del <rel> — edita skills-core.txt da cópia e reg
 }
 deploy() {  # deploy <home> [flags...] → stdout+stderr em $OUT, código em $RC
   local home="$1"; shift
-  OUT="$(HOME="$home" "$R/deploy.sh" --claude-only --no-archify --no-qdrant "$@" 2>&1)"; RC=$?
+  OUT="$(HOME="$home" "$R/deploy.sh" --claude-only --no-archify --no-qdrant --no-brain "$@" 2>&1)"; RC=$?
 }
 sha() { if command -v sha256sum >/dev/null 2>&1; then sha256sum | cut -c1-64; else shasum -a 256 | cut -c1-64; fi; }  # macOS sem coreutils
 tree_sha() {  # hash de conteúdo+caminho+modo de uma árvore (sem timestamps)
@@ -233,6 +237,28 @@ deploy "$H2" --dry-run
 check "dry-run sai com 0" '[ $RC -eq 0 ]'
 check "nenhum arquivo criado" '[ -z "$(find "$H2" -type f)" ]'
 check "dry-run relata o que faria" 'grep -q "\[dry-run\] arquivos: copied=" <<<"$OUT"'
+
+# ─────────────────────────────────────────────────────────────────────────────
+section "Legacy embedder: not a deploy step"
+H4="$WORK/home-memory"; mkdir -p "$H4"
+export OSFORGE_EMBED=mock                                # embedder "reachable": deploy still skips it
+deploy "$H4"
+unset OSFORGE_EMBED
+check "deploy exits 0" '[ $RC -eq 0 ]'
+check "deploy never runs embed-backfill" '! grep -q "embed-backfill" <<<"$OUT"'
+
+# ─────────────────────────────────────────────────────────────────────────────
+section "Brain runtime (ADR-017)"
+H5="$WORK/home-brain"; mkdir -p "$H5"
+deploy "$H5"
+check "osforge_brain.py installed next to osforge-db" '[ -f "$H5/.local/bin/osforge_brain.py" ] && cmp -s "$H5/.local/bin/osforge_brain.py" "$R/scripts/osforge_brain.py"'
+check "installed osforge-db imports the brain from ~/.local/bin (help lists recall)" 'HOME="$H5" python3 "$H5/.local/bin/osforge-db" 2>/dev/null | grep -q "recall"'
+check "--no-brain → exit 0, one skip line, no venv" '[ $RC -eq 0 ] && [ "$(grep -c "brain runtime skipped (--no-brain)" <<<"$OUT")" = 1 ] && [ ! -e "$H5/.osforge/venv" ]'
+OUT="$(HOME="$H5" "$R/deploy.sh" --claude-only --no-archify --no-qdrant --dry-run 2>&1)"
+check "dry-run → reports venv, model and migrate steps, creates no venv" 'grep -q "\[dry-run\] python3 -m venv" <<<"$OUT" && grep -q "\[dry-run\] osforge-db brain migrate" <<<"$OUT" && [ ! -e "$H5/.osforge/venv" ]'
+OUT="$(HOME="$H5" PIP_INDEX_URL="http://127.0.0.1:9/simple" PIP_NO_CACHE_DIR=1 PIP_RETRIES=0 PIP_TIMEOUT=2 "$R/deploy.sh" --claude-only --no-archify --no-qdrant 2>&1)"; RC=$?
+check "pip unreachable → deploy exits 0 with one 'brain venv skipped' line" '[ $RC -eq 0 ] && [ "$(grep -c "brain venv skipped" <<<"$OUT")" = 1 ]'
+check "brain pins in deploy.sh match VENV_PINS in osforge_brain.py" '[ "$(sed -n "s/^BRAIN_PINS=\"\(.*\)\"$/\1/p" "$R/deploy.sh")" = "$(python3 -c "import sys; sys.path.insert(0, sys.argv[1]); import osforge_brain as b; print(\" \".join(b.VENV_PINS))" "$R/scripts")" ]'
 
 # ─────────────────────────────────────────────────────────────────────────────
 section "Deploy em HOME vazio + uninstall = HOME vazio (exceto dados)"

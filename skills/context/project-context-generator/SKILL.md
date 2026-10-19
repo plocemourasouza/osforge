@@ -10,7 +10,7 @@ metadata:
 
 ## Project state
 !`[ -f project-context.md ] && echo "project-context.md exists ($(wc -l < project-context.md) lines)" || echo "project-context.md not found — generating from scratch"`
-!`[ -f .osforge/memory/constitution.md ] && echo "constitution.md exists" || echo "constitution.md not found"`
+!`[ -f .specs/memory/constitution.md ] && echo "constitution.md exists" || echo "constitution.md not found"`
 !`cat package.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'Stack: {list(d.get(\"dependencies\",{}).keys())[:8]}')" 2>/dev/null || echo "package.json not found"`
 
 # Project Context Generator
@@ -202,6 +202,6 @@ When there is a conflict between principles:
 5. DX (developer experience)
 ```
 
-Save to `.osforge/memory/constitution.md`.
+Save to `.specs/memory/constitution.md`.
 
 **The constitution.md is read automatically** by the orchestrator, spec-builder and arch-builder as a reference for decisions. Update whenever the team makes a significant architectural decision.

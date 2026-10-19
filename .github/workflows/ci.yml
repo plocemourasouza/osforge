@@ -1,5 +1,5 @@
 # Minimal CI (B-008, ADR-015). Everything here is offline: no API calls, no Docker, no
-# global installs. Deliberately no version matrix and no coverage gate — one job per OS
+# global installs (the brain step pip-installs qdrant-client into a throwaway venv only). Deliberately no version matrix and no coverage gate — one job per OS
 # is what a single-maintainer bash/python repo needs. macOS runs to catch bash 3.2.
 name: ci
 on:
@@ -51,7 +51,10 @@ jobs:
           ./tests/test-gateguard-sql.sh
           ./tests/test-scan-secrets.sh
           ./tests/hooks/run-contracts.sh
+          ./tests/test-route-guard-race.sh
           ./tests/test-session-continuity.sh
+          ./tests/test-memory-recall.sh
+          ./tests/test-brain.sh            # stdlib part; store part SKIPs without qdrant-client
           ./tests/test-canvas-feedback.sh
           ./tests/test-context-usage.sh
           ./tests/test-installers.sh
@@ -61,6 +64,12 @@ jobs:
           ./tests/test-quota.sh
           ./tests/test-calls.sh
           ./tests/test-judge.sh
+      - name: Brain store checks (qdrant-client in a throwaway venv, fake embedder, no model)
+        run: |
+          set -e
+          python3 -m venv "$RUNNER_TEMP/brainvenv"
+          "$RUNNER_TEMP/brainvenv/bin/python" -m pip install -q --disable-pip-version-check qdrant-client==1.19.1
+          OSFORGE_TEST_BRAIN_PYTHON="$RUNNER_TEMP/brainvenv/bin/python" ./tests/test-brain.sh
       - name: Dry-run deploy on an empty HOME creates nothing
         run: |
           set -e

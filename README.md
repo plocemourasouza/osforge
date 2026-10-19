@@ -4,7 +4,7 @@
 
 **An AI-powered development framework: skills, agents, rules, hooks, commands, and a full library of specialists — the single source of truth for your global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration.**
 
-27 specialized agents · 177 on-demand skills · 14 rules (Cursor: 11 always-on, 3 stack rules by file glob) · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
+25 specialized agents · 177 on-demand skills · 14 rules (Cursor: 11 always-on, 3 stack rules by file glob) · 9 spec commands · zero-token Python hooks · local SQLite state with a cross-project task board · 121 business specialists · local generative UI. Tuned for **Next.js + TypeScript + Prisma + Supabase + Bun**, with coverage for mobile, game dev, Rust, Python, and more.
 
 > *"Forging the development environment for AI-powered teams."*
 
@@ -53,13 +53,13 @@ The repo ships its own maps, produced by the `system-diagrams` skill through the
 
 ![OSForge v5.0 — system map](docs/architecture/osforge.png)
 
-> `architecture` · Archify v2.16.0 · signal-flow + trace · **9/9 checks · 0 errors · 0 warnings** · spec `1ddc…afa9` · artifact `8d69…aa97`
+> `architecture` · Archify v2.16.0 · signal-flow + trace · **9/9 checks · 0 errors · 0 warnings** · spec `43db…c746` · artifact `0b73…ed1e`
 
-**Agents & skills** — the four routing layers, the 26 specialists in four groups, the Model A distribution of the 177 skills; full rosters in the cards.
+**Agents & skills** — the four routing layers, the 24 specialists in four groups, the Model A distribution of the 177 skills; full rosters in the cards.
 
 ![OSForge v5.0 — agents & skills](docs/architecture/osforge-agents-skills.png)
 
-> `architecture` · Archify v2.16.0 · signal-flow + trace · **9/9 · 0 · 0** · spec `eb40…3c3f` · artifact `7e1f…359c`
+> `architecture` · Archify v2.16.0 · signal-flow + trace · **9/9 · 0 · 0** · spec `0ece…6aca` · artifact `c779…da74`
 
 **The spec-\* cycle** — swim-lanes for User, Orchestrator, specialist agents (waves), gates/state/artifacts and the Stop & recover lane; six phases, the Canvas checkpoints, the Archify receipt inside `/spec-design`, GateGuard and the user-confirmation grant.
 
@@ -78,7 +78,7 @@ flowchart LR
   subgraph REPO["OSForge repo — single source of truth"]
     direction TB
     SK["177 skills"]
-    AG["27 agents"]
+    AG["25 agents"]
     RU["14 rules"]
     CM["9 spec commands"]
     HK["11 hooks"]
@@ -142,7 +142,7 @@ flowchart TB
     T3["Fast: haiku — tests, docs, boilerplate, i18n"]
   end
   subgraph L2["2 · Agent selection"]
-    A1["orchestrator → 26 specialists"]
+    A1["orchestrator → 24 specialists"]
   end
   subgraph L3["3 · Skill triggers (on-demand)"]
     S1["@SKILLS.md index → skills/.../SKILL.md"]
@@ -188,14 +188,14 @@ cd osforge
 
 ## What's inside
 
-### 27 specialized agents
+### 25 specialized agents
 
 Every agent ships a Reality Check (anti-self-deception) and a Quality Control loop (mandatory verification). Full roster in [USAGE.md](USAGE.md).
 
-- **Orchestrator** — meta-agent: intake, triage, planning, routing to 26 specialists, cross-session tracking, and the language boundary.
+- **Orchestrator** — meta-agent: intake, triage, planning, routing to 24 specialists, cross-session tracking, and the language boundary.
 - **Engineering** — frontend-engineer, backend-engineer, database-architect, mobile-developer, game-developer, devops-engineer, performance-optimizer.
 - **Quality & Security** — code-reviewer, code-refactorer, security-auditor, penetration-tester, test-engineer, qa-automation-engineer, validator.
-- **Planning & Product** — planner, system-architect, project-planner, product-manager, product-owner, product-strategy-advisor.
+- **Planning & Product** — planner, system-architect, product-owner, product-strategy-advisor.
 - **Investigation** — debugger, explorer-agent, code-archaeologist.
 - **Docs & SEO** — documentation-writer, seo-specialist, git-commit-helper.
 

@@ -66,11 +66,10 @@ When building mobile apps that sync with OSForge:
 
 ---
 
-## ⚠️ CRITICAL: ASK BEFORE ASSUMING (MANDATORY)
+## Clarify before assuming
 
-> **STOP! If the user's request is open-ended, DO NOT default to your favorites.**
-
-### You MUST Ask If Not Specified:
+When the request is open-ended, ask about whichever of these it leaves unspecified rather than
+defaulting to your usual stack:
 
 | Aspect | Question | Why |
 |--------|----------|-----|
@@ -95,7 +94,7 @@ When building mobile apps that sync with OSForge:
 
 ---
 
-## 🚫 MOBILE ANTI-PATTERNS (NEVER DO THESE!)
+## Mobile anti-patterns
 
 ### Performance Sins
 
@@ -377,16 +376,9 @@ After editing any file:
 
 ### Why This Is Non-Negotiable
 
-```
-AI writes code → "Looks good" → User opens Android Studio → BUILD ERRORS!
-This is UNACCEPTABLE.
-
-AI MUST:
-├── Run the actual build command
-├── See if it compiles
-├── Fix any errors
-└── ONLY THEN say "done"
-```
+Code that was never built is not done: the first person to open Android Studio or Xcode finds
+the errors instead of you. Run the actual build command below, fix what it reports, and only then
+call the work complete.
 
 ### Build Commands by Framework
 

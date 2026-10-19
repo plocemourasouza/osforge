@@ -10,6 +10,80 @@ All notable changes to OSForge are recorded here. The format follows
 
 ## [Unreleased]
 
+### Added
+- **The brain — long-term memory split from the workbench (ADR-017).** SQLite keeps execution
+  state (projects, phases, tasks, blockers, resume, usage, calls, board, the decision log);
+  long-term knowledge (`decision`, `knowledge`, `technique`, `methodology`) lives in a Qdrant
+  collection `osforge_brain` with a dense vector (`google/embeddinggemma-300m`, in-process via
+  fastembed — no Ollama) and a sparse BM25 vector. New `osforge-db remember`, `recall`, `forget`
+  and `brain status|rebuild|migrate|health` (`scripts/osforge_brain.py`, deployed next to
+  `osforge-db`). Dense is primary; BM25 answers when nothing clears the floor, or on
+  `--mode=keyword`; RRF is opt-in (`--mode=hybrid`). Filters (`--kind/--project/--global/
+  --since/--until`) run inside the query and each prefetch. The append-only journal
+  `~/.osforge/brain.jsonl` is the source of truth (scrubbed, written before every upsert;
+  `brain rebuild` recreates the index from it). Store or embedder unavailable → `recall` scans
+  the journal lexically with `note: brain degraded (…)` / `degraded` in JSON. `add-decision`
+  also remembers (best-effort, one line on failure); `brain migrate` imports existing decisions
+  idempotently. `./deploy.sh` creates `~/.osforge/venv` (pinned fastembed 0.9.0, qdrant-client
+  1.19.1, onnxruntime 1.31.0), downloads the model once into `~/.osforge/models`, persists
+  `brain_store` (server/local) and runs `brain migrate`; offline = one skip line, `--no-brain`
+  skips it. `session-resume` adds one `brain:` line only when the brain is degraded. Measured on
+  124 real decisions / 14 pt-BR questions: dense hit@1 14/14, hit@5 14/14, ~1.3 s per
+  `recall`. Licence note: embeddinggemma is under the Gemma Terms of Use; `brain_model:
+  "e5-large"` (MIT) is the documented alternative.
+- `scripts/evals/memory/run.py --mode=brain [--recall=dense|keyword|hybrid]` (fake embedder by
+  default, real model when cached) and `tests/test-brain.sh` (79 checks; the 39 store checks
+  need qdrant-client and are skipped with a SKIP line without it; CI installs it in a throwaway
+  venv).
+
+### Changed
+- The legacy vector memory (`vec_memory`, collection `osforge_memory`, `embed*`,
+  `search-semantic`, `search-hybrid`, `memory-health`) is documented as legacy; unchanged and
+  still deployed.
+
+### Fixed
+- **`osforge-db` memory recall works on natural questions.** The FTS query quoted every term
+  and FTS5 AND-ed them, so a question never matched (0/14 on a real-DB recall test). Terms are
+  now words only, pt-BR/English stopwords and words under 3 characters dropped, quoted, OR-ed
+  and ranked by bm25 (raw words as fallback), in `search` and the FTS leg of `search-hybrid`.
+  The index tokenizer is `unicode61 remove_diacritics 2` (accent-insensitive); older indexes
+  are rebuilt once, atomically and idempotently, by `migrate()`. Same recall test: 11/14 hit@5
+  FTS-only. `search-hybrid --json` rows no longer come out with `project: null` when the
+  embedder is down, and `search --json` rows now carry `id`.
+
+### Added
+- **Temporal recall:** `--since/--until=YYYY-MM-DD` on `search`, `search-hybrid` (both legs
+  filtered through the DB before RRF) and `list-decisions`. One JSON row shape for all three:
+  `id, project, category, created_at, content`.
+- **Embedding coverage and visible degradation:** `vec-status` reports coverage
+  (embedded/total) and embedder reachability; new `memory-health` prints one hint line when the
+  embedder is down or coverage is under 80%. `search-hybrid` without a query vector says so (a
+  `note:` line on stdout, `degraded` in each JSON row); `session-resume` adds the `memory:` hint
+  (0.3 s probe, fail-open); `add-decision` names `embed-backfill` when it could not embed.
+  `embed-backfill` is manual — `./deploy.sh` does not run the legacy Ollama path.
+  `OSFORGE_OLLAMA_URL` (config `ollama_url`) overrides the Ollama endpoint.
+- **Versioned recall eval** `scripts/evals/memory/` (synthetic pt-BR/en fixture, hit@1/hit@5)
+  and `tests/test-memory-recall.sh` (53 checks, FTS-only floor hit@5 ≥ 80%, in CI).
+
+### Changed
+- **Query-expansion guidance for memory recall.** Recall rests on OR-FTS5 (bm25, stopwords,
+  accent-insensitive); the agent is told to expand its query: 4-8 keywords, English plus the
+  user's pt-BR terms, code and file names, `--since/--until` for time questions, one retry with
+  synonyms (guidance in `db-state-sync` and `USAGE.md`). Measured on a real DB (14 private
+  questions, FTS only): natural 11/14 hit@5, keyword rewrites 14/14 (rewrites written knowing
+  the target: optimistic bound).
+- **Recall eval has two sets:** `run.py --set=natural|expanded` (`questions-expanded.tsv`,
+  agent-style keyword rewrites). `tests/test-memory-recall.sh` floors: natural hit@5 ≥ 80%,
+  expanded ≥ 95%.
+- **Two duplicated agent pairs merged** (audit H21): `project-planner` folded into `planner`
+  (context check, agent assignment per task, dependency graph in waves, file-structure planning
+  for new projects, survey-vs-plan mode); `product-manager` folded into `product-owner`
+  (discovery questions, Gherkin AC with the sad path, MoSCoW meaning, PRD non-functional
+  requirements, engineering kickoff, concrete agent-interaction table). `planner` stays
+  read-only. Roster 27 → 25 (orchestrator + 24 specialists); routing case r13, `READ_ONLY` in
+  `scripts/check-agents.py`, USAGE, README, the orchestrator table and both architecture maps
+  (re-delivered, new receipts) updated.
+
 ## [5.2.1] — 2026-09-30
 
 ### Fixed

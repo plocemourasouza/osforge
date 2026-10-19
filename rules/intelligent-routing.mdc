@@ -100,8 +100,8 @@ Based on the detected domains:
 | CONFIG_REVIEW | `skills/config-critique` (4-axis LLM linter for customizations) |
 | STUCK | `skills/stuck-recovery` (detect loop + save state + surgical reset) |
 | Explore an unknown codebase | `explorer-agent` |
-| Product planning | `product-manager` or `product-owner` |
-| Project planning | `project-planner` |
+| Product planning (requirements, user stories, backlog) | `product-owner` |
+| Project planning (task breakdown, dependency graph) | `planner` |
 | System architecture | `system-architect` |
 | 3+ domains or complex FEATURE | → Activate the Orchestrator |
 

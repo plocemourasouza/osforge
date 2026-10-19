@@ -52,7 +52,7 @@ environment:
 EOF
 ```
 
-Normally the default template is deployed by OSForge's `deploy.sh`; the command above is the manual fallback. If the file does not exist at runtime, the hook should fail closed (block auto-mode) instead of running without rules. The 3 sections (`allow` / `soft_deny` / `environment`) are detailed below.
+`deploy.sh` does not ship this file; the command above creates it. If the file does not exist at runtime, the hook should fail closed (block auto-mode) instead of running without rules. The 3 sections (`allow` / `soft_deny` / `environment`) are detailed below.
 
 ## Architecture — 2 stages
 
@@ -78,7 +78,7 @@ fast_path_allowed:
 
 For tools that write, execute, or modify state, the classifier runs.
 
-#### Classifier schema (forced tool call)
+#### Classifier output (structured output, `strict: true`; reasoning depth via `effort`, low or medium)
 
 ```json
 {
@@ -87,10 +87,6 @@ For tools that write, execute, or modify state, the classifier runs.
   "input_schema": {
     "type": "object",
     "properties": {
-      "thinking": {
-        "type": "string",
-        "description": "Brief step-by-step reasoning"
-      },
       "shouldBlock": {
         "type": "boolean",
         "description": "Whether the action should be blocked (true) or allowed (false)"
@@ -100,7 +96,7 @@ For tools that write, execute, or modify state, the classifier runs.
         "description": "Brief explanation of the classification decision"
       }
     },
-    "required": ["thinking", "shouldBlock", "reason"]
+    "required": ["shouldBlock", "reason"]
   }
 }
 ```
@@ -180,15 +176,15 @@ This lets rules like "this project can NEVER run `rm -rf`" in CLAUDE.md be respe
 - Boundary between the prefix and the dynamic suffix (user rules + transcript)
 - The suffix changes every call, the prefix is reused by Anthropic API caching
 
-Result: typical classifier latency ~150-300ms (Sonnet with cache hit) or 50-100ms (Haiku).
+Measure and record classifier latency on the chosen model before relying on it in the hot path.
 
 ## Practical implementation in OSForge
 
 ### Step 1 — Create `~/.osforge/safety-rules.yaml`
-Default template deployed by `deploy.sh`. The user can edit it.
+Create it with the snippet above; `deploy.sh` does not ship it.
 
 ### Step 2 — pre-tool-use hook
-`hooks/pre_tool_use.py` (already present in OSForge) gains a "classifier" mode:
+Design sketch, not implemented: the existing PreToolUse hook (`hooks/gateguard.py`) would gain a "classifier" mode:
 
 ```python
 # Pseudocode
@@ -228,7 +224,7 @@ claude --auto
 ## Verification
 
 Before declaring it done:
-- [ ] Classifier runs in < 500ms (cache hit)
+- [ ] Classifier latency measured on the chosen model and recorded
 - [ ] Allowlisted tools (Read, Grep, etc) skip the classifier (< 1ms)
 - [ ] Injection test: file content trying to override the classifier → blocked
 - [ ] User rules take precedence over defaults

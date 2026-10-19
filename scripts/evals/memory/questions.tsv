@@ -1,0 +1,21 @@
+# Natural-language questions for the memory recall eval. Each targets one or more decisions
+# of decisions.tsv. Written the way an agent asks, NOT copied from the decision text.
+# Columns (TAB): gold	question	[since]	[until]
+#   gold  = decision key(s); several keys separated by | (a hit on any counts)
+#   since/until = YYYY-MM-DD, passed as --since/--until (temporal questions)
+D03	por que as funções de perfil devolvem um resultado com erro em vez de nada?
+D02	where is the session cookie name defined and why?
+D01	quantos itens por pagina na listagem de produtos?
+D04	what is the colour rule for the members badge?
+D07	como o consumo do token de acesso evita condição de corrida?
+D08	how do we rate limit each API key?
+D09	quais dados pessoais o espelho deixou de guardar?
+D10	what happens when a webhook keeps failing?
+D11	de quanto em quanto tempo as chaves de API são rotacionadas?
+D12	how are the backup subfolders organised in Drive?
+D13	a busca da documentação depende de algum serviço hospedado?
+D14	does dark mode follow the system preference?
+D15	como ficou configurado o toolchain do Rust?
+D05	o que decidimos sobre o cache do catálogo?	2026-09-01	2026-09-30
+D06	what did we decide about the catalog cache?	2026-10-01	2026-10-31
+D02|D07	which security decisions did we take?	2026-08-01	2026-08-31

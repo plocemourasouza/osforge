@@ -45,8 +45,6 @@ RULES = [
     ("claude-code/CLAUDE.md", r"\*\*(\d+)\*\* \*\*rules\*\* \(Cursor only; \d+ always-on", rules, "rules"),
     ("claude-code/CLAUDE.md", r"\*\*\d+\*\* \*\*rules\*\* \(Cursor only; (\d+) always-on", rules_always, "always-on rules"),
     ("claude-code/CLAUDE.md", r"the (\d+) core skills in `~/\.claude/skills/`", core, "core skills"),
-    ("claude-code/CLAUDE.md", r"`env\.ENABLE_TOOL_SEARCH=(\w+)`", tool_search, "ENABLE_TOOL_SEARCH"),
-    ("claude-code/CLAUDE.md", r"`@SKILLS\.md`, (\d+) skills\)", skills, "skills"),
     ("USAGE.md", r"índice de triggers das (\d+) skills", skills, "skills"),
     ("USAGE.md", r"Syncs (\d+) agents \(orchestrator", agents, "agents"),
     ("USAGE.md", r"Installs (\d+) hooks to", hooks, "hooks"),
@@ -54,6 +52,9 @@ RULES = [
     ("USAGE.md", r"Copies (\d+) rules \(\d+ `\.mdc`", rules, "rules"),
     ("USAGE.md", r"Copies \d+ rules \((\d+) `\.mdc`", rules_mdc, "mdc rules"),
     ("USAGE.md", r"What each hook does \((\d+) hooks\)", hooks, "hooks"),
+    # Moved from claude-code/CLAUDE.md to USAGE.md §16 (audit N3): reference, not per-turn behaviour.
+    ("USAGE.md", r"`env\.ENABLE_TOOL_SEARCH=(\w+)`", tool_search, "ENABLE_TOOL_SEARCH"),
+    ("USAGE.md", r"`@SKILLS\.md`, (\d+) skills\)", skills, "skills"),
 ]
 
 fails = 0
