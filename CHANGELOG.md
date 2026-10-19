@@ -10,6 +10,8 @@ All notable changes to OSForge are recorded here. The format follows
 
 ## [Unreleased]
 
+## [5.3.1] — 2026-10-19
+
 ### Fixed
 - **Deploy source is always `main`.** A `--release` deploy reported `detached @ <tag>` (banner,
   guard line, `install-state.json`). A detached worktree whose tag is on `main` now reads
