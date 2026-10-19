@@ -31,11 +31,11 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Offline suites (829 checks; none touches the live ~/.claude, none spends API):
+# Offline suites (833 checks; none touches the live ~/.claude, none spends API):
 ./tests/test-assertions.sh              # Verdict logic of the eval harnesses (67)
 ./tests/hooks/run-contracts.sh          # Hook contracts: real commands × fixtures, both harnesses (66; deploy gate)
 ./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle + denial attenuation (84)
-./tests/test-deploy-lifecycle.sh        # Stateful deploy: nothing of yours is lost, idempotent, doctor/uninstall/restore, brain steps, no legacy embed-backfill, deploy-source guard + --release (92; ~1 min; CI)
+./tests/test-deploy-lifecycle.sh        # Stateful deploy: nothing of yours is lost, idempotent, doctor/uninstall/restore, brain steps, no legacy embed-backfill, deploy-source guard + --release (96; ~1 min; CI)
 ./tests/test-session-continuity.sh      # One project identity; scoped resume, cap, cleanup and memory hint (40)
 ./tests/test-canvas-feedback.sh         # Canvas feedback drain (Stop) + server-side validation (34; the server part needs bun)
 ./tests/test-scan-secrets.sh            # scan-secrets on both payload formats, temporary git repo (33)

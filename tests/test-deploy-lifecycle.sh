@@ -293,6 +293,7 @@ gdeploy() {  # gdeploy <home> [flags...] — real deploy.sh of the clone, guard 
 
 HG="$WORK/hg-ok"; mkdir -p "$HG"; gdeploy "$HG"
 check "clean main at a v* tag → deploys (exit 0, banner shows the ref)" '[ $RC -eq 0 ] && grep -q "Ref:  main @ v1.9.0" <<<"$OUT"'
+check "banner names the official release (highest tag on main)" 'grep -q "official release v1.9.0" <<<"$OUT"'
 check "install-state records the ref" 'grep -q "main @ v1.9.0" "$HG/.osforge/install-state.json"'
 
 git -C "$G" checkout -q -b topic
@@ -330,8 +331,17 @@ git -C "$G" checkout -q -b wip; : > "$G/stray.txt"
 HR="$WORK/hr"; mkdir -p "$HR"; gdeploy "$HR" --release
 check "--release → exit 0 from a dirty feature branch" '[ $RC -eq 0 ] || { echo "$OUT" | tail -15; false; }'
 check "--release picked v1.10.0 (version sort, not v1.9.0) in ~/.osforge/release/" '[ -f "$HR/.osforge/release/v1.10.0/VERSION" ] && [ ! -e "$HR/.osforge/release/v1.9.0" ]'
-check "--release state says v1.10.0 from a detached ref" 'grep -q "\"version\": \"1.10.0\"" "$HR/.osforge/install-state.json" && grep -q "detached @ v1.10.0" "$HR/.osforge/install-state.json"'
+check "--release state says v1.10.0, source main (not 'detached')" 'grep -q "\"version\": \"1.10.0\"" "$HR/.osforge/install-state.json" && grep -q "main @ v1.10.0" "$HR/.osforge/install-state.json" && ! grep -q "detached @" "$HR/.osforge/install-state.json"'
+check "--release guard and banner name main and the official release" 'grep -q "main @ v1.10.0 (official release v1.10.0), clean tree" <<<"$OUT" && grep -q "Ref:  main @ v1.10.0 · official release v1.10.0" <<<"$OUT"'
 check "--release deploys the release's files, not the wip checkout's" '[ "$(cat "$HR/.osforge/repo-path")" = "$HR/.osforge/release/v1.10.0" ]'
+( cd "$W/work" && GIT checkout -q -b side && printf '9.9.9\n' > VERSION && GIT commit -q -am side && GIT tag v9.9.9 \
+  && GIT push -q origin side --tags && GIT checkout -q main ) >/dev/null 2>&1
+gdeploy "$HR" --release
+check "--release ignores a higher tag cut off main (v9.9.9 on a side branch)" '[ $RC -eq 0 ] && [ ! -e "$HR/.osforge/release/v9.9.9" ] && grep -q "official release v1.10.0" <<<"$OUT"'
+git -C "$G" fetch -q origin --tags; git -C "$G" stash -q -u 2>/dev/null; git -C "$G" checkout -q --detach v9.9.9
+HG7="$WORK/hg-offmain"; mkdir -p "$HG7"; gdeploy "$HG7"
+check "detached at a tag that is not on main → refused" '[ $RC -ne 0 ] && grep -q "tag v9.9.9 is not on main" <<<"$OUT"'
+git -C "$G" checkout -q wip; git -C "$G" stash pop -q 2>/dev/null
 gdeploy "$HR" --release
 check "--release again reuses the worktree" '[ $RC -eq 0 ] && grep -q "reusing worktree" <<<"$OUT"'
 HOME="$HR" "$G/deploy.sh" --doctor > "$WORK/rel-doctor.log" 2>&1
