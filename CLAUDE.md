@@ -15,7 +15,10 @@ OSForge is **not an application** — it is the source of truth for the user's g
 
 ```bash
 ./deploy.sh                  # Sync everything → ~/.claude/ and ~/.cursor/
-./deploy.sh --dry-run        # Preview without changes
+./deploy.sh --dry-run        # Preview without changes (also prints the deploy-source guard verdict)
+./deploy.sh --release        # Fetch tags, deploy the latest v* tag from a detached worktree in ~/.osforge/release/ (ADR-018)
+./deploy.sh --force-branch   # Bypass the guard (needs: main + clean tree + HEAD at a v* tag); or OSFORGE_DEPLOY_FORCE_BRANCH=1
+scripts/release.sh 5.3.0     # Release PR: bump VERSION, date CHANGELOG [Unreleased], branch release/x.y.z (--no-pr); CI tags after merge
 ./deploy.sh --claude-only    # or --cursor-only
 ./deploy.sh --with-qdrant    # Provision vector memory (Qdrant via Docker, opt-in); --no-qdrant forces SQLite
 ./deploy.sh --doctor         # What drifted since the last deploy (state in ~/.osforge/install-state.json)
@@ -28,11 +31,11 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Offline suites (809 checks; none touches the live ~/.claude, none spends API):
+# Offline suites (829 checks; none touches the live ~/.claude, none spends API):
 ./tests/test-assertions.sh              # Verdict logic of the eval harnesses (67)
 ./tests/hooks/run-contracts.sh          # Hook contracts: real commands × fixtures, both harnesses (66; deploy gate)
 ./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle + denial attenuation (84)
-./tests/test-deploy-lifecycle.sh        # Stateful deploy: nothing of yours is lost, idempotent, doctor/uninstall/restore, brain steps, no legacy embed-backfill (72; ~1 min; CI)
+./tests/test-deploy-lifecycle.sh        # Stateful deploy: nothing of yours is lost, idempotent, doctor/uninstall/restore, brain steps, no legacy embed-backfill, deploy-source guard + --release (92; ~1 min; CI)
 ./tests/test-session-continuity.sh      # One project identity; scoped resume, cap, cleanup and memory hint (40)
 ./tests/test-canvas-feedback.sh         # Canvas feedback drain (Stop) + server-side validation (34; the server part needs bun)
 ./tests/test-scan-secrets.sh            # scan-secrets on both payload formats, temporary git repo (33)
@@ -68,6 +71,7 @@ bun scripts/canvas/server.ts            # OSForge Canvas — local generative UI
 ```
 
 Deploy behavior worth knowing:
+- **Deploy-source guard (ADR-018):** from a git checkout, `./deploy.sh` refuses unless the branch is `main`, the tree is clean and HEAD is exactly at a `v*` tag — use `--release` (any branch) or `--force-branch`. `--doctor`/`--uninstall`/`--restore` are not guarded. `.github/workflows/release.yml` tags `v$VERSION` and publishes the GitHub Release when a VERSION bump reaches `main` with green CI.
 - Removing a skill dir here removes it from `~/.claude/skills/` and `~/.cursor/skills/` on the next deploy — **only if the installed copy is still byte-identical to what the deploy wrote**. Your own skills, and anything installed with `install-skill --global`, are never deleted (there is no `rsync --delete` on this path any more).
 - Hooks (`hooks/hooks-claude-code.json` → `~/.claude/settings.json`) merge **by id** (`event|matcher|script`), three-way: a managed entry still equal to what was recorded is replaced, one **you edited** aborts the deploy with both versions (`--force-hooks`), an event the repo dropped disappears, and your own entries — including under `~/.claude/hooks/` — are never touched. MCPs (`mcp/claude-code.json` → `~/.claude.json`) merge non-destructively (union). Deploy reports MCP drift between repo and live config.
 - Backups go to `~/.claude_backups/<run_id>/<path relative to HOME>`, and only when something is actually overwritten or kept — an idempotent second run writes nothing and creates no backup. `./deploy.sh --restore=<run_id>` puts a run's backups back.

@@ -187,6 +187,8 @@ def cmd_apply(a):
     prev = load_state() or {}
     prev_files = prev.get("files", {})
     st = empty_state(a.run_id, a.version, a.repo, a.commit)
+    if a.ref:
+        st["ref"] = a.ref   # branch @ tag the deploy came from (ADR-018)
     st["hooks"] = prev.get("hooks", {})
     st["settings"] = prev.get("settings", {})
     st["mcps"] = prev.get("mcps", [])
@@ -578,7 +580,7 @@ def main():
     p = argparse.ArgumentParser(prog="osforge-state")
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("apply"); s.add_argument("--manifest", required=True); s.add_argument("--run-id", required=True)
-    s.add_argument("--version", default=""); s.add_argument("--repo", default=""); s.add_argument("--commit", default="")
+    s.add_argument("--version", default=""); s.add_argument("--repo", default=""); s.add_argument("--commit", default=""); s.add_argument("--ref", default="")
     s.add_argument("--dry-run", action="store_true"); s.add_argument("--force", action="store_true"); s.add_argument("--adopt", action="store_true")
     s.add_argument("--prune-under", action="append", default=[])
     s = sub.add_parser("merge-hooks"); s.add_argument("--hooks", required=True); s.add_argument("--settings", required=True)

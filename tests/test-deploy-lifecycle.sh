@@ -20,6 +20,10 @@
 #  13. brain (ADR-017): osforge_brain.py lands next to osforge-db and imports from there;
 #      --no-brain = one skip line, no venv; --dry-run only reports the venv/model/migrate steps;
 #      an offline venv setup (pip unreachable) never aborts the deploy
+#  14. deploy-source guard + --release (ADR-018): refuses non-main / dirty / no v* tag, --force-branch
+#      and OSFORGE_DEPLOY_FORCE_BRANCH=1 pass, --dry-run reports, --release deploys the highest tag
+#      (local bare remote, no network); every deploy call here passes --force-branch because this
+#      working copy is a feature branch (and CI checks out a detached merge ref)
 #
 # Tudo acontece em mktemp; nunca toca o $HOME real. Sem rede (--no-archify --no-qdrant --no-brain).
 # Uso: tests/test-deploy-lifecycle.sh   (exit 0 = tudo verde; 1 = alguma garantia falhou)
@@ -58,7 +62,7 @@ set_core() {  # set_core add|del <rel> — edita skills-core.txt da cópia e reg
 }
 deploy() {  # deploy <home> [flags...] → stdout+stderr em $OUT, código em $RC
   local home="$1"; shift
-  OUT="$(HOME="$home" "$R/deploy.sh" --claude-only --no-archify --no-qdrant --no-brain "$@" 2>&1)"; RC=$?
+  OUT="$(HOME="$home" "$R/deploy.sh" --force-branch --claude-only --no-archify --no-qdrant --no-brain "$@" 2>&1)"; RC=$?
 }
 sha() { if command -v sha256sum >/dev/null 2>&1; then sha256sum | cut -c1-64; else shasum -a 256 | cut -c1-64; fi; }  # macOS sem coreutils
 tree_sha() {  # hash de conteúdo+caminho+modo de uma árvore (sem timestamps)
@@ -254,9 +258,9 @@ deploy "$H5"
 check "osforge_brain.py installed next to osforge-db" '[ -f "$H5/.local/bin/osforge_brain.py" ] && cmp -s "$H5/.local/bin/osforge_brain.py" "$R/scripts/osforge_brain.py"'
 check "installed osforge-db imports the brain from ~/.local/bin (help lists recall)" 'HOME="$H5" python3 "$H5/.local/bin/osforge-db" 2>/dev/null | grep -q "recall"'
 check "--no-brain → exit 0, one skip line, no venv" '[ $RC -eq 0 ] && [ "$(grep -c "brain runtime skipped (--no-brain)" <<<"$OUT")" = 1 ] && [ ! -e "$H5/.osforge/venv" ]'
-OUT="$(HOME="$H5" "$R/deploy.sh" --claude-only --no-archify --no-qdrant --dry-run 2>&1)"
+OUT="$(HOME="$H5" "$R/deploy.sh" --force-branch --claude-only --no-archify --no-qdrant --dry-run 2>&1)"
 check "dry-run → reports venv, model and migrate steps, creates no venv" 'grep -q "\[dry-run\] python3 -m venv" <<<"$OUT" && grep -q "\[dry-run\] osforge-db brain migrate" <<<"$OUT" && [ ! -e "$H5/.osforge/venv" ]'
-OUT="$(HOME="$H5" PIP_INDEX_URL="http://127.0.0.1:9/simple" PIP_NO_CACHE_DIR=1 PIP_RETRIES=0 PIP_TIMEOUT=2 "$R/deploy.sh" --claude-only --no-archify --no-qdrant 2>&1)"; RC=$?
+OUT="$(HOME="$H5" PIP_INDEX_URL="http://127.0.0.1:9/simple" PIP_NO_CACHE_DIR=1 PIP_RETRIES=0 PIP_TIMEOUT=2 "$R/deploy.sh" --force-branch --claude-only --no-archify --no-qdrant 2>&1)"; RC=$?
 check "pip unreachable → deploy exits 0 with one 'brain venv skipped' line" '[ $RC -eq 0 ] && [ "$(grep -c "brain venv skipped" <<<"$OUT")" = 1 ]'
 check "brain pins in deploy.sh match VENV_PINS in osforge_brain.py" '[ "$(sed -n "s/^BRAIN_PINS=\"\(.*\)\"$/\1/p" "$R/deploy.sh")" = "$(python3 -c "import sys; sys.path.insert(0, sys.argv[1]); import osforge_brain as b; print(\" \".join(b.VENV_PINS))" "$R/scripts")" ]'
 
@@ -268,6 +272,73 @@ HOME="$H3" "$R/deploy.sh" --uninstall >/dev/null 2>&1
 LEFT="$(cd "$H3" && find . -type f | LC_ALL=C sort | tr '\n' ' ')"
 # .osforge/config.json (backend vetorial) e osforge.db são DADOS seus, não arquivos gerenciados: ficam.
 check "só sobram dados e o settings.json vazio" '[ "$LEFT" = "./.claude.json ./.claude/settings.json ./.osforge/config.json ./.osforge/osforge.db " ] || { echo "   sobrou: $LEFT"; false; }'
+
+# ─────────────────────────────────────────────────────────────────────────────
+section "Deploy-source guard + --release (ADR-018)"
+# Throwaway git world: a work repo (this tree, fresh history), a local bare "origin", a clone.
+W="$WORK/gitworld"; mkdir -p "$W/work"
+(cd "$R" && tar --exclude=.git -cf - .) | tar -xf - -C "$W/work"
+GIT() { git -c user.name=t -c user.email=t@example.invalid -c commit.gpgsign=false -c tag.gpgsign=false "$@"; }
+( cd "$W/work" && GIT init -q -b main && GIT add -A && GIT commit -q -m c1 && GIT tag v1.9.0 \
+  && GIT init -q --bare -b main "$W/origin.git" && GIT remote add origin "$W/origin.git" && GIT push -q origin main --tags ) >/dev/null 2>&1
+GIT clone -q "$W/origin.git" "$W/clone" >/dev/null 2>&1
+G="$W/clone"
+check "fixture: clone is main at v1.9.0" '[ "$(git -C "$G" describe --tags --exact-match HEAD 2>/dev/null)" = v1.9.0 ]'
+# the release that --release must find, pushed AFTER the clone: v1.10.0 > v1.9.0 only by version sort
+( cd "$W/work" && printf '1.10.0\n' > VERSION && GIT commit -q -am c2 && GIT tag v1.10.0 && GIT push -q origin main --tags ) >/dev/null 2>&1
+gdeploy() {  # gdeploy <home> [flags...] — real deploy.sh of the clone, guard ACTIVE unless a flag/env says otherwise
+  local home="$1"; shift
+  OUT="$(HOME="$home" "$G/deploy.sh" --claude-only --no-archify --no-qdrant --no-brain "$@" 2>&1)"; RC=$?
+}
+
+HG="$WORK/hg-ok"; mkdir -p "$HG"; gdeploy "$HG"
+check "clean main at a v* tag → deploys (exit 0, banner shows the ref)" '[ $RC -eq 0 ] && grep -q "Ref:  main @ v1.9.0" <<<"$OUT"'
+check "install-state records the ref" 'grep -q "main @ v1.9.0" "$HG/.osforge/install-state.json"'
+
+git -C "$G" checkout -q -b topic
+HG="$WORK/hg-topic"; mkdir -p "$HG"; gdeploy "$HG"
+check "non-main branch → refused, names the reason and the flag" '[ $RC -ne 0 ] && grep -q "branch is .topic., not main" <<<"$OUT" && grep -q -- "--force-branch" <<<"$OUT"'
+check "refused deploy wrote nothing" '[ "$(find "$HG" -type f | wc -l | tr -d " ")" = 0 ]'
+gdeploy "$HG" --force-branch
+check "--force-branch on a non-main branch → deploys" '[ $RC -eq 0 ] && grep -q "guard bypassed" <<<"$OUT"'
+HG2="$WORK/hg-topic-env"; mkdir -p "$HG2"; OUT="$(OSFORGE_DEPLOY_FORCE_BRANCH=1 HOME="$HG2" "$G/deploy.sh" --claude-only --no-archify --no-qdrant --no-brain 2>&1)"; RC=$?
+check "OSFORGE_DEPLOY_FORCE_BRANCH=1 → deploys" '[ $RC -eq 0 ] && grep -q "guard bypassed" <<<"$OUT"'
+HG3="$WORK/hg-topic-dry"; mkdir -p "$HG3"; gdeploy "$HG3" --dry-run
+check "--dry-run reports the verdict and continues (exit 0, nothing written)" '[ $RC -eq 0 ] && grep -q "guard would REFUSE" <<<"$OUT" && grep -q "Deploy finalizado" <<<"$OUT" && [ "$(find "$HG3" -type f | wc -l | tr -d " ")" = 0 ]'
+gdeploy "$HG" --doctor
+check "--doctor is not guarded" '! grep -q "Refusing" <<<"$OUT"'
+git -C "$G" checkout -q main
+
+: > "$G/stray.txt"
+HG4="$WORK/hg-dirty"; mkdir -p "$HG4"; gdeploy "$HG4"
+check "dirty tree on main → refused" '[ $RC -ne 0 ] && grep -q "uncommitted changes" <<<"$OUT"'
+mv "$G/stray.txt" "$WORK/stray.txt"
+
+GIT -C "$G" commit -q --allow-empty -m local-work
+HG5="$WORK/hg-untagged"; mkdir -p "$HG5"; gdeploy "$HG5"
+check "main past its tag (HEAD not at a v* tag) → refused" '[ $RC -ne 0 ] && grep -q "not at a v\* tag" <<<"$OUT"'
+gdeploy "$HG5" --force-branch
+check "--force-branch deploys an untagged main" '[ $RC -eq 0 ]'
+
+mv "$G/.git" "$G/.git.off"
+HG6="$WORK/hg-tarball"; mkdir -p "$HG6"; gdeploy "$HG6" --dry-run
+check "not a git checkout → no guard" '[ $RC -eq 0 ] && grep -q "not a git checkout" <<<"$OUT"'
+mv "$G/.git.off" "$G/.git"
+
+# --release: from a feature branch with a dirty tree, still deploys the highest tag from a detached worktree
+git -C "$G" checkout -q -b wip; : > "$G/stray.txt"
+HR="$WORK/hr"; mkdir -p "$HR"; gdeploy "$HR" --release
+check "--release → exit 0 from a dirty feature branch" '[ $RC -eq 0 ] || { echo "$OUT" | tail -15; false; }'
+check "--release picked v1.10.0 (version sort, not v1.9.0) in ~/.osforge/release/" '[ -f "$HR/.osforge/release/v1.10.0/VERSION" ] && [ ! -e "$HR/.osforge/release/v1.9.0" ]'
+check "--release state says v1.10.0 from a detached ref" 'grep -q "\"version\": \"1.10.0\"" "$HR/.osforge/install-state.json" && grep -q "detached @ v1.10.0" "$HR/.osforge/install-state.json"'
+check "--release deploys the release's files, not the wip checkout's" '[ "$(cat "$HR/.osforge/repo-path")" = "$HR/.osforge/release/v1.10.0" ]'
+gdeploy "$HR" --release
+check "--release again reuses the worktree" '[ $RC -eq 0 ] && grep -q "reusing worktree" <<<"$OUT"'
+HOME="$HR" "$G/deploy.sh" --doctor > "$WORK/rel-doctor.log" 2>&1
+check "--doctor shows installed version vs latest local tag" 'grep -q "installed v1.10.0 = latest local tag v1.10.0" "$WORK/rel-doctor.log"'
+git -C "$G" remote set-url origin "$W/does-not-exist.git"
+HR2="$WORK/hr-offline"; mkdir -p "$HR2"; gdeploy "$HR2" --release
+check "--release with an unreachable origin → clear failure, nothing written" '[ $RC -ne 0 ] && grep -q "fetch --tags origin failed" <<<"$OUT" && [ "$(find "$HR2" -type f | wc -l | tr -d " ")" = 0 ]'
 
 echo ""
 echo "══ lifecycle: $PASS ok, $FAIL falha(s)"
