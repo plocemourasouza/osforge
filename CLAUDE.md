@@ -31,7 +31,7 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Offline suites (958 checks; none touches the live ~/.claude, none spends API):
+# Offline suites (971 checks; none touches the live ~/.claude, none spends API):
 ./tests/test-assertions.sh              # Verdict logic of the eval harnesses (67)
 ./tests/hooks/run-contracts.sh          # Hook contracts: real commands × fixtures, both harnesses (71; deploy gate)
 ./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle + denial attenuation (84)
@@ -44,7 +44,7 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-installers.sh              # install-skill/install-mcp: the helpers that run on YOUR machine (22)
 ./tests/test-judge.sh                   # Isolated judge: argv/env/isolation/exit codes with a fake claude (81)
 ./tests/test-quality-guard.sh           # quality-guard (B-035): callers left open, duplicates, tests state, shadow/on/off, p95 budget, signals CLI (40)
-./tests/test-monitor.sh                 # Monitor contract (B-036): portfolio/project numbers vs hand count, --discover, quality block, read-only, budget (45)
+./tests/test-monitor.sh                 # Monitor (B-036): contract numbers vs hand count, --discover, quality block, read-only, budget; /monitor page + /api/monitor (58; the server part needs bun)
 ./tests/test-outcome-r3.sh              # Outcome eval r3 (Pacote 02): builds offline, --dry plans 396/288 calls, r1/r2 byte-identical (35)
 ./tests/test-eval-cases.sh              # Eval cases v2: category, criticals, orphans fail --dry (42)
 ./tests/test-trigger-detect.sh          # Trigger eval counts the real skill (not just the clone) and runs outside the repo (3)
@@ -70,7 +70,7 @@ python3 scripts/check-portability.py    # bash 4+ / GNU-only in what gets deploy
 
 python3 scripts/buscar-skill.py <query> # Search skills locally
 python3 scripts/osforge-db.py --help    # State CLI (deployed as `osforge-db` in ~/.local/bin)
-bun scripts/canvas/server.ts            # OSForge Canvas — local generative UI viewer (port 4242, see skills/osforge-canvas/)
+bun scripts/canvas/server.ts            # OSForge Canvas — local generative UI viewer (port 4242, see skills/osforge-canvas/); /monitor = portfolio of projects (B-036)
 ```
 
 Deploy behavior worth knowing:
@@ -96,7 +96,7 @@ Deploy behavior worth knowing:
 - `scripts/osforge-db.py` — deployed to `~/.local/bin/osforge-db`; SQLite state at `~/.osforge/osforge.db` (global) or `.osforge/osforge.db` (per-project via `--scope=local`). Tracks projects, phases, tasks (`wave`/`depends_on` for parallel dispatch), decisions (FTS5), blockers; `board` = cross-project view. Also: **local vector memory** (`embed`, `embed-backfill`, `search-semantic`, `search-hybrid`, `vec-init`, `vec-status`; 3-tier Qdrant→SQLite→FTS5 selected via `~/.osforge/config.json`) and **observations/instincts** feeding `evolve`.
 - `scripts/osforge_brain.py` — the **brain** (ADR-017), deployed next to `osforge-db` in `~/.local/bin`: long-term memory (`remember`/`recall`/`forget`/`brain *`) in Qdrant collection `osforge_brain` (dense embeddinggemma-300m via fastembed + sparse BM25), journal `~/.osforge/brain.jsonl` as source of truth. Stdlib side imported by `osforge-db`; heavy side runs in `~/.osforge/venv` (created by `deploy.sh`, `--no-brain` skips). The SQLite side is the **workbench**.
 - `scripts/qdrant/` — `docker-compose.yml` (pinned `qdrant/qdrant:v1.18.2`, persistent volume at `~/.osforge/qdrant/storage`) + README for the opt-in vector backend. Provisioned by `./deploy.sh --with-qdrant`.
-- `scripts/canvas/` — OSForge Canvas: local generative-UI service (single-file Bun server + single-file viewer, zero deps). Claude writes JSON artifacts to `<cwd>/outputs/canvas/artifacts/`, the viewer renders them as interactive UI (SSE live-reload), feedback lands in `outputs/canvas/feedback/` (runtime scratch, gitignored). Schema: `skills/osforge-canvas/references/schema.md`.
+- `scripts/canvas/` — OSForge Canvas: local generative-UI service (single-file Bun server + single-file viewer, zero deps). Claude writes JSON artifacts to `<cwd>/outputs/canvas/artifacts/`, the viewer renders them as interactive UI (SSE live-reload), feedback lands in `outputs/canvas/feedback/` (runtime scratch, gitignored). Schema: `skills/osforge-canvas/references/schema.md`. The same server serves `/monitor` (`monitor.html`, layout adapted from Ponytail's board, MIT) with `/api/monitor` → `osforge-db monitor` (read-only portfolio of every project + the selected project's detail; B-036, ADR-019).
 
 ### Source material (not deployed, gitignored)
 - `sources/01-anthropic/` … `sources/13-claude-red/` — vendored upstream skill collections, the raw curation sources (Anthropic, superpowers, Vercel, Trail of Bits, Supabase, Expo, Cloudflare, Sentry, Claude-Red, etc.). Disk-only (ADR-009).

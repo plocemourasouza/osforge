@@ -2526,6 +2526,17 @@ def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False
         "custo": round(tot["custo"], 4), "minutos": round(tot["minutos"], 1),
     }
     out["projetos"] = projects
+    now = datetime.now(timezone.utc)
+    shown = {p["slug"] for p in projects}
+    blk = []
+    for b in conn.execute("SELECT b.id, b.description, b.waiting_for, b.created_at, p.slug FROM blockers b "
+                          "JOIN projects p ON p.id=b.project_id WHERE b.resolved_at IS NULL ORDER BY b.created_at"):
+        if b["slug"] not in shown:
+            continue
+        c = _parse_iso(b["created_at"])
+        blk.append({"projeto": b["slug"], "id": b["id"], "descricao": b["description"], "aguardando": b["waiting_for"],
+                    "desde": b["created_at"], "idade_dias": (now - c).days if c else None})
+    out["bloqueios"] = blk
     out["sem_projeto"] = {"serie": _series(per.get(None) or {}, keys_series)}
     if discover:
         out["sem_cadastro"] = unregistered

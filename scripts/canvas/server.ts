@@ -31,6 +31,7 @@
 import { watch, type FSWatcher } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { resolve, join } from "node:path";
+import { homedir } from "node:os";
 
 // ── Constants ───────────────────────────────────────────────────────────────
 
@@ -65,6 +66,7 @@ const DATA_DIR = resolveDataDir();
 const ARTIFACTS_DIR = join(DATA_DIR, "artifacts");
 const FEEDBACK_DIR = join(DATA_DIR, "feedback");
 const VIEWER_HTML = join(import.meta.dir, "viewer.html");
+const MONITOR_HTML = join(import.meta.dir, "monitor.html");
 const PORT = resolvePort();
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -305,12 +307,97 @@ async function handlePostFeedback(id: string, request: Request): Promise<Respons
   return Response.json({ ok: true });
 }
 
+// ── Monitor (B-036, SPEC-P05 rev. 3): portfolio page + read-only JSON ──────────────
+// The page is static; the data comes from `osforge-db monitor`, run on demand (never with a
+// shell) and cached for MONITOR_CACHE_MS. The SSE stream below says when osforge.db changed.
+
+const MONITOR_CACHE_MS = 15_000;
+const MONITOR_TIMEOUT_MS = 10_000;
+const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{0,99}$/;
+const monitorCache = new Map<string, { at: number; status: number; body: string }>();
+
+function osforgeDbPath(): string {
+  return process.env["OSFORGE_DB"] || join(homedir(), ".osforge", "osforge.db");
+}
+
+/** The osforge-db command: this checkout's copy first (dev and release worktree), then the
+ * deployed one, then the repo-path anchor. null when none exists. */
+async function osforgeDbCmd(): Promise<string[] | null> {
+  const sibling = join(import.meta.dir, "..", "osforge-db.py");
+  if (await Bun.file(sibling).exists()) return ["python3", sibling];
+  const deployed = join(homedir(), ".local", "bin", "osforge-db");
+  if (await Bun.file(deployed).exists()) return [deployed];
+  try {
+    const anchor = (await Bun.file(join(homedir(), ".osforge", "repo-path")).text()).trim();
+    const viaAnchor = join(anchor, "scripts", "osforge-db.py");
+    if (anchor && (await Bun.file(viaAnchor).exists())) return ["python3", viaAnchor];
+  } catch {
+    /* no anchor */
+  }
+  return null;
+}
+
+async function handleMonitorPage(): Promise<Response> {
+  const file = Bun.file(MONITOR_HTML);
+  if (!(await file.exists())) return jsonError("monitor.html not found", 503);
+  return new Response(file, {
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      // The page loads nothing from outside: say so to the browser too.
+      "Content-Security-Policy":
+        "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'",
+    },
+  });
+}
+
+async function handleMonitorApi(request: Request, url: URL): Promise<Response> {
+  if (!isAllowedOrigin(request)) return jsonError("forbidden origin", 403);
+  const project = url.searchParams.get("project");
+  const daysRaw = url.searchParams.get("days") ?? "30";
+  const days = Number.parseInt(daysRaw, 10);
+  if (!/^\d+$/.test(daysRaw) || days < 1 || days > 365) return jsonError("days must be 1-365", 400);
+  if (project !== null && !SLUG_PATTERN.test(project)) return jsonError("invalid project", 400);
+  const discover = project === null && url.searchParams.get("discover") === "1";
+
+  const key = `${project ?? ""}|${days}|${discover ? 1 : 0}`;
+  const hit = monitorCache.get(key);
+  if (hit && Date.now() - hit.at < MONITOR_CACHE_MS) {
+    return new Response(hit.body, { status: hit.status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+  }
+  const cmd = await osforgeDbCmd();
+  if (!cmd) return jsonError("osforge-db not found", 503);
+  const args = [...cmd, "monitor", ...(project ? [project] : []), `--days=${days}`, ...(discover ? ["--discover"] : [])];
+  const proc = Bun.spawn(args, { stdout: "pipe", stderr: "pipe", env: process.env });
+  const timer = setTimeout(() => proc.kill(), MONITOR_TIMEOUT_MS);
+  const [out, code] = await Promise.all([new Response(proc.stdout).text(), proc.exited]);
+  clearTimeout(timer);
+  let status = 200;
+  let body = out;
+  if (code === 2) {
+    status = project ? 404 : 400;
+    body = JSON.stringify({ error: project ? "project not found" : "bad request" });
+  } else if (code !== 0) {
+    console.error("[canvas] osforge-db monitor exited", code, (await new Response(proc.stderr).text()).slice(0, 500));
+    return jsonError("monitor failed", 502);
+  } else {
+    try {
+      JSON.parse(out);
+    } catch {
+      return jsonError("monitor returned invalid JSON", 502);
+    }
+  }
+  monitorCache.set(key, { at: Date.now(), status, body });
+  return new Response(body, { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+}
+
 // ── SSE: filesystem change stream ───────────────────────────────────────────────
 
 interface SseEvent {
-  kind: "artifact" | "feedback";
+  kind: "artifact" | "feedback" | "monitor";
   id: string;
 }
+
+const MONITOR_DEBOUNCE_MS = 2_000;
 
 function handleEvents(request: Request): Response {
   const encoder = new TextEncoder();
@@ -347,8 +434,40 @@ function handleEvents(request: Request): Response {
         );
       };
 
+      // A first comment flushes the headers now, so EventSource reports "open" at once.
+      try {
+        controller.enqueue(encoder.encode(`: connected\n\n`));
+      } catch {
+        /* closed before start */
+      }
+
       watchers.push(watch(ARTIFACTS_DIR, (_evt, filename) => schedule("artifact", filename)));
       watchers.push(watch(FEEDBACK_DIR, (_evt, filename) => schedule("feedback", filename)));
+
+      // osforge.db changed (a hook or session-save wrote): tell the monitor page, at most every
+      // 2 s, and drop the cached JSON. The db runs in WAL mode, so its directory is watched.
+      try {
+        const dbPath = osforgeDbPath();
+        const dbDir = resolve(dbPath, "..");
+        const dbName = dbPath.slice(dbDir.length + 1);
+        watchers.push(
+          watch(dbDir, (_evt, filename) => {
+            if (!filename || !String(filename).startsWith(dbName)) return;
+            const existing = debounceTimers.get("monitor:db");
+            if (existing) return;
+            debounceTimers.set(
+              "monitor:db",
+              setTimeout(() => {
+                debounceTimers.delete("monitor:db");
+                monitorCache.clear();
+                emit({ kind: "monitor", id: "db" });
+              }, MONITOR_DEBOUNCE_MS),
+            );
+          }),
+        );
+      } catch {
+        /* no database directory yet: the page polls every 60 s */
+      }
 
       heartbeat = setInterval(() => {
         if (closed) return;
@@ -407,6 +526,8 @@ async function route(request: Request): Promise<Response> {
   if (pathname === "/api/health" && method === "GET") return handleHealth();
   if (pathname === "/api/artifacts" && method === "GET") return handleListArtifacts();
   if (pathname === "/api/events" && method === "GET") return handleEvents(request);
+  if (pathname === "/monitor" && method === "GET") return handleMonitorPage();
+  if (pathname === "/api/monitor" && method === "GET") return handleMonitorApi(request, url);
 
   const artifactMatch = pathname.match(/^\/api\/artifacts\/([^/]+)$/);
   if (artifactMatch && method === "GET") {

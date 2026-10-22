@@ -983,6 +983,27 @@ SEDE (retomada):
        [pending    ] #2 p0 Server Action: criar assinatura Stripe
 ```
 
+### Monitor de projetos e atividades (B-036, ADR-019)
+
+O servidor do Canvas (sobe sozinho no SessionStart) serve um painel local com **todos os projetos**:
+`http://127.0.0.1:4242/monitor`. A barra lateral agrupa por status (em andamento, backlog, pausados,
+concluídos) e lista as pastas com sessão do Claude Code que ainda não foram cadastradas; "Todos os
+projetos" mostra KPIs (sessões, tempo de agente, custo, tokens) com variação contra o período anterior,
+o gráfico empilhado por projeto, a tabela de projetos, os bloqueios abertos e o mapa de atividade de 12
+semanas. Ao escolher um projeto: fases, quadro de tarefas (a fazer, em andamento, bloqueadas, feitas),
+bloqueios com idade, decisões, qualidade (estado dos testes, chamadores abertos, duplicatas, atalhos
+`shortcut:`), consumo por modelo e sessões. O link guarda a seleção (`/monitor#p=<slug>&d=30`).
+
+```bash
+osforge-db set-project-status <slug> backlog     # active | backlog | paused | done | archived
+osforge-db monitor --json                        # o mesmo dado do painel (portfólio)
+osforge-db monitor <slug> --json                 # detalhe; --compact = uma linha para a faixa
+```
+
+O painel só lê. Atualiza quando o `osforge.db` muda (SSE do Canvas) e a cada 60 s. Depois de um deploy
+que traga o monitor, reinicie o Canvas uma vez (`pkill -f canvas/server.ts`; a próxima sessão o sobe de
+novo) — o processo antigo não conhece a rota `/monitor`.
+
 ### Por que não misturar numa sessão só?
 
 - Contexto: arquivos de projetos diferentes competem pela janela de contexto

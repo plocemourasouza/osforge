@@ -64,8 +64,20 @@ from mattpocock/skills (`inspired_by` in the files). The "smart zone / dumb zone
 ## DietrichGebert/ponytail — MIT License, Copyright (c) 2026 DietrichGebert
 
 https://github.com/DietrichGebert/ponytail, read at commit 09c434ab73ca43761c5d8b0c5d341926c2fba710
-(docs/intake/ponytail/). Nothing from it is deployed; all of it lives in the outcome eval of round r3
-(docs/intake/ponytail/MEDICAO-r3.md), measured before any adoption.
+(docs/intake/ponytail/). Two uses: the monitor page (deployed), and the outcome eval of round r3
+(docs/intake/ponytail/MEDICAO-r3.md, not deployed), measured before any rule is adopted.
+
+Adaptation (deployed; ADR-019, SPEC-P05 rev. 3):
+- `scripts/canvas/monitor.html` — layout (sidebar + main), CSS tokens and themes, and the drawing
+  helpers (monotone curve, gradients/blur, sparkline KPIs, stacked stream with hover, hexagon
+  12-week activity map and its thermal ramp) from `hooks/band/board.ts`. Data, structure (portfolio
+  of projects, task board, phases, blockers, decisions, quality) and texts are OSForge's; the
+  share card, logo and CSV ingestion are not used. The file carries the MIT notice in its header.
+
+Re-implemented from scratch (mechanism only, no code copied):
+- `hooks/quality-guard.py` + `hooks/lib/defs.py` — the band's "callers open", "duplicate" and
+  "tests" signals (`hooks/band/metrics.ts`, `register.tsx`), here recorded in `signals` and, in
+  `on` mode, told to the model.
 
 Verbatim copy (eval reference arm only):
 - `scripts/evals/outcome/r3/vendor/ponytail/SKILL.md` — `skills/ponytail/SKILL.md`, unchanged (sha256

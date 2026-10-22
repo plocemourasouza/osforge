@@ -496,14 +496,15 @@ deploy_claude() {
   copy_dir "$REPO/commands" "$CLAUDE/commands"
 
   echo ""
-  log "OSForge Canvas (server + viewer):"
+  log "OSForge Canvas (server + viewer + monitor):"
   if [ "$LEGACY_DEPLOY" != "1" ]; then
     copy_file "$REPO/scripts/canvas/server.ts" "$CLAUDE/canvas/server.ts"
     copy_file "$REPO/scripts/canvas/viewer.html" "$CLAUDE/canvas/viewer.html"
-  elif $DRY_RUN; then skip "cp scripts/canvas/{server.ts,viewer.html} → ~/.claude/canvas/"
+    copy_file "$REPO/scripts/canvas/monitor.html" "$CLAUDE/canvas/monitor.html"
+  elif $DRY_RUN; then skip "cp scripts/canvas/{server.ts,viewer.html,monitor.html} → ~/.claude/canvas/"
   else
     mkdir -p "$CLAUDE/canvas"
-    cp "$REPO/scripts/canvas/server.ts" "$REPO/scripts/canvas/viewer.html" "$CLAUDE/canvas/"
+    cp "$REPO/scripts/canvas/server.ts" "$REPO/scripts/canvas/viewer.html" "$REPO/scripts/canvas/monitor.html" "$CLAUDE/canvas/"
     ok "canvas deployado em $CLAUDE/canvas/ (autostart via SessionStart hook)"
   fi
 

@@ -14,6 +14,8 @@
 #   7. budget on 50,000 calls (median of 5): band --compact < 200 ms (runs every turn);
 #      project < 400 ms and portfolio < 600 ms (the panel fetches them in the background)
 #   8. read-only: the database file is byte-identical after every monitor call
+#   9. Canvas: /monitor loads nothing external and never writes data as HTML; /api/monitor
+#      validates slug/days/Origin and maps unknown project to 404 (needs bun, else skipped)
 set -uo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
@@ -105,6 +107,7 @@ check "legacy status kept raw, shown as outro" "[ \"\$(q '[p[\"status_bruto\"] f
 check "totals: open tasks 3, blockers 1, signals 1 (tests excluded)" "[ \"\$(q '(d[\"totais\"][\"tarefas_abertas\"], d[\"totais\"][\"bloqueios_abertos\"], d[\"totais\"][\"sinais_abertos\"])')\" = '(3, 1, 1)' ]"
 check "period: 5 calls (one outside the horizon), 3 sessions" "[ \"\$(q '(d[\"totais\"][\"chamadas\"], d[\"totais\"][\"sessoes\"])')\" = '(5, 3)' ]"
 check "health: 1 of 5 calls without project = 20.0%" "[ \"\$(q 'd[\"saude\"][\"chamadas_sem_projeto_pct\"]')\" = 20.0 ]"
+check "open blockers across projects, with project and age" "[ \"\$(q '[(b[\"projeto\"], b[\"idade_dias\"]) for b in d[\"bloqueios\"]]')\" = \"[('alpha', 3)]\" ]"
 check "health: projects without a root" "[ \"\$(q 'd[\"saude\"][\"projetos_sem_raiz\"]')\" = \"['beta', 'empty']\" ]"
 check "window from quota.json" "[ \"\$(q 'd[\"janela\"][\"five_hour\"][\"pct\"]')\" = 63.0 ]"
 check "series covers the 84-day horizon" "[ \"\$(q 'len(d[\"projetos\"][0][\"serie\"])')\" = 84 ]"
@@ -174,6 +177,37 @@ check "phase, in-progress task, blockers, signals, tests" "[ \"\$(q '(d[\"projet
 section "8. read-only"
 SHA1="$(python3 -c "import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],'rb').read()).hexdigest())" "$OSFORGE_DB")"
 check "database byte-identical after every monitor call" "[ \"$SHA0\" = \"$SHA1\" ]"
+
+section "9. Canvas: /monitor page and /api/monitor"
+H="$REPO/scripts/canvas/monitor.html"
+check "page loads nothing external (no script src, stylesheet link, http(s) src/href/url, @import)" "! grep -Eq '<script[^>]+src=|<link[^>]+stylesheet|(src|href)=\"https?:|url\\(https?:|@import' \"$H\""
+check "page never writes data as HTML (no .innerHTML / insertAdjacentHTML / document.write)" "! grep -Eq '\\.innerHTML|insertAdjacentHTML|document\\.write' \"$H\""
+python3 - "$H" "$WORK/monitor.js" <<'EOF'
+import re, sys
+s = open(sys.argv[1], encoding="utf-8").read()
+open(sys.argv[2], "w", encoding="utf-8").write(re.findall(r"<script>(.*?)</script>", s, re.S)[0])
+EOF
+check "page script parses (node --check)" "node --check \"$WORK/monitor.js\" 2>/dev/null || ! command -v node >/dev/null"
+if ! command -v bun >/dev/null 2>&1; then
+  echo "  ⟳  bun ausente — rotas do Canvas não testadas aqui (rodam onde o Canvas roda)"
+else
+  PORT="$(python3 -c "import socket; s=socket.socket(); s.bind(('127.0.0.1',0)); print(s.getsockname()[1])")"
+  CANVAS_PORT="$PORT" bun "$REPO/scripts/canvas/server.ts" --dir="$WORK/canvas" >"$WORK/server.log" 2>&1 &
+  SPID=$!
+  for _ in $(seq 50); do curl -sf "http://127.0.0.1:$PORT/api/health" >/dev/null 2>&1 && break; sleep 0.1; done
+  U="http://127.0.0.1:$PORT"
+  code(){ curl -s -o "$WORK/resp" -w '%{http_code}' "$@"; }
+  check "GET /monitor → 200 html" "[ \"\$(code \"$U/monitor\")\" = 200 ] && grep -q 'OSForge Monitor' \"$WORK/resp\""
+  check "/monitor sends a CSP that forbids external loads" "curl -s -D - -o /dev/null \"$U/monitor\" | grep -i '^content-security-policy:' | grep -q \"default-src 'none'\""
+  check "/api/monitor → portfolio JSON" "[ \"\$(code \"$U/api/monitor?days=30\")\" = 200 ] && python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d[\"schema\"]==\"osforge.monitor.v1\" and \"projetos\" in d' \"$WORK/resp\""
+  check "/api/monitor?project=alpha → detail" "[ \"\$(code \"$U/api/monitor?project=alpha\")\" = 200 ] && grep -q '\"fases_detalhe\"' \"$WORK/resp\""
+  check "unknown project → 404" "[ \"\$(code \"$U/api/monitor?project=nope\")\" = 404 ]"
+  check "bad slug (path traversal) → 400" "[ \"\$(code \"$U/api/monitor?project=..%2Fx\")\" = 400 ]"
+  check "days out of range → 400" "[ \"\$(code \"$U/api/monitor?days=0\")\" = 400 ] && [ \"\$(code \"$U/api/monitor?days=1e3\")\" = 400 ]"
+  check "foreign Origin → 403" "[ \"\$(code -H 'Origin: https://evil.example' \"$U/api/monitor\")\" = 403 ]"
+  check "discover=1 → sem_cadastro block" "[ \"\$(code \"$U/api/monitor?discover=1\")\" = 200 ] && grep -q '\"sem_cadastro\"' \"$WORK/resp\""
+  kill "$SPID" 2>/dev/null; wait "$SPID" 2>/dev/null
+fi
 
 section "7. budget: 50,000 calls"
 python3 - "$OSFORGE_DB" <<'EOF'
