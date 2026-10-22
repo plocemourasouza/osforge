@@ -482,4 +482,12 @@ suggests `bind-project`/`upsert-project` commands for unregistered folders it di
 transcript `cwd` fields. Release 5.4.0 follows ADR-018 once the offline items are green; rule
 changes join a later release only with an r3 report in `docs/evals/`.
 
+**Addendum (2026-10-22, after using the preview).** The monitor becomes a small command centre
+(SPEC-P06, B-040–B-042): sidebar groups by live activity (Claude Code sessions, IDE windows and dev
+servers detected locally) and age (24 h → waiting, 30 days or held/archived → history); a per-project
+inbox delivered to the running agent at its next tool call by a new hook, `inbox-deliver`; and
+explicit actions to open Claude Code in Terminal, run it in the background, or open an installed
+IDE. Every action route is POST + JSON + same Origin/Host, and project roots come only from the
+database or the server's own discovery, never from the browser.
+
 **Date:** 2026-10-22.

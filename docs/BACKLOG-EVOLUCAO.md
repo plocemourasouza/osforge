@@ -329,6 +329,15 @@ D-G1 e D-M1 como recomendadas; D-P1, D-P2 (rodada paga r3), D-G2 e D-M2 continua
 ### B-038 · Painel lateral (`Pane`) — opcional (D-M2)
 - **Spec:** [P-05 §4](intake/ponytail/SPEC-P05-monitor.md).
 
+### B-040 · Grupos por atividade ao vivo (Ativo agora, Em andamento, Aguardando, Backlog, Histórico)
+- **Spec:** [P-06 §1–2](intake/ponytail/SPEC-P06-central-de-comando.md). **Chamadas pagas:** 0. Histórico depois de 30 dias.
+
+### B-041 · Conversa com os agentes pelo painel (caixa de entrada + hook `inbox-deliver`)
+- **Spec:** [P-06 §3](intake/ponytail/SPEC-P06-central-de-comando.md). **Chamadas pagas:** 0. Hooks 12 → 13.
+
+### B-042 · Disparo de ferramentas pelo painel (Claude no Terminal, em segundo plano, IDEs, status, cadastro)
+- **Spec:** [P-06 §4–5](intake/ponytail/SPEC-P06-central-de-comando.md). **Chamadas pagas:** 0 para construir; só as que o Paulo disparar.
+
 ### B-039 · Carimbos de tempo do SQLite deslocados pelo fuso — aberto
 - **Achado da revisão do B-036.** Colunas antigas (`projects.updated_at`, `tasks.updated_at`, `state.updated_at`,
   `decisions.created_at` …) são gravadas com `datetime('now','utc')`, que o SQLite trata como hora local e

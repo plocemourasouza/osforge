@@ -1,5 +1,9 @@
 # P-05 · Monitor de projetos e atividades (painel + faixa)
 
+**Os grupos da barra lateral e a conversa com os agentes foram estendidos pela
+[P-06](SPEC-P06-central-de-comando.md)** (Ativo agora, Em andamento, Aguardando, Backlog,
+Histórico; caixa de entrada; disparo de Claude Code e IDEs).
+
 **Revisão 3 (2026-10-22, aprovada):** o painel passa a ser um **portfólio**: lista todos os
 projetos (em andamento, backlog, pausados, concluídos e os que têm sessão mas ainda não foram
 cadastrados) e mostra o detalhe do projeto selecionado. O visual parte do quadro do Ponytail
