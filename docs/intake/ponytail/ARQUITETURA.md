@@ -43,7 +43,7 @@ A cobertura item a item está em [`COBERTURA.md`](COBERTURA.md); as evidências,
                  └─ G-3 estado dos testes ──┘                                         │
                                             └─→ osforge-db: tabela signals ◄──────────┘
  Camada 3       osforge-db (SQLite) ◄── session-save (calls, usage) · tasks · phases · decisions · blockers
- monitor               │  contrato único: `osforge-db monitor <slug> --json`
+ monitor               │  contrato único: `osforge-db monitor [<slug>] --json`
                        ├──→ Painel: servidor do Canvas, 127.0.0.1:4242/monitor (SSE ao vivo)
                        └──→ Faixa: mod `osforge-monitor` (AbovePrompt) + $.session.usage()
                                   (custo, contexto, janela de 5 h — EV-C-P03)
@@ -93,7 +93,7 @@ O que muda em relação ao Ponytail:
 
 Um contrato de dados e duas vistas. Spec: [SPEC-P05](SPEC-P05-monitor.md).
 
-**Contrato:** `osforge-db monitor <slug> [--since 30d] --json`, que devolve:
+**Contrato:** `osforge-db monitor [<slug>] [--days 30] --json` — sem slug, o portfólio de todos os projetos; com slug, o detalhe (rev. 3 da P-05). Devolve:
 
 | Bloco | Conteúdo | Fonte |
 |---|---|---|

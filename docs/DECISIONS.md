@@ -442,3 +442,44 @@ contributors who want what is released run `--release`. Tests and CI's dry-run d
 network for `--release` (fetch); offline, check out a tag and deploy it, or `--force-branch`.
 
 **Date:** 2026-10-19.
+
+## ADR-019: Pacote 02 — Ponytail's behaviour as rules, edit-time guards and a portfolio monitor
+
+**Context.** The intake of `DietrichGebert/ponytail` (`09c434a`, MIT; `docs/intake/ponytail/`)
+found that it ships no subagents (its "20 agents" are host tools with adapters for one prompt)
+and that its subagent channel is redundant here: 270 of 277 OSForge subagents that wrote code
+already received the always-loaded summary (EV-M-P01). What it has of value is (1) writing rules
+OSForge lacks — 9 of 12 missing or partial (`COBERTURA.md` §1), (2) three edit-time signals
+(open callers, likely duplicate, tests state) that Ponytail shows only to the human (EV-P33), and
+(3) a local board with a project sidebar, KPIs, a stacked chart and a 12-week activity map.
+OSForge already stores the data a project monitor needs (projects, phases, tasks, decisions,
+blockers, 33,840 calls) but shows it only as `osforge-db board` text.
+
+**Decision.** Adopt the three layers of `PACOTE-02-ponytail.md` (rev. 2) as backlog items
+B-031–B-038, OSForge-native (alternative C of `ARQUITETURA.md`):
+1. **Rules (B-032 P-01, B-033 P-02, B-034 P-03).** Authored first as eval variants; a skill is
+   changed only if its arm wins the outcome round r3 (B-031) by more than the run spread, with
+   no critical criterion worse. r3 itself is a paid run and needs its own authorisation.
+2. **Guards (B-035 P-04).** A `PostToolUse` hook, `quality-guard`, writes `signals`
+   (`callers_open`, `duplicate`, `tests`). It ships in **shadow** mode (records, never injects);
+   injection to the model is switched on only after two weeks with false alarms ≤ 10% (G-1)
+   and ≤ 25% (G-2).
+3. **Monitor (B-036, B-037, B-038 P-05 rev. 3).** One read-only contract,
+   `osforge-db monitor [<slug>] --json` (`osforge.monitor.v1`), feeding a **portfolio** page
+   `/monitor` on the existing Canvas server — every project grouped by lifecycle status, with
+   the detail of the selected one — whose layout is adapted from Ponytail's `board.ts` (MIT
+   notice kept), and later a Claude Code band (`AbovePrompt` mod). `projects.status` gains a
+   lifecycle (`active`, `backlog`, `paused`, `done`, `archived`) so the portfolio can be split.
+
+**Alternatives rejected.** Installing Ponytail whole (two conflicting rule sets, a hook that asks
+the model to edit `settings.json`, a second CSV ledger); Ponytail's band alone (session view, not
+project view; its "tests passed" is a regex over the command line); copying its prompt verbatim
+into a skill (only as an eval arm, `ponytail-ref`).
+
+**Consequences.** Hooks go from 11 to 12. The early-access mod UI API is kept off the critical
+path: if the band breaks, the guards and the panel keep working. The monitor never writes; it
+suggests `bind-project`/`upsert-project` commands for unregistered folders it discovers from
+transcript `cwd` fields. Release 5.4.0 follows ADR-018 once the offline items are green; rule
+changes join a later release only with an r3 report in `docs/evals/`.
+
+**Date:** 2026-10-22.

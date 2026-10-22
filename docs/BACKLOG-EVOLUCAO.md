@@ -299,6 +299,36 @@ Proposta e specs: [`intake/PACOTE-01-qualidade-e-controle.md`](intake/PACOTE-01-
 ### B-030 · Registro de injeção de instincts — ⏸ só se o E5 for rodar
 - **Insumo:** [L-04](intake/laya/DECISAO-L04-laco-de-aprendizado.md).
 
+## Pacote 02 — Ponytail: comportamento, guardas e monitor (ADR-019)
+
+Proposta e specs: [`intake/PACOTE-02-ponytail.md`](intake/PACOTE-02-ponytail.md) (rev. 2), com o monitor na
+[rev. 3 da P-05](intake/ponytail/SPEC-P05-monitor.md) (portfólio de todos os projetos). Aprovado em 2026-10-22.
+D-G1 e D-M1 como recomendadas; D-P1, D-P2 (rodada paga r3), D-G2 e D-M2 continuam abertas.
+
+### B-031 · Rodada r3 do eval de resultado — preparar sem chamada
+- **Spec:** [MEDICAO-r3](intake/ponytail/MEDICAO-r3.md). **Chamadas pagas:** 0 para preparar; 288–396 para rodar (D-P2).
+
+### B-032 · Escada da solução em `coding-guidelines` — como variante da r3
+- **Spec:** [P-01](intake/ponytail/SPEC-P01-escada-da-solucao.md). Toca a skill só se o braço C ganhar.
+
+### B-033 · `code-review` com código conectado — como variante da r3
+- **Spec:** [P-02](intake/ponytail/SPEC-P02-review-codigo-conectado.md). Toca a skill só se o braço C ganhar.
+
+### B-034 · `repo-audit` sob demanda, com livro de atalhos — como variante da r3
+- **Spec:** [P-03](intake/ponytail/SPEC-P03-repo-audit.md). Entra como skill, como uma linha, ou não entra, pela r3.
+
+### B-035 · Guardas de edição (`quality-guard`) + `signals`, em modo sombra
+- **Spec:** [P-04](intake/ponytail/SPEC-P04-guardas-de-edicao.md). **Chamadas pagas:** 0. Hooks 11 → 12.
+
+### B-036 · Ciclo de vida do projeto + contrato `osforge-db monitor` + painel `/monitor`
+- **Spec:** [P-05 §0–2](intake/ponytail/SPEC-P05-monitor.md). **Chamadas pagas:** 0. O painel é a última parte.
+
+### B-037 · Faixa `osforge-monitor` no Claude Code
+- **Spec:** [P-05 §3](intake/ponytail/SPEC-P05-monitor.md). **Dependências:** B-036.
+
+### B-038 · Painel lateral (`Pane`) — opcional (D-M2)
+- **Spec:** [P-05 §4](intake/ponytail/SPEC-P05-monitor.md).
+
 ## Adiados — só com evidência
 
 | Item | Condição para reabrir |
@@ -319,4 +349,6 @@ B-003 ─────────────→ B-014 → B-015 → B-016 → B
 B-006 ─────────────→ B-018 → B-019
                      B-018 → B-020, B-022
 B-013 ─────────────→ B-021, B-023, B-024, adiados
+B-028 ─────────────→ B-035 (sombra) ─→ B-036 (contrato → painel) ─→ B-037 ─→ B-038
+B-031 ─→ r3 (D-P2) ─→ B-032, B-033, B-034
 ```

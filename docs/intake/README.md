@@ -34,14 +34,14 @@ conjunto, e não da ordem em que cada projeto foi lido.
 |---|---|---|---|---|
 | [Laya](laya/ANALISE.md) (`aayushch/laya`, Apache-2.0) | 2026-09-22 → 24 | `5970a11` | L-01 guarda de cota · L-02 juiz isolado · L-03 auditoria por chamada · L-04 decisão do R-09 | **incorporada** — Pacote 01, ADR-016, v5.2.0 (L-04 segue condicional ao E5) |
 | [Needle](needle/ANALISE.md) (`cactus-compute/needle`, Apache-2.0) | 2026-09-24 → 25 | `42bf1f2` | N-01 casos de eval com categoria e críticos · o modelo foi **recusado com medição** | **incorporada** — Pacote 01, ADR-016, v5.2.0 |
-| [Ponytail](ponytail/ANALISE.md) (`DietrichGebert/ponytail`, MIT) | 2026-10-22 | `09c434a` | P-01 escada da solução · P-02 review do código conectado · P-03 `repo-audit` · P-04 guardas de edição · P-05 monitor de andamento · o plugin foi **recusado** | no [Pacote 02](PACOTE-02-ponytail.md), aguardando aprovação |
+| [Ponytail](ponytail/ANALISE.md) (`DietrichGebert/ponytail`, MIT) | 2026-10-22 | `09c434a` | P-01 escada da solução · P-02 review do código conectado · P-03 `repo-audit` · P-04 guardas de edição · P-05 monitor de andamento · o plugin foi **recusado** | **incorporada** — [Pacote 02](PACOTE-02-ponytail.md), ADR-019 (aprovado em 2026-10-22; regras dependem da r3) |
 
 **Pacotes:**
 
 | Pacote | Itens | Estado |
 |---|---|---|
 | [Pacote 01 — Qualidade e controle](PACOTE-01-qualidade-e-controle.md) | B-025 a B-030 | entregue em v5.2.0 (ADR-016); B-030 condicional ao E5 |
-| [Pacote 02 — Ponytail](PACOTE-02-ponytail.md) | B-031 a B-038 | proposta (rev. 2): regras medidas na r3, guardas em sombra, monitor |
+| [Pacote 02 — Ponytail](PACOTE-02-ponytail.md) | B-031 a B-038 | aprovado (ADR-019), em implementação: regras medidas na r3, guardas em sombra, monitor de portfólio |
 
 Quando um pacote é aprovado: cada candidato vira um `B-0xx` no backlog com a mesma spec como corpo,
 a análise passa a ser citada pela ADR que aprovar o pacote, e esta tabela marca a fonte como

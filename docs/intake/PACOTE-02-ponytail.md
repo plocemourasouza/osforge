@@ -1,6 +1,6 @@
 # Pacote 02 — Ponytail: comportamento, guardas e monitor de andamento (revisão 2)
 
-**Estado:** proposta, aguardando aprovação. **Fonte:** [Ponytail](ponytail/ANALISE.md) (MIT, `09c434a`).
+**Estado:** aprovado em 2026-10-22 (ADR-019), em implementação. O monitor segue a [rev. 3 da P-05](ponytail/SPEC-P05-monitor.md): um portfólio com todos os projetos e o detalhe do selecionado, com o visual do quadro do Ponytail como base. **Fonte:** [Ponytail](ponytail/ANALISE.md) (MIT, `09c434a`).
 **Base:** OSForge `v5.3.1`. **Ids propostos no backlog:** B-031 a B-038.
 **Leitura recomendada:** [`ponytail/COBERTURA.md`](ponytail/COBERTURA.md) (o que ele trata e como,
 item a item) e [`ponytail/ARQUITETURA.md`](ponytail/ARQUITETURA.md) (como encaixa e as alternativas).
