@@ -32,6 +32,9 @@ Comandos:
   list-projects [--status=active|all]
   set-project-status <slug> <active|backlog|paused|done|archived>
                                     Ciclo de vida do projeto (ADR-019); o monitor agrupa por ele
+  monitor [<slug>] [--days=30] [--discover] [--all] [--compact]
+                                    Contrato do monitor (osforge.monitor.v1, sempre JSON, só leitura):
+                                    sem slug = portfólio; com slug = detalhe (B-036)
   add-signal <slug> <callers_open|duplicate|tests> <subject> [--detail=JSON] [--session=ID]
   resolve-signal <id> [<id>...]
   signals [<slug>] [--open] [--report] [--since=YYYY-MM-DD]
@@ -101,12 +104,28 @@ Comandos:
     OPENAI_API_KEY      Chave para openai
 """
 
-import sqlite3, sys, os, json, textwrap, math, hashlib, struct, re, unicodedata
+import sqlite3, sys, os, json, textwrap, math, hashlib, struct, re, unicodedata, time, shlex
 from array import array
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from urllib import request as _urllib_request
-from urllib import error as _urllib_error
+
+
+class _LazyModule:
+    """Imports on first attribute access. urllib.request costs ~60 ms to import and only the
+    vector/HTTP paths use it; every other command (and every hook calling osforge-db) skips it."""
+
+    def __init__(self, name):
+        self._name, self._mod = name, None
+
+    def __getattr__(self, attr):
+        if self._mod is None:
+            import importlib
+            self._mod = importlib.import_module(self._name)
+        return getattr(self._mod, attr)
+
+
+_urllib_request = _LazyModule("urllib.request")
+_urllib_error = _LazyModule("urllib.error")
 
 # The brain (long-term memory) ships next to this file; stdlib-only at import time.
 # No bytecode: the deployed copy lives in ~/.local/bin, which must not grow a __pycache__.
@@ -114,13 +133,22 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import osforge_brain as _brain  # noqa: E402
 
-# numpy é OPCIONAL — acelerador; resultado idêntico ao pure-Python
-try:
-    import numpy as _np
-    _HAS_NUMPY = True
-except ImportError:
-    _np = None
-    _HAS_NUMPY = False
+# numpy é OPCIONAL — acelerador; resultado idêntico ao pure-Python. Imported lazily, on the
+# first vector operation: importing it costs ~100 ms, paid by every hook that calls osforge-db
+# and by the monitor's 200 ms budget even though they never touch a vector (B-036).
+_np = None
+_HAS_NUMPY = None
+
+
+def _numpy():
+    global _np, _HAS_NUMPY
+    if _HAS_NUMPY is None:
+        try:
+            import numpy as _mod
+            _np, _HAS_NUMPY = _mod, True
+        except ImportError:
+            _np, _HAS_NUMPY = None, False
+    return _np
 
 # ── Localização do banco ──────────────────────────────────────────────────
 
@@ -218,7 +246,7 @@ def _embed_model():
 
 def _vec_normalize(vec):
     """Normaliza vetor L2 → retorna list[float]. Usa numpy se disponível."""
-    if _HAS_NUMPY:
+    if _numpy() is not None:
         a = _np.array(vec, dtype=_np.float32)
         n = float(_np.linalg.norm(a))
         if n == 0.0:
@@ -243,7 +271,7 @@ def _blob_to_vec(blob):
 
 def _cosine(a, b):
     """Cosseno entre dois vetores já normalizados L2 → valor em [-1, 1]."""
-    if _HAS_NUMPY:
+    if _numpy() is not None:
         return float(_np.dot(_np.array(a, dtype=_np.float32),
                              _np.array(b, dtype=_np.float32)))
     return sum(x * y for x, y in zip(a, b))
@@ -732,6 +760,7 @@ def cmd_vec_status(conn):
     """Imprime provider ativo, backend vetorial, modelo, contagem por source_table.
     Se backend=qdrant, também mostra saúde e total de pontos na coleção.
     """
+    _numpy()   # resolve the lazy import before printing: output must not pause mid-report
     provider = _EMBED_PROVIDER
     model    = _embed_model()
     rows = conn.execute("""
@@ -767,7 +796,7 @@ def cmd_vec_status(conn):
             "qdrant_collection": _QDRANT_COLLECTION if _VECTOR_BACKEND == "qdrant" else None,
             "qdrant_healthy": qdrant_healthy,
             "qdrant_points": qdrant_points,
-            "numpy_available": _HAS_NUMPY,
+            "numpy_available": _numpy() is not None,
             "sqlite_tables": [dict(r) for r in rows],
         }
         print(json.dumps(out, ensure_ascii=False))
@@ -786,7 +815,7 @@ def cmd_vec_status(conn):
     _out(f"  coverage       : {embedded}/{total} decisions embedded{pct}"
          + ("  → run `osforge-db embed-backfill`"
             if reachable is not None and total and embedded < total else ""))
-    _out(f"  numpy          : {'sim (acelerador ativo)' if _HAS_NUMPY else 'nao (pure-Python)'}")
+    _out(f"  numpy          : {'sim (acelerador ativo)' if _numpy() is not None else 'nao (pure-Python)'}")
     if _VECTOR_BACKEND == "qdrant":
         _out(f"  qdrant_url     : {_QDRANT_URL}")
         _out(f"  collection     : {_QDRANT_COLLECTION}")
@@ -2054,6 +2083,460 @@ def cmd_signals(conn, slug=None, open_only=False, report=False, since=None):
              f"{'(resolvido)' if it['resolved'] else ''}")
 
 
+# ── Monitor (B-036, SPEC-P05 rev. 3, ADR-019) ───────────────────────────────
+# One read-only contract for the Canvas panel (/monitor) and the Claude Code band:
+#   osforge-db monitor [<slug>] [--days=30] [--discover] [--all] [--compact] --json
+# Without a slug: the portfolio (every project, grouped by lifecycle status). With a slug: the
+# project's detail. Never writes to the database. Schema `osforge.monitor.v1`.
+
+MONITOR_SCHEMA = "osforge.monitor.v1"
+
+
+def _tz_modifier():
+    """SQLite date modifier for the local UTC offset, computed once. `'localtime'` would call
+    localtime_r per row (the slowest part of the query on 50k calls). The offset of *now* is used
+    for the whole horizon: around a DST change a call within an hour of midnight may land on the
+    neighbouring day, which a progress view tolerates."""
+    off = datetime.now().astimezone().utcoffset() or timedelta(0)
+    return f"{int(off.total_seconds() // 60):+d} minutes"
+_AGENT_GAP_CAP_S = 300          # a pause longer than 5 min between calls is not agent work
+_MONITOR_HEATMAP_DAYS = 84      # 12 weeks
+_OPEN_TASK = ("pending", "in-progress", "blocked")
+
+
+def _iso_utc(dt):
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _parse_iso(ts):
+    """UTC timestamp from 'YYYY-MM-DDTHH:MM:SS[.fff][Z]' or SQLite's 'YYYY-MM-DD HH:MM:SS'."""
+    try:
+        return datetime.fromisoformat((ts or "")[:19].replace(" ", "T")).replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+
+def _day_keys(n):
+    today = datetime.now().astimezone().date()
+    return [(today - timedelta(days=i)).isoformat() for i in range(n - 1, -1, -1)]
+
+
+def _quota_snapshot():
+    path = os.environ.get("OSFORGE_QUOTA_FILE") or os.path.expanduser("~/.osforge/quota.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            q = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(q, dict) or q.get("schema") not in (None, "osforge.quota.v1"):
+        return None
+    out = {"at": q.get("at")}
+    for k in ("five_hour", "seven_day"):
+        sub = q.get(k)
+        if isinstance(sub, dict):
+            out[k] = {"pct": sub.get("pct"), "resets_at": sub.get("resets_at")}
+    if isinstance(q.get("rejected"), dict):
+        out["rejected"] = {"resets_at": q["rejected"].get("resets_at")}
+    return out
+
+
+def _usage_by_day(conn, cutoff, project_id=None, with_sessions=False):
+    """Usage since `cutoff`, aggregated in SQLite (50k calls must stay well under 200 ms):
+    per project and local day, per (day, model), per session (detail only) and
+    orchestrator/subagent. Cost is priced per aggregated group from pricing.json, never per row.
+    Agent minutes: gap to the previous call of the same session (LAG), capped at 5 minutes."""
+    where, params = "ts>=?", [cutoff]
+    if project_id is not None:
+        where += " AND project_id=?"
+        params.append(project_id)
+    models = _load_pricing()
+    price_cache = {}
+    tzm = _tz_modifier()
+
+    def price(model):
+        if model not in price_cache:
+            price_cache[model] = _price_for_model(models, model)
+        return price_cache[model]
+
+    per, per_model, split, priceless = {}, {}, {}, {}
+    for r in conn.execute(
+            f"SELECT project_id, date(ts,'{tzm}') day, model, sidechain, COUNT(*) n, "
+            f"SUM(input) input, SUM(output) output, SUM(cache_read) cache_read, "
+            f"SUM(cache_write_5m) cache_write_5m, SUM(cache_write_1h) cache_write_1h "
+            f"FROM calls WHERE {where} GROUP BY project_id, day, model, sidechain", params):
+        pid, day = r["project_id"], r["day"]
+        pr = price(r["model"])
+        cost = _cost_usd(pr, r) if pr else 0.0
+        if pr is None:
+            priceless[r["model"]] = priceless.get(r["model"], 0) + r["n"]
+        tokens = (r["input"] or 0) + (r["output"] or 0) + (r["cache_write_5m"] or 0) + (r["cache_write_1h"] or 0)
+        d = per.setdefault(pid, {}).setdefault(day, {"chamadas": 0, "tokens": 0, "cache_read": 0,
+                                                     "custo": 0.0, "minutos": 0.0, "_s": set()})
+        d["chamadas"] += r["n"]
+        d["tokens"] += tokens
+        d["cache_read"] += r["cache_read"] or 0
+        d["custo"] += cost
+        m = per_model.setdefault(pid, {}).setdefault((day, r["model"]), {"chamadas": 0, "tokens": 0, "custo": 0.0})
+        m["chamadas"] += r["n"]
+        m["tokens"] += tokens
+        m["custo"] += cost
+        sp = split.setdefault(pid, {}).setdefault("subagente" if r["sidechain"] else "orquestrador",
+                                                 {"chamadas": 0, "tokens": 0, "custo": 0.0})
+        sp["chamadas"] += r["n"]
+        sp["tokens"] += tokens
+        sp["custo"] += cost
+    # Sessions and agent minutes per (project, day, session).
+    for r in conn.execute(
+            f"SELECT project_id, day, session_id, SUM(MIN(COALESCE(gap, 0), {_AGENT_GAP_CAP_S})) / 60.0 minutes "
+            f"FROM (SELECT project_id, session_id, date(ts,'{tzm}') day, "
+            f"      MAX((julianday(ts) - julianday(LAG(ts) OVER (PARTITION BY session_id ORDER BY ts))) * 86400, 0) gap "
+            f"      FROM calls WHERE {where}) GROUP BY project_id, day, session_id", params):
+        d = per.get(r["project_id"], {}).get(r["day"])
+        if d is not None:
+            d["minutos"] += r["minutes"] or 0.0
+            d["_s"].add(r["session_id"])
+    sessions = {}
+    if with_sessions and project_id is not None:
+        rows = conn.execute(
+            f"SELECT session_id, model, MIN(ts) inicio, MAX(ts) fim, COUNT(*) n, SUM(input) input, "
+            f"SUM(output) output, SUM(cache_read) cache_read, SUM(cache_write_5m) cache_write_5m, "
+            f"SUM(cache_write_1h) cache_write_1h FROM calls WHERE {where} GROUP BY session_id, model", params)
+        mins = {r["session_id"]: r["m"] or 0.0 for r in conn.execute(
+            f"SELECT session_id, SUM(MIN(COALESCE(gap, 0), {_AGENT_GAP_CAP_S})) / 60.0 m FROM "
+            f"(SELECT session_id, MAX((julianday(ts) - julianday(LAG(ts) OVER (PARTITION BY session_id ORDER BY ts))) * 86400, 0) gap "
+            f" FROM calls WHERE {where}) GROUP BY session_id", params)}
+        for r in rows:
+            pr = price(r["model"])
+            tokens = (r["input"] or 0) + (r["output"] or 0) + (r["cache_write_5m"] or 0) + (r["cache_write_1h"] or 0)
+            s = sessions.setdefault(r["session_id"], {"inicio": r["inicio"], "fim": r["fim"], "chamadas": 0,
+                                                      "tokens": 0, "custo": 0.0,
+                                                      "minutos": mins.get(r["session_id"], 0.0), "_m": {}})
+            s["inicio"] = min(s["inicio"], r["inicio"])
+            s["fim"] = max(s["fim"], r["fim"])
+            s["chamadas"] += r["n"]
+            s["tokens"] += tokens
+            s["custo"] += _cost_usd(pr, r) if pr else 0.0
+            s["_m"][r["model"]] = s["_m"].get(r["model"], 0) + r["n"]
+        sessions = {project_id: sessions}
+    return per, per_model, sessions, split, priceless
+
+
+def _series(per_day, keys):
+    out = []
+    for k in keys:
+        d = per_day.get(k) or {}
+        out.append({"dia": k, "chamadas": d.get("chamadas", 0), "tokens": d.get("tokens", 0),
+                    "custo": round(d.get("custo", 0.0), 4), "minutos": round(d.get("minutos", 0.0), 1),
+                    "sessoes": len(d.get("_s", ()))})
+    return out
+
+
+def _period(per_day, keys):
+    tot = {"chamadas": 0, "tokens": 0, "custo": 0.0, "minutos": 0.0}
+    sess = set()
+    for k in keys:
+        d = per_day.get(k)
+        if not d:
+            continue
+        for f in ("chamadas", "tokens", "custo", "minutos"):
+            tot[f] += d[f]
+        sess |= d["_s"]
+    tot["custo"] = round(tot["custo"], 4)
+    tot["minutos"] = round(tot["minutos"], 1)
+    tot["sessoes"] = len(sess)
+    return tot
+
+
+def _project_summary(conn, p, per_day, keys_period, keys_series):
+    pid = p["id"]
+    counts = {s: 0 for s in ("pending", "in_progress", "blocked", "done", "cancelled")}
+    for r in conn.execute("SELECT status, COUNT(*) n FROM tasks WHERE project_id=? GROUP BY status", (pid,)):
+        counts[r["status"].replace("-", "_")] = r["n"]
+    ph = conn.execute("SELECT COUNT(*) total, SUM(CASE WHEN status IN ('complete','done') THEN 1 ELSE 0 END) feitas "
+                      "FROM phases WHERE project_id=?", (pid,)).fetchone()
+    st = conn.execute("SELECT current_phase, resume_point, updated_at FROM state WHERE project_id=?", (pid,)).fetchone()
+    blockers = conn.execute("SELECT COUNT(*) FROM blockers WHERE project_id=? AND resolved_at IS NULL", (pid,)).fetchone()[0]
+    signals = conn.execute("SELECT COUNT(*) FROM signals WHERE project_id=? AND resolved_at IS NULL AND kind!='tests'",
+                           (pid,)).fetchone()[0]
+    live = sum(v for k, v in counts.items() if k != "cancelled")
+    if live:
+        pct = round(100.0 * counts["done"] / live, 1)
+    elif ph["total"]:
+        pct = round(100.0 * (ph["feitas"] or 0) / ph["total"], 1)
+    else:
+        pct = None
+    last = [conn.execute(q, (pid,)).fetchone()[0] for q in (
+        "SELECT MAX(ts) FROM calls WHERE project_id=?",
+        "SELECT MAX(updated_at) FROM tasks WHERE project_id=?",
+        "SELECT MAX(created_at) FROM decisions WHERE project_id=?",
+        "SELECT MAX(updated_at) FROM state WHERE project_id=?")]
+    last = [x for x in last if x]
+    last_iso = max((_iso_utc(_parse_iso(x)) for x in last if _parse_iso(x)), default=None)
+    status = p["status"] if p["status"] in PROJECT_STATUSES else "outro"
+    root = p["root_path"] if "root_path" in p.keys() else None
+    return {
+        "slug": p["slug"], "descricao": p["description"], "status": status,
+        "status_bruto": p["status"], "triage": p["triage"],
+        "fase_atual": (st["current_phase"] if st else None),
+        "fases": {"total": ph["total"] or 0, "feitas": ph["feitas"] or 0},
+        "tarefas": counts, "tarefas_abertas": counts["pending"] + counts["in_progress"] + counts["blocked"],
+        "pct": pct, "bloqueios_abertos": blockers, "sinais_abertos": signals,
+        "ultima_atividade": last_iso,
+        "periodo": _period(per_day, keys_period),
+        "serie": _series(per_day, keys_series),
+        "acesso": {"raiz": root, "raiz_existe": bool(root and os.path.isdir(root)),
+                   "remoto": bool(p["remote_hash"] if "remote_hash" in p.keys() else None)},
+    }
+
+
+def _discover(conn, max_age_days=30):
+    """Folders with a Claude Code session in the last `max_age_days` days, from the `cwd` field
+    of the newest transcript per folder in ~/.claude/projects. Read-only: nothing is written;
+    the caller shows commands. Returns (unregistered[], suggested_roots{project_id: dir})."""
+    base = os.environ.get("OSFORGE_TRANSCRIPTS_DIR") or os.path.expanduser("~/.claude/projects")
+    if not os.path.isdir(base):
+        return [], {}
+    horizon = time.time() - max_age_days * 86400
+    cwds = {}
+    for entry in os.listdir(base):
+        d = os.path.join(base, entry)
+        if not os.path.isdir(d):
+            continue
+        try:
+            files = [os.path.join(d, f) for f in os.listdir(d) if f.endswith(".jsonl")]
+            files = [(os.path.getmtime(f), f) for f in files]
+        except OSError:
+            continue
+        files = [x for x in files if x[0] >= horizon]
+        if not files:
+            continue
+        mtime, newest = max(files)
+        cwd = None
+        try:
+            with open(newest, encoding="utf-8", errors="replace") as fh:
+                for _ in range(60):
+                    line = fh.readline()
+                    if not line:
+                        break
+                    try:
+                        e = json.loads(line)
+                    except ValueError:
+                        continue
+                    if isinstance(e, dict) and isinstance(e.get("cwd"), str) and e["cwd"]:
+                        cwd = e["cwd"]
+                        break
+        except OSError:
+            continue
+        if not cwd or not os.path.isdir(cwd):
+            continue
+        if cwd not in cwds or cwds[cwd][0] < mtime:
+            cwds[cwd] = (mtime, len(files))
+    cache, unregistered, suggested, seen = {}, [], {}, set()
+    home = os.path.realpath(os.path.expanduser("~"))
+    for cwd, (mtime, nfiles) in sorted(cwds.items(), key=lambda kv: -kv[1][0]):
+        top = _git_out(["rev-parse", "--show-toplevel"], cwd)
+        root = os.path.realpath(top) if top else os.path.realpath(cwd)
+        if root == home or root in seen:
+            continue
+        seen.add(root)
+        pid = _resolve_project_id_for_cwd(conn, os.path.realpath(cwd), cache)
+        if pid is not None:
+            row = conn.execute("SELECT root_path FROM projects WHERE id=?", (pid,)).fetchone()
+            if not (row and row["root_path"]) and top:
+                suggested.setdefault(pid, root)
+            continue
+        slug = _slugify(os.path.basename(root)) or "projeto"
+        unregistered.append({
+            "pasta": root, "nome": os.path.basename(root), "slug_sugerido": slug, "git": bool(top),
+            "ultima_sessao": _iso_utc(datetime.fromtimestamp(mtime, timezone.utc)),
+            "sessoes_30d": nfiles,
+            "comando": f'osforge-db upsert-project {slug} "{os.path.basename(root)}" standard backlog --root={shlex.quote(root)}',
+        })
+    return unregistered, suggested
+
+
+def _shortcuts(root):
+    """`shortcut:` comments in the project (Ponytail's debt ledger, EV-P34): how many, and how
+    many do not say when to replace them (no comma after the limit)."""
+    if not root or not os.path.isdir(root):
+        return None
+    import subprocess
+    try:
+        r = subprocess.run(["git", "-C", root, "grep", "-n", "-I", "--no-color", "-E", r"shortcut:"],
+                           capture_output=True, text=True, timeout=2, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if r.returncode not in (0, 1):
+        return None
+    items, no_trigger = [], 0
+    for line in r.stdout.splitlines():
+        parts = line.split(":", 2)
+        if len(parts) < 3:
+            continue
+        note = parts[2].split("shortcut:", 1)[-1].strip()
+        has_trigger = "," in note
+        no_trigger += 0 if has_trigger else 1
+        if len(items) < 50:
+            items.append({"local": f"{parts[0]}:{parts[1]}", "nota": note[:160], "gatilho": has_trigger})
+    return {"total": len(r.stdout.splitlines()), "sem_gatilho": no_trigger, "itens": items}
+
+
+def _project_detail(conn, p, summary, per_model, sessions, split, priceless, keys_period):
+    pid = p["id"]
+    phases = []
+    for ph in conn.execute("SELECT id, name, status, started_at, completed_at FROM phases WHERE project_id=? ORDER BY id", (pid,)):
+        c = {s: 0 for s in ("pending", "in-progress", "blocked", "done", "cancelled")}
+        for r in conn.execute("SELECT status, COUNT(*) n FROM tasks WHERE phase_id=? GROUP BY status", (ph["id"],)):
+            c[r["status"]] = r["n"]
+        live = sum(v for k, v in c.items() if k != "cancelled")
+        phases.append({"nome": ph["name"], "status": ph["status"], "total": live, "feitas": c["done"],
+                       "em_andamento": c["in-progress"], "bloqueadas": c["blocked"],
+                       "pct": round(100.0 * c["done"] / live, 1) if live else
+                              (100.0 if ph["status"] in ("complete", "done") else 0.0)})
+    done_ids = {r["id"] for r in conn.execute("SELECT id FROM tasks WHERE project_id=? AND status='done'", (pid,))}
+    open_tasks = []
+    for t in conn.execute(
+            "SELECT t.id, t.title, t.status, t.priority, t.wave, t.depends_on, t.updated_at, ph.name phase "
+            "FROM tasks t LEFT JOIN phases ph ON ph.id=t.phase_id WHERE t.project_id=? AND t.status IN "
+            "('pending','in-progress','blocked') ORDER BY t.priority, t.wave, t.id", (pid,)):
+        deps = [d.strip() for d in (t["depends_on"] or "").split(",") if d.strip()]
+        pend = [d for d in deps if not (d.isdigit() and int(d) in done_ids)]
+        open_tasks.append({"id": t["id"], "titulo": t["title"], "status": t["status"], "prioridade": t["priority"],
+                           "onda": t["wave"], "fase": t["phase"], "dependencias_abertas": pend,
+                           "atualizada": t["updated_at"]})
+    recent_done = [{"id": t["id"], "titulo": t["title"], "atualizada": t["updated_at"]} for t in conn.execute(
+        "SELECT id, title, updated_at FROM tasks WHERE project_id=? AND status='done' "
+        "ORDER BY updated_at DESC, id DESC LIMIT 10", (pid,))]
+    now = datetime.now(timezone.utc)
+    blockers = []
+    for b in conn.execute("SELECT id, description, waiting_for, created_at FROM blockers "
+                          "WHERE project_id=? AND resolved_at IS NULL ORDER BY created_at", (pid,)):
+        c = _parse_iso(b["created_at"])
+        blockers.append({"id": b["id"], "descricao": b["description"], "aguardando": b["waiting_for"],
+                         "desde": b["created_at"], "idade_dias": (now - c).days if c else None})
+    decisions = [{"id": d["id"], "texto": textwrap.shorten(d["content"], width=280, placeholder="…"),
+                  "categoria": d["category"], "em": d["created_at"]} for d in conn.execute(
+        "SELECT id, content, category, created_at FROM decisions WHERE project_id=? "
+        "ORDER BY created_at DESC, id DESC LIMIT 10", (pid,))]
+    sigs = [{"id": s["id"], "tipo": s["kind"], "assunto": s["subject"], "em": s["ts"],
+             "detalhe": json.loads(s["detail"] or "{}")} for s in conn.execute(
+        "SELECT * FROM signals WHERE project_id=? AND resolved_at IS NULL AND kind!='tests' ORDER BY id DESC LIMIT 50", (pid,))]
+    t = conn.execute("SELECT detail, ts FROM signals WHERE project_id=? AND kind='tests' ORDER BY id DESC LIMIT 1",
+                     (pid,)).fetchone()
+    tests = dict(json.loads(t["detail"] or "{}"), em=t["ts"]) if t else None
+    pm = per_model.get(pid, {})
+    by_day_model = [{"dia": k[0], "modelo": k[1], "chamadas": v["chamadas"], "tokens": v["tokens"],
+                     "custo": round(v["custo"], 4)} for k, v in sorted(pm.items())]
+    sess = []
+    for sid, s in sorted((sessions.get(pid) or {}).items(), key=lambda kv: kv[1]["inicio"], reverse=True)[:20]:
+        main_model = max(s["_m"].items(), key=lambda kv: kv[1])[0] if s["_m"] else None
+        sess.append({"sessao": sid[:8], "inicio": s["inicio"], "fim": s["fim"], "minutos": round(s["minutos"], 1),
+                     "chamadas": s["chamadas"], "tokens": s["tokens"], "custo": round(s["custo"], 4),
+                     "modelo": main_model})
+    root = summary["acesso"]["raiz"] if summary["acesso"]["raiz_existe"] else None
+    detail = dict(summary)
+    detail.update({
+        "fases_detalhe": phases,
+        "tarefas_abertas_lista": open_tasks,
+        "feitas_recentes": recent_done,
+        "bloqueios": blockers,
+        "decisoes": decisions,
+        "consumo": {"por_dia_modelo": by_day_model,
+                    "orquestrador_subagente": {k: dict(v, custo=round(v["custo"], 4))
+                                               for k, v in (split.get(pid) or {}).items()},
+                    "sem_preco": priceless},
+        "sessoes": sess,
+        "qualidade": {"sinais": sigs, "testes": tests, "atalhos": _shortcuts(root)},
+        "atividade": [{"dia": x["dia"], "minutos": x["minutos"]} for x in summary["serie"][-_MONITOR_HEATMAP_DAYS:]],
+    })
+    return detail
+
+
+def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False, compact=False):
+    if days < 1 or days > 365:
+        _err2("--days entre 1 e 365")
+    horizon = max(2 * days, _MONITOR_HEATMAP_DAYS)
+    keys_series = _day_keys(horizon)
+    keys_period = keys_series[-days:]
+    cutoff = _iso_utc(datetime.strptime(keys_series[0], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                      - timedelta(days=1))
+    out = {"schema": MONITOR_SCHEMA, "gerado_em": _iso_utc(datetime.now(timezone.utc)), "dias": days,
+           "horizonte_dias": horizon, "janela": _quota_snapshot()}
+    if slug:
+        p = conn.execute("SELECT * FROM projects WHERE slug=?", (slug,)).fetchone()
+        if not p:
+            _err2(f"Projeto '{slug}' não encontrado.")
+        if compact:   # the band gets cost and window from the engine; skip the usage scan
+            per, per_model, sessions, split, priceless = {}, {}, {}, {}, {}
+        else:
+            per, per_model, sessions, split, priceless = _usage_by_day(conn, cutoff, p["id"], True)
+        summary = _project_summary(conn, p, per.get(p["id"], {}), keys_period, keys_series)
+        if compact:
+            in_prog = conn.execute("SELECT title FROM tasks WHERE project_id=? AND status='in-progress' "
+                                   "ORDER BY priority, id LIMIT 1", (p["id"],)).fetchone()
+            t = conn.execute("SELECT detail FROM signals WHERE project_id=? AND kind='tests' ORDER BY id DESC LIMIT 1",
+                             (p["id"],)).fetchone()
+            kinds = {r["kind"]: r["n"] for r in conn.execute(
+                "SELECT kind, COUNT(*) n FROM signals WHERE project_id=? AND resolved_at IS NULL AND kind!='tests' "
+                "GROUP BY kind", (p["id"],))}
+            out["projeto"] = {k: summary[k] for k in ("slug", "status", "fase_atual", "fases", "tarefas", "pct",
+                                                       "bloqueios_abertos")}
+            out["projeto"]["em_andamento"] = in_prog["title"] if in_prog else None
+            out["projeto"]["sinais"] = kinds
+            out["projeto"]["testes"] = (json.loads(t["detail"] or "{}").get("state") if t else None)
+        else:
+            out["projeto"] = _project_detail(conn, p, summary, per_model, sessions, split, priceless, keys_period)
+        print(json.dumps(out, ensure_ascii=False, separators=(",", ":") if compact else None))
+        return
+    per, _pm, _s, _sp, priceless = _usage_by_day(conn, cutoff)
+    q = "SELECT * FROM projects" + ("" if include_archived else " WHERE status!='archived'")
+    projects = [_project_summary(conn, p, per.get(p["id"], {}), keys_period, keys_series)
+                for p in conn.execute(q + " ORDER BY slug").fetchall()]
+    suggested, unregistered = {}, []
+    if discover:
+        unregistered, suggested = _discover(conn)
+        by_id = {r["slug"]: r["id"] for r in conn.execute("SELECT id, slug FROM projects")}
+        for pr in projects:
+            sug = suggested.get(by_id.get(pr["slug"]))
+            if sug:
+                pr["acesso"]["raiz_sugerida"] = sug
+                pr["acesso"]["comando"] = f"osforge-db bind-project {pr['slug']} --root={shlex.quote(sug)}"
+    order = {s: i for i, s in enumerate(PROJECT_STATUSES + ("outro",))}
+    projects.sort(key=lambda x: (order.get(x["status"], 9), -(_parse_iso(x["ultima_atividade"]) or
+                                 datetime(1970, 1, 1, tzinfo=timezone.utc)).timestamp(), x["slug"]))
+    by_status = {}
+    for pr in projects:
+        by_status[pr["status"]] = by_status.get(pr["status"], 0) + 1
+    tot = {"chamadas": 0, "tokens": 0, "custo": 0.0, "minutos": 0.0}
+    sess = set()
+    for pid, days_map in per.items():
+        for k in keys_period:
+            d = days_map.get(k)
+            if d:
+                for f in tot:
+                    tot[f] += d[f]
+                sess |= d["_s"]
+    unassigned = sum(d["chamadas"] for k, d in (per.get(None) or {}).items() if k in keys_period)
+    out["totais"] = {
+        "projetos": len(projects), "por_status": by_status,
+        "tarefas_abertas": sum(p["tarefas_abertas"] for p in projects),
+        "bloqueios_abertos": sum(p["bloqueios_abertos"] for p in projects),
+        "sinais_abertos": sum(p["sinais_abertos"] for p in projects),
+        "chamadas": tot["chamadas"], "sessoes": len(sess), "tokens": tot["tokens"],
+        "custo": round(tot["custo"], 4), "minutos": round(tot["minutos"], 1),
+    }
+    out["projetos"] = projects
+    out["sem_projeto"] = {"serie": _series(per.get(None) or {}, keys_series)}
+    if discover:
+        out["sem_cadastro"] = unregistered
+    out["saude"] = {
+        "chamadas_sem_projeto_pct": round(100.0 * unassigned / tot["chamadas"], 1) if tot["chamadas"] else 0.0,
+        "projetos_sem_raiz": [p["slug"] for p in projects if not p["acesso"]["raiz_existe"]],
+        "modelos_sem_preco": priceless,
+    }
+    print(json.dumps(out, ensure_ascii=False))
+
+
 def _resolve_project_id_for_cwd(conn, cwd, cache):
     """Mesma ordem de hooks/lib/project_id.py:resolve (sem o passo OSFORGE_PROJECT — o
     backfill varre históricos de MUITOS projetos, não 'esta sessão'): root_path (exato ou
@@ -2610,7 +3093,12 @@ def main():
     args = [a for a in args if not a.startswith("--")]
 
     if not args:
-        print(__doc__)
+        try:
+            sys.stdout.write(__doc__ + "\n")
+            sys.stdout.flush()
+        except BrokenPipeError:
+            # `osforge-db | grep -q x` / `| head`: the reader left early; that is not an error.
+            os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
         sys.exit(0)
 
     cmd = args[0]
@@ -2756,6 +3244,13 @@ def main():
         if len(rest) < 2:
             _err2(f"Uso: set-project-status <slug> {'|'.join(PROJECT_STATUSES)}")
         cmd_set_project_status(conn, rest[0], rest[1])
+    elif cmd == "monitor":
+        try:
+            m_days = int(next((x.split("=", 1)[1] for x in _flags if x.startswith("--days=")), "30"))
+        except ValueError:
+            _err2("--days precisa ser um inteiro")
+        cmd_monitor(conn, rest[0] if rest else None, m_days, "--discover" in _flags,
+                    "--all" in _flags, "--compact" in _flags)
     elif cmd == "add-signal":
         if len(rest) < 3:
             _err2("Uso: add-signal <slug> <callers_open|duplicate|tests> <subject> "

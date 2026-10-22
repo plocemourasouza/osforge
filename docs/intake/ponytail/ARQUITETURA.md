@@ -154,7 +154,7 @@ quem prefere acompanhar sem sair do Claude Code.
 | Peça | Orçamento | Se falhar |
 |---|---|---|
 | `quality-guard.py` | < 150 ms p95 por Edit; `git grep` só quando uma definição sumiu ou nasceu | Sai 0 em silêncio (contrato de hooks do OSForge) |
-| `osforge-db monitor --json` | < 200 ms em 50 mil chamadas | Painel mostra o erro; a faixa some |
+| `osforge-db monitor --json` | faixa (`--compact`) < 200 ms; detalhe < 400 ms e portfólio < 600 ms, em 50 mil chamadas | Painel mostra o erro; a faixa some |
 | Faixa | Zero trabalho no desenho; 1 processo por turno | Hook pulado sozinho pelo motor; `OSFORGE_MONITOR_BAND=off` |
 | Painel | Só `127.0.0.1`; mesmas regras de Origin do Canvas (B-020) | Sessão segue normal |
 

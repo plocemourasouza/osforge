@@ -65,6 +65,7 @@ jobs:
           ./tests/test-calls.sh
           ./tests/test-judge.sh
           ./tests/test-quality-guard.sh    # edit-time guards (B-035): G-1/G-2/G-3, modes, p95 budget
+          ./tests/test-monitor.sh          # monitor contract (B-036): numbers, discover, read-only, budget
           ./tests/test-outcome-r3.sh       # r3 builds offline, --dry plans 396/288 calls, r1/r2 unchanged
       - name: Brain store checks (qdrant-client in a throwaway venv, fake embedder, no model)
         run: |

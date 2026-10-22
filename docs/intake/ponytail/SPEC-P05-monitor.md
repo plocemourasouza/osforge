@@ -134,8 +134,7 @@ A mesma informação num `Pane` (`$.ui.open`), aberto por um comando `/osforge-m
 
 ## Arquivos
 
-`scripts/osforge-db.py` (`monitor`, `set-project-status`) · `scripts/lib/monitor_discover.py`
-**(NOVO)** · `scripts/canvas/server.ts` (duas rotas) · `scripts/canvas/monitor.html` **(NOVO)** ·
+`scripts/osforge-db.py` (`monitor`, `set-project-status`, descoberta das pastas) · `scripts/canvas/server.ts` (duas rotas) · `scripts/canvas/monitor.html` **(NOVO)** ·
 `mods/osforge-monitor/` **(NOVO)** · `deploy.sh` (copiar o mod, `env`, versão mínima) ·
 `scripts/osforge-state.py` (estado do mod) · `tests/test-monitor.sh` **(NOVO)** ·
 `tests/test-canvas-feedback.sh` · `THIRD_PARTY_NOTICES`.
@@ -152,7 +151,11 @@ A mesma informação num `Pane` (`$.ui.open`), aberto por um comando `/osforge-m
    em `sem_cadastro`; projeto sem raiz recebe `raiz_sugerida`; transcript malformado é ignorado;
    nada gravado no banco.
 5. `set-project-status` aceita os cinco valores e recusa outro (exit 2).
-6. 50 mil chamadas sintéticas → portfólio e projeto < 200 ms cada (sem `--discover`).
+6. 50 mil chamadas sintéticas (sessões em rajadas, como nos transcripts reais), mediana de 5:
+   `--compact` (a faixa, roda a cada turno) < 200 ms; detalhe do projeto < 400 ms; portfólio
+   < 600 ms (sem `--discover`). O painel busca os dois em segundo plano e guarda por 15 s; o
+   orçamento de 200 ms da rev. 2 só se mantém para a faixa — medido, o Python sobe em ~100 ms
+   e a agregação das 50 mil chamadas leva outros ~300 ms.
 7. Canvas: `/api/monitor` só em `127.0.0.1`; Origin estranho → 403; projeto inexistente → 404;
    o HTML não carrega nada externo e não usa `innerHTML` com dado do banco.
 8. Mod: `claude plugin validate` e `claude plugin test` verdes; o teste do módulo **roda no CI**
