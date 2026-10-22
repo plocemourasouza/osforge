@@ -22,6 +22,9 @@ juiz, contra a rubrica e a verdade da tarefa (EV-O-P10).
 | `code-review` | nota neutra | SKILL.md atual | atual + P-02 | Ler o código conectado melhora? (também a primeira medição da skill) |
 | `repo-audit` | nota neutra | skill nova (P-03) | instrução de uma linha | A skill vale mais que uma linha? |
 | `ponytail-ref` *(opcional, D-P1)* | nota neutra | SKILL.md do Ponytail, literal | o mesmo C de `coding-guidelines` | A adaptação perdeu o que fazia o original funcionar? |
+| `mapa-repo` *(item 18 da cobertura)* | nota neutra | `coding-guidelines` + P-01 | B + mapa de exports do repositório, no formato do `ponytail-map.js` (EV-P30) | O mapa no contexto faz reusar o que **não** está no prompt? |
+
+O `mapa-repo` usa variantes cg1m, cg3m e cg5m das tarefas cg1, cg3 e cg5, em que o arquivo do helper existente (`components/ui/input.tsx`, `lib/format.ts`, `lib/money.ts`) **não** vem no prompt. Sem o mapa, o modelo não tem como saber que ele existe; com o mapa, só sabe o nome e o caminho. Se C não superar B além do ruído, o mapa não vira injeção de sessão.
 
 O `ponytail-ref` reusa as tarefas cg1–cg6. O texto literal do Ponytail entra só como variante
 de eval, com o aviso MIT no cabeçalho do arquivo.
@@ -56,11 +59,13 @@ As contagens que o juiz já devolve na r2 (`seeded_found`, `manufactured_finding
 |---|---|---|
 | Piloto (1 tarefa, 1 braço) | 2 | ~0,2 |
 | r3 sem `ponytail-ref` (13 tarefas × 3 braços × 3 execuções) | 117 + 117 = 234 | ~25 |
-| r3 com `ponytail-ref` (+6 × 3 × 3) | 342 | ~36 |
+| + `mapa-repo` (3 × 3 × 3) | +54 | ~6 |
+| + `ponytail-ref` (6 × 3 × 3) | +108 | ~11 |
+| **Tudo** | **396** | **~42** |
 
 \* Pela taxa da r2: 38,33 por 360 chamadas (EV-O-P11). A r2 chegou a 24% de pico da janela de
-5 h. Com até 342 chamadas, concorrência 4 e parada automática em 80% (B-026), espera-se ficar
-abaixo disso.
+5 h. Com até 396 chamadas e concorrência 4, espera-se um pico na mesma faixa (~25–30%), longe da
+parada automática em 80% (B-026).
 
 ## Regra de decisão
 
@@ -69,6 +74,7 @@ abaixo disso.
 | `coding-guidelines` | C − B > ruído e nenhum crítico pior em C | P-01 recusado, registrado |
 | `code-review` | C − B > ruído e `manufactured_high`(C) ≤ `manufactured_high`(B) | P-02 recusado, registrado |
 | `repo-audit` | B − A > ruído **e** B − C > ruído | Se só B − A: entra a linha (C), não a skill |
+| `mapa-repo` | C − B > ruído nos critérios de reuso, sem crítico pior | O mapa não entra |
 | `ponytail-ref` | — (informativo) | Se B(Ponytail) > C(nossa) além do ruído: refazer a adaptação antes de adotar |
 
 "Ruído" = o maior spread entre execuções dos dois braços comparados, como na r2.

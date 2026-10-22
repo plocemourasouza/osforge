@@ -67,3 +67,50 @@
 | EV-O-P10 | `scripts/evals/outcome/driver.py:4`, `:547` | Eval de resultado com três braços que diferem só no `--append-system-prompt`; rodadas aceitas: r1, r2 | FATO |
 | EV-O-P11 | `docs/evals/…-r2-fable-judge.md:14`, `:16` | Rodada 2: 360 chamadas, 38,33 em dólar-equivalente da assinatura, pico de 24% da janela de 5 h | FATO |
 | EV-O-P12 | `scripts/evals/outcome/driver.py` (`TASKS`), `scripts/evals/outcome/tasks_r2.py` | Alvos medidos até hoje: r1 `clean-code`, `frontend-design`, `adversarial-review`; r2 `clean-code`, `verification-before-completion`, `behavioral-modes`, `output-enforcement`, agentes `planner` e `code-reviewer`. `coding-guidelines` e `code-review` nunca | FATO |
+
+## Revisão 2 — estruturas, guardas e painel (EV-P30 a EV-P39)
+
+| ID | Onde | Fato | Tipo |
+|---|---|---|---|
+| EV-P30 | [`hooks/ponytail-map.js#L1-L16`](https://github.com/DietrichGebert/ponytail/blob/09c434ab73ca43761c5d8b0c5d341926c2fba710/hooks/ponytail-map.js#L1-L16) | Mapa do repositório: exports de topo por pasta, código compartilhado primeiro, orçamento de 2000 caracteres, regex por linguagem (sem parser) | FATO |
+| EV-P31 | [`hooks/band/register.tsx#L301-L308`](https://github.com/DietrichGebert/ponytail/blob/09c434ab73ca43761c5d8b0c5d341926c2fba710/hooks/band/register.tsx#L301-L308) | "Chamadores abertos": no fim do turno, cada definição removida e não redefinida é procurada com `git grep`; chamadas restantes viram alerta | FATO |
+| EV-P32 | [`hooks/band/metrics.ts#L83-L90`](https://github.com/DietrichGebert/ponytail/blob/09c434ab73ca43761c5d8b0c5d341926c2fba710/hooks/band/metrics.ts#L83-L90) | "Duplicata?": mesmo nome normalizado (minúsculas, sem `_`/`-`) em outro arquivo | FATO |
+| EV-P33 | `hooks/band/register.tsx` (arquivo inteiro) | Zero ocorrências de `additionalContext`: os sinais da faixa vão só para a tela, nunca para o modelo | FATO |
+| EV-P34 | [`skills/ponytail-debt/SKILL.md#L37`](https://github.com/DietrichGebert/ponytail/blob/09c434ab73ca43761c5d8b0c5d341926c2fba710/skills/ponytail-debt/SKILL.md#L37) | Livro de dívida: todo `shortcut:` vira linha; os que não dizem quando trocar ganham `no-trigger` | FATO |
+| EV-P35 | [`hooks/ponytail-runtime.js#L56`](https://github.com/DietrichGebert/ponytail/blob/09c434ab73ca43761c5d8b0c5d341926c2fba710/hooks/ponytail-runtime.js#L56) | Nível persistido por projeto, num arquivo nomeado pelo hash do diretório | FATO |
+| EV-P36 | [`docs/agent-portability.md`](https://github.com/DietrichGebert/ponytail/blob/09c434ab73ca43761c5d8b0c5d341926c2fba710/docs/agent-portability.md); busca por `*/agents/*.md` | Os "20 agentes" são ferramentas hospedeiras com adaptadores; o repositório não contém nenhuma definição de subagente | FATO |
+| EV-P37 | [`hooks/band/board.ts#L208-L211`](https://github.com/DietrichGebert/ponytail/blob/09c434ab73ca43761c5d8b0c5d341926c2fba710/hooks/band/board.ts#L208-L211) · [`#L420-L424`](https://github.com/DietrichGebert/ponytail/blob/09c434ab73ca43761c5d8b0c5d341926c2fba710/hooks/band/board.ts#L420-L424) | Painel: KPIs de sessões, tempo de agente, custo e tokens; mapa de atividade de 84 dias e sequência de dias | FATO |
+| EV-P38 | [`hooks/ponytail-band-import.js#L159-L160`](https://github.com/DietrichGebert/ponytail/blob/09c434ab73ca43761c5d8b0c5d341926c2fba710/hooks/ponytail-band-import.js#L159-L160) | Import de sessões: custo = o maior entre o total do próprio Claude Code e uma estimativa | FATO |
+| EV-P39 | [`skills/ponytail/SKILL.md#L15`](https://github.com/DietrichGebert/ponytail/blob/09c434ab73ca43761c5d8b0c5d341926c2fba710/skills/ponytail/SKILL.md#L15) | Toda resposta termina com o que foi pulado ou não conferido e o risco | FATO |
+
+## API de UI do Claude Code e contexto de subagentes (EV-C-P)
+
+Referência e tipos embutidos na skill `plugin-authoring` do Claude Code 2.1.308; documentação
+pública em `code.claude.com/docs/en/sub-agents.md` e `hooks.md`, consultada em 2026-10-22.
+
+| ID | Fato | Fonte | Tipo |
+|---|---|---|---|
+| EV-C-P01 | A API de módulos de hooks de função é *early access* e "muda entre versões"; os tipos da versão em uso são a autoridade | `reference.md`, linha 5 | FATO |
+| EV-C-P02 | `CLAUDE_CODE_PLUGIN_DIRS` carrega pastas de plugin a partir do bloco `env` do `~/.claude/settings.json` (nunca das settings do projeto), também em sessões do app de desktop; pastas em `~/.claude/skills/<nome>` também são carregadas | `reference.md`, linha 72 | FATO |
+| EV-C-P03 | `$.session.usage()` devolve contexto, janelas de limite (`five_hour`, `seven_day`) e custo da sessão | `claude-code.d.ts`, linhas 12313–12340 | FATO |
+| EV-C-P04 | Componentes `AbovePrompt` (faixa) e `Pane` (painel lateral); superfícies `terminal`, `desktop`, `vscode` e `mobile` | `claude-code.d.ts`, linhas 10796 e 10853; `reference.md` § Drawing | FATO |
+| EV-C-P05 | Subagentes embutidos e próprios carregam o CLAUDE.md (Explore e Plan não, nem quem tem `omitClaudeMd`); `skills:` no frontmatter pré-carrega skills; `SubagentStart` aceita `additionalContext` e matcher por tipo de agente | `sub-agents.md`, `hooks.md` | FATO |
+| EV-C-P06 | O `additionalContext` de um `PostToolUse` vira um lembrete de sistema que o modelo lê no passo seguinte | `hooks.md` | FATO |
+
+## Medições na máquina de trabalho (EV-M-P) — 2026-10-22, agregadas
+
+| ID | Fato |
+|---|---|
+| EV-M-P01 | 321 transcripts de subagente com metadados de tipo. Dos 277 que escreveram código (Edit/Write, fora Explore), **270** traziam o CLAUDE.md global e o resumo de `coding-guidelines`; só **10** carregaram a skill `coding-guidelines` inteira |
+| EV-M-P02 | `~/.osforge/osforge.db` (só leitura): 9 projetos, 43 fases, 292 tarefas (284 feitas, 6 pendentes, 2 bloqueadas), 129 decisões, 7 bloqueios, 33.840 chamadas de 2026-08-23 a 2026-10-22, das quais 8.623 (25%) sem projeto identificado |
+| EV-M-P03 | Claude Code 2.1.307 instalado |
+
+## OSForge, revisão 2 (EV-O-P13 a EV-O-P17) — `v5.3.1`
+
+| ID | Onde | Fato | Tipo |
+|---|---|---|---|
+| EV-O-P13 | `hooks/hooks-claude-code.json:40` | `PostToolUse` hoje: `protect-tests` e `observe-capture`; nada olha chamadores nem duplicatas | FATO |
+| EV-O-P14 | `scripts/canvas/server.ts:7`, `:401-409` | Canvas: só `127.0.0.1`, sem autenticação; rotas `/`, `/api/health`, `/api/artifacts`, `/api/events` (SSE) | FATO |
+| EV-O-P15 | `scripts/osforge-db.py:854-962`, `:1457` | Tabelas `projects`, `phases`, `state`, `decisions`, `blockers`, `tasks`, `calls`; comando `board` | FATO |
+| EV-O-P16 | `claude-code/settings-base.json:4` | O deploy mescla o bloco `env` do `settings.json` e o restaura no `--uninstall` (B-015, B-016) | FATO |
+| EV-O-P17 | `tests/hooks/fixtures/claude-code/posttooluse-edit-src.json` | Contrato do payload `PostToolUse` de Edit já testado: `tool_input.file_path`, `old_string`, `new_string` | FATO |

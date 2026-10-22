@@ -40,7 +40,10 @@ fraco medido (EV-O-P09).
    - N+1 em Server Component.
 4. **Prova:** todo achado tem caso concreto e arquivo:linha. Antes de chamar algo de não usado,
    procurar na árvore inteira (inclusive testes, config e referências por string).
-5. **Saída:**
+5. **Livro de atalhos:** listar cada comentário `shortcut:` (convenção de P-01) como
+   `arquivo:linha, o que foi simplificado, limite, quando trocar`, marcando `sem-gatilho` os que
+   não dizem quando trocar, porque são esses que apodrecem. Vem do `/ponytail-debt` (EV-P34).
+6. **Saída:**
    - O que o repositório faz e a carga assumida.
    - Achados em Must fix / Should fix / Nice to have, numerados, **no máximo 20** (dizendo quantos
      ficaram de fora), cada um com o que é, problema, correção e "se não corrigir".

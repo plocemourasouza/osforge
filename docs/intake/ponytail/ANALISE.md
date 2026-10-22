@@ -1,80 +1,77 @@
-# Ponytail — o que entra no OSForge, e como
+# Ponytail — o que entra no OSForge, e como (revisão 2)
 
 | | |
 |---|---|
 | Fonte | https://github.com/DietrichGebert/ponytail |
 | SHA analisado | `09c434ab73ca43761c5d8b0c5d341926c2fba710` (commit de 2026-10-18) |
 | Licença | MIT (© 2026 DietrichGebert) |
-| O que é | Um prompt de "dev sênior preguiçoso" (`skills/ponytail/SKILL.md`, 52 linhas) mais review, audit, uma faixa de métricas no Claude Code e manifestos para ~20 agentes |
 | OSForge de referência | `v5.3.1` (`fd2e1ff`) |
-| Evidências | [`EVIDENCIAS.md`](EVIDENCIAS.md) |
+| Documentos | [`COBERTURA.md`](COBERTURA.md) (31 comportamentos, um a um) · [`ARQUITETURA.md`](ARQUITETURA.md) · specs P-01 a P-05 · [`MEDICAO-r3.md`](MEDICAO-r3.md) · [`EVIDENCIAS.md`](EVIDENCIAS.md) |
 | Data | 2026-10-22 |
 
-## Veredito
+**O que mudou da revisão 1:**
 
-**Não instalar o plugin. Importar três mecanismos, e só depois de medi-los com o eval de
-resultado que o OSForge já tem.**
+- o inventário passou a cobrir **todas** as estruturas do Ponytail, inclusive mapa do
+  repositório, guardas da faixa, livro de dívida e painel;
+- medimos, nos transcripts reais, o que chega aos subagentes do OSForge;
+- estudamos a API de UI do Claude Code que a faixa usa;
+- o resultado é uma proposta em três camadas, com monitor de andamento do projeto.
 
-O plugin, instalado ao lado do OSForge, competiria com ele em quatro pontos:
+## O que é o Ponytail, estrutura por estrutura
 
-- injeta persona e regras de resposta em toda sessão e em todo subagente (EV-P10, EV-P11);
-- pede ao modelo que edite o seu `settings.json` (EV-P12);
-- grava arquivos a cada turno (EV-P14);
-- disputa o roteamento com uma skill que se declara "para qualquer tarefa de código" (EV-P05).
-
-O roteamento é justamente o ponto fraco medido no E1: 1 de 30 positivos (EV-O-P09). Os números
-de benefício do README medem menos do que dizem (seção abaixo). O que sobra, e não temos, é
-pouco e é bom:
-
-| Id | Candidato | O que o OSForge ganha | Spec |
+| Estrutura | O que é de fato | Decisão | Por quê |
 |---|---|---|---|
-| P-01 | **Escada da solução** em `coding-guidelines` | Uma ordem de preferência antes de escrever código: precisa existir? → já existe no repo? → stdlib ou plataforma → dependência já instalada → mínimo que funciona. Mais uma lista do que **nunca** se corta e um piso de teste para lógica não trivial. Hoje nenhuma das duas skills de código fala de stdlib, plataforma ou dependência nova (EV-O-P01) | [SPEC-P01](SPEC-P01-escada-da-solucao.md) |
-| P-02 | **Review que lê o código conectado** em `code-review` | Hoje o escopo é "o diff inteiro" (EV-O-P03). Passa a incluir quem chama o que mudou, a carga esperada como premissa declarada, caso concreto obrigatório por achado e o "se não corrigir" de cada um | [SPEC-P02](SPEC-P02-review-codigo-conectado.md) |
-| P-03 | **`repo-audit`**, skill sob demanda | Não existe auditoria de código do repositório inteiro, só de UI (EV-O-P05). Mapa primeiro, achados ranqueados, no máximo 20, e "não verificado" no fim | [SPEC-P03](SPEC-P03-repo-audit.md) |
+| **"Funciona com 20 agentes"** | São **20 ferramentas hospedeiras** (Cursor, Codex, Gemini, Copilot…), cada uma com um adaptador que carrega o mesmo prompt. O repositório **não define nenhum agente** no sentido do OSForge, isto é, nenhum subagente com papel próprio (EV-P36) | Nada a incorporar | Não existe esse artefato. O OSForge tem 25 agentes próprios e já atende Claude Code e Cursor |
+| Injeção em subagentes (`SubagentStart`) | Põe ~3 KB de regras em todo subagente (EV-P11) | Não importar o canal; **importar o conteúdo** | Medimos: o resumo do OSForge já chega a **270 de 277** subagentes que escreveram código, e a skill `coding-guidelines` inteira a só 10 (EV-M-P01). O que falta é o que o resumo diz, não um canal novo |
+| Regras do prompt (escada, nunca cortar, chamadores, atalho declarado…) | 52 linhas (EV-P01–P04) | **Camada 1**: P-01, medido na r3 | 9 das 12 regras faltam ou estão incompletas no OSForge (COBERTURA §1) |
+| Ativação na sessão, níveis, desligar | `SessionStart` + arquivos de modo (EV-P10, EV-P13, EV-P35) | Não importar | O OSForge já tem o equivalente: resumo sempre carregado, `behavioral-modes` e `OSFORGE_*=off` |
+| Mapa do repositório | Exports por pasta, 2000 caracteres, no início da sessão (EV-P30) | **Camada 1, condicionado**: braço próprio na r3 | Pode aumentar o reuso, mas custa ~500 tokens por sessão; só entra se ganhar |
+| Review, audit, livro de dívida | Skills (EV-P06–P09, EV-P34) | **Camada 1**: P-02, P-03 (com o livro de atalhos) | O review do OSForge para no diff; não existe auditoria do repositório inteiro |
+| Guardas da faixa (chamadores abertos, duplicata, testes) | Calculados no turno e mostrados **só ao humano** (EV-P31–P33) | **Camada 2**: P-04, como hooks que avisam o **modelo** no ato | É a parte mais valiosa do Ponytail, e o OSForge não tem nada parecido |
+| Faixa e painel | Módulo de UI de plugin + HTML estático sobre CSV (EV-P14, EV-P37) | **Camada 3**: P-05, monitor próprio sobre o `osforge-db` | Mostram a **sessão**; você quer o **andamento do projeto**, e esses dados o OSForge já tem (EV-M-P02) |
+| Import de sessões, webhook, "gain" | Utilitários (EV-P17, EV-P38) | Não importar | A tabela `calls` já tem 33.840 chamadas; o "gain" é placar de benchmark, não medida do repositório |
 
-As três passam pelo mesmo crivo, uma rodada do eval de resultado (r3) descrita em
-[`MEDICAO-r3.md`](MEDICAO-r3.md). Esse crivo é necessário porque o OSForge já sabe que texto
-de skill frequentemente não muda nada: na rodada 2, cinco de seis alvos ficaram neutros
-(EV-O-P07), e nem `coding-guidelines` nem `code-review` foram medidos até hoje (EV-O-P12). Entra o que bater o próprio ruído; o resto fica registrado como recusado.
+## Proposta em três camadas
 
-## O que o Ponytail mede de verdade
+Detalhe e alternativas em [`ARQUITETURA.md`](ARQUITETURA.md).
 
-O benchmark (39 tarefas, Opus 5.5, 5 execuções) é melhor que a média dos projetos do gênero.
-Usa a CLI pura como linha de base, conta linhas com script e tem verificações escondidas
-em 18 tarefas. Mas o README conta mais do que os dados sustentam:
+1. **Regras (Camada 1):** P-01 escada, P-02 review conectado, P-03 `repo-audit`, e o mapa como
+   candidato. Entram só se ganharem na r3 do eval de resultado.
+2. **Guardas (Camada 2):** P-04, um hook `PostToolUse` que avisa o modelo, no próprio Edit,
+   quando ele quebrou um chamador ou recriou algo que já existe, e registra o estado dos testes.
+   Entra primeiro em modo sombra, e a injeção só liga com alarme falso medido baixo.
+3. **Monitor (Camada 3):** P-05. Um contrato de dados (`osforge-db monitor --json`) e duas vistas:
+   - **Painel** no servidor do Canvas: fases, tarefas, bloqueios, decisões, consumo, janela e
+     qualidade.
+   - **Faixa** no Claude Code: fase, tarefa em andamento, progresso, bloqueios, custo, janela e
+     alertas.
+
+## O que o benchmark do Ponytail mede de verdade
+
+O harness é sério: CLI pura como linha de base (EV-P27), linhas contadas por script e
+verificação escondida em 18 tarefas. Mas o README conta mais do que os dados sustentam:
 
 | O README diz | O que os dados do próprio repositório mostram |
 |---|---|
-| −53% de código, −26% de custo | Consistente com a tabela por tarefa. Mas o ganho de custo vem quase todo das tarefas **sem** verificação de correção. Nas 18 com verificação escondida o custo cai ~1% (EV-P20, EV-P22) |
-| "98% da lógica arriscada sai com teste", "66% dos bugs injetados pegos" | A classificação de "precisa de teste" é manual e as ferramentas de teste e mutação **não estão no repositório**. A seção de limitações que dizia isso foi apagada depois da publicação (EV-P21) |
-| Review: "100% dos problemas plantados, 87% sem a skill" | Não existe tarefa, harness nem dado; o número está só no texto alternativo de uma imagem (EV-P23) |
-| "Passou nas 30 execuções de segurança" | As três condições passaram 30/30, inclusive sem a skill. O próprio relatório diz que "os três braços empatam" (EV-P24) |
-| Respostas melhores, 110 a 67 | Contra o Ponytail anterior. Contra **nenhuma skill**, o juiz preferiu a resposta sem skill: 106 a 82, número que o README não mostra (EV-P25) |
-| Tarefas | As do grupo de "apps pequenos", onde está o maior efeito, foram triadas para "manter os vencedores claros" (EV-P26). Nas 12 tarefas de repositório real, conta como "correto" qualquer execução que tenha adicionado alguma linha (EV-P22). Nenhuma tarefa usa Next.js, Prisma ou Supabase |
+| −53% de código, −26% de custo | Bate com a tabela por tarefa. Mas o custo cai só **1%** nas 18 tarefas com verificação de correção, e sobe em 8 delas (recalculado, EV-P20). As 12 tarefas de repositório real contam como corretas se adicionaram qualquer linha (EV-P22) |
+| "98% da lógica arriscada sai com teste", "66% dos bugs injetados pegos" | Classificação manual; as ferramentas de teste e mutação não estão no repositório. A seção que admitia isso foi apagada depois da publicação (EV-P21) |
+| Review: "100% dos problemas plantados, 87% sem a skill" | Não existe tarefa nem dado; só o texto alternativo de uma imagem (EV-P23) |
+| "Passou nas 30 execuções de segurança" | As três condições passaram 30/30, inclusive sem a skill (EV-P24) |
+| Respostas melhores, 110 a 67 | Contra a versão anterior. Contra **nenhuma skill**, o juiz preferiu sem skill: 106 a 82 (EV-P25) |
+| Tarefas | O grupo de maior efeito foi triado para "manter os vencedores claros" (EV-P26); nenhuma tarefa em Next.js, Prisma ou Supabase |
 
-Leitura honesta: o prompt deixa o código mais curto e mais barato **sem piorar** o que o
-benchmark verifica. Que ele **melhore** qualidade, testes ou review não está demonstrado. É
-exatamente o tipo de alegação que a ADR-015 manda medir antes de adotar.
-
-## Recusados
-
-| O quê | Por quê |
-|---|---|
-| Instalar o plugin | Os quatro conflitos acima; cerca de 1,2–1,5 mil tokens por sessão, mais ~3 KB por subagente. No OSForge, 75% das chamadas são de subagentes (EV-M04 do Laya), então esse custo pesa |
-| A faixa ("band") e o painel ("board") | Exigem a API de módulos de UI de plugin, que o deploy do OSForge não usa. Os números são frágeis: "testes passaram" vem de regex no comando e no código de saída, e só fica desatualizado em seis linguagens; "reuso %" é regex sobre nomes. O teste da faixa não roda no CI (EV-P15 a EV-P18). O OSForge já tem os dados de custo, tokens e tempo na tabela `calls` (B-028, EV-O-P08) |
-| Formato fixo de fim de resposta ("o que pulei, que risco existe") | O OSForge já tem regra equivalente onde importa (`verification-before-completion`), e P-02 a leva ao `code-review`; impor em toda resposta seria mais um bloco sempre carregado |
-| Modos lite/full/ultra, `/ponytail-gain`, `/ponytail-debt` | Já há `behavioral-modes`; os outros dois são variações do audit |
+Leitura: o prompt encurta o código sem piorar o que o benchmark verifica. Que ele melhore
+qualidade não está demonstrado. Por isso cada peça passa pela nossa medição antes de entrar.
 
 ## Licença e proveniência
 
-MIT, compatível. As specs reescrevem os mecanismos no padrão do `SKILL-STANDARD`; se alguma
-frase for mantida literalmente (o exemplo de achado em quatro partes é o candidato óbvio), o
-aviso entra em `THIRD_PARTY_NOTICES` e o frontmatter leva `inspired_by`, como foi feito com
-o ECC.
+MIT, compatível. O texto das regras é reescrito; o layout do painel pode partir do `board.ts`
+(MIT). Tudo com `inspired_by` e aviso em `THIRD_PARTY_NOTICES`, como foi feito com o ECC.
 
 ## Método
 
-Leitura do código no SHA fixado; o runtime (hooks, faixa, rede, instalação) e o benchmark
-(método, dados, números recalculados a partir da tabela publicada) foram lidos também por dois
-leitores independentes. Cada afirmação usada aqui foi reconferida no arquivo e está em
-`EVIDENCIAS.md`. Nada do Ponytail foi executado. Nenhuma chamada de modelo foi feita.
+Leitura do código no SHA fixado; runtime e benchmark lidos também por dois leitores
+independentes, com cada afirmação reconferida no arquivo. Números do benchmark recalculados da
+tabela publicada. A API de UI do Claude Code foi lida na referência e nos tipos da versão
+2.1.308; o comportamento de subagentes, na documentação e em 321 transcripts reais. Nada do
+Ponytail foi executado e nenhuma chamada de modelo foi feita.

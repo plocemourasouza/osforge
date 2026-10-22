@@ -1,72 +1,92 @@
-# Pacote 02 — Ponytail, incorporação incremental e medida
+# Pacote 02 — Ponytail: comportamento, guardas e monitor de andamento (revisão 2)
 
 **Estado:** proposta, aguardando aprovação. **Fonte:** [Ponytail](ponytail/ANALISE.md) (MIT, `09c434a`).
-**Base:** OSForge `v5.3.1`. **Ids propostos no backlog:** B-031 a B-034.
-**Evidências:** `EV-P…` e `EV-O-P…` em [`ponytail/EVIDENCIAS.md`](ponytail/EVIDENCIAS.md).
+**Base:** OSForge `v5.3.1`. **Ids propostos no backlog:** B-031 a B-038.
+**Leitura recomendada:** [`ponytail/COBERTURA.md`](ponytail/COBERTURA.md) (o que ele trata e como,
+item a item) e [`ponytail/ARQUITETURA.md`](ponytail/ARQUITETURA.md) (como encaixa e as alternativas).
+**Evidências:** `EV-P…`, `EV-C-P…`, `EV-M-P…`, `EV-O-P…` em [`ponytail/EVIDENCIAS.md`](ponytail/EVIDENCIAS.md).
 
 ## Em uma frase
 
-Do Ponytail entram três mecanismos que o OSForge não tem, e cada um só fica depois de ganhar
-no eval de resultado que o OSForge já usa:
+O Ponytail não traz agentes; os "20 agentes" do README são ferramentas hospedeiras. O que ele
+tem de valioso é um conjunto de regras de escrita e três guardas que hoje só aparecem na tela
+dele. O pacote traz isso para o OSForge em três camadas:
 
-- a escada que decide **de onde** sai a solução;
-- um review que lê também quem chama o código alterado;
-- uma auditoria do repositório inteiro.
+1. **regras**, onde o modelo de fato as lê;
+2. **guardas**, que avisam o modelo no momento do erro;
+3. **um monitor visual** do andamento de cada projeto, construído sobre os dados que o
+   OSForge já tem.
 
-O plugin em si não entra, porque competiria com o OSForge pelas mesmas regras, hooks e roteamento.
+## Como o fluxo de trabalho muda
+
+| Momento | Hoje | Com o pacote |
+|---|---|---|
+| Antes de escrever | "Escreva pouco", sem dizer de onde tirar a solução | Escada: repositório → stdlib/plataforma → dependência instalada; nunca dependência por poucas linhas; nunca cortar validação, perda de dados, segurança e acessibilidade (P-01). Talvez também um mapa do repositório (se ganhar na r3) |
+| Durante a edição | Nada observa o que foi quebrado | O modelo é avisado no ato: "você renomeou `formatPrice`; ainda é chamado em 2 lugares", "já existe `formatCurrency` em `lib/format.ts`" (P-04) |
+| Antes de dizer "pronto" | Lei de verificação, sem dado de quando os testes rodaram | O estado dos testes (passou / falhou / desatualizado) é registrado e visível (P-04) |
+| Revisão | O review cobre o diff | Também os chamadores fora do diff, a carga assumida e "se não corrigir"; mais auditoria do repositório inteiro e livro de atalhos (P-02, P-03) |
+| Acompanhamento | `osforge-db board` em texto, ou perguntar ao modelo | Faixa no Claude Code e painel local com fase, tarefas, bloqueios, decisões, consumo, janela de 5 h e alertas de qualidade (P-05) |
 
 ## O pacote
 
-| Id | Item | Spec | Esforço | Chamadas pagas |
-|---|---|---|---|---|
-| B-031 | Rodada r3 do eval de resultado: instrumento aceita `r3`, 13 tarefas no stack, rubricas e variantes | [MEDICAO-r3](ponytail/MEDICAO-r3.md) | M | 0 para preparar |
-| B-032 | Escada da solução + "nunca cortar" + atalho declarado em `coding-guidelines` | [P-01](ponytail/SPEC-P01-escada-da-solucao.md) | P | — |
-| B-033 | `code-review` lê os chamadores, declara a carga, exige caso concreto e diz "se não corrigir" | [P-02](ponytail/SPEC-P02-review-codigo-conectado.md) | P | — |
-| B-034 | `repo-audit`, skill sob demanda (fora do core) | [P-03](ponytail/SPEC-P03-repo-audit.md) | P–M | — |
+| Id | Item | Camada | Spec | Esforço | Chamadas pagas |
+|---|---|---|---|---|---|
+| B-031 | Rodada r3 do eval de resultado (inclui o braço do mapa) | 1 | [MEDICAO-r3](ponytail/MEDICAO-r3.md) | M | 0 para preparar |
+| B-032 | Escada da solução em `coding-guidelines` + resumo em `SKILLS.md` | 1 | [P-01](ponytail/SPEC-P01-escada-da-solucao.md) | P | — |
+| B-033 | `code-review` com código conectado | 1 | [P-02](ponytail/SPEC-P02-review-codigo-conectado.md) | P | — |
+| B-034 | `repo-audit` sob demanda, com livro de atalhos | 1 | [P-03](ponytail/SPEC-P03-repo-audit.md) | P–M | — |
+| B-035 | Guardas de edição (`quality-guard`) + tabela `signals`, em modo sombra | 2 | [P-04](ponytail/SPEC-P04-guardas-de-edicao.md) | M | 0 |
+| B-036 | Contrato `osforge-db monitor --json` + painel `/monitor` no Canvas | 3 | [P-05](ponytail/SPEC-P05-monitor.md) | M | 0 |
+| B-037 | Faixa `osforge-monitor` no Claude Code | 3 | [P-05](ponytail/SPEC-P05-monitor.md) | M | 0 |
+| B-038 | Painel lateral (`Pane`) — opcional | 3 | [P-05](ponytail/SPEC-P05-monitor.md) | P–M | 0 |
 
-```
-B-031 preparar r3 (offline) ──→ piloto (2 chamadas) ──→ r3 (234 ou 342 chamadas, autorização)
-                                                             │
-                     ┌───────────────────────────────────────┼─────────────────────┐
-                     ▼                                       ▼                     ▼
-            B-032 se C > B                          B-033 se C > B        B-034 se B > A e B > C
-                     └──────────────→ release 5.4.0 com o que ganhou ←─────────────┘
-```
+**Ordem:**
+
+1. B-031, B-035 (sombra) e B-036, em paralelo, todos offline.
+2. A r3, com autorização. Pelo resultado: B-032, B-033 e B-034 entram ou são recusados.
+3. Guardas ligadas ao modelo, se a sombra aprovar.
+4. B-037; depois, B-038.
+5. Release 5.4.0 pelo fluxo da ADR-018.
+
+Esforço total: 5 a 9 dias, mais as duas semanas de sombra correndo em paralelo.
 
 ## O que ganhamos
 
-| Hoje | Com o pacote |
-|---|---|
-| As regras de código dizem "escreva pouco", mas não dizem de onde tirar a solução; nada sobre stdlib, plataforma ou dependência nova (EV-O-P01) | Uma ordem explícita, com exemplos do nosso stack: `Intl`, `crypto.randomUUID()`, `<input type="date">`, Zod e Prisma já instalados, antes de instalar ou escrever |
-| "Simplifique" sem contrapeso escrito (EV-O-P02) | Uma lista do que nunca se corta: validação de fronteira, perda de dados, segurança, acessibilidade |
-| O review cobre o diff (EV-O-P03); o chamador quebrado fora dele passa | O review segue a mudança até quem a chama, e cada achado diz a consequência de não corrigir |
-| Não há auditoria de código do repositório inteiro (EV-O-P05) | `repo-audit` sob demanda, com mapa primeiro, achados ranqueados, máximo de 20 e checklist do stack (service role no cliente, tabela sem RLS, dinheiro em `float`) |
-| `coding-guidelines` e `code-review`, duas das skills mais usadas, nunca foram medidas (EV-O-P12) | A r3 mede as duas pela primeira vez (B − A), mesmo que as mudanças sejam recusadas |
-| Alegações do Ponytail que o repositório dele não sustenta (EV-P20 a EV-P26) | Uma medição própria, no nosso stack, com juiz cego e critérios críticos |
+- **Comportamento.** As regras que faltam (9 de 12 estão ausentes ou incompletas, COBERTURA §1)
+  entram no resumo que já chega a 270 de 277 subagentes que codam. Não precisa de canal novo nem
+  de ~3 KB por subagente.
+- **Erros pegos no ato.** Chamador quebrado e código duplicado viram aviso ao modelo no Edit,
+  não um alerta numa tela que ele não vê, como no Ponytail.
+- **Visão do projeto.** Fase, tarefas, bloqueios e decisões, com consumo e janela, a partir de
+  dados que já existem: 9 projetos, 292 tarefas, 33.840 chamadas.
+- **Um achado de brinde:** 25% das chamadas não têm projeto identificado. O monitor mostra isso,
+  e passa a ser corrigível.
+- **Nada adotado sem medição.** Regras pela r3; guardas por duas semanas de sombra; monitor por
+  testes de correção dos números.
 
-E o que evitamos: dois prompts globais brigando, ~1,2–1,5 mil tokens por sessão, mais ~3 KB em
-cada subagente (EV-P10, EV-P11), um hook pedindo ao modelo para editar o seu `settings.json`
-(EV-P12) e uma faixa com "✓ testes" que pode mentir (EV-P15, EV-P16).
+**O que evitamos:**
+
+- dois prompts globais em conflito;
+- um hook pedindo ao modelo para editar o seu `settings.json`;
+- um segundo livro-razão em CSV;
+- uma faixa com "✓ testes" que pode mentir;
+- uma dependência da API de UI *early access* no caminho crítico.
 
 ## Custo
 
-- **Preparar:** zero chamadas.
-- **Medir:** 234 chamadas (~25 em dólar-equivalente da assinatura), ou 342 (~36) com o
-  braço de referência do Ponytail original. Piloto de 2 chamadas antes.
-- **Adotar:** zero chamadas. A única mudança sempre carregada é ~40 tokens no resumo de
-  `SKILLS.md`, e só se P-01 ganhar.
-
-## Pronto quando
-
-1. r3 rodada e relatório versionado em `docs/evals/`.
-2. Só o que ganhou foi aplicado. O que não ganhou está registrado como recusado, com o número.
-3. Suítes, manifesto e contagens verdes; `THIRD_PARTY_NOTICES` com o Ponytail; ADR-019;
-   CHANGELOG; release pelo fluxo da ADR-018.
+- **Implementar:** zero chamadas de modelo. Quatro suítes novas, todas offline.
+- **Medir a Camada 1:** 288 chamadas (~31 em dólar-equivalente da assinatura); 396 (~42) com o
+  braço do Ponytail original. Piloto de 2 chamadas antes.
+- **Sempre carregado:** +~40 tokens no resumo (se P-01 ganhar); +~500 por sessão só se o mapa
+  ganhar.
 
 ## Decisões pendentes
 
 | Id | Decisão | Recomendação |
 |---|---|---|
-| D-P1 | Incluir o braço `ponytail-ref` (Ponytail original contra a nossa adaptação) | Sim: +108 chamadas, e responde se a adaptação perdeu o que funcionava |
-| D-P2 | Autorizar a r3 (piloto + rodada) | Depois de B-031 pronto e do `--dry` limpo |
-| D-P3 | Modelo executor | `claude-opus-5-5`, o mesmo da r2, para comparar com a série |
+| D-P1 | Braço do Ponytail original na r3 | Sim (+108 chamadas): mostra se a adaptação perdeu algo |
+| D-P2 | Autorizar a r3 | Depois do `--dry` limpo |
+| D-G1 | Guardas para outras linguagens além de TS/JS/Python | Não agora |
+| D-G2 | Lembrar o modelo no `Stop` quando os testes estão desatualizados | Depois da sombra |
+| D-M1 | Como entregar a faixa | Pasta própria + `CLAUDE_CODE_PLUGIN_DIRS` gerenciado pelo deploy |
+| D-M2 | Painel lateral | Depois de usar a faixa e o painel por algumas semanas |
