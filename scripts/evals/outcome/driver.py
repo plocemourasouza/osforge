@@ -16,6 +16,7 @@ judge calls run in shuffled order.
   python3 driver.py --run --model <id> [--runs 3] [--concurrency 4]
   python3 driver.py --report <out.md> --model <id>
   ... --round r2 [--budget 40]                 # round 2: everything under r2/ (default round r1)
+  ... --round r3 [--skip ponytail-ref]         # round 3: everything under r3/; ponytail-ref is optional
 
 Real calls (--pilot/--run) are a human decision. Results are cached under results/ (gitignored)
 and a re-run resumes: cached ok calls are not repeated. A quota rejection (judge exit 75, or the
@@ -92,20 +93,24 @@ VARIANT_ARMS = {s: ("B", "C") for s in TASKS}  # arms whose system prompt comes 
 TRUTH_IN_RUBRIC = False  # r2: tasks/<target>/<task>.truth.md is appended to the judge rubric
 PILOT = ("clean-code", "cc3")
 ROUND = "r1"
+SPEC = None    # r2+: the tasks_<round> module
+TASK_DIRS = {}  # r3+: target -> tasks/ subdir it reads prompts and truths from (default: itself)
 
 
 def configure(round_name):
     """Point every path and table at one round. r1 = the committed round-1 layout, unchanged."""
-    global BASE, RESULTS, TASKS, SKILL_EXTRA_RUBRIC, VARIANT_ARMS, TRUTH_IN_RUBRIC, PILOT, ROUND
+    global BASE, RESULTS, TASKS, SKILL_EXTRA_RUBRIC, VARIANT_ARMS, TRUTH_IN_RUBRIC, PILOT, ROUND, SPEC, TASK_DIRS
     ROUND = round_name
     if round_name == "r1":
         return
     sys.path.insert(0, HERE)
-    import tasks_r2 as R  # noqa: E402
+    import importlib  # noqa: E402
+    R = importlib.import_module("tasks_" + round_name)  # tasks_r2, tasks_r3
     BASE = os.path.join(HERE, round_name)
     RESULTS = os.path.join(BASE, "results")
     TASKS, SKILL_EXTRA_RUBRIC, VARIANT_ARMS = R.TASKS, R.EXTRA_RUBRIC, R.VARIANT_ARMS
     TRUTH_IN_RUBRIC, PILOT = True, R.PILOT
+    SPEC, TASK_DIRS = R, getattr(R, "TASK_DIRS", {})
 
 JUDGE_MODEL = None   # --judge-model; None = same as --model
 JUDGE_DIR = "judge"  # results subdir for verdicts; a different judge model gets its own
@@ -132,6 +137,18 @@ def configure_only(only):
     TASKS = {k: v for k, v in TASKS.items() if k in want}
 
 
+def configure_skip(skip):
+    """--skip: leave some targets out (r3: `--skip ponytail-ref` = the 288-call run without D-P1)."""
+    global TASKS
+    if not skip:
+        return
+    drop = [x.strip() for x in skip.split(",") if x.strip()]
+    unknown = [x for x in drop if x not in TASKS]
+    if unknown:
+        raise SystemExit("--skip: unknown target(s) %s; known: %s" % (unknown, ", ".join(TASKS)))
+    TASKS = {k: v for k, v in TASKS.items() if k not in drop}
+
+
 STOP = threading.Event()
 STOP_REASON = []
 LOCK = threading.Lock()
@@ -144,14 +161,20 @@ def read(path):
         return fh.read()
 
 
+def task_file(skill, task, suffix=".md"):
+    return os.path.join(BASE, "tasks", TASK_DIRS.get(skill, skill), task + suffix)
+
+
 def task_prompt(skill, task):
-    return read(os.path.join(BASE, "tasks", skill, task + ".md"))
+    return read(task_file(skill, task))
 
 
 def system_prompt(skill, arm):
     if arm not in VARIANT_ARMS[skill]:
         return NEUTRAL_NOTE
     body = read(os.path.join(BASE, "variants", "%s.%s.md" % (skill, arm)))
+    if body.startswith("<!--"):  # r3: a leading license/provenance comment stays in the file, not the prompt
+        body = body[body.index("-->") + 3:].lstrip("\n")
     return NEUTRAL_NOTE + "\n\n# Guidance for this kind of task\n\n" + body
 
 
@@ -160,7 +183,7 @@ def rubric_text(skill, task):
              read(os.path.join(BASE, "rubrics", task + ".md"))]
     if TRUTH_IN_RUBRIC:
         parts.append("## Ground truth for this task\n\n"
-                     + read(os.path.join(BASE, "tasks", skill, task + ".truth.md")))
+                     + read(task_file(skill, task, ".truth.md")))
     if skill in SKILL_EXTRA_RUBRIC:
         parts.append(read(os.path.join(BASE, "rubrics", SKILL_EXTRA_RUBRIC[skill])))
     return "\n\n".join(p.strip() for p in parts) + "\n"
@@ -399,9 +422,9 @@ def do_dry(runs):
             problems.append("missing schema " + skill)
         json.loads(read(schema_path(skill)))
         for task, spec in tasks.items():
-            need = [os.path.join(BASE, "tasks", skill, task + ".md"), os.path.join(BASE, "rubrics", task + ".md")]
+            need = [task_file(skill, task), os.path.join(BASE, "rubrics", task + ".md")]
             if TRUTH_IN_RUBRIC:
-                need.append(os.path.join(BASE, "tasks", skill, task + ".truth.md"))
+                need.append(task_file(skill, task, ".truth.md"))
             missing = [f for f in need if not os.path.exists(f)]
             problems.extend("missing " + f for f in missing)
             if missing:
@@ -418,6 +441,13 @@ def do_dry(runs):
         return 1
     js = jobs(runs)
     print("plan: %d executor calls + %d judge calls (runs=%d)" % (len(js), len(js), runs))
+    if ROUND not in ("r1", "r2"):
+        for skill, tasks in TASKS.items():
+            n = len(tasks) * len(ARMS) * runs
+            print("  %-20s %2d tasks x %d arms x %d runs = %3d executor + %3d judge = %3d calls%s" % (
+                skill, len(tasks), len(ARMS), runs, n, n, 2 * n,
+                "  (optional)" if skill in getattr(SPEC, "OPTIONAL", ()) else ""))
+        print("  total model calls: %d" % (2 * len(js)))
     for skill in TASKS:
         print("  %-20s sys-prompt chars  A=%d  B=%d  C=%d" % (skill, *(len(system_prompt(skill, a)) for a in ARMS)))
     print("example executor argv (prompt/system elided):",
@@ -517,9 +547,10 @@ def do_report(out_path, model, runs, cmdline):
     sys.path.insert(0, HERE)
     if ROUND != "r1":
         from report_r2 import build_report_r2  # noqa: E402
+        extra = {} if ROUND == "r2" else {"spec": SPEC}
         text = build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, REPO, cmdline,
                                {a: {s: len(system_prompt(s, a)) for s in TASKS} for a in ARMS}, BASE,
-                               judge_model=JUDGE_MODEL if JUDGE_DIR != "judge" else None)
+                               judge_model=JUDGE_MODEL if JUDGE_DIR != "judge" else None, **extra)
         with open(out_path, "w", encoding="utf-8") as fh:
             fh.write(text)
         print("wrote " + out_path)
@@ -544,13 +575,15 @@ def main(argv):
     p.add_argument("--runs", type=int, default=3)
     p.add_argument("--concurrency", type=int, default=4)
     p.add_argument("--seed", type=int, default=20261017)
-    p.add_argument("--round", default="r1", choices=("r1", "r2"))
+    p.add_argument("--round", default="r1", choices=("r1", "r2", "r3"))
     p.add_argument("--budget", type=float, help="r2+: stop when cached+new USD-equivalent exceeds this")
     p.add_argument("--judge-model", help="judge with a different model; verdicts go to results/judge-<id>/")
     p.add_argument("--only", help="comma-separated skills/targets to run in this process")
+    p.add_argument("--skip", help="comma-separated skills/targets to leave out (r3: ponytail-ref is optional)")
     a = p.parse_args(argv)
     configure(a.round)
     configure_only(a.only)
+    configure_skip(a.skip)
     configure_judge(a.judge_model, a.model)
     if a.dry:
         return do_dry(a.runs)

@@ -50,3 +50,7 @@ secrets.json
 
 # Files the Claude desktop app drops into a connected folder (session deliverables)
 Claude outputs/
+
+# Outcome-eval raw results (per round; the reports in docs/evals/ are what is versioned)
+scripts/evals/outcome/results/
+scripts/evals/outcome/r*/results/

@@ -1,7 +1,8 @@
 """report_r2.py -- aggregate the cached round-2 outcome-eval results into a docs/evals/ report.
 
-Called by `driver.py --report <out.md> --round r2`. Same layout as round 1 (report.py, left
-untouched so round 1 regenerates byte-identically) plus the round-2 extras: per-target judge counts,
+Called by `driver.py --report <out.md> --round r2` (and `--round r3`, which passes its own task
+module as `spec`: labels, counts, header text and decision rules come from tasks_r3.py).
+Same layout as round 1 (report.py, left untouched so round 1 regenerates byte-identically) plus the round-2 extras: per-target judge counts,
 per-task output tokens, peak 5-hour utilization seen in the executor streams, and a per-call
 appendix (exit, wall, tokens, cost). Only numbers computed from r2/results/ appear here; a cell
 with no graded data prints a dash, never a guess. Python 3 stdlib only.
@@ -24,8 +25,25 @@ SECONDARY = {  # target -> (count, label) shown in the summary table
 }
 
 
-def _labels(target):
-    return R.ARM_LABELS.get(target, R.ARM_LABELS["default"])
+# Header text of the round-2 report (kept verbatim so r2 regenerates byte-identically).
+R2_META = {
+    "title": "Skill outcome eval, round 2",
+    "suite": "`outcome` round 2 (`--round r2`): no-skill vs current vs reduced/previous; agents: without vs with the boilerplate block",
+    "pins": "variants pinned to `656aaf0` (clean-code C from `0fb36cd`)",
+    "run": "driver.py --run --round r2 --model %s --runs %d --concurrency 4 --budget 40",
+    "arms": ("**Arm semantics differ by target.** Skills: A = a one-line neutral note only, B = note + current "
+             "SKILL.md body, C = note + the audit-reduced body (for `clean-code`, C = the *previous* text, "
+             "`0fb36cd`, so B − C measures v3.0 against v2.0). Agents (`agent-*`, H17): every arm carries the "
+             "agent body; A = body **without** the \"Reality Check\" and \"Quality Control Loop\" sections, "
+             "B = full current body, C = A + one line (\"Before delivering, confirm the output answers the "
+             "original request and say where you are uncertain.\"). So for agents B − A is the value of the "
+             "boilerplate block, and C − B asks whether one line can replace it."),
+}
+
+
+def _labels(target, spec=None):
+    spec = spec or R
+    return spec.ARM_LABELS.get(target, spec.ARM_LABELS["default"])
 
 
 def _util(e):
@@ -36,7 +54,12 @@ def _util(e):
     return u * 100 if u <= 1 else u
 
 
-def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo, cmdline, sys_chars, base, judge_model=None):
+def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo, cmdline, sys_chars, base, judge_model=None,
+                    spec=None):
+    meta = R2_META if spec is None else spec.REPORT
+    secondary = SECONDARY if spec is None else spec.SECONDARY
+    decision = {} if spec is None else getattr(spec, "DECISION", {})
+    tmod = spec or R  # the round's task module (labels, counts)
     sha = _sh(["git", "rev-parse", "--short", "HEAD"], repo)
     branch = _sh(["git", "rev-parse", "--abbrev-ref", "HEAD"], repo)
     dirty = _sh(["git", "status", "--porcelain", "--", "skills/", "agents/"], repo)
@@ -54,20 +77,19 @@ def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo,
 
     L = []
     w = L.append
-    w("# Skill outcome eval, round 2 — %s — %s" % (model, datetime.date.today().isoformat()))
+    w("# %s — %s — %s" % (meta["title"], model, datetime.date.today().isoformat()))
     w("")
     w("| Field | Value |")
     w("|---|---|")
-    w("| Suite | `outcome` round 2 (`--round r2`): no-skill vs current vs reduced/previous; agents: without vs with the boilerplate block |")
+    w("| Suite | %s |" % meta["suite"])
     w("| Executor model | `%s` |" % model)
     w("| Judge model | `%s` via `scripts/lib/judge.py` (blind, isolated) |" % (judge_model or model))
-    w("| Repo | `%s` on `%s`; `skills/` + `agents/` %s; variants pinned to `656aaf0` (clean-code C from `0fb36cd`) |"
-      % (sha, branch, "clean" if not dirty else "DIRTY"))
+    w("| Repo | `%s` on `%s`; `skills/` + `agents/` %s; %s |"
+      % (sha, branch, "clean" if not dirty else "DIRTY", meta["pins"]))
     w("| CLI | `%s` |" % cli)
     w("| Runs per cell | %d (%d targets, %d tasks × 3 arms × %d = %d executor + %d judge calls planned) |"
       % (runs, len(TASKS), sum(len(t) for t in TASKS.values()), runs, n_jobs, n_jobs))
-    w("| Command | `%s` (run: `driver.py --run --round r2 --model %s --runs %d --concurrency 4 --budget 40`) |"
-      % (cmdline, model, runs))
+    w("| Command | `%s` (run: `%s`) |" % (cmdline, meta["run"] % (model, runs)))
     w("| Wall time | %s (concurrency 4; per target: executor phase, then judge phase) |"
       % ("; ".join(phases) if phases else "?"))
     w("| Early stop | %s |" % ("; ".join(stops) if stops else "none"))
@@ -107,18 +129,12 @@ def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo,
       "mean score (mean over the target's tasks of run r, r = 1..3): the run-to-run noise of that arm. A "
       "delta is called **real** only when |Δ| exceeds the larger run spread of the two arms compared.")
     w("")
-    w("**Arm semantics differ by target.** Skills: A = a one-line neutral note only, B = note + current "
-      "SKILL.md body, C = note + the audit-reduced body (for `clean-code`, C = the *previous* text, "
-      "`0fb36cd`, so B − C measures v3.0 against v2.0). Agents (`agent-*`, H17): every arm carries the "
-      "agent body; A = body **without** the \"Reality Check\" and \"Quality Control Loop\" sections, "
-      "B = full current body, C = A + one line (\"Before delivering, confirm the output answers the "
-      "original request and say where you are uncertain.\"). So for agents B − A is the value of the "
-      "boilerplate block, and C − B asks whether one line can replace it.")
+    w(meta["arms"])
     w("")
 
     summary = []
     for target, tasks in TASKS.items():
-        lab = _labels(target)
+        lab = _labels(target, tmod)
         w("## %s" % target)
         w("")
         cell = {}
@@ -206,6 +222,9 @@ def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo,
             cverdict = "C < B beyond run spread"
         w("**Computed verdict:** %s. **Arm C:** %s." % (verdict, cverdict))
         w("")
+        if target in decision:
+            w("**Decision rule (MEDICAO-r3):** %s" % decision[target])
+            w("")
 
         # per task
         w("### Per task (k/N runs passing criticals · mean score · mean output tokens)")
@@ -251,7 +270,7 @@ def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo,
         w("")
 
         # judge counts
-        counts = R.COUNTS[target]
+        counts = tmod.COUNTS[target]
         w("### Judge counts (mean per graded answer; per task in brackets)")
         w("")
         w("| Count | A | B | C |")
@@ -267,7 +286,7 @@ def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo,
                 cells.append("%s (%s)" % (_f(_mean(allv), 2), ", ".join(per)))
             w("| `%s` | %s |" % (cnt, " | ".join(cells)))
         w("")
-        sec_cnt = SECONDARY[target][0]
+        sec_cnt = secondary[target][0]
         sec = {}
         for arm in ARMS:
             vals = [v[sec_cnt] for task in tasks for _, v, _ in cell[(task, arm)] if v is not None and sec_cnt in v]
@@ -281,7 +300,7 @@ def build_report_r2(TASKS, ARMS, runs, model, load, exec_path, judge_path, repo,
     for target, st, verdict, cverdict, dBA, dCB, sec in summary:
         w("| `%s` | %s | %s | %s | %s | %s | %s | %s | %s: %s |" % (
             target, *("%s ± %s" % (_f(st[a]["mean"], 2), _f(st[a]["spread"], 2)) for a in ARMS),
-            _f(dBA, 2), _f(dCB, 2), verdict.split(" (")[0], cverdict, SECONDARY[target][1],
+            _f(dBA, 2), _f(dCB, 2), verdict.split(" (")[0], cverdict, secondary[target][1],
             " / ".join(_f(sec[a], 2) for a in ARMS)))
     w("")
     analysis = os.path.join(base, ("analysis-%s.md" % judge_model if judge_model else "analysis.md"))

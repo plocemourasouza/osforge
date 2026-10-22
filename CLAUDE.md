@@ -31,7 +31,7 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Offline suites (833 checks; none touches the live ~/.claude, none spends API):
+# Offline suites (868 checks; none touches the live ~/.claude, none spends API):
 ./tests/test-assertions.sh              # Verdict logic of the eval harnesses (67)
 ./tests/hooks/run-contracts.sh          # Hook contracts: real commands × fixtures, both harnesses (66; deploy gate)
 ./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle + denial attenuation (84)
@@ -43,6 +43,7 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-gateguard-sql.sh           # GateGuard destructive-SQL detector (23)
 ./tests/test-installers.sh              # install-skill/install-mcp: the helpers that run on YOUR machine (22)
 ./tests/test-judge.sh                   # Isolated judge: argv/env/isolation/exit codes with a fake claude (81)
+./tests/test-outcome-r3.sh              # Outcome eval r3 (Pacote 02): builds offline, --dry plans 396/288 calls, r1/r2 byte-identical (35)
 ./tests/test-eval-cases.sh              # Eval cases v2: category, criticals, orphans fail --dry (42)
 ./tests/test-trigger-detect.sh          # Trigger eval counts the real skill (not just the clone) and runs outside the repo (3)
 ./tests/test-quota.sh                   # quota.json: writes (statusline + harness streams), freshness, 80/95% warning once per band (37)

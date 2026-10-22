@@ -6,12 +6,16 @@ working tree, so a later edit under skills/ or agents/ cannot change a past roun
 
   python3 build_variants.py               # round r1 (default) -> variants/
   python3 build_variants.py --round r2    # round r2           -> r2/variants/
+  python3 build_variants.py --round r3    # round r3           -> r3/variants/
 
 Round 1 (rev 58c47e3, the commit the round-1 report was run on): arm B = the SKILL.md body
 (frontmatter stripped); arm C = the same body with the prompt audit's cuts applied.
 Round 2 (rev 656aaf0): see R2_TARGETS -- arm C is either a set of cuts, or (clean-code) the
 previous text from an older revision; for the agent targets arm A is the body WITHOUT the
 boilerplate block, B the full body, C = A + one line.
+Round 3 (rev fd2e1ff): see build_r3 -- arm C = arm B + the P-01/P-02 text; repo-audit B is the draft
+under r3/drafts/; mapa-repo C appends a repository exports map; ponytail-ref B is the vendored
+Ponytail SKILL.md (sha256-pinned).
 Every cut is an exact old->new replacement asserted to match ONCE, so a source edit that moves
 the text makes this script fail loudly instead of silently producing C == B.
 
@@ -347,11 +351,241 @@ def build_r2():
         print("%-32s %s" % (name, "  ".join("%s=%6d" % (a, len(t)) for a, t in sorted(arms.items()))))
 
 
+# =========================================================================== round 3
+# docs/intake/ponytail/MEDICAO-r3.md. Skills read from R3_REV (HEAD of main when r3 was prepared).
+# The P-01/P-02 texts below ARE the deliverable of those proposals (English, ADR-011): the skills
+# under skills/ are only edited if their arm C wins.
+R3_REV = "fd2e1ff"
+R3_DIR = os.path.join(HERE, "r3")
+R3_OUT = os.path.join(R3_DIR, "variants")
+
+# coding-guidelines + P-01 (SPEC-P01): the solution ladder and "never cut" under section 2,
+# one line under section 5.
+P01_LADDER = """Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+### Solution ladder
+
+Before writing code, stop at the first rung that solves the whole task:
+
+1. Does it need to exist? Leave out what nobody asked for, and name it in one line.
+2. Does it already exist in this repository (a helper, component, service, pattern)? Use it the way
+   the surrounding code does.
+3. Does the standard library or the platform solve it (`Intl`, `crypto.randomUUID()`,
+   `URLSearchParams`, `structuredClone`, `<input type="date">`, `<dialog>`)? Use it, unless the project
+   has its own: the house component beats the native one.
+4. Does an already-installed dependency solve it (Zod, the Supabase client, Prisma's
+   `upsert`/`$transaction`)? Use it. Never add a dependency for a few lines.
+5. Only then: the minimum code that works.
+
+### Never cut when simplifying
+
+Validation at a trust boundary (user input, webhooks, Server Actions), error handling that prevents
+data loss, security and authorization checks, accessibility, and anything the user asked for.
+
+A shortcut with a known limit gets a one-line comment: `shortcut: <the limit>, <when to replace it>`.
+Code review treats that comment as a recorded decision, not as a finding."""
+CODING_GUIDELINES_P01 = [
+    ('Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.', P01_LADDER),
+    ("- New code that conflicts with code 30 lines away is a silent regression.\n",
+     "- New code that conflicts with code 30 lines away is a silent regression.\n"
+     "- Fixing a bug: find every caller of the function you touch and fix the cause once, in the shared code.\n"),
+]
+
+# code-review: the dynamic-context lines (!`cmd`) are rendered to what Claude Code would inject in
+# the eval's empty, non-git cwd -- applied to B and C alike, so the arms differ only by P-02.
+CODE_REVIEW_RENDER = [
+    ('!`git log --oneline -10 2>/dev/null || echo "Git not available or not initialized"`\n'
+     '!`git diff --stat HEAD 2>/dev/null | tail -5 || echo "Diff not available"`\n',
+     "Git not available or not initialized\n"),
+]
+P02_VERDICT_OLD = """**Verdict:** APPROVED | CHANGES_REQUESTED
+**Files reviewed:** {N}
+**Findings:** {N}
+
+### Issues (must be resolved)
+1. {issue with location and suggestion}
+
+### Suggestions (recommended)
+1. {suggestion}
+
+### Positives
+1. {something that turned out well}
+```"""
+P02_VERDICT_NEW = """**Verdict:** APPROVED | CHANGES_REQUESTED
+**Assumed load:** {who and what runs this code (one user, one team, many instances) and where that came from}
+**Files reviewed:** {N}
+**Findings:** {N}
+
+### Issues (must be resolved)
+1. {issue with location and suggestion}
+   If not fixed: {one sentence: the consequence for the user or the data}
+
+### Suggestions (recommended)
+1. {suggestion}
+
+### Positives
+1. {something that turned out well}
+
+Not verified: {one line: what mattered and could not be checked}
+```"""
+# code-review + P-02 (SPEC-P02): connected code in scope, declared load, proof rule, consequence lines.
+CODE_REVIEW_P02 = [
+    ("- Load project-context.md and the project's `CONTEXT.md` glossary\n",
+     "- Load project-context.md and the project's `CONTEXT.md` glossary\n"
+     "- When a change alters a function's signature, return value or behaviour (or renames a field, column\n"
+     "  or export), search the whole repository for every caller, including files outside the diff, and\n"
+     "  review them too\n"
+     "- State the expected load, taken from the README, the deploy config or project-context.md (one user,\n"
+     "  one team, many processes or instances). Judge scale findings against that load and say it in the report\n"),
+    ("**Done when:** the review covers the whole diff since the agreed point — every modified file\n"
+     "named, none silently skipped.",
+     "**Done when:** the review covers the diff and the code it reaches — every modified file\n"
+     "named, none silently skipped, and every caller of a changed signature, return value or behaviour\n"
+     "checked, inside or outside the diff."),
+    ("**Done when:** each divergence found is tied to the file and line that shows it.",
+     "**Proof rule:** every finding needs a concrete case (\"this input or situation leads to this wrong\n"
+     "result\"). No case, no finding. A `shortcut: <limit>, <when to replace it>` comment is a recorded\n"
+     "decision, not a finding, unless the declared load already exceeds its limit.\n\n"
+     "**Done when:** each divergence found is tied to the file and line that shows it."),
+    (P02_VERDICT_OLD, P02_VERDICT_NEW),
+]
+
+# repo-audit (P-03): B = the draft skill (not installed yet), C = the one-line alternative.
+REPO_AUDIT_DRAFT = os.path.join(R3_DIR, "drafts", "repo-audit", "SKILL.md")
+REPO_AUDIT_LINE = "List the most serious problems first, each with a concrete case and file:line.\n"
+
+# ponytail-ref (optional, D-P1): Ponytail's SKILL.md body verbatim, vendored with its license.
+PONYTAIL_SKILL = os.path.join(R3_DIR, "vendor", "ponytail", "SKILL.md")
+PONYTAIL_SHA256 = "9badd22a32e19cb884e46dfa8d3aae82bb81dfa5484105b8b4f0262df823a509"
+PONYTAIL_HEADER = """<!--
+Ponytail skills/ponytail/SKILL.md, body verbatim (frontmatter stripped), from
+https://github.com/DietrichGebert/ponytail at 09c434ab73ca43761c5d8b0c5d341926c2fba710.
+Used only as an outcome-eval variant (round r3, target ponytail-ref); not deployed.
+MIT License, Copyright (c) 2026 DietrichGebert. Full text: r3/vendor/ponytail/LICENSE, THIRD_PARTY_NOTICES.
+driver.py drops this comment from the system prompt; the arm sees only the body below.
+-->
+"""
+
+# mapa-repo: the exports of the fictional salon app the cg tasks live in, rendered in the format of
+# Ponytail's hooks/ponytail-map.js (buildMap) -- one line per folder, shared code first, at most 3
+# names per file (1 when the folder has more than 8 files), 30 per line, 2000-char budget. Only names
+# and folders: the map says THAT a helper exists, not its signature.
+REPO_EXPORTS = [
+    ("app/(account)/bookings/actions.ts", ["cancelBooking", "CancelState"]),
+    ("app/(account)/bookings/page.tsx", ["BookingsPage"]),
+    ("app/(account)/profile/actions.ts", ["updateProfile", "ProfileState"]),
+    ("app/(account)/profile/page.tsx", ["ProfilePage"]),
+    ("app/(booking)/book/actions.ts", ["createBooking", "BookingState"]),
+    ("app/(booking)/book/page.tsx", ["BookPage"]),
+    ("app/(shop)/cart/actions.ts", ["addToCart", "removeLine", "checkout"]),
+    ("app/(shop)/cart/cart-form.tsx", ["CartForm"]),
+    ("app/(shop)/checkout/actions.ts", ["placeOrder"]),
+    ("app/(shop)/orders/[id]/confirmation/page.tsx", ["ConfirmationPage"]),
+    ("app/(shop)/products/page.tsx", ["ProductsPage"]),
+    ("app/api/slots/route.ts", ["GET"]),
+    ("app/api/webhooks/payflow/route.ts", ["runtime", "POST"]),
+    ("components/account/cancel-booking-button.tsx", ["CancelBookingButton"]),
+    ("components/account/profile-form.tsx", ["ProfileForm"]),
+    ("components/booking/booking-form.tsx", ["BookingForm"]),
+    ("components/booking/service-picker.tsx", ["ServicePicker"]),
+    ("components/booking/staff-picker.tsx", ["StaffPicker"]),
+    ("components/shop/add-to-cart-button.tsx", ["AddToCartButton"]),
+    ("components/shop/cart-summary.tsx", ["CartSummary"]),
+    ("components/shop/product-card.tsx", ["ProductCard"]),
+    ("components/shop/product-grid.tsx", ["ProductGrid"]),
+    ("components/ui/badge.tsx", ["Badge", "badgeVariants"]),
+    ("components/ui/button.tsx", ["Button", "buttonVariants"]),
+    ("components/ui/card.tsx", ["Card", "CardHeader", "CardTitle", "CardContent"]),
+    ("components/ui/dialog.tsx", ["Dialog", "DialogTrigger", "DialogContent", "DialogTitle"]),
+    ("components/ui/form-message.tsx", ["FormMessage"]),
+    ("components/ui/icon-button.tsx", ["IconButton"]),
+    ("components/ui/input.tsx", ["Input"]),
+    ("components/ui/label.tsx", ["Label"]),
+    ("emails/order-receipt.tsx", ["OrderReceipt"]),
+    ("lib/auth.ts", ["getSession", "requireUser", "requireStaff"]),
+    ("lib/cart.ts", ["cartTotalCents", "getCart"]),
+    ("lib/db.ts", ["prisma"]),
+    ("lib/format.ts", ["formatCurrency", "formatDateTime", "formatPhone"]),
+    ("lib/money.ts", ["toCents", "fromCents", "sumCents"]),
+    ("lib/orders.ts", ["createOrder"]),
+    ("lib/receipt.ts", ["buildReceipt"]),
+    ("lib/slots.ts", ["Slot", "listSlotsForDay", "nextFreeSlot"]),
+    ("lib/supabase/client.ts", ["createClient"]),
+    ("lib/supabase/middleware.ts", ["updateSession"]),
+    ("lib/supabase/server.ts", ["createClient"]),
+    ("lib/types.ts", ["CartLineWithProduct", "OrderWithItems"]),
+    ("lib/utils.ts", ["cn"]),
+    ("middleware.ts", ["middleware", "config"]),
+]
+MAP_SHARED = ("util", "helper", "lib", "common", "shared", "service", "component", "hook", "core", "model",
+              "schema", "api")
+
+
+def repo_map(exports, budget=2000):
+    """Python port of ponytail-map.js buildMap() for a fixed file -> exported-names table."""
+    files = sorted(exports, key=lambda fe: (not any(w in fe[0].lower() for w in MAP_SHARED), fe[0]))
+    dirs = {}
+    for path, names in files:
+        d = os.path.dirname(path) or "."
+        dirs.setdefault(d, []).append(names)
+    lines, used, skipped = [], 0, 0
+    for d, per_file in dirs.items():
+        names = []
+        for n in per_file:
+            for x in n[:1 if len(per_file) > 8 else 3]:
+                if x not in names:
+                    names.append(x)
+        line = "%s/: %s%s" % (d, ", ".join(names[:30]), ", ..." if len(names) > 30 else "")
+        if used + len(line) > budget:
+            skipped += 1
+            continue
+        lines.append(line)
+        used += len(line) + 1
+    return ("Codebase map (what already exists; reuse it, read a file only when you need its details):\n"
+            + "\n".join(lines) + ("\n(%d more folders not listed)" % skipped if skipped else ""))
+
+
+def build_r3():
+    import hashlib
+    os.makedirs(R3_OUT, exist_ok=True)
+    arms = {}
+    rel = "skills/coding-guidelines/SKILL.md"
+    warn_if_tree_differs(R3_REV, rel)
+    cg = strip_frontmatter(git_show(R3_REV, rel))
+    cg_c = apply_cuts("coding-guidelines", cg, CODING_GUIDELINES_P01)
+    arms["coding-guidelines"] = {"B": cg, "C": cg_c}
+
+    rel = "skills/quality/code-review/SKILL.md"
+    warn_if_tree_differs(R3_REV, rel)
+    cr = apply_cuts("code-review (render)", strip_frontmatter(git_show(R3_REV, rel)), CODE_REVIEW_RENDER)
+    arms["code-review"] = {"B": cr, "C": apply_cuts("code-review", cr, CODE_REVIEW_P02)}
+
+    with open(REPO_AUDIT_DRAFT, encoding="utf-8") as fh:
+        draft = fh.read()
+    arms["repo-audit"] = {"B": strip_frontmatter(draft), "C": REPO_AUDIT_LINE}
+
+    arms["mapa-repo"] = {"B": cg_c, "C": cg_c.rstrip("\n") + "\n\n" + repo_map(REPO_EXPORTS) + "\n"}
+
+    with open(PONYTAIL_SKILL, "rb") as fh:
+        raw = fh.read()
+    if hashlib.sha256(raw).hexdigest() != PONYTAIL_SHA256:
+        sys.exit("%s changed: it must stay byte-identical to upstream 09c434a (sha256 %s)"
+                 % (PONYTAIL_SKILL, PONYTAIL_SHA256))
+    arms["ponytail-ref"] = {"B": PONYTAIL_HEADER + strip_frontmatter(raw.decode("utf-8")), "C": cg_c}
+
+    for name, texts in arms.items():
+        for arm, text in texts.items():
+            write_variant(R3_OUT, name, arm, text)
+        print("%-20s %s" % (name, "  ".join("%s=%6d" % (a, len(t)) for a, t in sorted(texts.items()))))
+    print("repo-audit B from %s (sha256 %s)" % (os.path.relpath(REPO_AUDIT_DRAFT, REPO),
+                                                hashlib.sha256(draft.encode("utf-8")).hexdigest()[:12]))
+
+
 def main(argv):
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    p.add_argument("--round", default="r1", choices=("r1", "r2"))
+    p.add_argument("--round", default="r1", choices=("r1", "r2", "r3"))
     a = p.parse_args(argv)
-    build_r1() if a.round == "r1" else build_r2()
+    {"r1": build_r1, "r2": build_r2, "r3": build_r3}[a.round]()
 
 
 if __name__ == "__main__":

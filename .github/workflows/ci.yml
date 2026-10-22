@@ -64,6 +64,7 @@ jobs:
           ./tests/test-quota.sh
           ./tests/test-calls.sh
           ./tests/test-judge.sh
+          ./tests/test-outcome-r3.sh       # r3 builds offline, --dry plans 396/288 calls, r1/r2 unchanged
       - name: Brain store checks (qdrant-client in a throwaway venv, fake embedder, no model)
         run: |
           set -e

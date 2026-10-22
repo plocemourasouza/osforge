@@ -1,0 +1,68 @@
+{
+ "type": "object",
+ "required": [
+  "criteria",
+  "score",
+  "rationale",
+  "seeded_found",
+  "total_findings",
+  "manufactured_findings",
+  "manufactured_high"
+ ],
+ "properties": {
+  "criteria": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "result",
+     "note"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "result": {
+      "enum": [
+       "pass",
+       "fail",
+       "na"
+      ]
+     },
+     "note": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "score": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 10
+  },
+  "rationale": {
+   "type": "string"
+  },
+  "seeded_found": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "total_findings": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "manufactured_findings": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "manufactured_high": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  }
+ }
+}
