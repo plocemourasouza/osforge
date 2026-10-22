@@ -305,22 +305,22 @@ Proposta e specs: [`intake/PACOTE-02-ponytail.md`](intake/PACOTE-02-ponytail.md)
 [rev. 3 da P-05](intake/ponytail/SPEC-P05-monitor.md) (portfólio de todos os projetos). Aprovado em 2026-10-22.
 D-G1 e D-M1 como recomendadas; D-P1, D-P2 (rodada paga r3), D-G2 e D-M2 continuam abertas.
 
-### B-031 · Rodada r3 do eval de resultado — preparar sem chamada
+### B-031 · Rodada r3 do eval de resultado — ✅ preparada (rodada paga aguarda D-P2)
 - **Spec:** [MEDICAO-r3](intake/ponytail/MEDICAO-r3.md). **Chamadas pagas:** 0 para preparar; 288–396 para rodar (D-P2).
 
-### B-032 · Escada da solução em `coding-guidelines` — como variante da r3
+### B-032 · Escada da solução em `coding-guidelines` — ◐ variante pronta, aguarda a r3
 - **Spec:** [P-01](intake/ponytail/SPEC-P01-escada-da-solucao.md). Toca a skill só se o braço C ganhar.
 
-### B-033 · `code-review` com código conectado — como variante da r3
+### B-033 · `code-review` com código conectado — ◐ variante pronta, aguarda a r3
 - **Spec:** [P-02](intake/ponytail/SPEC-P02-review-codigo-conectado.md). Toca a skill só se o braço C ganhar.
 
-### B-034 · `repo-audit` sob demanda, com livro de atalhos — como variante da r3
+### B-034 · `repo-audit` sob demanda, com livro de atalhos — ◐ rascunho pronto, aguarda a r3
 - **Spec:** [P-03](intake/ponytail/SPEC-P03-repo-audit.md). Entra como skill, como uma linha, ou não entra, pela r3.
 
-### B-035 · Guardas de edição (`quality-guard`) + `signals`, em modo sombra
+### B-035 · Guardas de edição (`quality-guard`) + `signals`, em modo sombra — ✅ em sombra (ligar após o relatório de 2 semanas)
 - **Spec:** [P-04](intake/ponytail/SPEC-P04-guardas-de-edicao.md). **Chamadas pagas:** 0. Hooks 11 → 12.
 
-### B-036 · Ciclo de vida do projeto + contrato `osforge-db monitor` + painel `/monitor`
+### B-036 · Ciclo de vida do projeto + contrato `osforge-db monitor` + painel `/monitor` — ✅
 - **Spec:** [P-05 §0–2](intake/ponytail/SPEC-P05-monitor.md). **Chamadas pagas:** 0. O painel é a última parte.
 
 ### B-037 · Faixa `osforge-monitor` no Claude Code
@@ -328,6 +328,12 @@ D-G1 e D-M1 como recomendadas; D-P1, D-P2 (rodada paga r3), D-G2 e D-M2 continua
 
 ### B-038 · Painel lateral (`Pane`) — opcional (D-M2)
 - **Spec:** [P-05 §4](intake/ponytail/SPEC-P05-monitor.md).
+
+### B-039 · Carimbos de tempo do SQLite deslocados pelo fuso — aberto
+- **Achado da revisão do B-036.** Colunas antigas (`projects.updated_at`, `tasks.updated_at`, `state.updated_at`,
+  `decisions.created_at` …) são gravadas com `datetime('now','utc')`, que o SQLite trata como hora local e
+  desloca pelo fuso (UTC-3 → agora + 3 h). O monitor limita "última atividade" ao presente; a correção da
+  gravação (`datetime('now')`) e a dos dados já gravados ficam para um item próprio, com teste em TZ ≠ UTC.
 
 ## Adiados — só com evidência
 
