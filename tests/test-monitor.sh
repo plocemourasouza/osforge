@@ -101,14 +101,14 @@ EOF
 section "1. portfolio"
 db monitor > "$J"; RC=$?
 check "exit 0, schema v1" "[ $RC -eq 0 ] && [ \"\$(q 'd[\"schema\"]')\" = osforge.monitor.v1 ]"
-check "archived project left out by default" "[ \"\$(q '[p[\"slug\"] for p in d[\"projetos\"]]')\" = \"['alpha', 'beta', 'empty']\" ]"
-check "order: active, backlog, then outro" "[ \"\$(q '[p[\"status\"] for p in d[\"projetos\"]]')\" = \"['active', 'backlog', 'outro']\" ]"
+check "archived project listed (history library)" "[ \"\$(q 'sorted(p[\"slug\"] for p in d[\"projetos\"])')\" = \"['alpha', 'beta', 'empty', 'gamma']\" ]"
+check "groups: active+recent → andamento, backlog, archived → historico; listed in group order" "[ \"\$(q '[(p[\"slug\"], p[\"grupo_base\"]) for p in d[\"projetos\"]]')\" = \"[('alpha', 'andamento'), ('empty', 'andamento'), ('beta', 'backlog'), ('gamma', 'historico')]\" ]"
 check "legacy status kept raw, shown as outro" "[ \"\$(q '[p[\"status_bruto\"] for p in d[\"projetos\"] if p[\"slug\"]==\"empty\"][0]')\" = someday ]"
 check "totals: open tasks 3, blockers 1, signals 1 (tests excluded)" "[ \"\$(q '(d[\"totais\"][\"tarefas_abertas\"], d[\"totais\"][\"bloqueios_abertos\"], d[\"totais\"][\"sinais_abertos\"])')\" = '(3, 1, 1)' ]"
 check "period: 5 calls (one outside the horizon), 3 sessions" "[ \"\$(q '(d[\"totais\"][\"chamadas\"], d[\"totais\"][\"sessoes\"])')\" = '(5, 3)' ]"
 check "health: 1 of 5 calls without project = 20.0%" "[ \"\$(q 'd[\"saude\"][\"chamadas_sem_projeto_pct\"]')\" = 20.0 ]"
 check "open blockers across projects, with project and age" "[ \"\$(q '[(b[\"projeto\"], b[\"idade_dias\"]) for b in d[\"bloqueios\"]]')\" = \"[('alpha', 3)]\" ]"
-check "health: projects without a root" "[ \"\$(q 'd[\"saude\"][\"projetos_sem_raiz\"]')\" = \"['beta', 'empty']\" ]"
+check "health: projects without a root" "[ \"\$(q 'sorted(d[\"saude\"][\"projetos_sem_raiz\"])')\" = \"['beta', 'empty', 'gamma']\" ]"
 check "window from quota.json" "[ \"\$(q 'd[\"janela\"][\"five_hour\"][\"pct\"]')\" = 63.0 ]"
 check "series covers the 84-day horizon" "[ \"\$(q 'len(d[\"projetos\"][0][\"serie\"])')\" = 84 ]"
 check "alpha: pct = 2 done / 5 live = 40.0" "[ \"\$(q 'd[\"projetos\"][0][\"pct\"]')\" = 40.0 ]"
@@ -117,7 +117,7 @@ check "alpha: tokens = input+output+writes (cache reads apart)" "[ \"\$(q 'd[\"p
 check "alpha: agent minutes = (60 s + capped 300 s) / 60 = 6.0" "[ \"\$(q 'd[\"projetos\"][0][\"periodo\"][\"minutos\"]')\" = 6.0 ]"
 check "alpha: has a root on disk" "[ \"\$(q 'd[\"projetos\"][0][\"acesso\"][\"raiz_existe\"]')\" = True ]"
 db monitor --all > "$J"
-check "--all includes archived" "[ \"\$(q 'sorted(p[\"slug\"] for p in d[\"projetos\"])')\" = \"['alpha', 'beta', 'empty', 'gamma']\" ]"
+check "--all still accepted" "[ \"\$(q 'len(d[\"projetos\"])')\" = 4 ]"
 db monitor --days=7 > "$J"
 check "--days=7: s2 (5 days ago) in, horizon still 84" "[ \"\$(q '(d[\"totais\"][\"chamadas\"], d[\"horizonte_dias\"])')\" = '(5, 84)' ]"
 db monitor --days=90 > "$J"
@@ -256,6 +256,78 @@ EOF
   fi
   kill "$SPID" 2>/dev/null; wait "$SPID" 2>/dev/null
 fi
+
+section "10. command centre: groups by age, live detection, inbox, runs (P-06)"
+python3 - "$OSFORGE_DB" <<'EOF'
+import sqlite3, sys
+from datetime import datetime, timedelta, timezone
+c = sqlite3.connect(sys.argv[1])
+now = datetime.now(timezone.utc)
+for slug, hours in (("w1", 30), ("w2", 24 * 29), ("h1", 24 * 31)):
+    c.execute("INSERT INTO projects (slug, description, status) VALUES (?,?, 'active')", (slug, slug))
+    pid = c.execute("SELECT id FROM projects WHERE slug=?", (slug,)).fetchone()[0]
+    c.execute("INSERT INTO tasks (project_id, title, updated_at) VALUES (?,?,?)",
+              (pid, "t", (now - timedelta(hours=hours)).strftime("%Y-%m-%d %H:%M:%S")))
+c.execute("INSERT INTO projects (slug, description, status) VALUES ('held', 'h', 'paused')")
+c.execute("INSERT INTO projects (slug, description, status) VALUES ('none', 'n', 'active')")
+c.execute("UPDATE projects SET created_at=updated_at")
+c.commit()
+EOF
+db monitor > "$J"
+grp(){ q "[p[\"grupo_base\"] for p in d[\"projetos\"] if p[\"slug\"]==\"$1\"][0]"; }
+check "30 h without activity → aguardando" "[ \"\$(grp w1)\" = aguardando ]"
+check "29 days → still aguardando" "[ \"\$(grp w2)\" = aguardando ]"
+check "31 days → historico" "[ \"\$(grp h1)\" = historico ]"
+check "held (paused) → historico, with the reason" "[ \"\$(grp held)\" = historico ] && [ \"\$(q '[p[\"grupo_regra\"] for p in d[\"projetos\"] if p[\"slug\"]==\"held\"][0]')\" = segurado ]"
+check "rules exposed: 24 h / 30 days" "[ \"\$(q '(d[\"regras_grupo\"][\"aguardando_apos_h\"], d[\"regras_grupo\"][\"historico_apos_dias\"])')\" = '(24, 30)' ]"
+
+# live detection with captured ps/cwd (macOS process titles)
+L="$WORK/live"; mkdir -p "$L/novo" && (cd "$L/novo" && $GIT init -q && echo x > a && $GIT add a && $GIT commit -qm i)
+cat > "$WORK/ps.txt" <<EOF
+  101 claude
+  102 /Users/x/.local/bin/claude --resume abc
+  103 node /x/node_modules/.bin/next dev --turbo
+  104 /Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Plugin).app/Contents/MacOS/Cursor Helper (Plugin): extension-host (user) alpha [1-1]
+  105 /Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin): extension-host (user) outra-pasta [2-3]
+  106 /usr/bin/python3 /x/osforge-db.py live
+  107 node server.js
+  108 claude
+EOF
+python3 -c "import json,sys; print(json.dumps({'101': sys.argv[1], '102': sys.argv[2], '103': sys.argv[1] + '/lib', '107': sys.argv[1], '108': '/'}))" "$A" "$L/novo" > "$WORK/cwd.json"
+mkdir -p "$HOME/.claude/projects/$(printf '%s' "$A" | sed 's/[^A-Za-z0-9]/-/g')" && touch "$HOME/.claude/projects/$(printf '%s' "$A" | sed 's/[^A-Za-z0-9]/-/g')/s.jsonl"
+OSFORGE_LIVE_PS_FILE="$WORK/ps.txt" OSFORGE_LIVE_CWD_FILE="$WORK/cwd.json" db live > "$J"
+check "live: claude in alpha, working now (fresh transcript)" "[ \"\$(q '(d[\"projetos\"][\"alpha\"][\"claude\"], d[\"projetos\"][\"alpha\"][\"trabalhando\"])')\" = '(1, True)' ]"
+check "live: next dev in a subfolder maps to alpha; plain node server.js is not a dev server" "[ \"\$(q 'len(d[\"projetos\"][\"alpha\"][\"servidores\"])')\" = 1 ]"
+check "live: Cursor window on alpha (IDE helper process title)" "[ \"\$(q 'd[\"projetos\"][\"alpha\"][\"ides\"]')\" = \"['Cursor']\" ]"
+check "live: unregistered folders listed (claude in novo, VS Code on outra-pasta)" "[ \"\$(q 'sorted((x[\"nome\"], x[\"claude\"], x[\"ides\"]) for x in d[\"sem_cadastro\"])')\" = \"[('novo', 1, []), ('outra-pasta', 0, ['VS Code'])]\" ]"
+check "live: claude in / is ignored, osforge itself is not a server" "[ \"\$(q 'sum(v[\"claude\"] for v in d[\"projetos\"].values()) + sum(x[\"claude\"] for x in d[\"sem_cadastro\"])')\" = 2 ]"
+OSFORGE_LIVE_PS_FILE="$WORK/ps.txt" OSFORGE_LIVE_CWD_FILE="$WORK/cwd.json" db monitor --live > "$J"
+check "monitor --live embeds the live block" "[ \"\$(q 'd[\"ao_vivo\"][\"projetos\"][\"alpha\"][\"claude\"]')\" = 1 ]"
+
+# inbox
+export OSFORGE_INBOX_DIR="$WORK/inbox"
+check "inbox-add → id and flag file" "db --json inbox-add alpha 'use Server Actions no checkout' | grep -q '\"id\"' && [ -f \"$OSFORGE_INBOX_DIR/alpha\" ]"
+check "empty or oversized message → exit 2" "db inbox-add alpha '  ' >/dev/null 2>&1; [ \$? -eq 2 ] && db inbox-add alpha \"\$(python3 -c 'print(\"x\"*4001)')\" >/dev/null 2>&1; [ \$? -eq 2 ]"
+db --json inbox-add alpha "segunda orientação" >/dev/null
+db monitor alpha > "$J"
+check "monitor: 2 pending in the project and in the conversation" "[ \"\$(q '(d[\"projeto\"][\"inbox_pendentes\"], [m[\"status\"] for m in d[\"projeto\"][\"conversa\"] if m[\"tipo\"]==\"orientacao\"])')\" = \"(2, ['pendente', 'pendente'])\" ]"
+T1="$(db inbox-take alpha --session=sess-aaaaaaaa-1)"; T2="$(db inbox-take alpha --session=sess-bbbbbbbb-2)"
+check "inbox-take hands both to the first session, none to the second" "[ \"\$(printf '%s' \"\$T1\" | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')\" = 2 ] && [ \"\$T2\" = '[]' ]"
+check "flag removed when nothing is pending" "[ ! -f \"$OSFORGE_INBOX_DIR/alpha\" ]"
+check "delivery recorded with the session" "db --json inbox alpha | python3 -c 'import json,sys; d=json.load(sys.stdin); assert all(m[\"status\"]==\"entregue\" and m[\"sessao\"]==\"sess-aaa\" for m in d), d'"
+ID="$(db --json inbox-add alpha 'cancelar esta' | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
+db inbox-cancel "$ID" >/dev/null 2>&1
+check "cancel → cancelada, flag gone" "[ ! -f \"$OSFORGE_INBOX_DIR/alpha\" ] && db --json inbox alpha | grep -q '\"cancelada\"'"
+check "inbox-take on an unknown project → [] and exit 0" "[ \"\$(db inbox-take ghost --session=x)\" = '[]' ]"
+
+# runs
+RID="$(db --json run-add alpha --kind=background --tool=claude '--prompt=rode os testes' --status=rodando | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
+db run-update "$RID" --status=concluida '--result=12 testes ok' --cost=0.42 >/dev/null 2>&1
+check "runs: recorded and closed with result and cost" "db --json runs alpha | python3 -c 'import json,sys; r=json.load(sys.stdin)[0]; assert (r[\"status\"], r[\"resultado\"], r[\"custo\"])==(\"concluida\", \"12 testes ok\", 0.42) and r[\"fim\"], r'"
+check "run-add with a bad kind → exit 2" "db run-add alpha --kind=rocket >/dev/null 2>&1; [ \$? -eq 2 ]"
+db monitor alpha > "$J"
+check "conversation merges messages and runs" "[ \"\$(q 'sorted(set(m[\"tipo\"] for m in d[\"projeto\"][\"conversa\"]))')\" = \"['execucao', 'orientacao']\" ]"
+unset OSFORGE_INBOX_DIR
 
 section "7. budget: 50,000 calls"
 python3 - "$OSFORGE_DB" <<'EOF'

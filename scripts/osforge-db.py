@@ -35,6 +35,12 @@ Comandos:
   monitor [<slug>] [--days=30] [--discover] [--all] [--compact]
                                     Contrato do monitor (osforge.monitor.v1, sempre JSON, só leitura):
                                     sem slug = portfólio; com slug = detalhe (B-036)
+  live                              O que roda agora (Claude Code, IDE, servidor de dev) por projeto (B-040)
+  inbox-add <slug> <texto>          Orientação para os agentes do projeto (entregue pelo hook inbox-deliver)
+  inbox-take <slug> --session=ID    Entrega atômica das pendentes (JSON); usado pelo hook
+  inbox <slug> | inbox-cancel <id>
+  run-add <slug> --kind=terminal|background|ide [--tool=] [--prompt=] [--pid=] [--log=]
+  run-update <id> [--status=] [--result=] [--cost=] | runs <slug>
   add-signal <slug> <callers_open|duplicate|tests> <subject> [--detail=JSON] [--session=ID]
   resolve-signal <id> [<id>...]
   signals [<slug>] [--open] [--report] [--since=YYYY-MM-DD]
@@ -1025,6 +1031,35 @@ CREATE TABLE IF NOT EXISTS signals (
     resolved_at TEXT
 );
 CREATE INDEX IF NOT EXISTS signals_project_open ON signals(project_id, resolved_at);
+
+-- Command centre (B-041/B-042, SPEC-P06): messages to the agents of a project, delivered by the
+-- inbox-deliver hook, and what the panel launched (Terminal, background run, IDE).
+CREATE TABLE IF NOT EXISTS inbox (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts                TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
+    project_id        INTEGER NOT NULL REFERENCES projects(id),
+    text              TEXT    NOT NULL,
+    status            TEXT    NOT NULL DEFAULT 'pendente' CHECK(status IN ('pendente','entregue','cancelada')),
+    delivered_at      TEXT,
+    delivered_session TEXT,
+    via               TEXT    NOT NULL DEFAULT 'painel'
+);
+CREATE INDEX IF NOT EXISTS inbox_project_status ON inbox(project_id, status);
+CREATE TABLE IF NOT EXISTS runs (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts         TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
+    project_id INTEGER NOT NULL REFERENCES projects(id),
+    kind       TEXT    NOT NULL CHECK(kind IN ('terminal','background','ide')),
+    tool       TEXT    NOT NULL DEFAULT '',
+    prompt     TEXT    NOT NULL DEFAULT '',
+    status     TEXT    NOT NULL DEFAULT 'iniciada' CHECK(status IN ('iniciada','rodando','concluida','falhou','interrompida')),
+    pid        INTEGER,
+    ended_at   TEXT,
+    log_path   TEXT,
+    result     TEXT,
+    cost_usd   REAL
+);
+CREATE INDEX IF NOT EXISTS runs_project ON runs(project_id, id);
 
 CREATE TABLE IF NOT EXISTS vec_memory (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -2277,6 +2312,7 @@ def _project_summary(conn, p, per_day, keys_period, keys_series):
     stamps = [min(d, now_utc) for d in (_parse_iso(x) for x in last) if d]
     last_iso = _iso_utc(max(stamps)) if stamps else None
     status = p["status"] if p["status"] in PROJECT_STATUSES else "outro"
+    grupo, regra = _grupo_base(status, last_iso)
     root = p["root_path"] if "root_path" in p.keys() else None
     return {
         "slug": p["slug"], "descricao": p["description"], "status": status,
@@ -2290,6 +2326,9 @@ def _project_summary(conn, p, per_day, keys_period, keys_series):
         "serie": _series(per_day, keys_series),
         "acesso": {"raiz": root, "raiz_existe": bool(root and os.path.isdir(root)),
                    "remoto": bool(p["remote_hash"] if "remote_hash" in p.keys() else None)},
+        "grupo_base": grupo, "grupo_regra": regra,
+        "inbox_pendentes": conn.execute("SELECT COUNT(*) FROM inbox WHERE project_id=? AND status='pendente'",
+                                        (pid,)).fetchone()[0],
     }
 
 
@@ -2452,12 +2491,13 @@ def _project_detail(conn, p, summary, per_model, sessions, split, priceless, key
                     "sem_preco": priceless},
         "sessoes": sess,
         "qualidade": {"sinais": sigs, "testes": tests, "atalhos": _shortcuts(root)},
+        "conversa": _conversation(conn, pid),
         "atividade": [{"dia": x["dia"], "minutos": x["minutos"]} for x in summary["serie"][-_MONITOR_HEATMAP_DAYS:]],
     })
     return detail
 
 
-def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False, compact=False):
+def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False, compact=False, live=False):
     if days < 1 or days > 365:
         _err2("--days entre 1 e 365")
     horizon = max(2 * days, _MONITOR_HEATMAP_DAYS)
@@ -2494,7 +2534,7 @@ def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False
         print(json.dumps(out, ensure_ascii=False, separators=(",", ":") if compact else None))
         return
     per, _pm, _s, _sp, priceless = _usage_by_day(conn, cutoff)
-    q = "SELECT * FROM projects" + ("" if include_archived else " WHERE status!='archived'")
+    q = "SELECT * FROM projects"   # archived projects are the history library: always listed (P-06)
     projects = [_project_summary(conn, p, per.get(p["id"], {}), keys_period, keys_series)
                 for p in conn.execute(q + " ORDER BY slug").fetchall()]
     suggested, unregistered = {}, []
@@ -2506,12 +2546,13 @@ def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False
             if sug:
                 pr["acesso"]["raiz_sugerida"] = sug
                 pr["acesso"]["comando"] = f"osforge-db bind-project {pr['slug']} --root={shlex.quote(sug)}"
-    order = {s: i for i, s in enumerate(PROJECT_STATUSES + ("outro",))}
-    projects.sort(key=lambda x: (order.get(x["status"], 9), -(_parse_iso(x["ultima_atividade"]) or
+    order = {g: i for i, g in enumerate(("andamento", "aguardando", "backlog", "historico"))}
+    projects.sort(key=lambda x: (order.get(x["grupo_base"], 9), -(_parse_iso(x["ultima_atividade"]) or
                                  datetime(1970, 1, 1, tzinfo=timezone.utc)).timestamp(), x["slug"]))
-    by_status = {}
+    by_status, by_group = {}, {}
     for pr in projects:
         by_status[pr["status"]] = by_status.get(pr["status"], 0) + 1
+        by_group[pr["grupo_base"]] = by_group.get(pr["grupo_base"], 0) + 1
     tot = {"chamadas": 0, "tokens": 0, "custo": 0.0, "minutos": 0.0}
     sess = set()
     for pid, days_map in per.items():
@@ -2523,7 +2564,8 @@ def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False
                 sess |= d["_s"]
     unassigned = sum(d["chamadas"] for k, d in (per.get(None) or {}).items() if k in keys_period)
     out["totais"] = {
-        "projetos": len(projects), "por_status": by_status,
+        "projetos": len(projects), "por_status": by_status, "por_grupo": by_group,
+        "inbox_pendentes": sum(p["inbox_pendentes"] for p in projects),
         "tarefas_abertas": sum(p["tarefas_abertas"] for p in projects),
         "bloqueios_abertos": sum(p["bloqueios_abertos"] for p in projects),
         "sinais_abertos": sum(p["sinais_abertos"] for p in projects),
@@ -2531,6 +2573,9 @@ def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False
         "custo": round(tot["custo"], 4), "minutos": round(tot["minutos"], 1),
     }
     out["projetos"] = projects
+    out["regras_grupo"] = {"aguardando_apos_h": GROUP_WAITING_AFTER_H, "historico_apos_dias": GROUP_HISTORY_AFTER_D}
+    if live:
+        out["ao_vivo"] = live_state(conn)
     now = datetime.now(timezone.utc)
     shown = {p["slug"] for p in projects}
     blk = []
@@ -2551,6 +2596,331 @@ def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False
         "modelos_sem_preco": priceless,
     }
     print(json.dumps(out, ensure_ascii=False))
+
+
+# ── Command centre (B-040..B-042, SPEC-P06) ─────────────────────────────────
+# Sidebar groups by live activity and age; a per-project inbox the `inbox-deliver` hook hands to
+# the running agent; and the record of what the panel launched (`runs`).
+
+GROUP_WAITING_AFTER_H = 24
+GROUP_HISTORY_AFTER_D = 30
+INBOX_MAX_CHARS = 4000
+RUN_KINDS = ("terminal", "background", "ide")
+RUN_STATUSES = ("iniciada", "rodando", "concluida", "falhou", "interrompida")
+_HELD = {"paused": "segurado", "done": "concluído", "archived": "arquivado"}
+
+
+def _grupo_base(status, last_iso, now=None):
+    """(group, reason) without live activity — the panel puts a live project in "ativo"."""
+    now = now or datetime.now(timezone.utc)
+    if status == "backlog":
+        return "backlog", "no backlog"
+    if status in _HELD:
+        return "historico", _HELD[status]
+    last = _parse_iso(last_iso) if last_iso else None
+    if not last:
+        return "historico", "sem atividade registrada"
+    age_h = (now - last).total_seconds() / 3600
+    if age_h > GROUP_HISTORY_AFTER_D * 24:
+        return "historico", f"parado há {int(age_h // 24)} dias"
+    if age_h > GROUP_WAITING_AFTER_H:
+        return "aguardando", (f"parado há {int(age_h // 24)} dias" if age_h >= 48 else f"parado há {int(age_h)} h")
+    return "andamento", "atividade nas últimas 24 h"
+
+
+def _inbox_dir():
+    return os.environ.get("OSFORGE_INBOX_DIR") or os.path.expanduser("~/.osforge/inbox")
+
+
+def _inbox_flag(slug):
+    safe = slug if re.match(r"^[a-z0-9][a-z0-9._-]{0,99}$", slug or "") else \
+        "h-" + hashlib.sha1((slug or "").encode("utf-8")).hexdigest()[:16]
+    return os.path.join(_inbox_dir(), safe)
+
+
+def _inbox_sync_flag(conn, pid, slug):
+    """The flag file mirrors "this project has pending messages": the hook's fast path."""
+    n = conn.execute("SELECT COUNT(*) FROM inbox WHERE project_id=? AND status='pendente'", (pid,)).fetchone()[0]
+    flag = _inbox_flag(slug)
+    try:
+        if n:
+            os.makedirs(_inbox_dir(), mode=0o700, exist_ok=True)
+            with open(flag, "w", encoding="utf-8") as f:
+                f.write(str(n))
+        elif os.path.exists(flag):
+            os.remove(flag)
+    except OSError:
+        pass
+    return n
+
+
+def cmd_inbox_add(conn, slug, text, via="painel"):
+    text = (text or "").strip()
+    if not text:
+        _err2("orientação vazia")
+    if len(text) > INBOX_MAX_CHARS:
+        _err2(f"orientação com mais de {INBOX_MAX_CHARS} caracteres")
+    p = conn.execute("SELECT id FROM projects WHERE slug=?", (slug,)).fetchone()
+    if not p:
+        _err2(f"Projeto '{slug}' não encontrado.")
+    mid = conn.execute("INSERT INTO inbox (ts, project_id, text, via) VALUES (?,?,?,?)",
+                       (_now(), p["id"], text, via or "painel")).lastrowid
+    conn.commit()
+    _inbox_sync_flag(conn, p["id"], slug)
+    if _json_mode:
+        print(json.dumps({"id": mid}))
+    else:
+        _ok(f"orientação {mid} na caixa de entrada de '{slug}'")
+
+
+def cmd_inbox_take(conn, slug, session):
+    """Atomically hand every pending message of `slug` to `session`. Prints a JSON list (empty
+    when there is nothing, or the project is unknown — the hook calls this blind)."""
+    p = conn.execute("SELECT id FROM projects WHERE slug=?", (slug,)).fetchone()
+    if not p:
+        print("[]")
+        return
+    conn.commit()
+    conn.execute("BEGIN IMMEDIATE")
+    rows = conn.execute("SELECT id, ts, text FROM inbox WHERE project_id=? AND status='pendente' ORDER BY id",
+                        (p["id"],)).fetchall()
+    now = _now()
+    for r in rows:
+        conn.execute("UPDATE inbox SET status='entregue', delivered_at=?, delivered_session=? WHERE id=?",
+                     (now, session or "", r["id"]))
+    conn.execute("COMMIT")
+    _inbox_sync_flag(conn, p["id"], slug)
+    print(json.dumps([{"id": r["id"], "ts": r["ts"], "text": r["text"]} for r in rows], ensure_ascii=False))
+
+
+def cmd_inbox_list(conn, slug, limit=50):
+    p = _get_project(conn, slug)
+    rows = conn.execute("SELECT * FROM inbox WHERE project_id=? ORDER BY id DESC LIMIT ?", (p["id"], limit)).fetchall()
+    items = [{"id": r["id"], "ts": r["ts"], "texto": r["text"], "status": r["status"], "via": r["via"],
+              "entregue_em": r["delivered_at"], "sessao": (r["delivered_session"] or "")[:8] or None} for r in rows]
+    if _json_mode:
+        print(json.dumps(items, ensure_ascii=False))
+        return
+    for it in items:
+        _out(f"  #{it['id']:<5} {it['ts'][:16]} {it['status']:<9} {textwrap.shorten(it['texto'], 70, placeholder='…')}")
+
+
+def cmd_inbox_cancel(conn, mid):
+    try:
+        mid = int(mid)
+    except ValueError:
+        _err2(f"id inválido '{mid}'")
+    r = conn.execute("SELECT i.project_id, p.slug FROM inbox i JOIN projects p ON p.id=i.project_id "
+                     "WHERE i.id=? AND i.status='pendente'", (mid,)).fetchone()
+    if not r:
+        _err2(f"orientação {mid} não está pendente")
+    conn.execute("UPDATE inbox SET status='cancelada' WHERE id=?", (mid,))
+    conn.commit()
+    _inbox_sync_flag(conn, r["project_id"], r["slug"])
+    _ok(f"orientação {mid} cancelada")
+
+
+def cmd_run_add(conn, slug, kind, tool="", prompt="", pid=None, log_path=None, status="iniciada"):
+    if kind not in RUN_KINDS:
+        _err2(f"kind inválido '{kind}'. Use: {'|'.join(RUN_KINDS)}")
+    if status not in RUN_STATUSES:
+        _err2(f"status inválido '{status}'")
+    p = conn.execute("SELECT id FROM projects WHERE slug=?", (slug,)).fetchone()
+    if not p:
+        _err2(f"Projeto '{slug}' não encontrado.")
+    rid = conn.execute("INSERT INTO runs (ts, project_id, kind, tool, prompt, status, pid, log_path) "
+                       "VALUES (?,?,?,?,?,?,?,?)",
+                       (_now(), p["id"], kind, tool or "", (prompt or "")[:INBOX_MAX_CHARS * 2], status,
+                        pid, log_path)).lastrowid
+    conn.commit()
+    print(json.dumps({"id": rid}) if _json_mode else f"run {rid}")
+
+
+def cmd_run_update(conn, rid, status=None, pid=None, result=None, cost=None, log_path=None):
+    try:
+        rid = int(rid)
+    except ValueError:
+        _err2(f"id inválido '{rid}'")
+    if status and status not in RUN_STATUSES:
+        _err2(f"status inválido '{status}'")
+    if not conn.execute("SELECT 1 FROM runs WHERE id=?", (rid,)).fetchone():
+        _err2(f"execução {rid} não encontrada")
+    sets, args = [], []
+    for col, val in (("status", status), ("pid", pid), ("result", (result or "")[:4000] if result is not None else None),
+                     ("cost_usd", cost), ("log_path", log_path)):
+        if val is not None:
+            sets.append(f"{col}=?")
+            args.append(val)
+    if status in ("concluida", "falhou", "interrompida"):
+        sets.append("ended_at=?")
+        args.append(_now())
+    if sets:
+        conn.execute(f"UPDATE runs SET {', '.join(sets)} WHERE id=?", args + [rid])
+        conn.commit()
+    _ok(f"execução {rid} atualizada")
+
+
+def _runs_rows(conn, pid, limit=30):
+    return [{"id": r["id"], "ts": r["ts"], "tipo": r["kind"], "ferramenta": r["tool"], "texto": r["prompt"],
+             "status": r["status"], "pid": r["pid"], "fim": r["ended_at"], "resultado": r["result"],
+             "custo": r["cost_usd"]}
+            for r in conn.execute("SELECT * FROM runs WHERE project_id=? ORDER BY id DESC LIMIT ?", (pid, limit))]
+
+
+def cmd_runs(conn, slug, limit=30):
+    p = _get_project(conn, slug)
+    items = _runs_rows(conn, p["id"], limit)
+    if _json_mode:
+        print(json.dumps(items, ensure_ascii=False))
+        return
+    for it in items:
+        _out(f"  #{it['id']:<5} {it['ts'][:16]} {it['tipo']:<10} {it['status']:<12} {it['ferramenta']}")
+
+
+# ── Live detection (B-040) ───────────────────────────────────────────────────
+
+_IDE_HELPER = re.compile(r"^(?:.*/)?(.+?) Helper \(Plugin\): extension-host \(user\) (.+?)(?: \[[\d-]+\])?\s*$")
+_IDE_NAMES = {"Code": "VS Code", "Code - Insiders": "VS Code Insiders"}
+_DEV_SERVER = re.compile(
+    r"(?:^|[\s/])(?:next(?:-server)?\s+dev|next-server|vite(?:\s|$)|expo\s+start|nodemon|uvicorn|"
+    r"manage\.py\s+runserver|astro\s+dev|nuxt\s+dev|remix\s+dev|wrangler\s+dev|"
+    r"(?:npm|pnpm|yarn|bun)\s+(?:run\s+)?(?:dev|start)(?:\s|$)|bun\s+(?:--hot|--watch))")
+
+
+def _ps_lines():
+    fx = os.environ.get("OSFORGE_LIVE_PS_FILE")          # tests: a captured `ps` output
+    if fx:
+        try:
+            return open(fx, encoding="utf-8").read().splitlines()
+        except OSError:
+            return []
+    import subprocess
+    try:
+        r = subprocess.run(["ps", "-axo", "pid=,command="], capture_output=True, text=True, timeout=3, check=False)
+        return r.stdout.splitlines()
+    except (OSError, subprocess.SubprocessError):
+        return []
+
+
+def _cwds(pids):
+    """pid -> working directory. Tests: OSFORGE_LIVE_CWD_FILE (JSON). Linux: /proc. macOS: lsof."""
+    fx = os.environ.get("OSFORGE_LIVE_CWD_FILE")
+    if fx:
+        try:
+            d = json.load(open(fx, encoding="utf-8"))
+            return {int(k): v for k, v in d.items() if int(k) in pids}
+        except (OSError, ValueError):
+            return {}
+    out = {}
+    if not pids:
+        return out
+    if os.path.isdir("/proc/self"):
+        for pid in pids:
+            try:
+                out[pid] = os.readlink(f"/proc/{pid}/cwd")
+            except OSError:
+                pass
+        return out
+    import subprocess
+    try:
+        r = subprocess.run(["lsof", "-a", "-d", "cwd", "-Fpn", "-p", ",".join(str(p) for p in sorted(pids))],
+                           capture_output=True, text=True, timeout=3, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return out
+    cur = None
+    for line in r.stdout.splitlines():
+        if line.startswith("p"):
+            try:
+                cur = int(line[1:])
+            except ValueError:
+                cur = None
+        elif line.startswith("n") and cur is not None:
+            out[cur] = line[1:]
+    return out
+
+
+def _transcript_recent(cwd, seconds=120):
+    """Claude Code keeps a session's transcript in ~/.claude/projects/<cwd with every
+    non-alphanumeric character as '-'>; a write in the last `seconds` = working right now."""
+    base = os.environ.get("OSFORGE_TRANSCRIPTS_DIR") or os.path.expanduser("~/.claude/projects")
+    d = os.path.join(base, re.sub(r"[^A-Za-z0-9]", "-", cwd))
+    try:
+        newest = max((os.path.getmtime(os.path.join(d, f)) for f in os.listdir(d) if f.endswith(".jsonl")), default=0)
+    except OSError:
+        return False
+    return time.time() - newest < seconds
+
+
+def live_state(conn):
+    """{"projetos": {slug: {...}}, "sem_cadastro": [...]} — what is running right now."""
+    claude, servers, ides = {}, {}, []
+    for line in _ps_lines():
+        line = line.strip()
+        m = re.match(r"^(\d+)\s+(.*)$", line)
+        if not m:
+            continue
+        pid, cmd = int(m.group(1)), m.group(2)
+        if pid == os.getpid():
+            continue
+        ide = _IDE_HELPER.match(cmd)
+        if ide:
+            app = os.path.basename(ide.group(1))
+            ides.append((_IDE_NAMES.get(app, app), re.sub(r"\s*\(Workspace\)$", "", ide.group(2)).strip()))
+            continue
+        exe = cmd.split()[0] if cmd.split() else ""
+        if os.path.basename(exe) == "claude":
+            claude[pid] = cmd
+        elif _DEV_SERVER.search(cmd) and "osforge" not in cmd:
+            servers[pid] = cmd
+    cwds = _cwds(set(claude) | set(servers))
+    projects = {r["id"]: r for r in conn.execute("SELECT id, slug, root_path FROM projects")}
+    cache, out, loose = {}, {}, {}
+
+    def slot(pid_, key, label):
+        if pid_ is not None:
+            return out.setdefault(projects[pid_]["slug"], {"claude": 0, "trabalhando": False, "ides": [], "servidores": [], "pastas": []})
+        return loose.setdefault(key, {"pasta": key, "nome": label, "claude": 0, "trabalhando": False, "ides": [], "servidores": []})
+
+    for pid, cwd in cwds.items():
+        real = os.path.realpath(cwd)
+        top = _git_out(["rev-parse", "--show-toplevel"], real) if os.path.isdir(real) else ""
+        root = os.path.realpath(top) if top else real
+        if root == os.path.realpath(os.path.expanduser("~")) or root == "/":
+            continue
+        proj = _resolve_project_id_for_cwd(conn, real, cache)
+        s = slot(proj, root, os.path.basename(root))
+        if proj is not None and root not in s["pastas"]:
+            s["pastas"].append(root)
+        if pid in claude:
+            s["claude"] += 1
+            s["trabalhando"] = s["trabalhando"] or _transcript_recent(cwd)
+        else:
+            s["servidores"].append({"pid": pid, "cmd": servers[pid][:160]})
+    by_name = {}
+    for p in projects.values():
+        by_name.setdefault(p["slug"], p["id"])
+        if p["root_path"]:
+            by_name.setdefault(os.path.basename(p["root_path"].rstrip("/")), p["id"])
+    for app, name in ides:
+        proj = by_name.get(name) or by_name.get(_slugify(name))
+        s = slot(proj, name, name)
+        if app not in s["ides"]:
+            s["ides"].append(app)
+    return {"projetos": out, "sem_cadastro": list(loose.values())}
+
+
+def cmd_live(conn):
+    res = {"schema": "osforge.live.v1", "gerado_em": _iso_utc(datetime.now(timezone.utc))}
+    res.update(live_state(conn))
+    print(json.dumps(res, ensure_ascii=False))
+
+
+def _conversation(conn, pid, limit=50):
+    msgs = [{"tipo": "orientacao", "id": r["id"], "ts": r["ts"], "texto": r["text"], "status": r["status"],
+             "entregue_em": r["delivered_at"], "sessao": (r["delivered_session"] or "")[:8] or None}
+            for r in conn.execute("SELECT * FROM inbox WHERE project_id=? ORDER BY id DESC LIMIT ?", (pid, limit))]
+    runs = [dict(r, tipo_execucao=r["tipo"], tipo="execucao") for r in _runs_rows(conn, pid, limit)]
+    return sorted(msgs + runs, key=lambda x: x["ts"])[-limit:]
 
 
 def _resolve_project_id_for_cwd(conn, cwd, cache):
@@ -3266,7 +3636,47 @@ def main():
         except ValueError:
             _err2("--days precisa ser um inteiro")
         cmd_monitor(conn, rest[0] if rest else None, m_days, "--discover" in _flags,
-                    "--all" in _flags, "--compact" in _flags)
+                    "--all" in _flags, "--compact" in _flags, "--live" in _flags)
+    elif cmd == "live":
+        cmd_live(conn)
+    elif cmd == "inbox-add":
+        if len(rest) < 2:
+            _err2("Uso: inbox-add <slug> <texto> [--via=painel]")
+        via = next((x.split("=", 1)[1] for x in _flags if x.startswith("--via=")), "painel")
+        cmd_inbox_add(conn, rest[0], " ".join(rest[1:]), via)
+    elif cmd == "inbox-take":
+        if not rest:
+            _err2("Uso: inbox-take <slug> --session=ID")
+        cmd_inbox_take(conn, rest[0], session_flt)
+    elif cmd == "inbox":
+        if not rest:
+            _err2("Uso: inbox <slug>")
+        cmd_inbox_list(conn, rest[0])
+    elif cmd == "inbox-cancel":
+        if not rest:
+            _err2("Uso: inbox-cancel <id>")
+        cmd_inbox_cancel(conn, rest[0])
+    elif cmd == "run-add":
+        if not rest:
+            _err2("Uso: run-add <slug> --kind=terminal|background|ide [--tool=] [--prompt=] [--pid=] [--log=] [--status=]")
+        fl = {x.split("=", 1)[0][2:]: x.split("=", 1)[1] for x in _flags if "=" in x}
+        cmd_run_add(conn, rest[0], fl.get("kind", ""), fl.get("tool", ""), fl.get("prompt", ""),
+                    int(fl["pid"]) if fl.get("pid", "").isdigit() else None, fl.get("log"),
+                    fl.get("status", "iniciada"))
+    elif cmd == "run-update":
+        if not rest:
+            _err2("Uso: run-update <id> [--status=] [--pid=] [--result=] [--cost=] [--log=]")
+        fl = {x.split("=", 1)[0][2:]: x.split("=", 1)[1] for x in _flags if "=" in x}
+        try:
+            cost = float(fl["cost"]) if "cost" in fl else None
+        except ValueError:
+            _err2("--cost precisa ser número")
+        cmd_run_update(conn, rest[0], fl.get("status"), int(fl["pid"]) if fl.get("pid", "").isdigit() else None,
+                       fl.get("result"), cost, fl.get("log"))
+    elif cmd == "runs":
+        if not rest:
+            _err2("Uso: runs <slug>")
+        cmd_runs(conn, rest[0])
     elif cmd == "add-signal":
         if len(rest) < 3:
             _err2("Uso: add-signal <slug> <callers_open|duplicate|tests> <subject> "
