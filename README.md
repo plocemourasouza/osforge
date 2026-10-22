@@ -81,7 +81,7 @@ flowchart LR
     AG["25 agents"]
     RU["14 rules"]
     CM["9 spec commands"]
-    HK["11 hooks"]
+    HK["12 hooks"]
     MC["1 global MCP + per-project stacks"]
     DBCLI["osforge-db CLI"]
   end

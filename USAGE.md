@@ -137,7 +137,7 @@ selects the old copy/rsync path for one release.
 - Copies `CLAUDE.md` and `SKILLS.md`
 - Syncs 25 agents (orchestrator + 24 specialists) to `~/.claude/agents/`
 - Copies 9 `spec-*` commands to `~/.claude/commands/`
-- Installs 11 hooks to `~/.claude/hooks/` (plus the shared `hooks/lib/`)
+- Installs 12 hooks to `~/.claude/hooks/` (plus the shared `hooks/lib/`)
 - Merges the managed hook entries into `~/.claude/settings.json` by id (yours are preserved) and the MCP servers into `~/.claude.json` (non-destructive)
 
 **Cursor (`~/.cursor/`)**
@@ -503,7 +503,7 @@ cp hooks/*.py hooks/*.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*
 ```
 
-### What each hook does (11 hooks)
+### What each hook does (12 hooks)
 
 **`canvas-autostart.sh`** (SessionStart)
 - Inicia o OSForge Canvas em `localhost:4242` se ainda não estiver rodando
@@ -566,6 +566,17 @@ chmod +x ~/.claude/hooks/*
   contexto real enviado ao modelo) e injeta o aviso do Context Budget **uma vez por faixa por
   sessão**: ≥120k "salve estado e termine o passo", ≥150k "pare de abrir trabalho novo, termine o passo, handoff, compacte". Lê só o fim
   do transcript (~1 ms). `OSFORGE_CONTEXT_BANDS=120000,150000`; kill-switch `OSFORGE_CONTEXT_THRESHOLD=off` (B-021)
+
+**`quality-guard.py`** (PostToolUse `Edit|Write|MultiEdit|Bash` + PostToolUseFailure `Bash`)
+- Guardas durante a edição, adaptadas da faixa do Ponytail (B-035, ADR-019): **G-1** uma definição
+  exportada removida ou renomeada que outros arquivos ainda chamam; **G-2** uma definição nova cujo
+  nome normalizado já existe noutro arquivo; **G-3** o estado dos testes (o comando de teste foi
+  *executado*: `PostToolUse` = passou, `PostToolUseFailure` = falhou; um Edit em código depois = desatualizado)
+- Grava na tabela `signals` (`osforge-db signals <slug> [--open] [--report]`); um G-1 se resolve sozinho
+  quando nenhum chamador sobra. Só TS/JS e Python (D-G1)
+- `OSFORGE_QUALITY_GUARD=shadow` (padrão: grava, não fala), `on` (avisa o modelo por `additionalContext`
+  no G-1 e no G-2), `off`. Liga em `on` depois de duas semanas de sombra com alarme falso ≤ 10% (G-1) e
+  ≤ 25% (G-2). p95 < 150 ms num Edit comum. Teste: `tests/test-quality-guard.sh`
 
 **`canvas-feedback.py`** (Stop)
 - Se o usuário enviou feedback no Canvas para um artefato **deste projeto** (id prefixado com o

@@ -32,6 +32,10 @@ CC-20	claude-code	PostToolUse	protect-tests	claude-code/posttooluse-edit-test.js
 CC-21	claude-code	PostToolUse	protect-tests	claude-code/posttooluse-edit-src.json	silent
 CC-22	claude-code	PostToolUse	observe-capture	claude-code/posttooluse-edit-src.json	silent
 CC-23	claude-code	PostToolUse	observe-capture	claude-code/posttooluse-read-skill.json	silent
+# quality-guard (B-035): shadow by default → silent; `on` in a folder without git → silent
+CC-24	claude-code	PostToolUse	quality-guard	claude-code/posttooluse-edit-src.json	silent
+CC-25	claude-code	PostToolUse	quality-guard	claude-code/posttooluse-edit-src.json	silent	OSFORGE_QUALITY_GUARD=on
+CC-26	claude-code	PostToolUseFailure	quality-guard	claude-code/posttoolusefailure-bash-test.json	silent
 # ── SessionStart
 CC-30	claude-code	SessionStart	session-resume	claude-code/sessionstart.json	silent
 CC-31	claude-code	SessionStart	canvas-autostart	claude-code/sessionstart.json	any
@@ -63,6 +67,7 @@ CC-91	claude-code	Stop	*	claude-code/payload-not-object.json	any
 CC-92	claude-code	PostToolUse	*	claude-code/payload-not-object.json	any
 CC-93	claude-code	UserPromptSubmit	*	claude-code/payload-not-object.json	any
 CC-94	claude-code	SessionStart	*	claude-code/payload-not-object.json	any
+CC-99	claude-code	PostToolUseFailure	*	claude-code/payload-not-object.json	any
 CC-95	claude-code	PreToolUse	*	claude-code/payload-garbage.json	any
 CC-96	claude-code	Stop	*	claude-code/payload-garbage.json	any
 CC-97	claude-code	PreToolUse	*	__BIG__	any

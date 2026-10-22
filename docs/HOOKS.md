@@ -26,7 +26,8 @@ Rules that every hook follows, and that `tests/hooks/run-contracts.sh` enforces:
    is the reference).
 5. **Every block message names the hook and its kill-switch** (`OSFORGE_GATEGUARD=off`,
    `OSFORGE_SCAN_SECRETS=off`, `OSFORGE_ROUTEGUARD=off`, `OSFORGE_OBSERVE_CAPTURE=0`,
-   `OSFORGE_CANVAS_FEEDBACK=off`, `OSFORGE_CONTEXT_THRESHOLD=off`, `OSFORGE_QUOTA_THRESHOLD=off`), so
+   `OSFORGE_CANVAS_FEEDBACK=off`, `OSFORGE_CONTEXT_THRESHOLD=off`, `OSFORGE_QUOTA_THRESHOLD=off`,
+   `OSFORGE_QUALITY_GUARD=off`), so
    neither the agent nor the user gets stuck behind a false positive.
 6. **Fail open, except for the irreversible.** GateGuard denies a destructive Bash command
    when it cannot persist state; everything else allows and warns on stderr.
@@ -36,6 +37,23 @@ Rules that every hook follows, and that `tests/hooks/run-contracts.sh` enforces:
    persists (command context, user message, resume) or re-injects goes through
    `hooks/lib/scrub.py`, and what comes back from the database is wrapped as *data*, capped,
    and scoped to the current project. `tests/test-session-continuity.sh` enforces this.
+
+## quality-guard (B-035, SPEC-P04) — the one hook that talks after an edit
+
+`hooks/quality-guard.py` runs on `PostToolUse` (`Edit|Write|MultiEdit|Bash`) and on
+`PostToolUseFailure` (`Bash`) — the event Claude Code fires when a tool call fails, which for
+Bash means a non-zero exit. That is how G-3 knows a test run failed without reading the output.
+
+- **Channel:** in `on` mode, G-1 (callers left open) and G-2 (likely duplicate) reach the model as
+  `additionalContext`, each message tagged `[OSForge quality-guard]` and naming the kill-switch.
+  In `shadow` (the default until the shadow report says otherwise, ADR-019) and for G-3 it only
+  records, in the `signals` table.
+- **Cheap path:** no git and no `osforge-db` unless the edit touched an exported definition, an
+  open signal's file, or a code file right after a test run. State per repository in
+  `~/.osforge/quality-guard/<hash>.json` (`OSFORGE_QG_DIR`).
+- **Precision is measured, not assumed:** regex definitions (`hooks/lib/defs.py`), TS/JS and
+  Python only. `osforge-db signals --report` gives per-kind totals, how many resolved by
+  themselves, and a fixed sample of 20 to label by hand.
 
 ## Quota-window guard (B-027, SPEC-L01 Parte A) — not a lifecycle hook
 

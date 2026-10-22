@@ -7,7 +7,7 @@ maintain the framework; `claude-code/CLAUDE.md` = how to behave in a session.
 
 ## What this repo is
 
-OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **177 skills, 25 agents** (orchestrator + 24 specialists), **14 rules (deployed to Cursor), 9 `spec-*` commands, 1 global MCP server (Context7; the rest are per-project stacks in `mcp/stacks/`)**, 11 hooks, and the `osforge-db` SQLite state CLI (with local vector memory). There is no build or lint step; the offline test suite is `tests/` (see below) and the "build" is the deploy.
+OSForge is **not an application** — it is the source of truth for the user's global Claude Code (`~/.claude/`) and Cursor (`~/.cursor/`) configuration: **177 skills, 25 agents** (orchestrator + 24 specialists), **14 rules (deployed to Cursor), 9 `spec-*` commands, 1 global MCP server (Context7; the rest are per-project stacks in `mcp/stacks/`)**, 12 hooks, and the `osforge-db` SQLite state CLI (with local vector memory). There is no build or lint step; the offline test suite is `tests/` (see below) and the "build" is the deploy.
 
 **ADR-001 (docs/DECISIONS.md): never edit `~/.claude/` or `~/.cursor/` directly.** All changes happen here, get committed, then deployed via `./deploy.sh`.
 
@@ -31,9 +31,9 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Offline suites (868 checks; none touches the live ~/.claude, none spends API):
+# Offline suites (913 checks; none touches the live ~/.claude, none spends API):
 ./tests/test-assertions.sh              # Verdict logic of the eval harnesses (67)
-./tests/hooks/run-contracts.sh          # Hook contracts: real commands × fixtures, both harnesses (66; deploy gate)
+./tests/hooks/run-contracts.sh          # Hook contracts: real commands × fixtures, both harnesses (71; deploy gate)
 ./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle + denial attenuation (84)
 ./tests/test-deploy-lifecycle.sh        # Stateful deploy: nothing of yours is lost, idempotent, doctor/uninstall/restore, brain steps, no legacy embed-backfill, deploy-source guard + --release (96; ~1 min; CI)
 ./tests/test-session-continuity.sh      # One project identity; scoped resume, cap, cleanup and memory hint (40)
@@ -43,6 +43,7 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-gateguard-sql.sh           # GateGuard destructive-SQL detector (23)
 ./tests/test-installers.sh              # install-skill/install-mcp: the helpers that run on YOUR machine (22)
 ./tests/test-judge.sh                   # Isolated judge: argv/env/isolation/exit codes with a fake claude (81)
+./tests/test-quality-guard.sh           # quality-guard (B-035): callers left open, duplicates, tests state, shadow/on/off, p95 budget, signals CLI (40)
 ./tests/test-outcome-r3.sh              # Outcome eval r3 (Pacote 02): builds offline, --dry plans 396/288 calls, r1/r2 byte-identical (35)
 ./tests/test-eval-cases.sh              # Eval cases v2: category, criticals, orphans fail --dry (42)
 ./tests/test-trigger-detect.sh          # Trigger eval counts the real skill (not just the clone) and runs outside the repo (3)
@@ -87,7 +88,7 @@ Deploy behavior worth knowing:
 - `agents/` — One `.md` per agent. Exception: `agents/orchestrator/` is a directory; the deploy copies its `AGENT.md` to `agents/orchestrator.md` and its support files (`triage-rules*.md`, `plan-templates/`, `delegation-brief.md`) to `~/.claude/orchestrator/` — the paths the `AGENT.md` tells the model to load.
 - `rules/` — `.mdc` files loaded as Cursor always-on global rules (Claude Code equivalents live inside `claude-code/CLAUDE.md`).
 - `commands/` — `spec-*.md` slash commands. Unified spec system (ADR-003): commands are the execution interface; the `tlc-spec-driven` skill holds templates. Both operate on `.specs/` in target projects.
-- `hooks/` — 11 shell/Python hook scripts (`canvas-autostart`, `session-resume`, `session-save`, `observe-capture`, `protect-tests`, `scan-secrets`, `gateguard`, `route-guard`, `notify-done`, `canvas-feedback`, `context-threshold`) + `hooks/lib/` (shared: `project_id.py` resolves one project identity for every hook, `scrub.py` removes secrets from anything persisted or re-injected) + two configs: `hooks-claude-code.json` (Claude Code → settings.json) and `hooks.json` (Cursor, absolute `$HOME/.cursor/hooks/` paths per ADR-006). `hooks/validate.py` is a project template, not a hook, and is not deployed. Output contract: `docs/HOOKS.md`.
+- `hooks/` — 12 shell/Python hook scripts (`canvas-autostart`, `session-resume`, `session-save`, `observe-capture`, `protect-tests`, `scan-secrets`, `gateguard`, `route-guard`, `notify-done`, `canvas-feedback`, `context-threshold`, `quality-guard`) + `hooks/lib/` (shared: `project_id.py` resolves one project identity for every hook, `scrub.py` removes secrets from anything persisted or re-injected, `defs.py` exported definitions and callers for `quality-guard`) + two configs: `hooks-claude-code.json` (Claude Code → settings.json) and `hooks.json` (Cursor, absolute `$HOME/.cursor/hooks/` paths per ADR-006). `hooks/validate.py` is a project template, not a hook, and is not deployed. Output contract: `docs/HOOKS.md`.
 - `claude-code/CLAUDE.md` and `claude-code/SKILLS.md` — deployed as `~/.claude/CLAUDE.md` and `~/.claude/SKILLS.md`. `SKILLS.md` has two halves: a hand-written **spine** (global rules + the always-active disciplines) and a generated **MANIFEST** between `<!-- MANIFEST:START/END -->` markers, holding one line per non-core skill. Edit the spine by hand; regenerate the manifest with `scripts/_generate_manifest.py`. A skill outside both the core allowlist and the manifest does not exist at runtime.
 - `claude-code/skills-core.txt` — the Model A allowlist: the only skills `deploy.sh` copies to `~/.claude/skills` (and `~/.cursor/skills`). Everything else is pulled per project via `scripts/install-skill.sh`. `--all-skills` restores the old deploy-everything behavior.
 - `mcp/claude-code.json` — MCP server definitions.

@@ -5,7 +5,7 @@ model: haiku
 allowed-tools: Bash
 metadata:
   author: osforge
-  version: '1.1'
+  version: '1.2'
 ---
 
 ## Database available
@@ -55,8 +55,9 @@ wherever it appears, fenced code blocks included.
 ### TRACK — update progress
 
 ```bash
-# Create/update project
+# Create/update project (status: active|backlog|paused|done|archived — the monitor groups by it)
 osforge-db upsert-project <slug> "<description>" <triage> <status>
+osforge-db set-project-status <slug> paused
 
 # Change a phase's status
 osforge-db set-phase <slug> "<phase name>" in-progress skills/planning/spec-builder

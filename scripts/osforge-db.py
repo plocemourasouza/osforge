@@ -30,6 +30,12 @@ Comandos:
                                     FTS5: content words OR-ed (stopwords pt/en dropped),
                                     accent-insensitive, bm25 order. since/until inclusive.
   list-projects [--status=active|all]
+  set-project-status <slug> <active|backlog|paused|done|archived>
+                                    Ciclo de vida do projeto (ADR-019); o monitor agrupa por ele
+  add-signal <slug> <callers_open|duplicate|tests> <subject> [--detail=JSON] [--session=ID]
+  resolve-signal <id> [<id>...]
+  signals [<slug>] [--open] [--report] [--since=YYYY-MM-DD]
+                                    Sinais do quality-guard (B-035); --report = resumo da sombra
   import-yaml <yaml_path> <slug>    Migra status.yaml existente
   stats                             Resumo geral do banco
   add-usage <slug> --session=ID --model=M --input=N --output=N [--cache-read=N] [--cache-create=N] [--turns=N]
@@ -977,6 +983,20 @@ CREATE TABLE IF NOT EXISTS calls (
 CREATE INDEX IF NOT EXISTS calls_ts ON calls(ts);
 CREATE INDEX IF NOT EXISTS calls_project_ts ON calls(project_id, ts);
 
+-- Edit-time quality signals written by hooks/quality-guard.py (B-035, ADR-019).
+-- kind: callers_open | duplicate | tests. detail = JSON with paths and names only.
+CREATE TABLE IF NOT EXISTS signals (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts          TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
+    project_id  INTEGER NOT NULL REFERENCES projects(id),
+    session_id  TEXT,
+    kind        TEXT    NOT NULL CHECK(kind IN ('callers_open','duplicate','tests')),
+    subject     TEXT    NOT NULL,
+    detail      TEXT    NOT NULL DEFAULT '{}',
+    resolved_at TEXT
+);
+CREATE INDEX IF NOT EXISTS signals_project_open ON signals(project_id, resolved_at);
+
 CREATE TABLE IF NOT EXISTS vec_memory (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     source_table TEXT    NOT NULL,
@@ -1880,8 +1900,159 @@ def cmd_prune_calls(conn, older_than):
     days = int(m.group(1))
     cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
     cur = conn.execute("DELETE FROM calls WHERE ts<?", (cutoff,))
+    # Signals share the retention window; open ones are kept whatever their age (B-035).
+    sig = conn.execute("DELETE FROM signals WHERE ts<? AND resolved_at IS NOT NULL", (cutoff,))
     conn.commit()
-    _ok(f"prune-calls: {cur.rowcount} linha(s) removida(s) (mais antigas que {days}d)")
+    _ok(f"prune-calls: {cur.rowcount} linha(s) removida(s) (mais antigas que {days}d); "
+        f"{sig.rowcount} sinal(is) resolvido(s) removido(s)")
+
+# ── Project lifecycle (ADR-019) ─────────────────────────────────────────────
+
+PROJECT_STATUSES = ("active", "backlog", "paused", "done", "archived")
+
+
+def _err2(msg):
+    """Usage/lookup error with exit 2 (the monitor contract distinguishes it from failures)."""
+    print(f"❌ {msg}", file=sys.stderr)
+    sys.exit(2)
+
+
+def cmd_set_project_status(conn, slug, status):
+    if status not in PROJECT_STATUSES:
+        _err2(f"status inválido '{status}'. Use: {'|'.join(PROJECT_STATUSES)}")
+    row = conn.execute("SELECT id FROM projects WHERE slug=?", (slug,)).fetchone()
+    if not row:
+        _err2(f"Projeto '{slug}' não encontrado.")
+    conn.execute("UPDATE projects SET status=?, updated_at=datetime('now','utc') WHERE id=?",
+                 (status, row["id"]))
+    conn.commit()
+    _ok(f"Projeto '{slug}' → {status}")
+
+
+# ── Quality signals (B-035, ADR-019) ────────────────────────────────────────
+
+SIGNAL_KINDS = ("callers_open", "duplicate", "tests")
+
+
+def cmd_add_signal(conn, slug, kind, subject, detail=None, session=None):
+    """Record one signal. An open signal with the same (project, kind, subject) is refreshed
+    instead of duplicated. `tests` is a state, not an alarm: a new one closes the previous."""
+    if kind not in SIGNAL_KINDS:
+        _err2(f"kind inválido '{kind}'. Use: {'|'.join(SIGNAL_KINDS)}")
+    p = _get_project(conn, slug)
+    try:
+        det = json.loads(detail) if detail else {}
+    except ValueError:
+        _err2("--detail precisa ser JSON")
+    det_txt = json.dumps(det, ensure_ascii=False, sort_keys=True)
+    now = _now()
+    if kind == "tests":
+        conn.execute("UPDATE signals SET resolved_at=? WHERE project_id=? AND kind='tests' "
+                     "AND resolved_at IS NULL", (now, p["id"]))
+        row = None
+    else:
+        row = conn.execute("SELECT id FROM signals WHERE project_id=? AND kind=? AND subject=? "
+                           "AND resolved_at IS NULL", (p["id"], kind, subject)).fetchone()
+    if row:
+        sid = row["id"]
+        conn.execute("UPDATE signals SET ts=?, detail=?, session_id=COALESCE(?, session_id) "
+                     "WHERE id=?", (now, det_txt, session, sid))
+    else:
+        sid = conn.execute("INSERT INTO signals (ts, project_id, session_id, kind, subject, detail) "
+                           "VALUES (?,?,?,?,?,?)",
+                           (now, p["id"], session, kind, subject, det_txt)).lastrowid
+    conn.commit()
+    if _json_mode:
+        print(json.dumps({"id": sid}))
+    else:
+        _ok(f"signal {sid} ({kind}) {subject}")
+
+
+def cmd_resolve_signal(conn, ids):
+    now = _now()
+    n = 0
+    for i in ids:
+        try:
+            n += conn.execute("UPDATE signals SET resolved_at=? WHERE id=? AND resolved_at IS NULL",
+                              (now, int(i))).rowcount
+        except ValueError:
+            _err2(f"id inválido '{i}'")
+    conn.commit()
+    _ok(f"resolve-signal: {n} sinal(is) resolvido(s)")
+
+
+def _signal_rows(conn, slug=None, open_only=False, since=None):
+    q = ("SELECT s.*, p.slug FROM signals s JOIN projects p ON p.id=s.project_id WHERE 1=1")
+    args = []
+    if slug:
+        q += " AND p.slug=?"
+        args.append(slug)
+    if open_only:
+        q += " AND s.resolved_at IS NULL"
+    if since:
+        q += " AND s.ts>=?"
+        args.append(since)
+    return conn.execute(q + " ORDER BY s.id DESC", args).fetchall()
+
+
+def cmd_signals(conn, slug=None, open_only=False, report=False, since=None):
+    """List signals, or (--report) the shadow-mode summary used to decide on injection:
+    per kind, how many fired, how many resolved by themselves and how fast, plus a sample of
+    20 alarms to check by hand (ADR-019: G-1 false alarms <= 10%, G-2 <= 25%)."""
+    if slug:
+        _get_project(conn, slug)
+    rows = _signal_rows(conn, slug, open_only and not report, since)
+    if not report:
+        items = [{"id": r["id"], "ts": r["ts"], "project": r["slug"], "kind": r["kind"],
+                  "subject": r["subject"], "detail": json.loads(r["detail"] or "{}"),
+                  "resolved_at": r["resolved_at"]} for r in rows]
+        if _json_mode:
+            print(json.dumps(items, ensure_ascii=False))
+            return
+        if not items:
+            _out("  (nenhum sinal)")
+        for it in items:
+            mark = "✓" if it["resolved_at"] else "●"
+            _out(f"  {mark} #{it['id']:<5} {it['ts'][:16]} {it['project']:<20} {it['kind']:<13} {it['subject']}")
+        return
+    by = {}
+    for r in rows:
+        if r["kind"] == "tests":
+            continue
+        b = by.setdefault(r["kind"], {"total": 0, "resolved": 0, "minutes": []})
+        b["total"] += 1
+        if r["resolved_at"]:
+            b["resolved"] += 1
+            try:
+                t0 = datetime.strptime(r["ts"], "%Y-%m-%dT%H:%M:%SZ")
+                t1 = datetime.strptime(r["resolved_at"], "%Y-%m-%dT%H:%M:%SZ")
+                b["minutes"].append((t1 - t0).total_seconds() / 60)
+            except ValueError:
+                pass
+    out = {"kinds": {}, "sample": []}
+    for k, b in sorted(by.items()):
+        mins = sorted(b["minutes"])
+        out["kinds"][k] = {"total": b["total"], "resolved": b["resolved"],
+                           "median_minutes_to_resolve": round(mins[len(mins) // 2], 1) if mins else None}
+    alarms = [r for r in rows if r["kind"] != "tests"]
+    # Deterministic sample: every n-th alarm, newest first, so a re-run shows the same 20.
+    step = max(1, len(alarms) // 20)
+    for r in alarms[::step][:20]:
+        out["sample"].append({"id": r["id"], "project": r["slug"], "kind": r["kind"],
+                              "subject": r["subject"], "detail": json.loads(r["detail"] or "{}"),
+                              "resolved": bool(r["resolved_at"])})
+    if _json_mode:
+        print(json.dumps(out, ensure_ascii=False))
+        return
+    _out("Sinais (relatório da sombra)")
+    for k, v in out["kinds"].items():
+        _out(f"  {k:<13} {v['total']:>4} disparos · {v['resolved']:>4} resolvidos sozinhos · "
+             f"mediana {v['median_minutes_to_resolve']} min")
+    _out("Amostra para conferir à mão (marque cada um como acerto ou alarme falso):")
+    for it in out["sample"]:
+        _out(f"  #{it['id']:<5} {it['project']:<20} {it['kind']:<13} {it['subject']} "
+             f"{'(resolvido)' if it['resolved'] else ''}")
+
 
 def _resolve_project_id_for_cwd(conn, cwd, cache):
     """Mesma ordem de hooks/lib/project_id.py:resolve (sem o passo OSFORGE_PROJECT — o
@@ -2403,6 +2574,7 @@ def main():
     session_arg  = next((a for a in args if a.startswith("--session=")), None)
     model_arg    = next((a for a in args if a.startswith("--model=")), None)
     remote_arg   = next((a for a in args if a.startswith("--remote=")), None)
+    detail_arg   = next((a for a in args if a.startswith("--detail=")), None)
     category   = cat_arg.split("=",1)[1]      if cat_arg      else None
     waiting    = wait_arg.split("=",1)[1]     if wait_arg      else None
     proj_flt   = proj_arg.split("=",1)[1]     if proj_arg      else None
@@ -2431,6 +2603,7 @@ def main():
     session_flt = session_arg.split("=",1)[1] if session_arg   else None
     model_flt  = model_arg.split("=",1)[1]    if model_arg     else None
     remote_flt = remote_arg.split("=",1)[1]   if remote_arg    else None
+    detail_flt = detail_arg.split("=",1)[1]   if detail_arg    else None
     kind_flt   = kind_arg.split("=",1)[1]     if kind_arg      else None
     tags_flt   = [t for t in tags_arg.split("=",1)[1].split(",") if t.strip()] if tags_arg else []
     mode_flt   = mode_arg.split("=",1)[1]     if mode_arg      else "dense"
@@ -2484,6 +2657,8 @@ def main():
     elif cmd == "upsert-project":
         if len(rest) < 2:
             _err("Uso: upsert-project <slug> <desc> [triage] [status]")
+        if len(rest) > 3 and rest[3] not in PROJECT_STATUSES:
+            _err2(f"status inválido '{rest[3]}'. Use: {'|'.join(PROJECT_STATUSES)}")
         cmd_upsert_project(conn, rest[0], rest[1],
                            rest[2] if len(rest)>2 else "standard",
                            rest[3] if len(rest)>3 else "active")
@@ -2577,6 +2752,22 @@ def main():
         cmd_prune_calls(conn, older_flt)
     elif cmd == "backfill-calls":
         cmd_backfill_calls(conn, rest[0] if rest else None)
+    elif cmd == "set-project-status":
+        if len(rest) < 2:
+            _err2(f"Uso: set-project-status <slug> {'|'.join(PROJECT_STATUSES)}")
+        cmd_set_project_status(conn, rest[0], rest[1])
+    elif cmd == "add-signal":
+        if len(rest) < 3:
+            _err2("Uso: add-signal <slug> <callers_open|duplicate|tests> <subject> "
+                  "[--detail=JSON] [--session=ID]")
+        cmd_add_signal(conn, rest[0], rest[1], " ".join(rest[2:]), detail_flt, session_flt)
+    elif cmd == "resolve-signal":
+        if not rest:
+            _err2("Uso: resolve-signal <id> [<id>...]")
+        cmd_resolve_signal(conn, rest)
+    elif cmd == "signals":
+        cmd_signals(conn, rest[0] if rest else None, "--open" in _flags, "--report" in _flags,
+                    since_flt)
     elif cmd == "import-yaml":
         if len(rest) < 2:
             _err("Uso: import-yaml <yaml_path> <slug>")
