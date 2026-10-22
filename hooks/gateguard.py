@@ -174,6 +174,18 @@ _DESTRUCTIVE_TOOLING = re.compile(
 )
 
 
+# B-041 (SPEC-P06): the monitor's inbox delivers text to OTHER sessions labelled as the user's
+# guidance. Only the panel (the Canvas server) writes there; an agent writing to it would be a
+# prompt-injection channel between projects. Hard deny — no fact-forcing retry.
+_INBOX_WRITE = re.compile(r"osforge-db(?:\.py)?['\"]?\s+(?:--\S+\s+)*inbox-add\b")
+
+
+def _inbox_write_msg() -> str:
+    return ("[GateGuard] `osforge-db inbox-add` é exclusivo do painel do monitor: ele entrega o texto a "
+            "outras sessões como orientação do usuário. Se o usuário quer passar uma orientação a outro "
+            "projeto, peça que ele escreva no painel (/monitor). Kill-switch: OSFORGE_GATEGUARD=off.")
+
+
 def _strip_quoted(cmd: str) -> str:
     """Remove single- and double-quoted strings to reduce false positives."""
     cmd = re.sub(r'"[^"\\]*(?:\\.[^"\\]*)*"', ' ', cmd)
@@ -882,6 +894,10 @@ def main():
 
         if not command:
             _allow()
+
+        if _INBOX_WRITE.search(command):
+            _log_denial("INBOX-WRITE", command)
+            _deny(_inbox_write_msg())
 
         cmd_hash = hashlib.sha256(command.encode("utf-8")).hexdigest()[:16]
         destructive_key = f"__destructive__{cmd_hash}"

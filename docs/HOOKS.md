@@ -64,8 +64,13 @@ none. A summary with failures always wins over a zero exit.
 ## inbox-deliver (B-041, SPEC-P06 §3) — the human's messages from the panel
 
 `hooks/inbox-deliver.py` runs on `PostToolUse` (`*`), `UserPromptSubmit` and `SessionStart`.
-Its fast path is a single `listdir` of `~/.osforge/inbox` (`OSFORGE_INBOX_DIR`): empty → exit,
-no git, no subprocess (~40 ms, all Python start-up). With a flag for the session's project it
+Its fast path never starts a subprocess: no flag in `~/.osforge/inbox` (`OSFORGE_INBOX_DIR`) →
+exit; flags only for other projects → exit too, because each flag carries its project's root and
+names and the hook compares them with `cwd` first (~40 ms, all Python start-up). Dotfiles are
+ignored. One 3 s budget for the whole run; deliveries are scrubbed (`hooks/lib/scrub.py`) and
+capped at 8,000 characters. Messages written by the panel are labelled as the user's; anything
+else as "via cli". GateGuard denies `osforge-db inbox-add` from an agent's Bash, always: the inbox
+would otherwise be a prompt-injection channel between projects. With a flag for the session's project it
 calls `osforge-db inbox-take` (atomic: two sessions, one gets the messages) and answers with
 `additionalContext` under the event's own `hookEventName`. Calls from a subagent (`agent_id`
 present) never take messages. The text is the user's own, sent from the local panel, and is

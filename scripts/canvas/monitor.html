@@ -413,7 +413,7 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
   }
   var ERR = { 'project has no registered folder: bind it first': 'o projeto não tem pasta cadastrada — cadastre a raiz primeiro', 'IDE not installed': 'essa IDE não está instalada', 'claude not found': 'não encontrei o claude neste Mac', 'a background run needs an instruction': 'escreva a instrução para rodar em segundo plano' }
   function act(promise, okText) {
-    return promise.then(function () { toast(okText); load() }, function (e) { toast('Não deu: ' + (ERR[e.message] || e.message), true) })
+    return promise.then(function () { toast(okText); load(); return true }, function (e) { toast('Não deu: ' + (ERR[e.message] || e.message), true); return false })
   }
   var STATUS_ACTIONS = { segurar: ['paused', 'Projeto segurado: foi para o histórico'], arquivar: ['archived', 'Projeto arquivado: está no histórico'], concluir: ['done', 'Projeto concluído: está no histórico'], backlog: ['backlog', 'Projeto no backlog'], reativar: ['active', 'Projeto reativado'] }
   function ideByWord(word) {
@@ -463,8 +463,10 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     edits.appendChild(cb); edits.appendChild(document.createTextNode(' permitir edições em 2º plano'))
     var send = function (prefix) {
       var target = slug || (sel && sel.value) || ''
-      var p = runComposer(target, (prefix || '') + ta.value, { acceptEdits: cb.checked })
-      if (p) { ta.value = ''; state.drafts[key] = '' }
+      var typed = ta.value
+      var p = runComposer(target, (prefix || '') + typed, { acceptEdits: cb.checked })
+      // Cleared only when the action worked: a refused instruction (no folder, no claude…) stays.
+      if (p) p.then(function (ok) { if (ok && state.drafts[key] === typed) { state.drafts[key] = ''; var el = byId(ta.id); if (el) el.value = '' } })
     }
     ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send('') } })
     var b1 = h('button', 'btn primary', 'Enviar ao agente'); b1.type = 'button'; b1.title = 'Entrega na próxima ação da sessão ativa (⌘↵)'
@@ -489,11 +491,24 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     wrap.appendChild(h('div', 'sub', 'Texto = orientação, entregue ao agente na próxima ação (ou na próxima sessão). Dite com o ditado do macOS. ⌘↵ envia.'))
     if (state.focus === ta.id) setTimeout(function () { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length) }, 0)
     ta.addEventListener('focus', function () { state.focus = ta.id })
-    ta.addEventListener('blur', function () { if (state.focus === ta.id) state.focus = '' })
+    ta.addEventListener('blur', function () {
+      if (state.focus === ta.id) state.focus = ''
+      // A refresh skipped while typing happens once the field is left (not while clicking a button of the composer).
+      setTimeout(function () { if (!state.focus && state.renderPending) render() }, 300)
+    })
     return wrap
   }
-  function conversation(D) {
-    var c = h('section', 'card pad'), head = h('div', 'card-head'); head.appendChild(h('h3', '', 'Conversa com os agentes'))
+  function refreshConversation() {
+    var old = byId('convo-card')
+    if (!old || !state.detail || state.detail.slug !== state.project) return
+    var fresh = conversation(state.detail, true), list = old.querySelector('.convo'), nl = fresh.querySelector('.convo')
+    var atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 8
+    list.replaceWith(nl)
+    var head = old.querySelector('.card-head'); if (head) head.replaceWith(fresh.querySelector('.card-head'))
+    if (atBottom) nl.scrollTop = nl.scrollHeight
+  }
+  function conversation(D, listOnly) {
+    var c = h('section', 'card pad'), head = h('div', 'card-head'); c.id = listOnly ? '' : 'convo-card'; head.appendChild(h('h3', '', 'Conversa com os agentes'))
     var l = liveOf(D.slug); head.appendChild(isLive(l) ? pill('agora: ' + liveText(l), 'ok') : pill('nenhuma sessão ativa', '')); c.appendChild(head)
     var list = h('div', 'convo'), items = D.conversa || []
     if (!items.length) list.appendChild(h('div', 'sub', 'Nada ainda. Escreva abaixo: o agente que estiver trabalhando aqui recebe na próxima ação.'))
@@ -524,6 +539,7 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
       list.appendChild(it)
     })
     c.appendChild(list)
+    if (listOnly) return c
     c.appendChild(composer(D.slug))
     setTimeout(function () { list.scrollTop = list.scrollHeight }, 0)
     return c
@@ -883,6 +899,9 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
   // ── render / data ────────────────────────────────────────────────────────
   var redrawers = []
   function render() {
+    // While a message is being written (or dictated), refresh around it, not through it.
+    if (state.focus && byId(state.focus)) { state.renderPending = true; sidebar(); refreshConversation(); return }
+    state.renderPending = false
     redrawers = []
     sidebar()
     var view = byId('view'); view.textContent = ''
@@ -960,7 +979,7 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
       if (sig === lastLive) return
       lastLive = sig; state.live = d
       if (!state.portfolio) return
-      if (state.focus) sidebar(); else render()
+      render()
     }, function () {})
   }
   setInterval(pollLive, 10000)

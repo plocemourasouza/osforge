@@ -40,7 +40,7 @@ Comandos:
   inbox-take <slug> --session=ID    Entrega atômica das pendentes (JSON); usado pelo hook
   inbox <slug> | inbox-cancel <id>
   run-add <slug> --kind=terminal|background|ide [--tool=] [--prompt=] [--pid=] [--log=]
-  run-update <id> [--status=] [--result=] [--cost=] | runs <slug>
+  run-update <id> [--status=] [--result=] [--cost=] | runs <slug> | runs-reconcile
   add-signal <slug> <callers_open|duplicate|tests> <subject> [--detail=JSON] [--session=ID]
   resolve-signal <id> [<id>...]
   signals [<slug>] [--open] [--report] [--since=YYYY-MM-DD]
@@ -2639,14 +2639,19 @@ def _inbox_flag(slug):
 
 
 def _inbox_sync_flag(conn, pid, slug):
-    """The flag file mirrors "this project has pending messages": the hook's fast path."""
+    """The flag file mirrors "this project has pending messages": the hook's fast path. It holds
+    the project's root and names, so the hook can tell "not this session's project" without any
+    subprocess. Called INSIDE the write transaction, so a concurrent add/take cannot leave a
+    pending message without its flag."""
     n = conn.execute("SELECT COUNT(*) FROM inbox WHERE project_id=? AND status='pendente'", (pid,)).fetchone()[0]
     flag = _inbox_flag(slug)
     try:
         if n:
             os.makedirs(_inbox_dir(), mode=0o700, exist_ok=True)
+            root = (conn.execute("SELECT root_path FROM projects WHERE id=?", (pid,)).fetchone() or [None])[0]
+            names = sorted({slug, _slugify(slug)} | ({os.path.basename(root.rstrip("/"))} if root else set()))
             with open(flag, "w", encoding="utf-8") as f:
-                f.write(str(n))
+                json.dump({"slug": slug, "pending": n, "roots": [root] if root else [], "names": names}, f)
         elif os.path.exists(flag):
             os.remove(flag)
     except OSError:
@@ -2654,7 +2659,7 @@ def _inbox_sync_flag(conn, pid, slug):
     return n
 
 
-def cmd_inbox_add(conn, slug, text, via="painel"):
+def cmd_inbox_add(conn, slug, text, via="cli"):
     text = (text or "").strip()
     if not text:
         _err2("orientação vazia")
@@ -2663,10 +2668,12 @@ def cmd_inbox_add(conn, slug, text, via="painel"):
     p = conn.execute("SELECT id FROM projects WHERE slug=?", (slug,)).fetchone()
     if not p:
         _err2(f"Projeto '{slug}' não encontrado.")
-    mid = conn.execute("INSERT INTO inbox (ts, project_id, text, via) VALUES (?,?,?,?)",
-                       (_now(), p["id"], text, via or "painel")).lastrowid
     conn.commit()
+    conn.execute("BEGIN IMMEDIATE")
+    mid = conn.execute("INSERT INTO inbox (ts, project_id, text, via) VALUES (?,?,?,?)",
+                       (_now(), p["id"], text, via or "cli")).lastrowid
     _inbox_sync_flag(conn, p["id"], slug)
+    conn.execute("COMMIT")
     if _json_mode:
         print(json.dumps({"id": mid}))
     else:
@@ -2682,15 +2689,16 @@ def cmd_inbox_take(conn, slug, session):
         return
     conn.commit()
     conn.execute("BEGIN IMMEDIATE")
-    rows = conn.execute("SELECT id, ts, text FROM inbox WHERE project_id=? AND status='pendente' ORDER BY id",
+    rows = conn.execute("SELECT id, ts, text, via FROM inbox WHERE project_id=? AND status='pendente' ORDER BY id",
                         (p["id"],)).fetchall()
     now = _now()
     for r in rows:
         conn.execute("UPDATE inbox SET status='entregue', delivered_at=?, delivered_session=? WHERE id=?",
                      (now, session or "", r["id"]))
-    conn.execute("COMMIT")
     _inbox_sync_flag(conn, p["id"], slug)
-    print(json.dumps([{"id": r["id"], "ts": r["ts"], "text": r["text"]} for r in rows], ensure_ascii=False))
+    conn.execute("COMMIT")
+    print(json.dumps([{"id": r["id"], "ts": r["ts"], "text": r["text"], "via": r["via"]} for r in rows],
+                     ensure_ascii=False))
 
 
 def cmd_inbox_list(conn, slug, limit=50):
@@ -2714,9 +2722,11 @@ def cmd_inbox_cancel(conn, mid):
                      "WHERE i.id=? AND i.status='pendente'", (mid,)).fetchone()
     if not r:
         _err2(f"orientação {mid} não está pendente")
-    conn.execute("UPDATE inbox SET status='cancelada' WHERE id=?", (mid,))
     conn.commit()
+    conn.execute("BEGIN IMMEDIATE")
+    conn.execute("UPDATE inbox SET status='cancelada' WHERE id=?", (mid,))
     _inbox_sync_flag(conn, r["project_id"], r["slug"])
+    conn.execute("COMMIT")
     _ok(f"orientação {mid} cancelada")
 
 
@@ -2758,6 +2768,24 @@ def cmd_run_update(conn, rid, status=None, pid=None, result=None, cost=None, log
         conn.execute(f"UPDATE runs SET {', '.join(sets)} WHERE id=?", args + [rid])
         conn.commit()
     _ok(f"execução {rid} atualizada")
+
+
+def cmd_runs_reconcile(conn):
+    """A background run whose process is gone (server restarted, crash) is not running any more."""
+    n = 0
+    for r in conn.execute("SELECT id, pid FROM runs WHERE status IN ('rodando','iniciada') AND kind='background'").fetchall():
+        alive = False
+        if r["pid"]:
+            try:
+                os.kill(int(r["pid"]), 0)
+                alive = True
+            except (OSError, ValueError):
+                alive = False
+        if not alive:
+            conn.execute("UPDATE runs SET status='interrompida', ended_at=? WHERE id=?", (_now(), r["id"]))
+            n += 1
+    conn.commit()
+    _ok(f"runs-reconcile: {n} execução(ões) marcada(s) como interrompida(s)")
 
 
 def _runs_rows(conn, pid, limit=30):
@@ -2870,21 +2898,24 @@ def live_state(conn):
         exe = cmd.split()[0] if cmd.split() else ""
         if os.path.basename(exe) == "claude":
             claude[pid] = cmd
-        elif _DEV_SERVER.search(cmd) and "osforge" not in cmd:
+        elif _DEV_SERVER.search(cmd) and not re.search(r"osforge-db(?:\.py)?\b|\bvite\s+(?:build|optimize)\b", cmd):
             servers[pid] = cmd
     cwds = _cwds(set(claude) | set(servers))
     projects = {r["id"]: r for r in conn.execute("SELECT id, slug, root_path FROM projects")}
-    cache, out, loose = {}, {}, {}
+    cache, out, loose, roots = {}, {}, {}, {}
 
     def slot(pid_, key, label):
         if pid_ is not None:
             return out.setdefault(projects[pid_]["slug"], {"claude": 0, "trabalhando": False, "ides": [], "servidores": [], "pastas": []})
         return loose.setdefault(key, {"pasta": key, "nome": label, "claude": 0, "trabalhando": False, "ides": [], "servidores": []})
 
-    for pid, cwd in cwds.items():
+    seen_server_cwd = set()
+    for pid, cwd in sorted(cwds.items()):
         real = os.path.realpath(cwd)
-        top = _git_out(["rev-parse", "--show-toplevel"], real) if os.path.isdir(real) else ""
-        root = os.path.realpath(top) if top else real
+        if real not in roots:                          # one git call per folder, not per process
+            top = _git_out(["rev-parse", "--show-toplevel"], real) if os.path.isdir(real) else ""
+            roots[real] = os.path.realpath(top) if top else real
+        root = roots[real]
         if root == os.path.realpath(os.path.expanduser("~")) or root == "/":
             continue
         proj = _resolve_project_id_for_cwd(conn, real, cache)
@@ -2894,7 +2925,8 @@ def live_state(conn):
         if pid in claude:
             s["claude"] += 1
             s["trabalhando"] = s["trabalhando"] or _transcript_recent(cwd)
-        else:
+        elif real not in seen_server_cwd:              # `npm run dev` → sh → next dev → next-server: one server
+            seen_server_cwd.add(real)
             s["servidores"].append({"pid": pid, "cmd": servers[pid][:160]})
     by_name = {}
     for p in projects.values():
@@ -3644,7 +3676,7 @@ def main():
         text_flag = next((x.split("=", 1)[1] for x in _flags if x.startswith("--text=")), None)
         if not rest or (text_flag is None and len(rest) < 2):
             _err2("Uso: inbox-add <slug> <texto> | inbox-add <slug> --text=<texto> [--via=painel]")
-        via = next((x.split("=", 1)[1] for x in _flags if x.startswith("--via=")), "painel")
+        via = next((x.split("=", 1)[1] for x in _flags if x.startswith("--via=")), "cli")
         cmd_inbox_add(conn, rest[0], text_flag if text_flag is not None else " ".join(rest[1:]), via)
     elif cmd == "inbox-take":
         if not rest:
@@ -3675,6 +3707,8 @@ def main():
             _err2("--cost precisa ser número")
         cmd_run_update(conn, rest[0], fl.get("status"), int(fl["pid"]) if fl.get("pid", "").isdigit() else None,
                        fl.get("result"), cost, fl.get("log"))
+    elif cmd == "runs-reconcile":
+        cmd_runs_reconcile(conn)
     elif cmd == "runs":
         if not rest:
             _err2("Uso: runs <slug>")

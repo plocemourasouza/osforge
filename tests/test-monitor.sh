@@ -292,12 +292,14 @@ cat > "$WORK/ps.txt" <<EOF
   106 /usr/bin/python3 /x/osforge-db.py live
   107 node server.js
   108 claude
+  109 sh -c next dev
+  110 node /x/node_modules/.bin/vite build
 EOF
-python3 -c "import json,sys; print(json.dumps({'101': sys.argv[1], '102': sys.argv[2], '103': sys.argv[1] + '/lib', '107': sys.argv[1], '108': '/'}))" "$A" "$L/novo" > "$WORK/cwd.json"
+python3 -c "import json,sys; print(json.dumps({'101': sys.argv[1], '102': sys.argv[2], '103': sys.argv[1] + '/lib', '107': sys.argv[1], '108': '/', '109': sys.argv[1] + '/lib', '110': sys.argv[1]}))" "$A" "$L/novo" > "$WORK/cwd.json"
 mkdir -p "$HOME/.claude/projects/$(printf '%s' "$A" | sed 's/[^A-Za-z0-9]/-/g')" && touch "$HOME/.claude/projects/$(printf '%s' "$A" | sed 's/[^A-Za-z0-9]/-/g')/s.jsonl"
 OSFORGE_LIVE_PS_FILE="$WORK/ps.txt" OSFORGE_LIVE_CWD_FILE="$WORK/cwd.json" db live > "$J"
 check "live: claude in alpha, working now (fresh transcript)" "[ \"\$(q '(d[\"projetos\"][\"alpha\"][\"claude\"], d[\"projetos\"][\"alpha\"][\"trabalhando\"])')\" = '(1, True)' ]"
-check "live: next dev in a subfolder maps to alpha; plain node server.js is not a dev server" "[ \"\$(q 'len(d[\"projetos\"][\"alpha\"][\"servidores\"])')\" = 1 ]"
+check "live: next dev in a subfolder maps to alpha, its sh wrapper is the same server, vite build and plain node are not servers" "[ \"\$(q 'len(d[\"projetos\"][\"alpha\"][\"servidores\"])')\" = 1 ]"
 check "live: Cursor window on alpha (IDE helper process title)" "[ \"\$(q 'd[\"projetos\"][\"alpha\"][\"ides\"]')\" = \"['Cursor']\" ]"
 check "live: unregistered folders listed (claude in novo, VS Code on outra-pasta)" "[ \"\$(q 'sorted((x[\"nome\"], x[\"claude\"], x[\"ides\"]) for x in d[\"sem_cadastro\"])')\" = \"[('novo', 1, []), ('outra-pasta', 0, ['VS Code'])]\" ]"
 check "live: claude in / is ignored, osforge itself is not a server" "[ \"\$(q 'sum(v[\"claude\"] for v in d[\"projetos\"].values()) + sum(x[\"claude\"] for x in d[\"sem_cadastro\"])')\" = 2 ]"
@@ -324,6 +326,9 @@ check "inbox-take on an unknown project → [] and exit 0" "[ \"\$(db inbox-take
 RID="$(db --json run-add alpha --kind=background --tool=claude '--prompt=rode os testes' --status=rodando | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
 db run-update "$RID" --status=concluida '--result=12 testes ok' --cost=0.42 >/dev/null 2>&1
 check "runs: recorded and closed with result and cost" "db --json runs alpha | python3 -c 'import json,sys; r=json.load(sys.stdin)[0]; assert (r[\"status\"], r[\"resultado\"], r[\"custo\"])==(\"concluida\", \"12 testes ok\", 0.42) and r[\"fim\"], r'"
+python3 -c "import sqlite3,sys; c=sqlite3.connect(sys.argv[1]); c.execute(\"INSERT INTO runs (project_id, kind, tool, status, pid) VALUES ((SELECT id FROM projects WHERE slug='alpha'), 'background', 'claude', 'rodando', 999999)\"); c.commit()" "$OSFORGE_DB"
+db runs-reconcile >/dev/null 2>&1
+check "runs-reconcile: a run whose process is gone → interrompida" "db --json runs alpha | python3 -c 'import json,sys; r=[x for x in json.load(sys.stdin) if x[\"pid\"]==999999][0]; assert r[\"status\"]==\"interrompida\", r'"
 check "run-add with a bad kind → exit 2" "db run-add alpha --kind=rocket >/dev/null 2>&1; [ \$? -eq 2 ]"
 db monitor alpha > "$J"
 check "conversation merges messages and runs" "[ \"\$(q 'sorted(set(m[\"tipo\"] for m in d[\"projeto\"][\"conversa\"]))')\" = \"['execucao', 'orientacao']\" ]"
@@ -371,6 +376,9 @@ SH
   check ".command is 0700 and only cds into the project" "[ \"\$(python3 -c 'import os,stat,sys; print(oct(stat.S_IMODE(os.stat(sys.argv[1]).st_mode)))' \"$CMDF\")\" = 0o700 ] && grep -q \"^cd '$A' || exit 1\" \"$CMDF\""
   bash "$CMDF" >/dev/null 2>&1
   check "the instruction reaches claude as ONE argument, byte for byte (quotes, \$( ), backticks inert)" "[ \"\$(cat \"$CLAUDE_LOG\")\" = \"\$TXT\" ]"
+  BODY2="$(python3 -c 'import json; print(json.dumps({"project":"alpha","mode":"terminal","text":"--dangerously-skip-permissions"}))')"
+  post /api/launch "$BODY2" >/dev/null; bash "$(sed -n 3p "$OPEN_LOG")" >/dev/null 2>&1
+  check "an instruction starting with - stays a prompt (leading space), never a claude option" "[ \"\$(cat \"$CLAUDE_LOG\")\" = ' --dangerously-skip-permissions' ]"
   check "background without an instruction → 400" "[ \"\$(post /api/launch '{\"project\":\"alpha\",\"mode\":\"background\"}')\" = 400 ]"
   check "background: 201 with a run id" "[ \"\$(post /api/launch '{\"project\":\"alpha\",\"mode\":\"background\",\"text\":\"revise os testes\",\"acceptEdits\":true}')\" = 201 ]"
   for _ in $(seq 40); do db --json runs alpha | grep -q '"concluida".*"tipo": "background"\|"tipo": "background".*"concluida"' && break; sleep 0.1; done
@@ -378,6 +386,10 @@ SH
   check "status: segurar → historico" "[ \"\$(post /api/project/status '{\"project\":\"w1\",\"status\":\"paused\"}')\" = 200 ] && db monitor | python3 -c 'import json,sys; d=json.load(sys.stdin); assert [p[\"grupo_base\"] for p in d[\"projetos\"] if p[\"slug\"]==\"w1\"]==[\"historico\"]'"
   check "status: invalid value → 400" "[ \"\$(post /api/project/status '{\"project\":\"w1\",\"status\":\"deleted\"}')\" = 400 ]"
   check "bind: suggested root from discovery (beta)" "[ \"\$(post /api/project/bind '{\"project\":\"beta\"}')\" = 200 ] && db --json list-projects --status=all | grep -q \"$(cd "$Bdir" && pwd -P)\""
+  DUP="$WORK/dup/w1"; mkdir -p "$DUP" && (cd "$DUP" && $GIT init -q && echo x > a && $GIT add a && $GIT commit -qm i)
+  mkdir -p "$HOME/.claude/projects/-dup"; python3 -c "import json,sys; print(json.dumps({'type':'user','cwd':sys.argv[1]}))" "$DUP" > "$HOME/.claude/projects/-dup/1.jsonl"
+  DUPR="$(cd "$DUP" && pwd -P)"
+  check "register: a folder named like an existing project (w1) is that project, never re-registered; w1 untouched" "[ \"\$(post /api/project/register \"{\\\"pasta\\\":\\\"$DUPR\\\"}\")\" != 201 ] && db --json list-projects --status=all | python3 -c 'import json,sys; p=[x for x in json.load(sys.stdin) if x[\"slug\"]==\"w1\"][0]; assert p[\"root_path\"] is None and p[\"status\"]==\"paused\", p'"
   check "register: only a discovered folder; then it is a project" "[ \"\$(post /api/project/register '{\"pasta\":\"/etc\"}')\" = 404 ] && [ \"\$(post /api/project/register \"{\\\"pasta\\\":\\\"$(cd "$N" && pwd -P)\\\"}\")\" = 201 ] && db --json list-projects --status=all | grep -q '\"novo-app\"'"
   kill "$SPID2" 2>/dev/null; wait "$SPID2" 2>/dev/null
   unset OSFORGE_INBOX_DIR

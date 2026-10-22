@@ -594,10 +594,24 @@ async function handleProjectRegister(request: Request): Promise<Response> {
   if (!found) return jsonError("folder is not among the discovered ones", 404);
   const slug = String(found["slug_sugerido"] || "");
   if (!SLUG_PATTERN.test(slug)) return jsonError("cannot derive a slug", 409);
+  const taken = await runDb(["--json", "list-projects", "--status=all"]);
+  try {
+    if ((JSON.parse(taken.out) as Array<Record<string, unknown>>).some((p) => p["slug"] === slug)) {
+      return jsonError(`a project named ${slug} already exists: bind its folder instead`, 409);
+    }
+  } catch {
+    return jsonError("could not list projects", 502);
+  }
   const add = await runDb(["upsert-project", slug, String(found["nome"] || slug), "standard", "active", `--root=${pasta}`]);
   if (add.code !== 0) return jsonError("register failed", 502);
   invalidate();
   return jsonOk({ ok: true, slug }, 201);
+}
+
+/** An instruction that starts with "-" would be read by claude as an option: a leading space
+ * keeps it a prompt and changes nothing for the model. */
+function asPrompt(text: string): string {
+  return text.startsWith("-") ? " " + text : text;
 }
 
 /** Bash single-quoted literal: safe for any text, including quotes, $( ) and backticks. */
@@ -636,7 +650,7 @@ async function handleLaunch(request: Request): Promise<Response> {
     const dir = join(homedir(), ".osforge", "launch");
     await mkdir(dir, { recursive: true, mode: 0o700 });
     const file = join(dir, `${Date.now()}-${slug}.command`);
-    const line = text ? `exec ${shq(claude)} ${shq(text)}` : `exec ${shq(claude)}`;
+    const line = text ? `exec ${shq(claude)} ${shq(asPrompt(text))}` : `exec ${shq(claude)}`;
     await Bun.write(file, `#!/bin/bash\ncd ${shq(root)} || exit 1\n${line}\n`);
     const chmod = Bun.spawn(["chmod", "700", file]);
     await chmod.exited;
@@ -655,9 +669,21 @@ async function handleLaunch(request: Request): Promise<Response> {
   const runsDir = join(homedir(), ".osforge", "runs");
   await mkdir(runsDir, { recursive: true, mode: 0o700 });
   const logPath = join(runsDir, `${runId}.jsonl`);
-  const args = [claude, "-p", text, "--output-format", "stream-json", "--verbose"];
+  const args = [claude, "-p", asPrompt(text), "--output-format", "stream-json", "--verbose"];
   if (body["acceptEdits"] === true) args.push("--permission-mode", "acceptEdits");
-  const proc = Bun.spawn(args, { cwd: root, stdout: Bun.file(logPath), stderr: "pipe", stdin: "ignore", env: process.env });
+  // OSFORGE_INBOX=off: a run launched from the panel must not take the guidance meant for the
+  // interactive session of the same project.
+  let proc: ReturnType<typeof Bun.spawn>;
+  try {
+    proc = Bun.spawn(args, {
+      cwd: root, stdout: Bun.file(logPath), stderr: Bun.file(logPath.replace(/\.jsonl$/, ".err")), stdin: "ignore",
+      env: { ...process.env, OSFORGE_INBOX: "off" },
+    });
+  } catch {
+    await runDb(["run-update", String(runId), "--status=falhou", "--result=não foi possível iniciar o claude"]);
+    invalidate();
+    return jsonError("could not start claude", 502);
+  }
   runningJobs.set(runId, proc);
   await runDb(["run-update", String(runId), `--pid=${proc.pid}`, `--log=${logPath}`]);
   invalidate();
@@ -679,6 +705,13 @@ async function handleLaunch(request: Request): Promise<Response> {
       }
     } catch {
       /* no result event: keep the exit status */
+    }
+    if (!result && status !== "concluida") {
+      try {
+        result = (await Bun.file(logPath.replace(/\.jsonl$/, ".err")).text()).trim().slice(-1500);
+      } catch {
+        /* no stderr */
+      }
     }
     if (proc.signalCode) status = "interrompida";
     await runDb(["run-update", String(runId), `--status=${status}`, `--result=${result.slice(0, 4000)}`,
@@ -919,6 +952,8 @@ async function main(): Promise<void> {
     throw err;
   }
 
+  // Background runs whose process is gone (this server restarted) are not running any more.
+  void runDb(["runs-reconcile"]);
   console.log(`OSForge Canvas → http://127.0.0.1:${PORT}`);
   console.log(`data dir       → ${DATA_DIR}`);
 }
