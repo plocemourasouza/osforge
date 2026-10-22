@@ -21,9 +21,9 @@ conjunto, e não da ordem em que cada projeto foi lido.
 
 | Prefixo | Significado |
 |---|---|
-| `L-01`…, `N-01`… | candidato de uma fonte (L = Laya, N = Needle) |
-| `EV-L…`, `EV-N…` | evidência no código da fonte, com permalink no SHA fixado |
-| `EV-O…`, `EV-O-N…` | evidência no OSForge (caminho:linha em `v5.1.0`, `3f0446c`), por fonte |
+| `L-01`…, `N-01`…, `P-01`… | candidato de uma fonte (L = Laya, N = Needle, P = Ponytail) |
+| `EV-L…`, `EV-N…`, `EV-P…` | evidência no código da fonte, com permalink no SHA fixado |
+| `EV-O…`, `EV-O-N…`, `EV-O-P…` | evidência no OSForge (caminho:linha em `v5.1.0`, `3f0446c`), por fonte |
 | `EV-C…` | comportamento do Claude Code observado (versão registrada) |
 | `EV-M…`, `EV-N-M…` | medição feita na máquina de trabalho (agregada, sem conteúdo), por fonte |
 | `D-…` | decisão em aberto que a implementação precisa tomar |
@@ -32,10 +32,16 @@ conjunto, e não da ordem em que cada projeto foi lido.
 
 | Fonte | Analisada em | SHA | Candidatos | Estado |
 |---|---|---|---|---|
-| [Laya](laya/ANALISE.md) (`aayushch/laya`, Apache-2.0) | 2026-09-22 → 24 | `5970a11` | L-01 guarda de cota · L-02 juiz isolado · L-03 auditoria por chamada · L-04 decisão do R-09 | no [Pacote 01](PACOTE-01-qualidade-e-controle.md) |
-| [Needle](needle/ANALISE.md) (`cactus-compute/needle`, Apache-2.0) | 2026-09-24 → 25 | `42bf1f2` | N-01 casos de eval com categoria e críticos · o modelo foi **recusado com medição** | no [Pacote 01](PACOTE-01-qualidade-e-controle.md) |
+| [Laya](laya/ANALISE.md) (`aayushch/laya`, Apache-2.0) | 2026-09-22 → 24 | `5970a11` | L-01 guarda de cota · L-02 juiz isolado · L-03 auditoria por chamada · L-04 decisão do R-09 | **incorporada** — Pacote 01, ADR-016, v5.2.0 (L-04 segue condicional ao E5) |
+| [Needle](needle/ANALISE.md) (`cactus-compute/needle`, Apache-2.0) | 2026-09-24 → 25 | `42bf1f2` | N-01 casos de eval com categoria e críticos · o modelo foi **recusado com medição** | **incorporada** — Pacote 01, ADR-016, v5.2.0 |
+| [Ponytail](ponytail/ANALISE.md) (`DietrichGebert/ponytail`, MIT) | 2026-10-22 | `09c434a` | P-01 escada da solução · P-02 review do código conectado · P-03 `repo-audit` · o plugin foi **recusado** | no [Pacote 02](PACOTE-02-ponytail.md), aguardando aprovação e a medição r3 |
 
-**Pacotes:** [Pacote 01 — Qualidade e controle](PACOTE-01-qualidade-e-controle.md) (B-025 a B-030), proposta aguardando aprovação.
+**Pacotes:**
+
+| Pacote | Itens | Estado |
+|---|---|---|
+| [Pacote 01 — Qualidade e controle](PACOTE-01-qualidade-e-controle.md) | B-025 a B-030 | entregue em v5.2.0 (ADR-016); B-030 condicional ao E5 |
+| [Pacote 02 — Ponytail](PACOTE-02-ponytail.md) | B-031 a B-034 | proposta: medir (r3) antes de adotar |
 
 Quando um pacote é aprovado: cada candidato vira um `B-0xx` no backlog com a mesma spec como corpo,
 a análise passa a ser citada pela ADR que aprovar o pacote, e esta tabela marca a fonte como
