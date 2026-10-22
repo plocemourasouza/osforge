@@ -571,7 +571,9 @@ chmod +x ~/.claude/hooks/*
 - Guardas durante a edição, adaptadas da faixa do Ponytail (B-035, ADR-019): **G-1** uma definição
   exportada removida ou renomeada que outros arquivos ainda chamam; **G-2** uma definição nova cujo
   nome normalizado já existe noutro arquivo; **G-3** o estado dos testes (o comando de teste foi
-  *executado*: `PostToolUse` = passou, `PostToolUseFailure` = falhou; um Edit em código depois = desatualizado)
+  *executado*: `PostToolUse` = passou, `PostToolUseFailure` = falhou, resumo do executor com falhas = falhou
+  mesmo com saída 0; `| tail`, `|| true` ou `; echo` depois do teste sem resumo legível = incerto; um Edit em
+  código depois = desatualizado)
 - Grava na tabela `signals` (`osforge-db signals <slug> [--open] [--report]`); um G-1 se resolve sozinho
   quando nenhum chamador sobra. Só TS/JS e Python (D-G1)
 - `OSFORGE_QUALITY_GUARD=shadow` (padrão: grava, não fala), `on` (avisa o modelo por `additionalContext`

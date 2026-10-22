@@ -88,13 +88,15 @@ print(json.dumps({"hook_event_name": "PostToolUse", "session_id": "s1", "cwd": r
                   "tool_input": {"file_path": f"{root}/{f}", "content": content}}))
 EOF
 }
-bash_payload(){  # command event [interrupted]
-  python3 - "$P" "$1" "$2" "${3:-}" <<'EOF'
+bash_payload(){  # command event [interrupted] [stdout]
+  python3 - "$P" "$1" "$2" "${3:-}" "${4-__default__}" <<'EOF'
 import json, sys
-root, cmd, ev, intr = sys.argv[1:5]
+root, cmd, ev, intr, out = sys.argv[1:6]
 p = {"hook_event_name": ev, "session_id": "s1", "cwd": root, "tool_name": "Bash", "tool_input": {"command": cmd}}
 if ev == "PostToolUse":
-    p["tool_response"] = {"stdout": " Test Files  3 passed (3)\n      Tests  12 passed (12)\n", "stderr": "", "interrupted": bool(intr)}
+    if out == "__default__":
+        out = " Test Files  3 passed (3)\n      Tests  12 passed (12)\n"
+    p["tool_response"] = {"stdout": out, "stderr": "", "interrupted": bool(intr)}
 else:
     p["error"] = "Exit code 1\n Tests  2 failed | 10 passed (12)"
     p["is_interrupt"] = bool(intr)
@@ -152,6 +154,29 @@ apply_edit lib/units.ts "export function toLabel(" "export function asLabel("
 OUT="$(edit_payload lib/units.ts "export function toLabel(" "export function asLabel(" | OSFORGE_QUALITY_GUARD=on run)"
 check "silence" "[ -z \"\$OUT\" ]"
 
+section "3b. moved, not removed; indented fragment"
+cat > "$P/lib/round.ts" <<'EOF'
+export function roundHalfUp(x: number) { return Math.round(x); }
+EOF
+cat > "$P/app/cart/sum.ts" <<'EOF'
+import { roundHalfUp } from "@/lib/round";
+export const s = roundHalfUp(1.5);
+EOF
+(cd "$P" && $GIT add -A && $GIT commit -qm round)
+printf 'export function roundHalfUp(x: number) { return Math.round(x); }\n' > "$P/lib/rounding.ts"
+apply_edit lib/round.ts "export function roundHalfUp(x: number) { return Math.round(x); }" ""
+apply_edit app/cart/sum.ts '"@/lib/round"' '"@/lib/rounding"'
+OUT="$(edit_payload lib/round.ts "export function roundHalfUp(x: number) { return Math.round(x); }" "" | OSFORGE_QUALITY_GUARD=on run)"
+check "function moved to another file → no G-1" "[ -z \"\$OUT\" ]"
+mkdir -p "$P/py"
+printf 'def compute_total(items):\n    return sum(items)\n' > "$P/py/totals.py"
+printf 'class Order:\n    def total(self):\n        return 1\n' > "$P/py/orders.py"
+(cd "$P" && $GIT add -A && $GIT commit -qm py)
+apply_edit py/orders.py "        return 1" "        computeTotal = 3\n        return computeTotal"
+OUT="$(edit_payload py/orders.py "        return 1" "computeTotal = 3
+        return computeTotal" | OSFORGE_QUALITY_GUARD=on run)"
+check "local variable in an indented fragment → no G-2" "[ -z \"\$OUT\" ]"
+
 section "4. G-2: new file duplicates formatCurrency"
 cat > "$P/lib/money.ts" <<'EOF'
 export function format_currency(cents: number): string {
@@ -193,6 +218,13 @@ bash_payload "npm run lint" PostToolUse | run
 check "non-test script → ignored" "[ \"\$(count tests all)\" = 3 ]"
 bash_payload "python3 -m pytest -q && echo done" PostToolUse | run
 check "python -m pytest inside a chain → passed" "[ \"\$(count tests all)\" = 4 ]"
+state(){ db --json signals shop --open | python3 -c 'import json,sys; t=[x for x in json.load(sys.stdin) if x["kind"]=="tests"]; print(t[0]["detail"]["state"])'; }
+bash_payload "npx vitest run 2>&1 | tail -5" PostToolUse "" " Tests  2 failed | 3 passed (5)"  | run
+check "exit 0 hidden by a pipe, runner printed failures → failed" "[ \"\$(state)\" = failed ]"
+bash_payload "pytest || true" PostToolUse "" "" | run
+check "exit code masked (|| true), no summary → unknown, not passed" "[ \"\$(state)\" = unknown ]"
+bash_payload "npm test; echo done" PostToolUse "" "" | run
+check "runner not last (; echo) → unknown" "[ \"\$(state)\" = unknown ]"
 
 section "7. modes"
 BEFORE="$(count callers_open all)"
@@ -249,10 +281,27 @@ EOF
 echo "     p95 = ${P95} ms"
 check "p95 < 150 ms" "[ \"$P95\" -lt 150 ]"
 
+python3 - "$B/src" <<'EOF'
+import sys
+lines = [f"export function fn{i}(x: number) {{ return x; }}" for i in range(30)]
+open(sys.argv[1] + "/many.ts", "w").write("\n".join(lines) + "\n")
+EOF
+MS="$(python3 - "$HOOK" "$B" <<'EOF'
+import json, subprocess, sys, time
+hook, root = sys.argv[1:3]
+f = f"{root}/src/many.ts"
+pay = json.dumps({"hook_event_name": "PostToolUse", "cwd": root, "tool_name": "Write",
+                  "tool_input": {"file_path": f, "content": open(f).read()}})
+t0 = time.time(); subprocess.run(["python3", hook], input=pay, text=True, capture_output=True, env=dict(__import__("os").environ, OSFORGE_QUALITY_GUARD="on")); print(int((time.time() - t0) * 1000))
+EOF
+)"
+echo "     Write with 30 duplicated exports: ${MS} ms"
+check "worst case stays inside the hook's 5 s timeout (budget 3 s)" "[ \"$MS\" -lt 4000 ]"
+
 section "10. signals CLI"
 check "unknown kind → exit 2" "db add-signal shop nope x >/dev/null 2>&1; [ \$? -eq 2 ]"
 check "--detail must be JSON → exit 2" "db add-signal shop duplicate x --detail='{bad' >/dev/null 2>&1; [ \$? -eq 2 ]"
-R="$(db --json signals --report)"
+R="$(db --json signals shop --report)"
 check "--report: per-kind totals and resolved counts" "printf '%s' \"\$R\" | python3 -c 'import json,sys; d=json.load(sys.stdin); k=d[\"kinds\"]; assert k[\"callers_open\"][\"total\"]>=2 and k[\"callers_open\"][\"resolved\"]>=1 and k[\"duplicate\"][\"total\"]==1, d'"
 check "--report: sample excludes tests and has ≤ 20" "printf '%s' \"\$R\" | python3 -c 'import json,sys; d=json.load(sys.stdin); s=d[\"sample\"]; assert 0<len(s)<=20 and all(x[\"kind\"]!=\"tests\" for x in s)'"
 python3 - "$OSFORGE_DB" <<'EOF'

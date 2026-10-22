@@ -156,8 +156,12 @@ printf 'not json\n{"cwd": 3}\n' > "$T/-bad/1.jsonl"
 O="$WORK/velho"; mkdir -p "$O"
 printf '{"type":"user","cwd":"%s"}\n' "$O" > "$T/-old/1.jsonl"
 python3 -c "import os,time; t=time.time()-40*86400; os.utime('$T/-old/1.jsonl',(t,t))"
+W2="$WORK/we\"ird \$(x)"; mkdir -p "$W2" && (cd "$W2" && $GIT init -q && echo x > a && $GIT add a && $GIT commit -qm i)
+mkdir -p "$T/-weird"; python3 -c "import json,sys; print(json.dumps({'type':'user','cwd':sys.argv[1]}))" "$W2" > "$T/-weird/1.jsonl"
 db monitor --discover > "$J"
-check "unregistered git folder listed by its root, with the command" "[ \"\$(q '[(x[\"nome\"], x[\"git\"], \"upsert-project novo-app\" in x[\"comando\"]) for x in d[\"sem_cadastro\"]]')\" = \"[('novo-app', True, True)]\" ]"
+W2REAL="$(cd "$W2" && pwd -P)"; W2NAME="$(basename "$W2")"
+check "suggested command survives quotes and \$( ) in the folder name (shlex round-trip)" "python3 -c 'import json,shlex,sys; d=json.load(open(sys.argv[1])); c=[x[\"comando\"] for x in d[\"sem_cadastro\"] if x[\"nome\"].startswith(\"we\")][0]; a=shlex.split(c); assert a[3]==sys.argv[2] and a[-1]==\"--root=\"+sys.argv[3], a' \"\$J\" \"\$W2NAME\" \"\$W2REAL\""
+check "unregistered git folder listed by its root, with the command" "[ \"\$(q '[(x[\"nome\"], x[\"git\"], \"upsert-project novo-app\" in x[\"comando\"]) for x in d[\"sem_cadastro\"] if x[\"nome\"]==\"novo-app\"]')\" = \"[('novo-app', True, True)]\" ]"
 check "registered project without root → suggested root and bind command" "[ \"\$(q '[p[\"acesso\"].get(\"raiz_sugerida\") for p in d[\"projetos\"] if p[\"slug\"]==\"beta\"][0]')\" = \"$(cd "$Bdir" && pwd -P)\" ]"
 check "registered project with a root → no suggestion" "[ \"\$(q '[\"raiz_sugerida\" in p[\"acesso\"] for p in d[\"projetos\"] if p[\"slug\"]==\"alpha\"][0]')\" = False ]"
 db monitor > "$J"
@@ -174,9 +178,12 @@ db monitor alpha --compact > "$J"
 check "one line" "[ \"\$(wc -l < \"$J\" | tr -d ' ')\" = 1 ]"
 check "phase, in-progress task, blockers, signals, tests" "[ \"\$(q '(d[\"projeto\"][\"em_andamento\"], d[\"projeto\"][\"bloqueios_abertos\"], d[\"projeto\"][\"sinais\"], d[\"projeto\"][\"testes\"])')\" = \"('t5', 1, {'callers_open': 1}, 'passed')\" ]"
 
-section "8. read-only"
+section "8. read-only (and never in the future)"
 SHA1="$(python3 -c "import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],'rb').read()).hexdigest())" "$OSFORGE_DB")"
 check "database byte-identical after every monitor call" "[ \"$SHA0\" = \"$SHA1\" ]"
+python3 -c "import sqlite3,sys; c=sqlite3.connect(sys.argv[1]); c.execute(\"UPDATE state SET updated_at=datetime('now','+5 hours')\"); c.commit()" "$OSFORGE_DB"
+db monitor > "$J"
+check "last activity clamped to now (datetime('now','utc') shifts by the local offset)" "python3 -c 'import json,sys; from datetime import datetime,timezone; d=json.load(open(sys.argv[1])); now=datetime.now(timezone.utc).strftime(\"%Y-%m-%dT%H:%M:%SZ\"); assert all((p[\"ultima_atividade\"] or \"\") <= now for p in d[\"projetos\"])' \"$J\""
 
 section "9. Canvas: /monitor page and /api/monitor"
 H="$REPO/scripts/canvas/monitor.html"
@@ -205,7 +212,48 @@ else
   check "bad slug (path traversal) → 400" "[ \"\$(code \"$U/api/monitor?project=..%2Fx\")\" = 400 ]"
   check "days out of range → 400" "[ \"\$(code \"$U/api/monitor?days=0\")\" = 400 ] && [ \"\$(code \"$U/api/monitor?days=1e3\")\" = 400 ]"
   check "foreign Origin → 403" "[ \"\$(code -H 'Origin: https://evil.example' \"$U/api/monitor\")\" = 403 ]"
+  check "foreign Host (DNS rebinding) → 403" "[ \"\$(code -H 'Host: evil.example:$PORT' \"$U/api/monitor\")\" = 403 ] && [ \"\$(code -H 'Host: evil.example:$PORT' \"$U/monitor\")\" = 403 ]"
+  # SSE: reading the db (the page's own reload) must not emit "monitor"; a write must.
+  curl -sN --max-time 9 "$U/api/events" > "$WORK/sse.txt" 2>/dev/null &
+  CPID=$!
+  sleep 0.5; curl -s "$U/api/monitor?days=7" >/dev/null; sleep 2.6; curl -s "$U/api/monitor?days=90" >/dev/null; sleep 2.6
+  READS="$(grep -c '"monitor"' "$WORK/sse.txt" || true)"
+  db add-decision alpha "decisão nova para o SSE" >/dev/null 2>&1; sleep 3
+  wait "$CPID" 2>/dev/null
+  check "SSE: reads do not trigger a monitor event (no reload loop)" "[ \"$READS\" = 0 ]"
+  check "SSE: a write triggers one" "[ \"\$(grep -c '\"monitor\"' \"$WORK/sse.txt\")\" -ge 1 ]"
   check "discover=1 → sem_cadastro block" "[ \"\$(code \"$U/api/monitor?discover=1\")\" = 200 ] && grep -q '\"sem_cadastro\"' \"$WORK/resp\""
+  # Optional browser smoke test (Playwright for Python + a Chromium): both views render with no
+  # page error. Skipped where no browser is installed.
+  if python3 -c "import playwright" >/dev/null 2>&1; then
+    SMOKE="$(python3 - "$U" <<'EOF' 2>&1
+import asyncio, sys
+from playwright.async_api import async_playwright
+async def main(u):
+    errs = []
+    async with async_playwright() as p:
+        try:
+            b = await p.chromium.launch()
+        except Exception as e:
+            print("SKIP", e.__class__.__name__); return
+        pg = await b.new_page()
+        pg.on("pageerror", lambda e: errs.append(str(e)))
+        for frag, needle in (("", "Projetos"), ("#p=alpha", "Quadro de tarefas")):
+            await pg.goto(u + "/monitor" + frag); await pg.wait_for_timeout(1200)
+            if needle not in await pg.inner_text("main"):
+                errs.append("missing " + needle)
+        await b.close()
+    print("OK" if not errs else "ERR " + "; ".join(errs))
+asyncio.run(main(sys.argv[1]))
+EOF
+)"
+    case "$SMOKE" in
+      SKIP*) echo "  ⟳  sem Chromium para o Playwright — smoke do navegador pulado" ;;
+      *) check "browser: portfolio and project views render without page errors" "[ \"\$SMOKE\" = OK ] || { echo \"     \$SMOKE\"; false; }" ;;
+    esac
+  else
+    echo "  ⟳  Playwright ausente — smoke do navegador pulado"
+  fi
   kill "$SPID" 2>/dev/null; wait "$SPID" 2>/dev/null
 fi
 

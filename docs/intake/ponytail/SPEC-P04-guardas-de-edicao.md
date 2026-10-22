@@ -60,7 +60,11 @@ O payload do Edit já é contrato testado no OSForge: `tool_input.file_path`, `o
 1. Detecta o comando de teste pelo `package.json` do projeto (`test`, `test:*`) e pelos
    executores comuns (`vitest`, `jest`, `playwright test`). O comando precisa ser **executado**,
    não apenas mencionado: o `echo pytest` que engana a faixa do Ponytail não conta.
-2. Grava `passou` ou `falhou` (código de saída), com contagens quando o executor as imprime.
+2. Grava `passou` ou `falhou` (código de saída), com contagens quando o executor as imprime
+   (stdout e stderr). Contagem com falhas vence o código de saída. Se o teste não é o último
+   comando da linha ou há `|`, `||` ou `;` (o código de saída deixa de ser o do executor) e
+   não há resumo legível, grava `incerto` (`unknown`). Achado da revisão: `npx vitest run | tail`
+   gravava `passou` com testes falhando.
 3. Qualquer Edit ou Write num arquivo de código do projeto, depois disso, marca `desatualizado`.
 4. Nesta fase vai só para o monitor; não injeta nada. Ligar ao `Stop`, para lembrar o modelo
    antes de um "pronto" sem teste fresco, é uma decisão posterior (D-G2).

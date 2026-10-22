@@ -55,7 +55,15 @@ except Exception:                                   # pragma: no cover — lib m
 MODE = (os.environ.get("OSFORGE_QUALITY_GUARD") or "shadow").strip().lower()
 GIT_TIMEOUT = 1.0
 MAX_PLACES = 5
-MAX_OPEN = 10
+MAX_OPEN = 50
+MAX_NAMES = 8            # names checked per edit, per guard (a Write of a whole module stays bounded)
+BUDGET_S = 3.0           # whole run; the hook's own timeout is 5 s
+RECHECK_ALL_S = 600      # every 10 min, re-check every open G-1 (fixes made outside Edit/Write)
+_T0 = time.time()
+
+
+def _time_left():
+    return BUDGET_S - (time.time() - _T0)
 TAG = "[OSForge quality-guard]"
 
 
@@ -91,7 +99,10 @@ def _root_of(path):
 
 
 def _grep(root, args):
-    rc, out = _git(root, ["grep", "-n", "--no-color", "-I"] + args)
+    if _time_left() <= 0.2:
+        return []                                    # out of budget: silence beats a timeout
+    # --untracked: a caller or a duplicate in a file not yet added still counts (.gitignore holds).
+    rc, out = _git(root, ["grep", "-n", "--no-color", "-I", "--untracked"] + args, timeout=min(GIT_TIMEOUT, _time_left()))
     return out.splitlines() if rc == 0 else []
 
 
@@ -144,14 +155,14 @@ class _DB:
         return bool(self._cmd and self._slug)
 
     def add(self, kind, subject, detail):
-        if not self._ready():
+        if _time_left() <= 0.3 or not self._ready():
             return None
         argv = self._cmd + ["--json", "add-signal", self._slug, kind, subject,
                             "--detail=" + json.dumps(detail, ensure_ascii=False)]
         if self.session:
             argv.append("--session=" + str(self.session))
         try:
-            r = subprocess.run(argv, capture_output=True, text=True, timeout=5, check=False)
+            r = subprocess.run(argv, capture_output=True, text=True, timeout=max(0.3, _time_left()), check=False)
             return json.loads(r.stdout.strip().splitlines()[-1]).get("id") if r.returncode == 0 else None
         except (OSError, subprocess.SubprocessError, ValueError, IndexError, AttributeError):
             return None
@@ -162,7 +173,7 @@ class _DB:
             return
         try:
             subprocess.run(self._cmd + ["resolve-signal"] + ids, capture_output=True,
-                           text=True, timeout=5, check=False)
+                           text=True, timeout=max(0.3, _time_left()), check=False)
         except (OSError, subprocess.SubprocessError):
             pass
 
@@ -203,6 +214,12 @@ def _callers(root, name, rel):
     return defs.caller_lines(name, lines, rel)
 
 
+def _defined_elsewhere(root, name, rel):
+    """The exact name is still a top-level definition in another file: it moved, not vanished."""
+    found = defs.def_lines(name, _grep(root, ["-iE", "--", defs.def_pattern(name)]), rel)
+    return any(other == name for _, _, other in found)
+
+
 def guard_edit(tool, ti, db, messages):
     path = ti.get("file_path") or ""
     if not path or not os.path.isabs(path):
@@ -212,12 +229,14 @@ def guard_edit(tool, ti, db, messages):
     if not root or not path.startswith(root + os.sep):
         return
     rel = os.path.relpath(path, root).replace(os.sep, "/")
+    db.cwd = root                                   # signals belong to the edited file's project
     st = _load(root)
     changed = False
+    full_recheck = time.time() - (st.get("rechecked_at") or 0) > RECHECK_ALL_S
 
     # G-3: any edit to code after a test run makes that result stale.
     tests = st.get("tests") or {}
-    if defs.is_code(rel) and tests.get("state") in ("passed", "failed"):
+    if defs.is_code(rel) and tests.get("state") in ("passed", "failed", "unknown"):
         sid = db.add("tests", "state", {"state": "stale", "after": tests.get("state"),
                                          "cmd": tests.get("cmd", ""), "edited": rel})
         st["tests"] = {"state": "stale", "id": sid, "cmd": tests.get("cmd", ""), "at": int(time.time())}
@@ -230,17 +249,23 @@ def guard_edit(tool, ti, db, messages):
         if not isinstance(info, dict):
             continue
         own = info.get("file") or ""
-        # Only an edit to the name's own file or to one of its callers can change the answer.
-        if rel != own and rel not in (info.get("callers") or []):
+        # Only an edit to the name's own file or to one of its callers can change the answer —
+        # except on the periodic full re-check, which catches fixes made by Bash, git or by hand.
+        if not full_recheck and rel != own and rel not in (info.get("callers") or []):
             still_open[name] = info
             continue
         own_text = _read(os.path.join(root, own)) if own else ""
         if own_text and name in defs.exported(own_text, defs.lang(own)):
             to_resolve.append(info.get("id"))          # the name came back
-        elif not _callers(root, name, own):
-            to_resolve.append(info.get("id"))          # no caller left
+        elif _time_left() <= 0.5:
+            still_open[name] = info                    # no budget left: decide next time
+        elif not _callers(root, name, own) or _defined_elsewhere(root, name, own):
+            to_resolve.append(info.get("id"))          # no caller left, or it moved
         else:
             still_open[name] = info
+    if full_recheck:
+        st["rechecked_at"] = int(time.time())
+        changed = True
     if to_resolve or len(still_open) != len(st.get("open") or {}):
         db.resolve(to_resolve)
         st["open"] = still_open
@@ -260,26 +285,27 @@ def guard_edit(tool, ti, db, messages):
     after = defs.exported(new, language)
     current = defs.exported(_read(path), language)
 
-    # G-1: names that left the file but are still called elsewhere.
-    for name in sorted(before - after - current):
-        if name in st.get("open", {}):
+    # G-1: names that left the file but are still called elsewhere (and were not just moved).
+    for name in sorted(before - after - current)[:MAX_NAMES]:
+        if name in st.get("open", {}) or len(st.get("open") or {}) >= MAX_OPEN:
             continue
         found = _callers(root, name, rel)
-        if not found:
+        if not found or _defined_elsewhere(root, name, rel):
             continue
         msg = (f"{TAG} You removed or renamed `{name}`; it is still used at {_places(found)}. "
                f"Update those callers or keep the name. (OSFORGE_QUALITY_GUARD=off disables this.)")
         sid = db.add("callers_open", name, {"file": rel, "callers": [f"{p}:{n}" for p, n in found[:20]],
                                             "count": len(found)})
-        if len(st.get("open") or {}) < MAX_OPEN:
-            st.setdefault("open", {})[name] = {"id": sid, "file": rel,
-                                               "callers": sorted({p for p, _ in found})[:20]}
+        st.setdefault("open", {})[name] = {"id": sid, "file": rel,
+                                           "callers": sorted({p for p, _ in found})[:20]}
         messages.append(msg)
         changed = True
 
-    # G-2: new names that already exist in another file.
+    # G-2: new top-level names that already exist in another file. `after & current`: a name in
+    # the fragment counts only if it is a top-level definition in the file as it now stands
+    # (an Edit's new_string starts at column 0 even when the code is indented).
     if not defs.is_next_convention(rel):
-        for name in sorted(after - before):
+        for name in sorted((after & current) - before)[:MAX_NAMES]:
             if defs.is_generic(name):
                 continue
             found = defs.def_lines(name, _grep(root, ["-iE", "--", defs.def_pattern(name)]), rel)
@@ -298,14 +324,14 @@ def guard_edit(tool, ti, db, messages):
 # ── G-3 ──────────────────────────────────────────────────────────────────────
 
 _RUNNERS = ("vitest", "jest", "pytest", "mocha", "ava")
-_SEP = re.compile(r"\s*(?:&&|\|\||;|\|)\s*")
+_SEP = re.compile(r"\s*(&&|\|\||;|\|)\s*")
 
 
 def _segments(command):
     """Each simple command of a shell line, as a token list, env assignments and `npx`-like
     wrappers stripped. Anything shlex cannot parse is ignored (silence beats a guess)."""
     out = []
-    for seg in _SEP.split(command or ""):
+    for seg in _SEP.split(command or "")[::2]:
         try:
             toks = shlex.split(seg)
         except ValueError:
@@ -329,25 +355,38 @@ def _test_scripts(root):
             (k == "test" or k.startswith("test:") or any(r in v for r in _RUNNERS + ("playwright test",)))}
 
 
+def _is_test_segment(t, scripts):
+    head = os.path.basename(t[0])
+    if head in _RUNNERS:
+        return True
+    if head in ("python", "python3") and t[1:3] == ["-m", "pytest"]:
+        return True
+    if head == "playwright" and t[1:2] == ["test"]:
+        return True
+    if head in ("npm", "pnpm", "yarn", "bun"):
+        rest = [x for x in t[1:] if not x.startswith("-")]
+        if rest[:1] == ["test"] or rest[:1] == ["t"]:
+            return True
+        if rest[:1] in (["run"], ["run-script"]) and len(rest) > 1 and (rest[1] in scripts or rest[1] == "test"):
+            return True
+        if head in ("yarn", "pnpm") and rest[:1] and rest[0] in scripts:
+            return True
+    return False
+
+
+def exit_code_is_the_runners(command, root):
+    """True when the shell's exit status is the test runner's: the run is the last command of
+    the line and nothing pipes it (`| tail`, `|| true`, `; echo done` all hide a failure)."""
+    scripts = _test_scripts(root) if root else set()
+    parts = _SEP.split(command or "")
+    seps = parts[1::2]
+    segs = _segments(command)
+    return bool(segs) and _is_test_segment(segs[-1], scripts) and all(x == "&&" for x in seps)
+
+
 def is_test_run(command, root):
     scripts = _test_scripts(root) if root else set()
-    for t in _segments(command):
-        head = os.path.basename(t[0])
-        if head in _RUNNERS:
-            return True
-        if head in ("python", "python3") and t[1:3] == ["-m", "pytest"]:
-            return True
-        if head == "playwright" and t[1:2] == ["test"]:
-            return True
-        if head in ("npm", "pnpm", "yarn", "bun"):
-            rest = [x for x in t[1:] if not x.startswith("-")]
-            if rest[:1] == ["test"] or rest[:1] == ["t"]:
-                return True
-            if rest[:1] in (["run"], ["run-script"]) and len(rest) > 1 and (rest[1] in scripts or rest[1] == "test"):
-                return True
-            if head in ("yarn", "pnpm") and rest[:1] and rest[0] in scripts:
-                return True
-    return False
+    return any(_is_test_segment(t, scripts) for t in _segments(command))
 
 
 _COUNTS = (
@@ -381,9 +420,14 @@ def guard_bash(event, payload, db):
         if isinstance(resp, dict) and resp.get("interrupted"):
             return
         state = "passed"
-        text = (resp.get("stdout") or "") if isinstance(resp, dict) else str(resp)
+        text = ((resp.get("stdout") or "") + "\n" + (resp.get("stderr") or "")) if isinstance(resp, dict) else str(resp)
+    counts = _counts(text)
+    if counts.get("failed"):
+        state = "failed"                          # the runner said so, whatever the shell returned
+    elif not exit_code_is_the_runners(command, root) and not counts:
+        state = "unknown"                         # `| tail`, `|| true`, `; echo`: exit code is not the runner's
     detail = {"state": state, "cmd": command[:200]}
-    detail.update(_counts(text))
+    detail.update(counts)
     sid = db.add("tests", "state", detail)
     st = _load(root)
     st["tests"] = {"state": state, "id": sid, "cmd": command[:200], "at": int(time.time())}

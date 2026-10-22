@@ -616,8 +616,9 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     if (!D.sessoes.length) { var e = h('tr'), td = h('td', 'empty', 'Nenhuma sessão no horizonte.'); td.colSpan = 6; e.appendChild(td); body.appendChild(e) }
     var maxMin = Math.max.apply(null, D.sessoes.map(function (s) { return s.minutos }).concat([1]))
     D.sessoes.forEach(function (s, idx) {
-      var r = h('tr' , idx >= 10 && !state.allSessions ? 'more-row' : ''), name = h('td', 'name')
-      if (idx >= 10 && !state.allSessions) r.hidden = true, bar = h('div', 'bar'); bar.style.setProperty('--c', colorOf(D.slug)); bar.style.width = Math.max(4, s.minutos / maxMin * 100) + '%'
+      var r = h('tr', idx >= 10 && !state.allSessions ? 'more-row' : ''), name = h('td', 'name'), bar = h('div', 'bar')
+      if (idx >= 10 && !state.allSessions) r.hidden = true
+      bar.style.setProperty('--c', colorOf(D.slug)); bar.style.width = Math.max(4, s.minutos / maxMin * 100) + '%'
       name.appendChild(h('div', 'task num', s.sessao)); name.appendChild(h('div', 'sub', localStamp(s.inicio) + ' · ' + ago(s.fim))); name.appendChild(bar)
       r.appendChild(name); r.appendChild(h('td', 'r num', dur(s.minutos))); r.appendChild(h('td', 'r num', String(s.chamadas))); r.appendChild(h('td', 'r num', tok(s.tokens)))
       r.appendChild(h('td', 'r num', money(s.custo))); r.appendChild(h('td', 'sub', (s.modelo || '').replace(/^claude-/, '')))
@@ -636,7 +637,7 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
 
   function quality(Q) {
     var c = h('section', 'card pad'), ch = h('div', 'card-head'); ch.appendChild(h('h3', '', 'Qualidade')); c.appendChild(ch)
-    var tests = Q.testes, label = { passed: ['testes passaram', 'ok'], failed: ['testes falharam', 'bad'], stale: ['testes desatualizados', 'warn'] }
+    var tests = Q.testes, label = { passed: ['testes passaram', 'ok'], failed: ['testes falharam', 'bad'], stale: ['testes desatualizados', 'warn'], unknown: ['resultado dos testes incerto', 'warn'] }
     var tl = tests ? (label[tests.state] || [tests.state, '']) : ['testes sem registro', '']
     var row = h('div', 'item'), top = h('div', 'task'); top.appendChild(pill(tl[0], tl[1]))
     if (tests) top.appendChild(h('span', 'sub', (tests.passed != null ? tests.passed + ' ok' + (tests.failed ? ', ' + tests.failed + ' falha(s)' : '') + ' · ' : '') + ago(tests.em)))

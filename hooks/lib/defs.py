@@ -127,6 +127,8 @@ def caller_lines(name, grep_lines, own_path):
             continue
         if _COMMENT.match(text):
             continue
+        if _defines(name, text):        # `function name(` / `def name(` is a definition, not a call
+            continue
         # Strip string literals so `"formatPrice("` in a message does not count.
         stripped = re.sub(r"(['\"`])(?:\\.|(?!\1).)*\1", "''", text)
         if rx.search(stripped):
@@ -144,6 +146,13 @@ def caller_lines(name, grep_lines, own_path):
     return sorted((p, v[0]) for p, v in best.items())
 
 
+_DEF_KW = r"(?:export\s+(?:default\s+)?)?(?:declare\s+)?(?:async\s+)?(?:function\*?|const|let|var|class|abstract\s+class|interface|type|enum|def)\s+"
+
+
+def _defines(name, text):
+    return bool(re.search(r"(?:^|[\s;{(])" + _DEF_KW + re.escape(name) + r"(?![\w$])", text))
+
+
 def def_pattern(name):
     """ERE for `git grep -iE`: a definition of `name` or its snake/camel spelling."""
     n = normalize(name)
@@ -155,7 +164,8 @@ def def_pattern(name):
 def def_lines(name, grep_lines, own_path):
     """Definitions of `name` (normalised) in other code files: [(path, line_no, found_name)]."""
     want = normalize(name)
-    rx = re.compile(r"(?:function\*?|const|let|var|class|interface|type|enum|def)\s+([A-Za-z_$][\w$]*)")
+    # Top level only (column 0): a method or a local variable is not a reusable helper.
+    rx = re.compile(r"^" + _DEF_KW + r"([A-Za-z_$][\w$]*)")
     out = []
     for raw in grep_lines:
         parts = raw.split(":", 2)
@@ -166,7 +176,7 @@ def def_lines(name, grep_lines, own_path):
             continue
         if _COMMENT.match(text):
             continue
-        m = rx.search(text)
+        m = rx.match(text)
         if m and normalize(m.group(1)) == want:
             try:
                 out.append((path, int(ln), m.group(1)))

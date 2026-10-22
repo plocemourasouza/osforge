@@ -28,7 +28,7 @@
  * Zero npm dependencies. Bun + node:fs only.
  */
 
-import { watch, type FSWatcher } from "node:fs";
+import { watch, statSync, type FSWatcher } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { homedir } from "node:os";
@@ -399,6 +399,20 @@ interface SseEvent {
 
 const MONITOR_DEBOUNCE_MS = 2_000;
 
+/** Size + mtime of the db and of its WAL when the WAL holds frames: what a WRITE changes and a
+ * read-only open/close does not. */
+function dbSignature(dbPath: string): string {
+  const part = (p: string, skipEmpty: boolean): string => {
+    try {
+      const st = statSync(p);
+      return skipEmpty && st.size === 0 ? "-" : `${st.size}:${st.mtimeMs}`;
+    } catch {
+      return "-";
+    }
+  };
+  return `${part(dbPath, false)}|${part(dbPath + "-wal", true)}`;
+}
+
 function handleEvents(request: Request): Response {
   const encoder = new TextEncoder();
   let watchers: FSWatcher[] = [];
@@ -445,20 +459,25 @@ function handleEvents(request: Request): Response {
       watchers.push(watch(FEEDBACK_DIR, (_evt, filename) => schedule("feedback", filename)));
 
       // osforge.db changed (a hook or session-save wrote): tell the monitor page, at most every
-      // 2 s, and drop the cached JSON. The db runs in WAL mode, so its directory is watched.
+      // 2 s, and drop the cached JSON. The db runs in WAL mode, so its directory is watched —
+      // but a READER also creates and deletes -wal/-shm, and the page's own reload spawns a
+      // reader: only a change in the size/mtime of the db or of a non-empty -wal counts.
       try {
         const dbPath = osforgeDbPath();
         const dbDir = resolve(dbPath, "..");
         const dbName = dbPath.slice(dbDir.length + 1);
+        let last = dbSignature(dbPath);
         watchers.push(
           watch(dbDir, (_evt, filename) => {
             if (!filename || !String(filename).startsWith(dbName)) return;
-            const existing = debounceTimers.get("monitor:db");
-            if (existing) return;
+            if (debounceTimers.get("monitor:db")) return;
             debounceTimers.set(
               "monitor:db",
               setTimeout(() => {
                 debounceTimers.delete("monitor:db");
+                const now = dbSignature(dbPath);
+                if (now === last) return;
+                last = now;
                 monitorCache.clear();
                 emit({ kind: "monitor", id: "db" });
               }, MONITOR_DEBOUNCE_MS),
@@ -517,10 +536,19 @@ function handleEvents(request: Request): Response {
 
 // ── Router ────────────────────────────────────────────────────────────────────
 
+/** DNS rebinding: a page on evil.example re-pointed at 127.0.0.1 sends Host: evil.example and
+ * no Origin on a same-origin GET. Only our own loopback names are served. */
+function isAllowedHost(request: Request): boolean {
+  const host = (request.headers.get("host") || "").toLowerCase();
+  return [`127.0.0.1:${PORT}`, `localhost:${PORT}`, `[::1]:${PORT}`].includes(host) ||
+    (PORT === 80 && ["127.0.0.1", "localhost", "[::1]"].includes(host));
+}
+
 async function route(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const { pathname } = url;
   const method = request.method;
+  if (!isAllowedHost(request)) return jsonError("forbidden host", 403);
 
   if (pathname === "/" && method === "GET") return handleRoot();
   if (pathname === "/api/health" && method === "GET") return handleHealth();

@@ -2271,7 +2271,11 @@ def _project_summary(conn, p, per_day, keys_period, keys_series):
         "SELECT MAX(created_at) FROM decisions WHERE project_id=?",
         "SELECT MAX(updated_at) FROM state WHERE project_id=?")]
     last = [x for x in last if x]
-    last_iso = max((_iso_utc(_parse_iso(x)) for x in last if _parse_iso(x)), default=None)
+    # Several older columns are written with datetime('now','utc'), which SQLite shifts by the
+    # local offset (UTC-3 → now + 3 h). Clamp: activity is never in the future.
+    now_utc = datetime.now(timezone.utc)
+    stamps = [min(d, now_utc) for d in (_parse_iso(x) for x in last) if d]
+    last_iso = _iso_utc(max(stamps)) if stamps else None
     status = p["status"] if p["status"] in PROJECT_STATUSES else "outro"
     root = p["root_path"] if "root_path" in p.keys() else None
     return {
@@ -2350,7 +2354,8 @@ def _discover(conn, max_age_days=30):
             "pasta": root, "nome": os.path.basename(root), "slug_sugerido": slug, "git": bool(top),
             "ultima_sessao": _iso_utc(datetime.fromtimestamp(mtime, timezone.utc)),
             "sessoes_30d": nfiles,
-            "comando": f'osforge-db upsert-project {slug} "{os.path.basename(root)}" standard backlog --root={shlex.quote(root)}',
+            "comando": (f"osforge-db upsert-project {shlex.quote(slug)} {shlex.quote(os.path.basename(root))} "
+                        f"standard backlog --root={shlex.quote(root)}"),
         })
     return unregistered, suggested
 

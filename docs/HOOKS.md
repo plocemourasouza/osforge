@@ -42,7 +42,13 @@ Rules that every hook follows, and that `tests/hooks/run-contracts.sh` enforces:
 
 `hooks/quality-guard.py` runs on `PostToolUse` (`Edit|Write|MultiEdit|Bash`) and on
 `PostToolUseFailure` (`Bash`) — the event Claude Code fires when a tool call fails, which for
-Bash means a non-zero exit. That is how G-3 knows a test run failed without reading the output.
+Bash means a non-zero exit. The exit code is trusted only when the test runner is the last
+command of the line and nothing pipes or masks it (`| tail`, `|| true`, `; echo`); otherwise
+G-3 reads the runner's summary from stdout and stderr, and records `unknown` when there is
+none. A summary with failures always wins over a zero exit.
+- **Budget:** one 3 s deadline for the whole run (the hook's timeout is 5 s), at most 8 names
+  per guard per edit; out of budget = silence, never a timeout. Every 10 min the open G-1
+  signals are all re-checked, so fixes made through Bash, git or another session close them.
 
 - **Channel:** in `on` mode, G-1 (callers left open) and G-2 (likely duplicate) reach the model as
   `additionalContext`, each message tagged `[OSForge quality-guard]` and naming the kill-switch.
