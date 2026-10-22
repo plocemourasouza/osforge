@@ -238,7 +238,7 @@ async def main(u):
             print("SKIP", e.__class__.__name__); return
         pg = await b.new_page()
         pg.on("pageerror", lambda e: errs.append(str(e)))
-        for frag, needle in (("", "Projetos"), ("#p=alpha", "Quadro de tarefas")):
+        for frag, needle in (("", "Projetos"), ("", "Ativo agora"), ("#p=alpha", "Quadro de tarefas"), ("#p=alpha", "Conversa com os agentes")):
             await pg.goto(u + "/monitor" + frag); await pg.wait_for_timeout(1200)
             if needle not in await pg.inner_text("main"):
                 errs.append("missing " + needle)

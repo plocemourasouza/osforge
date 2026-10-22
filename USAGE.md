@@ -1008,7 +1008,25 @@ osforge-db monitor --json                        # o mesmo dado do painel (portf
 osforge-db monitor <slug> --json                 # detalhe; --compact = uma linha para a faixa
 ```
 
-O painel só lê. Atualiza quando o `osforge.db` muda (SSE do Canvas) e a cada 60 s. Depois de um deploy
+**Central de comando (B-040–B-042, SPEC-P06).** A barra lateral agrupa por atividade: **Ativo agora**
+(sessão do Claude Code, janela do Cursor/VS Code ou servidor de dev rodando na pasta, lido dos processos
+a cada 10 s), **Em andamento** (mexido nas últimas 24 h), **Aguardando** (24 h a 30 dias), **Backlog** e
+**Histórico** (mais de 30 dias, ou segurado, concluído ou arquivado — a biblioteca de projetos). No topo,
+"Ativo agora" e um compositor; em cada projeto, a **Conversa com os agentes**:
+
+| Você escreve | Acontece |
+|---|---|
+| texto | vira orientação: o hook `inbox-deliver` entrega ao agente daquele projeto na próxima ação (ou na próxima sessão) |
+| `/claude [texto]` | abre o Claude Code no Terminal, na pasta do projeto, com o texto como primeira mensagem |
+| `/bg <texto>` | roda `claude -p` em segundo plano; resultado e custo aparecem na conversa (marque "permitir edições" para deixar editar arquivos) |
+| `/abrir <ide>`, `/cursor`, `/vscode` | abre a pasta na IDE instalada |
+| `/segurar`, `/arquivar`, `/concluir`, `/backlog`, `/reativar` | muda o status do projeto |
+| `@projeto …` (no compositor geral) | escolhe o projeto pela própria mensagem |
+
+O ditado do macOS funciona no campo de texto. A pasta de um projeto vem sempre do banco ou da descoberta
+do próprio servidor; pastas sem cadastro podem ser cadastradas pelo painel.
+
+O painel atualiza quando o `osforge.db` muda (SSE do Canvas) e a cada 60 s. Depois de um deploy
 que traga o monitor, reinicie o Canvas uma vez (`pkill -f canvas/server.ts`; a próxima sessão o sobe de
 novo) — o processo antigo não conhece a rota `/monitor`.
 

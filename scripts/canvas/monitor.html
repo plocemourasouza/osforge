@@ -122,6 +122,19 @@ td.name{white-space:normal;min-width:160px;width:100%;max-width:0}.task{overflow
 .banner{border:1px solid var(--line2);background:var(--warnbg);color:var(--warn);border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:13px}
 .banner.bad{background:var(--badbg);color:var(--bad)}
 footer{color:var(--faint);font-size:12px;margin-top:22px}
+.toast{position:fixed;right:20px;bottom:20px;max-width:420px;background:var(--tip);color:var(--tipText);border:1px solid var(--line2);border-radius:12px;padding:10px 14px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.35);opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none;z-index:10}.toast.show{opacity:1;transform:none}.toast.bad{border-color:var(--bad)}
+.composer{margin-top:12px;display:grid;gap:8px}.composer-row{display:flex;gap:8px;align-items:stretch}.composer-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.input{flex:1;min-width:0;resize:vertical;background:var(--track);border:1px solid var(--line2);border-radius:12px;color:var(--text);font:inherit;font-size:14px;padding:10px 12px;outline:0}.input:focus{border-color:var(--info)}
+.select{background:var(--track);border:1px solid var(--line2);border-radius:10px;color:var(--text);font:inherit;font-size:13px;padding:7px 10px;max-width:220px}
+.btn.primary{background:var(--ok);color:#06140a;border-color:transparent;font-weight:600}.check{display:inline-flex;align-items:center;gap:6px}
+.convo{max-height:360px;overflow-y:auto;display:grid;gap:8px;padding-right:4px}.msg{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--track)}.msg.me{border-left:3px solid var(--info)}.msg.run{border-left:3px solid var(--ok)}
+.msg .task{flex-wrap:wrap}.msg-text{margin-top:6px;white-space:pre-wrap;word-break:break-word}.msg-result{margin-top:6px;font:12px ui-monospace,Menlo,monospace;color:var(--muted);white-space:pre-wrap;max-height:160px;overflow:auto}
+.actions-row{display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center}
+.live-card{margin-bottom:14px}.live-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}.live-item{text-align:left;border:1px solid var(--line);background:var(--track);color:var(--text);border-radius:14px;padding:10px 12px;cursor:pointer;font:inherit;display:grid;gap:4px}.live-item:hover{border-color:var(--faint)}.live-item.muted{cursor:default;opacity:.8}
+.sep{height:1px;background:var(--line);margin:14px 0 2px}
+.side-label.toggle{border:0;background:none;cursor:pointer;text-align:left;width:100%}.side-label.toggle:hover{color:var(--text)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 var(--c,var(--ok))}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}.dot.pulse{animation:pulse 1.6s infinite}.dot.hollow.pulse{border-color:var(--ok);--c:var(--ok)}
+@media (prefers-reduced-motion:reduce){.dot.pulse{animation:none}}
 @media (max-width:1360px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:1100px){.grid2,.grid2.even{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:860px){.app{grid-template-columns:minmax(0,1fr)}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);max-height:46vh}
@@ -148,13 +161,13 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     <footer>Dados do <span class="num">osforge-db monitor</span> (osforge.monitor.v1), só leitura, nesta máquina. Custo = equivalente de API pelo preço datado em <span class="num">pricing.json</span>, não é fatura. Tempo de agente = intervalos entre chamadas da mesma sessão, cada um limitado a 5 min. Visual adaptado do quadro do Ponytail (MIT).</footer>
   </main>
 </div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (function () {
   'use strict'
   var NS = 'http://www.w3.org/2000/svg', DAY = 86400000
   var PALETTE = ['#5fe08a', '#7c8cff', '#2fd4c0', '#ff8a3d', '#ff6fb5', '#ffd166', '#4cc3ff', '#b26bff']
   var MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
-  var GROUPS = [['active', 'Em andamento'], ['backlog', 'Backlog'], ['paused', 'Pausados'], ['done', 'Concluídos'], ['archived', 'Arquivados'], ['outro', 'Outros']]
   var STATUS = { active: ['Em andamento', 'ok'], backlog: ['Backlog', 'info'], paused: ['Pausado', 'warn'], done: ['Concluído', ''], archived: ['Arquivado', ''], outro: ['Outro', ''] }
   var METRICS = {
     sessoes: { label: 'Sessões', fmt: String },
@@ -164,7 +177,7 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     chamadas: { label: 'Chamadas', fmt: function (n) { return Math.round(n).toLocaleString('pt-BR') } }
   }
   var KPI = [['sessoes', '#4cc3ff', '#7c8cff'], ['minutos', '#2fd4c0', '#5fe08a'], ['custo', '#ffd166', '#ff8a3d'], ['tokens', '#ff6fb5', '#b26bff']]
-  var state = { project: '', days: 30, metric: 'minutos', modelMetric: 'custo', q: '', hidden: {}, portfolio: null, detail: null, error: '', seq: 0 }
+  var state = { project: '', days: 30, metric: 'minutos', modelMetric: 'custo', q: '', hidden: {}, portfolio: null, detail: null, error: '', seq: 0, live: null, tools: { ides: [], claude: false }, drafts: {}, focus: '', composerProject: '', acceptEdits: false, showHistory: false }
 
   // ── helpers ──────────────────────────────────────────────────────────────
   function byId(id) { return document.getElementById(id) }
@@ -375,24 +388,212 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     return Math.round(j.five_hour.pct) + '%' + (age != null && age > 30 ? ' (há ' + age + ' min)' : '')
   }
 
+  // ── command centre (P-06): groups, live state, conversation, actions ─────
+  var LIVE_GROUPS = [['ativo', 'Ativo agora'], ['andamento', 'Em andamento'], ['aguardando', 'Aguardando'], ['backlog', 'Backlog'], ['historico', 'Histórico']]
+  var GROUP_PILL = { ativo: 'ok', andamento: 'info', aguardando: 'warn', backlog: '', historico: '' }
+  var GROUP_ONE = { ativo: 'ativo agora', andamento: 'em andamento', aguardando: 'aguardando', backlog: 'no backlog', historico: 'no histórico' }
+  function liveOf(slug) { return (state.live && state.live.projetos && state.live.projetos[slug]) || null }
+  function isLive(l) { return !!l && (l.claude > 0 || l.ides.length > 0 || l.servidores.length > 0) }
+  function groupOf(p) { return isLive(liveOf(p.slug)) ? 'ativo' : p.grupo_base }
+  function liveText(l) {
+    if (!isLive(l)) return ''
+    var parts = []
+    if (l.claude) parts.push(plural(l.claude, 'sessão do Claude Code', 'sessões do Claude Code') + (l.trabalhando ? ' (trabalhando)' : ''))
+    if (l.ides.length) parts.push(l.ides.join(', '))
+    if (l.servidores.length) parts.push(plural(l.servidores.length, 'servidor de dev', 'servidores de dev'))
+    return parts.join(' · ')
+  }
+  function toast(text, bad) {
+    var t = byId('toast'); t.textContent = text; t.className = 'toast show' + (bad ? ' bad' : '')
+    clearTimeout(toast.timer); toast.timer = setTimeout(function () { t.className = 'toast' }, 4000)
+  }
+  function postJSON(url, body) {
+    return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {} }).then(function (b) { if (!r.ok) throw new Error(b.error || ('HTTP ' + r.status)); return b }) })
+  }
+  var ERR = { 'project has no registered folder: bind it first': 'o projeto não tem pasta cadastrada — cadastre a raiz primeiro', 'IDE not installed': 'essa IDE não está instalada', 'claude not found': 'não encontrei o claude neste Mac', 'a background run needs an instruction': 'escreva a instrução para rodar em segundo plano' }
+  function act(promise, okText) {
+    return promise.then(function () { toast(okText); load() }, function (e) { toast('Não deu: ' + (ERR[e.message] || e.message), true) })
+  }
+  var STATUS_ACTIONS = { segurar: ['paused', 'Projeto segurado: foi para o histórico'], arquivar: ['archived', 'Projeto arquivado: está no histórico'], concluir: ['done', 'Projeto concluído: está no histórico'], backlog: ['backlog', 'Projeto no backlog'], reativar: ['active', 'Projeto reativado'] }
+  function ideByWord(word) {
+    var w = (word || '').toLowerCase().replace(/\s+/g, '')
+    return (state.tools.ides || []).filter(function (i) { return i.id === w || i.name.toLowerCase().replace(/\s+/g, '') === w || (w && i.id.indexOf(w) === 0) })[0]
+  }
+  // Composer: plain text = guidance for the agent; /commands act. "@slug" picks the project.
+  function runComposer(slug, raw, opts) {
+    var text = raw.trim(), m
+    if (!slug && (m = /^@([a-z0-9-]+)\s*/.exec(text))) { slug = m[1]; text = text.slice(m[0].length) }
+    if (!slug) { toast('Escolha o projeto (ou comece com @projeto)', true); return null }
+    if (!text) { toast('Escreva uma orientação ou um comando', true); return null }
+    if ((m = /^\/(claude|terminal)\b\s*([\s\S]*)$/.exec(text))) return act(postJSON('/api/launch', { project: slug, mode: 'terminal', text: m[2].trim() }), 'Claude Code aberto no Terminal em ' + slug)
+    if ((m = /^\/(bg|segundo-plano|fundo)\b\s*([\s\S]*)$/.exec(text))) return act(postJSON('/api/launch', { project: slug, mode: 'background', text: m[2].trim(), acceptEdits: !!(opts && opts.acceptEdits) }), 'Claude rodando em segundo plano em ' + slug)
+    if ((m = /^\/(abrir|ide)\s+(.+)$/.exec(text)) || (m = /^\/(cursor|vscode|code|windsurf|zed)\b()/.exec(text))) {
+      var ide = ideByWord(m[2] || m[1].replace(/^code$/, 'vscode'))
+      if (!ide) { toast('IDE não encontrada. Instaladas: ' + (state.tools.ides || []).map(function (i) { return i.name }).join(', '), true); return null }
+      return act(postJSON('/api/launch', { project: slug, mode: 'ide', ide: ide.id }), ide.name + ' aberto em ' + slug)
+    }
+    if ((m = /^\/(segurar|arquivar|concluir|backlog|reativar)\b/.exec(text))) { var s = STATUS_ACTIONS[m[1]]; return act(postJSON('/api/project/status', { project: slug, status: s[0] }), s[1]) }
+    if (text[0] === '/') { toast('Comando desconhecido. Use /claude, /bg, /abrir <ide>, /segurar, /arquivar, /concluir, /backlog, /reativar', true); return null }
+    var live = liveOf(slug)
+    return act(postJSON('/api/inbox', { project: slug, text: text }), live && live.claude ? 'Orientação na fila: o agente recebe na próxima ação' : 'Orientação na fila: sem sessão ativa, entra na próxima sessão de ' + slug)
+  }
+  function composer(slug) {
+    var key = slug || '__global__', wrap = h('div', 'composer')
+    var row = h('div', 'composer-row'), sel = null
+    if (!slug) {
+      sel = h('select', 'select'); sel.setAttribute('aria-label', 'Projeto')
+      var o0 = h('option', '', 'Projeto…'); o0.value = ''; sel.appendChild(o0)
+      ;((state.portfolio && state.portfolio.projetos) || []).slice().sort(function (a, b) { return (groupOf(a) === 'ativo' ? 0 : 1) - (groupOf(b) === 'ativo' ? 0 : 1) || a.slug.localeCompare(b.slug) }).forEach(function (p) {
+        var o = h('option', '', p.slug + (groupOf(p) === 'ativo' ? '  ●' : '')); o.value = p.slug; sel.appendChild(o)
+      })
+      sel.value = state.composerProject || ''
+      sel.addEventListener('change', function () { state.composerProject = sel.value })
+      row.appendChild(sel)
+    }
+    var ta = h('textarea', 'input'); ta.rows = 2; ta.id = 'composer-' + key
+    ta.placeholder = slug ? 'Orientação para o agente deste projeto, ou /claude, /bg, /abrir cursor, /segurar…' : '@projeto orientação, ou escolha o projeto ao lado. /claude, /bg, /abrir <ide>, /segurar…'
+    ta.setAttribute('aria-label', 'Mensagem ou comando')
+    ta.value = state.drafts[key] || ''
+    ta.addEventListener('input', function () { state.drafts[key] = ta.value })
+    row.appendChild(ta); wrap.appendChild(row)
+    var bar = h('div', 'composer-bar')
+    var edits = h('label', 'sub check'), cb = h('input'); cb.type = 'checkbox'; cb.checked = !!state.acceptEdits
+    cb.addEventListener('change', function () { state.acceptEdits = cb.checked })
+    edits.appendChild(cb); edits.appendChild(document.createTextNode(' permitir edições em 2º plano'))
+    var send = function (prefix) {
+      var target = slug || (sel && sel.value) || ''
+      var p = runComposer(target, (prefix || '') + ta.value, { acceptEdits: cb.checked })
+      if (p) { ta.value = ''; state.drafts[key] = '' }
+    }
+    ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send('') } })
+    var b1 = h('button', 'btn primary', 'Enviar ao agente'); b1.type = 'button'; b1.title = 'Entrega na próxima ação da sessão ativa (⌘↵)'
+    b1.addEventListener('click', function () { send('') })
+    var b2 = h('button', 'btn', 'Claude no Terminal'); b2.type = 'button'; b2.addEventListener('click', function () { send('/claude ') })
+    var b3 = h('button', 'btn', 'Claude em 2º plano'); b3.type = 'button'; b3.addEventListener('click', function () { send('/bg ') })
+    bar.appendChild(b1)
+    if (state.tools.claude) { bar.appendChild(b2); bar.appendChild(b3) }
+    if ((state.tools.ides || []).length) {
+      var ideSel = h('select', 'select'); ideSel.setAttribute('aria-label', 'Abrir em IDE')
+      var oi = h('option', '', 'Abrir em…'); oi.value = ''; ideSel.appendChild(oi)
+      state.tools.ides.forEach(function (i) { var o = h('option', '', i.name); o.value = i.id; ideSel.appendChild(o) })
+      ideSel.addEventListener('change', function () {
+        var target = slug || (sel && sel.value) || '', id = ideSel.value; ideSel.value = ''
+        if (!target) { toast('Escolha o projeto', true); return }
+        if (id) act(postJSON('/api/launch', { project: target, mode: 'ide', ide: id }), 'Abrindo em ' + id)
+      })
+      bar.appendChild(ideSel)
+    }
+    if (state.tools.claude) bar.appendChild(edits)
+    wrap.appendChild(bar)
+    wrap.appendChild(h('div', 'sub', 'Texto = orientação, entregue ao agente na próxima ação (ou na próxima sessão). Dite com o ditado do macOS. ⌘↵ envia.'))
+    if (state.focus === ta.id) setTimeout(function () { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length) }, 0)
+    ta.addEventListener('focus', function () { state.focus = ta.id })
+    ta.addEventListener('blur', function () { if (state.focus === ta.id) state.focus = '' })
+    return wrap
+  }
+  function conversation(D) {
+    var c = h('section', 'card pad'), head = h('div', 'card-head'); head.appendChild(h('h3', '', 'Conversa com os agentes'))
+    var l = liveOf(D.slug); head.appendChild(isLive(l) ? pill('agora: ' + liveText(l), 'ok') : pill('nenhuma sessão ativa', '')); c.appendChild(head)
+    var list = h('div', 'convo'), items = D.conversa || []
+    if (!items.length) list.appendChild(h('div', 'sub', 'Nada ainda. Escreva abaixo: o agente que estiver trabalhando aqui recebe na próxima ação.'))
+    items.forEach(function (m) {
+      var it = h('div', 'msg ' + (m.tipo === 'orientacao' ? 'me' : 'run')), top = h('div', 'task')
+      if (m.tipo === 'orientacao') {
+        var st = { pendente: ['pendente', 'warn'], entregue: ['entregue' + (m.sessao ? ' à sessão ' + m.sessao : '') + (m.entregue_em ? ' · ' + localStamp(m.entregue_em) : ''), 'ok'], cancelada: ['cancelada', ''] }[m.status] || [m.status, '']
+        top.appendChild(pill(st[0], st[1])); top.appendChild(h('span', 'sub', localStamp(m.ts)))
+        if (m.status === 'pendente') {
+          var cx = h('button', 'btn small', 'Cancelar'); cx.type = 'button'
+          cx.addEventListener('click', function () { act(postJSON('/api/inbox/' + m.id + '/cancel', {}), 'Orientação cancelada') })
+          top.appendChild(cx)
+        }
+        it.appendChild(top); it.appendChild(h('div', 'msg-text', m.texto))
+      } else {
+        var label = { terminal: 'Claude no Terminal', background: 'Claude em 2º plano', ide: 'Aberto em ' + m.ferramenta }[m.tipo_execucao] || m.ferramenta
+        var kind = { concluida: 'ok', falhou: 'bad', rodando: 'info', interrompida: 'warn', iniciada: 'info' }[m.status] || ''
+        top.appendChild(pill(label + ' · ' + m.status, kind)); top.appendChild(h('span', 'sub', localStamp(m.ts) + (m.custo != null ? ' · ' + money(m.custo) : '')))
+        if (m.status === 'rodando' && m.tipo_execucao === 'background') {
+          var stop = h('button', 'btn small', 'Parar'); stop.type = 'button'
+          stop.addEventListener('click', function () { act(postJSON('/api/runs/' + m.id + '/stop', {}), 'Execução interrompida') })
+          top.appendChild(stop)
+        }
+        it.appendChild(top)
+        if (m.texto) it.appendChild(h('div', 'msg-text', m.texto))
+        if (m.resultado) it.appendChild(h('div', 'msg-result', m.resultado))
+      }
+      list.appendChild(it)
+    })
+    c.appendChild(list)
+    c.appendChild(composer(D.slug))
+    setTimeout(function () { list.scrollTop = list.scrollHeight }, 0)
+    return c
+  }
+  function projectActions(D, pp) {
+    var box = h('div', 'actions-row')
+    var g = pp ? groupOf(pp) : D.grupo_base
+    var opts = D.status === 'active' || D.status === 'outro' ? ['segurar', 'concluir', 'arquivar', 'backlog'] : ['reativar'].concat(D.status === 'archived' ? [] : ['arquivar'])
+    opts.forEach(function (k) {
+      var b = h('button', 'btn small', k[0].toUpperCase() + k.slice(1)); b.type = 'button'
+      b.addEventListener('click', function () { var s = STATUS_ACTIONS[k]; act(postJSON('/api/project/status', { project: D.slug, status: s[0] }), s[1]) })
+      box.appendChild(b)
+    })
+    box.insertBefore(pill(({ ativo: 'Ativo agora', andamento: 'Em andamento', aguardando: 'Aguardando', backlog: 'Backlog', historico: 'Histórico' })[g] + (D.grupo_regra && g !== 'ativo' ? ' · ' + D.grupo_regra : ''), GROUP_PILL[g]), box.firstChild)
+    return box
+  }
+  function liveCard() {
+    var P = state.portfolio, list = (P.projetos || []).filter(function (p) { return groupOf(p) === 'ativo' })
+    var loose = ((state.live && state.live.sem_cadastro) || []).filter(isLive)
+    var c = h('section', 'card pad live-card'), head = h('div', 'card-head'); head.appendChild(h('h3', '', 'Ativo agora'))
+    head.appendChild(h('span', 'sub', state.live ? 'atualiza a cada 10 s' : 'lendo processos…')); c.appendChild(head)
+    if (!list.length && !loose.length) c.appendChild(h('div', 'sub', 'Nenhum projeto com Claude Code, IDE ou servidor rodando agora.'))
+    var grid = h('div', 'live-grid')
+    list.forEach(function (p) {
+      var l = liveOf(p.slug), it = h('button', 'live-item'); it.type = 'button'
+      var t = h('div', 'task'), d = h('span', 'dot pulse'); d.style.setProperty('--c', colorOf(p.slug)); t.appendChild(d); t.appendChild(h('b', '', p.slug))
+      if (l.trabalhando) t.appendChild(pill('trabalhando', 'ok'))
+      it.appendChild(t); it.appendChild(h('div', 'sub', liveText(l)))
+      if (p.inbox_pendentes) it.appendChild(h('div', 'sub', plural(p.inbox_pendentes, 'orientação pendente', 'orientações pendentes')))
+      it.addEventListener('click', function () { select(p.slug) })
+      grid.appendChild(it)
+    })
+    loose.forEach(function (u) {
+      var it = h('div', 'live-item muted'), t = h('div', 'task'), d = h('span', 'dot hollow'); t.appendChild(d); t.appendChild(h('b', '', u.nome)); t.appendChild(pill('sem cadastro', ''))
+      it.appendChild(t); it.appendChild(h('div', 'sub', liveText(u)))
+      grid.appendChild(it)
+    })
+    c.appendChild(grid)
+    c.appendChild(h('div', 'sep'))
+    c.appendChild(composer(''))
+    return c
+  }
+
   // ── sidebar ──────────────────────────────────────────────────────────────
   function sidebar() {
     var nav = byId('projects'); nav.textContent = ''
     var P = state.portfolio, list = (P && P.projetos) || []
     var all = navItem('', 'Todos os projetos', String(list.length), null)
     nav.appendChild(all)
-    GROUPS.forEach(function (g) {
-      var items = list.filter(function (p) { return p.status === g[0] })
+    LIVE_GROUPS.forEach(function (g) {
+      var items = list.filter(function (p) { return groupOf(p) === g[0] })
       if (!items.length) return
-      nav.appendChild(h('div', 'side-label', g[1]))
+      if (g[0] === 'historico') {
+        var tg = h('button', 'side-label toggle', g[1] + ' (' + items.length + ') ' + (state.showHistory || state.project && items.some(function (p) { return p.slug === state.project }) ? '▾' : '▸')); tg.type = 'button'
+        tg.title = 'Biblioteca: parados há mais de 30 dias, segurados, concluídos ou arquivados'
+        tg.addEventListener('click', function () { state.showHistory = !state.showHistory; sidebar() })
+        nav.appendChild(tg)
+        if (!(state.showHistory || state.project && items.some(function (p) { return p.slug === state.project }))) return
+      } else nav.appendChild(h('div', 'side-label', g[1]))
       items.forEach(function (p) { nav.appendChild(navItem(p.slug, p.slug, String(p.tarefas_abertas), p)) })
     })
-    var un = (P && P.sem_cadastro) || []
+    var un = ((P && P.sem_cadastro) || []).slice(), seen = {}
+    un.forEach(function (u) { seen[u.nome] = true })
+    ;((state.live && state.live.sem_cadastro) || []).forEach(function (u) { if (!seen[u.nome]) un.push({ nome: u.nome, pasta: u.pasta, ultima_sessao: null }) })
     if (un.length) {
       nav.appendChild(h('div', 'side-label', 'Sem cadastro'))
       un.forEach(function (u) {
-        var b = h('button', 'nav-item'), d = h('span', 'dot hollow'); b.type = 'button'; b.title = u.pasta
-        b.appendChild(d); b.appendChild(h('span', 'name', u.nome)); b.appendChild(h('span', 'n', ago(u.ultima_sessao)))
+        var lv = ((state.live && state.live.sem_cadastro) || []).filter(function (x) { return x.nome === u.nome })[0]
+        var b = h('button', 'nav-item'), d = h('span', 'dot hollow' + (isLive(lv) ? ' pulse' : '')); b.type = 'button'; b.title = u.pasta + (isLive(lv) ? ' — agora: ' + liveText(lv) : '')
+        b.appendChild(d); b.appendChild(h('span', 'name', u.nome)); b.appendChild(h('span', 'n', isLive(lv) ? 'ativo' : ago(u.ultima_sessao)))
         b.addEventListener('click', function () { select(''); setTimeout(function () { var el = byId('unregistered'); if (el) el.scrollIntoView({ behavior: 'smooth' }) }, 50) })
         nav.appendChild(b)
       })
@@ -400,8 +601,11 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
   }
   function navItem(slug, label, count, p) {
     var b = h('button', 'nav-item' + (state.project === slug ? ' on' : '')); b.type = 'button'; b.title = p ? (p.descricao || p.slug) : label
-    if (p) { var d = h('span', 'dot'); d.style.setProperty('--c', colorOf(slug)); b.appendChild(d) }
+    var lv = p ? liveOf(slug) : null
+    if (p) { var d = h('span', 'dot' + (isLive(lv) ? ' pulse' : '')); d.style.setProperty('--c', colorOf(slug)); b.appendChild(d) }
+    if (p && isLive(lv)) b.title = slug + ' — agora: ' + liveText(lv)
     b.appendChild(h('span', 'name', label))
+    if (p && p.inbox_pendentes) { var ib = h('span', 'blk', '✉'); ib.title = plural(p.inbox_pendentes, 'orientação pendente', 'orientações pendentes'); b.appendChild(ib) }
     if (p && p.bloqueios_abertos) { var k = h('span', 'blk', '⛔'); k.title = plural(p.bloqueios_abertos, 'bloqueio aberto', 'bloqueios abertos'); b.appendChild(k) }
     var n = h('span', 'n', count); n.title = p ? 'tarefas abertas' : 'projetos'; b.appendChild(n)
     if (state.project === slug) b.setAttribute('aria-current', 'page')
@@ -417,8 +621,9 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     var sub = byId('subtitle'); sub.textContent = ''
     var t = P.totais, bs = t.por_status || {}
     sub.appendChild(h('span', '', plural(t.projetos, 'projeto', 'projetos') + ' · ' + plural(t.tarefas_abertas, 'tarefa aberta', 'tarefas abertas') + ' · ' + plural(t.bloqueios_abertos, 'bloqueio', 'bloqueios')))
-    var COUNT = { active: ['em andamento', 'em andamento'], backlog: ['no backlog', 'no backlog'], paused: ['pausado', 'pausados'], done: ['concluído', 'concluídos'], archived: ['arquivado', 'arquivados'], outro: ['outro', 'outros'] }
-    GROUPS.forEach(function (g) { var c = bs[g[0]]; if (c) sub.appendChild(pill(c + ' ' + COUNT[g[0]][c === 1 ? 0 : 1], (STATUS[g[0]] || [])[1])) })
+    var byG = {}; list.forEach(function (p) { var g = groupOf(p); byG[g] = (byG[g] || 0) + 1 })
+    LIVE_GROUPS.forEach(function (g) { var c = byG[g[0]]; if (c) sub.appendChild(pill(c + ' ' + GROUP_ONE[g[0]], GROUP_PILL[g[0]])) })
+    view.appendChild(liveCard())
 
     var all = sumSeries(list.map(function (p) { return p.serie }).concat([P.sem_projeto.serie]))
     view.appendChild(kpis(all, t))
@@ -443,20 +648,22 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     var search = h('label', 'search'), input = h('input'); input.type = 'search'; input.placeholder = 'Buscar projeto'; input.setAttribute('aria-label', 'Buscar projeto'); input.value = state.q
     search.appendChild(input); lh.appendChild(search); tableCard.appendChild(lh)
     var wrap = h('div', 'table-wrap'), table = h('table'), thead = h('thead'), tr = h('tr')
-    ;[['Projeto', ''], ['Status', ''], ['Fase', ''], ['Progresso', ''], ['Abertas', 'r'], ['Bloq.', 'r'], ['Sinais', 'r'], ['Atividade', ''], ['Custo', 'r']].forEach(function (c) { tr.appendChild(h('th', c[1], c[0])) })
+    ;[['Projeto', ''], ['Situação', ''], ['Fase', ''], ['Progresso', ''], ['Abertas', 'r'], ['Bloq.', 'r'], ['Sinais', 'r'], ['Atividade', ''], ['Custo', 'r']].forEach(function (c) { tr.appendChild(h('th', c[1], c[0])) })
     thead.appendChild(tr); table.appendChild(thead)
     var body = h('tbody'); table.appendChild(body); wrap.appendChild(table); tableCard.appendChild(wrap)
     var fill = function () {
       body.textContent = ''
       var q = state.q.trim().toLowerCase()
+      var GO = { ativo: 0, andamento: 1, aguardando: 2, backlog: 3, historico: 4 }
       var rows = list.filter(function (p) { return !q || (p.slug + ' ' + (p.descricao || '') + ' ' + (p.fase_atual || '')).toLowerCase().indexOf(q) >= 0 })
+        .slice().sort(function (a, b) { return (GO[groupOf(a)] - GO[groupOf(b)]) || ((b.ultima_atividade || '').localeCompare(a.ultima_atividade || '')) })
       count.textContent = String(rows.length)
       if (!rows.length) { var e = h('tr'), td = h('td', 'empty', q ? 'Nenhum projeto encontrado.' : 'Nenhum projeto cadastrado.'); td.colSpan = 9; e.appendChild(td); body.appendChild(e); return }
       rows.forEach(function (p) {
         var r = h('tr', 'click'), name = h('td', 'name'), t1 = h('div', 'task'), d = h('span', 'dot'); d.style.setProperty('--c', colorOf(p.slug))
         r.tabIndex = 0; r.setAttribute('role', 'link'); r.setAttribute('aria-label', 'Abrir ' + p.slug)
         t1.appendChild(d); t1.appendChild(h('span', '', p.slug)); name.appendChild(t1); name.appendChild(h('div', 'sub', p.descricao || ''))
-        var st = h('td'); st.appendChild(statusPill(p.status))
+        var st = h('td'), g = groupOf(p); st.appendChild(pill(({ ativo: 'Ativo agora', andamento: 'Em andamento', aguardando: 'Aguardando', backlog: 'Backlog', historico: 'Histórico' })[g], GROUP_PILL[g])); st.title = g === 'ativo' ? liveText(liveOf(p.slug)) : (p.grupo_regra || '')
         var ph = h('td', 'sub', p.fase_atual || (p.fases.total ? p.fases.feitas + '/' + p.fases.total + ' fases' : '–'))
         var pr = h('td'); pr.appendChild(progress(p.pct, colorOf(p.slug)))
         var act = h('td', 'sub', ago(p.ultima_atividade))
@@ -498,11 +705,18 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     if (un.length || noRoot.length) {
       var c = h('section', 'card pad'); c.id = 'unregistered'; c.style.minWidth = '0'
       var ch = h('div', 'card-head'); ch.appendChild(h('h3', '', 'Pastas e raízes para cadastrar')); c.appendChild(ch)
-      c.appendChild(h('div', 'sub', 'Lidas do cwd das sessões do Claude Code nos últimos 30 dias. O monitor não grava nada: copie o comando e rode no terminal.'))
-      noRoot.forEach(function (p) { var it = h('div', 'item'); it.appendChild(h('div', '', p.slug + ' — raiz sugerida')); it.appendChild(cmdRow(p.acesso.comando)); c.appendChild(it) })
+      c.appendChild(h('div', 'sub', 'Lidas do cwd das sessões do Claude Code nos últimos 30 dias. Cadastre aqui ou copie o comando.'))
+      noRoot.forEach(function (p) {
+        var it = h('div', 'item'); it.appendChild(h('div', '', p.slug + ' — raiz sugerida: ' + p.acesso.raiz_sugerida))
+        var bb = h('button', 'btn small', 'Cadastrar raiz'); bb.type = 'button'
+        bb.addEventListener('click', function () { act(postJSON('/api/project/bind', { project: p.slug }), 'Raiz de ' + p.slug + ' cadastrada') })
+        it.appendChild(bb); it.appendChild(cmdRow(p.acesso.comando)); c.appendChild(it)
+      })
       un.forEach(function (u) {
         var it = h('div', 'item'); it.appendChild(h('div', '', u.nome)); it.appendChild(h('div', 'sub', u.pasta + ' · ' + plural(u.sessoes_30d, 'sessão', 'sessões') + ' · última ' + ago(u.ultima_sessao)))
-        it.appendChild(cmdRow(u.comando)); c.appendChild(it)
+        var reg = h('button', 'btn small', 'Cadastrar como projeto'); reg.type = 'button'
+        reg.addEventListener('click', function () { act(postJSON('/api/project/register', { pasta: u.pasta }), u.nome + ' cadastrado') })
+        it.appendChild(reg); it.appendChild(cmdRow(u.comando)); c.appendChild(it)
       })
       leftCol.appendChild(c)
     }
@@ -532,18 +746,26 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     var back = h('button', '', 'Monitor'); back.type = 'button'; back.addEventListener('click', function () { select('') })
     crumb.appendChild(back); crumb.appendChild(document.createTextNode(' / ')); crumb.appendChild(h('b', '', D.slug))
     var title = byId('title'); title.textContent = ''
-    var dot = h('span', 'dot'); dot.style.setProperty('--c', colorOf(D.slug)); title.appendChild(dot); title.appendChild(document.createTextNode(D.slug)); title.appendChild(statusPill(D.status))
+    var dot = h('span', 'dot'); dot.style.setProperty('--c', colorOf(D.slug)); title.appendChild(dot); title.appendChild(document.createTextNode(D.slug))
     var sub = byId('subtitle'); sub.textContent = ''
     sub.appendChild(h('span', '', D.descricao || ''))
     if (D.fase_atual) sub.appendChild(pill('fase: ' + D.fase_atual, 'info'))
     sub.appendChild(h('span', 'sub', (D.pct == null ? 'sem tarefas' : Math.round(D.pct) + '% concluído') + ' · última atividade ' + ago(D.ultima_atividade)))
+    var ppx = (state.portfolio && state.portfolio.projetos || []).filter(function (p) { return p.slug === D.slug })[0]
+    sub.appendChild(projectActions(D, ppx))
 
     if (!D.acesso.raiz_existe) {
       var b = h('div', 'banner'); b.appendChild(document.createTextNode('Sem raiz cadastrada: o monitor não conta atalhos nem roda git neste projeto. '))
       var pp = (state.portfolio && state.portfolio.projetos || []).filter(function (p) { return p.slug === D.slug })[0]
-      if (pp && pp.acesso.comando) b.appendChild(cmdRow(pp.acesso.comando)); else b.appendChild(cmdRow('osforge-db bind-project ' + D.slug + ' --root=<pasta do projeto>'))
+      if (pp && pp.acesso.raiz_sugerida) {
+        var bind = h('button', 'btn small', 'Cadastrar ' + pp.acesso.raiz_sugerida); bind.type = 'button'
+        bind.addEventListener('click', function () { act(postJSON('/api/project/bind', { project: D.slug }), 'Pasta cadastrada') })
+        b.appendChild(document.createTextNode('Pasta encontrada nas sessões: ')); b.appendChild(bind)
+      } else b.appendChild(cmdRow('osforge-db bind-project ' + D.slug + ' --root=<pasta do projeto>'))
+      b.appendChild(h('div', 'sub', 'Sem pasta, o painel também não abre Claude Code nem IDE neste projeto.'))
       view.appendChild(b)
     }
+    view.appendChild(conversation(D))
 
     view.appendChild(kpis(D.serie, D.periodo))
 
@@ -727,6 +949,23 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     es.onmessage = function (e) { var ev; try { ev = JSON.parse(e.data) } catch (x) { return } if (ev && ev.kind === 'monitor') { clearTimeout(debounce); debounce = setTimeout(load, 800) } }
   } catch (e) { live(false, 'sem tempo real') }
   setInterval(function () { if (!document.hidden) load() }, 60000)
+
+  // Live activity (P-06 §2): processes on this Mac, every 10 s. Only the sidebar and the live
+  // bits re-render when it changes, so a half-written message is never lost.
+  var lastLive = ''
+  function pollLive() {
+    if (document.hidden) return
+    getJSON('/api/live').then(function (d) {
+      var sig = JSON.stringify({ p: d.projetos, s: d.sem_cadastro })
+      if (sig === lastLive) return
+      lastLive = sig; state.live = d
+      if (!state.portfolio) return
+      if (state.focus) sidebar(); else render()
+    }, function () {})
+  }
+  setInterval(pollLive, 10000)
+  getJSON('/api/tools').then(function (t) { state.tools = t; render() }, function () {})
+  pollLive()
 
   readHash(); writeHash(); render(); load()
 })()
