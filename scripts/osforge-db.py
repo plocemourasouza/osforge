@@ -3640,10 +3640,12 @@ def main():
     elif cmd == "live":
         cmd_live(conn)
     elif cmd == "inbox-add":
-        if len(rest) < 2:
-            _err2("Uso: inbox-add <slug> <texto> [--via=painel]")
+        # --text= keeps a message that starts with "--" from being read as a flag (the panel uses it)
+        text_flag = next((x.split("=", 1)[1] for x in _flags if x.startswith("--text=")), None)
+        if not rest or (text_flag is None and len(rest) < 2):
+            _err2("Uso: inbox-add <slug> <texto> | inbox-add <slug> --text=<texto> [--via=painel]")
         via = next((x.split("=", 1)[1] for x in _flags if x.startswith("--via=")), "painel")
-        cmd_inbox_add(conn, rest[0], " ".join(rest[1:]), via)
+        cmd_inbox_add(conn, rest[0], text_flag if text_flag is not None else " ".join(rest[1:]), via)
     elif cmd == "inbox-take":
         if not rest:
             _err2("Uso: inbox-take <slug> --session=ID")

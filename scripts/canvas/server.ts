@@ -390,6 +390,313 @@ async function handleMonitorApi(request: Request, url: URL): Promise<Response> {
   return new Response(body, { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
 }
 
+// ── Command centre (B-040..B-042, SPEC-P06): live state and actions ─────────────────
+// Every action: POST + application/json + allowed Origin (+ the Host check in route()).
+// A project's folder comes from the database or from the server's own discovery — never from
+// the request. Nothing runs through a shell.
+
+const LIVE_CACHE_MS = 5_000;
+const ACTION_BODY_MAX = 64 * 1024;
+const TEXT_MAX = 4_000;
+let liveCache: { at: number; body: string } | null = null;
+const runningJobs = new Map<number, ReturnType<typeof Bun.spawn>>();
+
+const IDE_APPS: Array<{ id: string; name: string; app: string }> = [
+  { id: "cursor", name: "Cursor", app: "Cursor.app" },
+  { id: "vscode", name: "VS Code", app: "Visual Studio Code.app" },
+  { id: "vscode-insiders", name: "VS Code Insiders", app: "Visual Studio Code - Insiders.app" },
+  { id: "windsurf", name: "Windsurf", app: "Windsurf.app" },
+  { id: "zed", name: "Zed", app: "Zed.app" },
+  { id: "kiro", name: "Kiro", app: "Kiro.app" },
+  { id: "trae", name: "Trae", app: "Trae.app" },
+  { id: "webstorm", name: "WebStorm", app: "WebStorm.app" },
+  { id: "intellij", name: "IntelliJ IDEA", app: "IntelliJ IDEA.app" },
+  { id: "sublime", name: "Sublime Text", app: "Sublime Text.app" },
+  { id: "xcode", name: "Xcode", app: "Xcode.app" },
+  { id: "android-studio", name: "Android Studio", app: "Android Studio.app" },
+];
+
+function appDirs(): string[] {
+  const env = process.env["OSFORGE_APPS_DIRS"];
+  return env ? env.split(":").filter(Boolean) : ["/Applications", join(homedir(), "Applications")];
+}
+
+async function exists(p: string): Promise<boolean> {
+  try {
+    statSync(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function installedIdes(): Promise<Array<{ id: string; name: string; path: string }>> {
+  const out: Array<{ id: string; name: string; path: string }> = [];
+  for (const ide of IDE_APPS) {
+    for (const dir of appDirs()) {
+      const p = join(dir, ide.app);
+      if (await exists(p)) {
+        out.push({ id: ide.id, name: ide.name, path: p });
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+function openCmd(): string {
+  return process.env["OSFORGE_OPEN_CMD"] || "open";
+}
+
+async function claudeCmd(): Promise<string | null> {
+  const env = process.env["OSFORGE_CLAUDE_CMD"];
+  if (env) return env;
+  const found = Bun.which("claude");
+  if (found) return found;
+  const local = join(homedir(), ".local", "bin", "claude");
+  return (await exists(local)) ? local : null;
+}
+
+async function runDb(args: string[], timeoutMs = MONITOR_TIMEOUT_MS): Promise<{ code: number; out: string; err: string }> {
+  const cmd = await osforgeDbCmd();
+  if (!cmd) return { code: 127, out: "", err: "osforge-db not found" };
+  const proc = Bun.spawn([...cmd, ...args], { stdout: "pipe", stderr: "pipe", env: process.env });
+  const timer = setTimeout(() => proc.kill(), timeoutMs);
+  const [out, err, code] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text(), proc.exited]);
+  clearTimeout(timer);
+  return { code, out, err };
+}
+
+function jsonOk(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+}
+
+async function readAction(request: Request): Promise<Record<string, unknown> | Response> {
+  if (!isAllowedOrigin(request)) return jsonError("forbidden origin", 403);
+  const ct = (request.headers.get("content-type") || "").toLowerCase();
+  if (!ct.startsWith("application/json")) return jsonError("content-type must be application/json", 415);
+  const raw = await request.text();
+  if (raw.length > ACTION_BODY_MAX) return jsonError("body too large", 413);
+  try {
+    const body = JSON.parse(raw);
+    return isRecord(body) ? body : jsonError("body must be an object", 400);
+  } catch {
+    return jsonError("invalid JSON", 400);
+  }
+}
+
+/** The portfolio entry of `slug` (with discovery, so a suggested root is known). */
+async function portfolioEntry(slug: string): Promise<Record<string, unknown> | null> {
+  const r = await runDb(["monitor", "--days=7", "--discover"]);
+  if (r.code !== 0) return null;
+  try {
+    const d = JSON.parse(r.out);
+    return ((d["projetos"] as Array<Record<string, unknown>>) || []).find((p) => p["slug"] === slug) || null;
+  } catch {
+    return null;
+  }
+}
+
+function projectRoot(entry: Record<string, unknown>): string | null {
+  const a = (entry["acesso"] || {}) as Record<string, unknown>;
+  if (a["raiz_existe"] && typeof a["raiz"] === "string") return a["raiz"] as string;
+  return null;
+}
+
+function invalidate(): void {
+  monitorCache.clear();
+  liveCache = null;
+}
+
+async function handleLive(request: Request): Promise<Response> {
+  if (!isAllowedOrigin(request)) return jsonError("forbidden origin", 403);
+  if (liveCache && Date.now() - liveCache.at < LIVE_CACHE_MS) {
+    return new Response(liveCache.body, { headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+  }
+  const r = await runDb(["live"], 8_000);
+  if (r.code !== 0) return jsonError("live failed", 502);
+  liveCache = { at: Date.now(), body: r.out };
+  return new Response(r.out, { headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+}
+
+async function handleTools(request: Request): Promise<Response> {
+  if (!isAllowedOrigin(request)) return jsonError("forbidden origin", 403);
+  const terminal = process.platform === "darwin" || !!process.env["OSFORGE_OPEN_CMD"];
+  return jsonOk({ terminal, claude: !!(await claudeCmd()), ides: (await installedIdes()).map(({ id, name }) => ({ id, name })) });
+}
+
+function slugOf(body: Record<string, unknown>): string | null {
+  const s = body["project"];
+  return typeof s === "string" && SLUG_PATTERN.test(s) ? s : null;
+}
+
+async function handleInboxPost(request: Request): Promise<Response> {
+  const body = await readAction(request);
+  if (body instanceof Response) return body;
+  const slug = slugOf(body);
+  const text = typeof body["text"] === "string" ? (body["text"] as string).trim() : "";
+  if (!slug) return jsonError("invalid project", 400);
+  if (!text || text.length > TEXT_MAX) return jsonError(`text must be 1-${TEXT_MAX} chars`, 400);
+  const r = await runDb(["--json", "inbox-add", slug, `--text=${text}`, "--via=painel"]);
+  if (r.code === 2) return jsonError(r.err.includes("não encontrado") ? "project not found" : "invalid message", r.err.includes("não encontrado") ? 404 : 400);
+  if (r.code !== 0) return jsonError("inbox failed", 502);
+  invalidate();
+  return jsonOk(JSON.parse(r.out.trim().split("\n").pop() || "{}"), 201);
+}
+
+async function handleInboxCancel(request: Request, id: string): Promise<Response> {
+  const body = await readAction(request);
+  if (body instanceof Response) return body;
+  if (!/^\d+$/.test(id)) return jsonError("invalid id", 400);
+  const r = await runDb(["inbox-cancel", id]);
+  if (r.code !== 0) return jsonError("not pending", 409);
+  invalidate();
+  return jsonOk({ ok: true });
+}
+
+const STATUSES = ["active", "backlog", "paused", "done", "archived"];
+
+async function handleProjectStatus(request: Request): Promise<Response> {
+  const body = await readAction(request);
+  if (body instanceof Response) return body;
+  const slug = slugOf(body);
+  const status = body["status"];
+  if (!slug || typeof status !== "string" || !STATUSES.includes(status)) return jsonError("invalid project or status", 400);
+  const r = await runDb(["set-project-status", slug, status]);
+  if (r.code !== 0) return jsonError("project not found", 404);
+  invalidate();
+  return jsonOk({ ok: true });
+}
+
+async function handleProjectBind(request: Request): Promise<Response> {
+  const body = await readAction(request);
+  if (body instanceof Response) return body;
+  const slug = slugOf(body);
+  if (!slug) return jsonError("invalid project", 400);
+  const entry = await portfolioEntry(slug);
+  if (!entry) return jsonError("project not found", 404);
+  const sug = ((entry["acesso"] || {}) as Record<string, unknown>)["raiz_sugerida"];
+  if (typeof sug !== "string" || !(await exists(sug))) return jsonError("no suggested root for this project", 409);
+  const r = await runDb(["bind-project", slug, `--root=${sug}`]);
+  if (r.code !== 0) return jsonError("bind failed", 502);
+  invalidate();
+  return jsonOk({ ok: true, raiz: sug });
+}
+
+async function handleProjectRegister(request: Request): Promise<Response> {
+  const body = await readAction(request);
+  if (body instanceof Response) return body;
+  const pasta = body["pasta"];
+  if (typeof pasta !== "string") return jsonError("invalid folder", 400);
+  const r = await runDb(["monitor", "--days=7", "--discover"]);
+  if (r.code !== 0) return jsonError("monitor failed", 502);
+  const found = ((JSON.parse(r.out)["sem_cadastro"] as Array<Record<string, unknown>>) || []).find((u) => u["pasta"] === pasta);
+  if (!found) return jsonError("folder is not among the discovered ones", 404);
+  const slug = String(found["slug_sugerido"] || "");
+  if (!SLUG_PATTERN.test(slug)) return jsonError("cannot derive a slug", 409);
+  const add = await runDb(["upsert-project", slug, String(found["nome"] || slug), "standard", "active", `--root=${pasta}`]);
+  if (add.code !== 0) return jsonError("register failed", 502);
+  invalidate();
+  return jsonOk({ ok: true, slug }, 201);
+}
+
+/** Bash single-quoted literal: safe for any text, including quotes, $( ) and backticks. */
+function shq(s: string): string {
+  return "'" + s.replace(/'/g, "'\\''") + "'";
+}
+
+async function handleLaunch(request: Request): Promise<Response> {
+  const body = await readAction(request);
+  if (body instanceof Response) return body;
+  const slug = slugOf(body);
+  const mode = body["mode"];
+  const text = typeof body["text"] === "string" ? (body["text"] as string).trim() : "";
+  if (!slug) return jsonError("invalid project", 400);
+  if (mode !== "terminal" && mode !== "background" && mode !== "ide") return jsonError("invalid mode", 400);
+  if (text.length > TEXT_MAX) return jsonError("text too long", 400);
+  const entry = await portfolioEntry(slug);
+  if (!entry) return jsonError("project not found", 404);
+  const root = projectRoot(entry);
+  if (!root) return jsonError("project has no registered folder: bind it first", 409);
+
+  if (mode === "ide") {
+    const ide = (await installedIdes()).find((i) => i.id === body["ide"]);
+    if (!ide) return jsonError("IDE not installed", 400);
+    const p = Bun.spawn([openCmd(), "-a", ide.path, root], { stdout: "ignore", stderr: "pipe" });
+    const code = await p.exited;
+    await runDb(["run-add", slug, "--kind=ide", `--tool=${ide.name}`, `--status=${code === 0 ? "concluida" : "falhou"}`]);
+    invalidate();
+    return code === 0 ? jsonOk({ ok: true }, 201) : jsonError("could not open the IDE", 502);
+  }
+
+  const claude = await claudeCmd();
+  if (!claude) return jsonError("claude not found", 503);
+
+  if (mode === "terminal") {
+    const dir = join(homedir(), ".osforge", "launch");
+    await mkdir(dir, { recursive: true, mode: 0o700 });
+    const file = join(dir, `${Date.now()}-${slug}.command`);
+    const line = text ? `exec ${shq(claude)} ${shq(text)}` : `exec ${shq(claude)}`;
+    await Bun.write(file, `#!/bin/bash\ncd ${shq(root)} || exit 1\n${line}\n`);
+    const chmod = Bun.spawn(["chmod", "700", file]);
+    await chmod.exited;
+    const p = Bun.spawn([openCmd(), "-a", "Terminal", file], { stdout: "ignore", stderr: "pipe" });
+    const code = await p.exited;
+    await runDb(["run-add", slug, "--kind=terminal", "--tool=Terminal", `--prompt=${text}`, `--status=${code === 0 ? "iniciada" : "falhou"}`]);
+    invalidate();
+    return code === 0 ? jsonOk({ ok: true }, 201) : jsonError("could not open Terminal", 502);
+  }
+
+  // background
+  if (!text) return jsonError("a background run needs an instruction", 400);
+  const add = await runDb(["--json", "run-add", slug, "--kind=background", "--tool=claude", `--prompt=${text}`, "--status=rodando"]);
+  if (add.code !== 0) return jsonError("could not record the run", 502);
+  const runId = Number(JSON.parse(add.out.trim().split("\n").pop() || "{}")["id"]);
+  const runsDir = join(homedir(), ".osforge", "runs");
+  await mkdir(runsDir, { recursive: true, mode: 0o700 });
+  const logPath = join(runsDir, `${runId}.jsonl`);
+  const args = [claude, "-p", text, "--output-format", "stream-json", "--verbose"];
+  if (body["acceptEdits"] === true) args.push("--permission-mode", "acceptEdits");
+  const proc = Bun.spawn(args, { cwd: root, stdout: Bun.file(logPath), stderr: "pipe", stdin: "ignore", env: process.env });
+  runningJobs.set(runId, proc);
+  await runDb(["run-update", String(runId), `--pid=${proc.pid}`, `--log=${logPath}`]);
+  invalidate();
+  proc.exited.then(async (code) => {
+    runningJobs.delete(runId);
+    let status = code === 0 ? "concluida" : "falhou";
+    let result = "";
+    let cost: number | null = null;
+    try {
+      const lines = (await Bun.file(logPath).text()).trim().split("\n");
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const ev = JSON.parse(lines[i]!);
+        if (ev && ev.type === "result") {
+          result = String(ev.result ?? ev.subtype ?? "");
+          if (typeof ev.total_cost_usd === "number") cost = ev.total_cost_usd;
+          if (ev.is_error) status = "falhou";
+          break;
+        }
+      }
+    } catch {
+      /* no result event: keep the exit status */
+    }
+    if (proc.signalCode) status = "interrompida";
+    await runDb(["run-update", String(runId), `--status=${status}`, `--result=${result.slice(0, 4000)}`,
+      ...(cost !== null ? [`--cost=${cost}`] : [])]);
+    invalidate();
+  });
+  return jsonOk({ ok: true, id: runId }, 201);
+}
+
+async function handleRunStop(request: Request, id: string): Promise<Response> {
+  const body = await readAction(request);
+  if (body instanceof Response) return body;
+  const job = runningJobs.get(Number(id));
+  if (!job) return jsonError("run is not running here", 409);
+  job.kill();
+  return jsonOk({ ok: true });
+}
+
 // ── SSE: filesystem change stream ───────────────────────────────────────────────
 
 interface SseEvent {
@@ -556,6 +863,17 @@ async function route(request: Request): Promise<Response> {
   if (pathname === "/api/events" && method === "GET") return handleEvents(request);
   if (pathname === "/monitor" && method === "GET") return handleMonitorPage();
   if (pathname === "/api/monitor" && method === "GET") return handleMonitorApi(request, url);
+  if (pathname === "/api/live" && method === "GET") return handleLive(request);
+  if (pathname === "/api/tools" && method === "GET") return handleTools(request);
+  if (pathname === "/api/inbox" && method === "POST") return handleInboxPost(request);
+  if (pathname === "/api/launch" && method === "POST") return handleLaunch(request);
+  if (pathname === "/api/project/status" && method === "POST") return handleProjectStatus(request);
+  if (pathname === "/api/project/bind" && method === "POST") return handleProjectBind(request);
+  if (pathname === "/api/project/register" && method === "POST") return handleProjectRegister(request);
+  const inboxCancel = pathname.match(/^\/api\/inbox\/(\d+)\/cancel$/);
+  if (inboxCancel && method === "POST") return handleInboxCancel(request, inboxCancel[1]!);
+  const runStop = pathname.match(/^\/api\/runs\/(\d+)\/stop$/);
+  if (runStop && method === "POST") return handleRunStop(request, runStop[1]!);
 
   const artifactMatch = pathname.match(/^\/api\/artifacts\/([^/]+)$/);
   if (artifactMatch && method === "GET") {

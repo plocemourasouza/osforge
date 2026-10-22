@@ -329,6 +329,60 @@ db monitor alpha > "$J"
 check "conversation merges messages and runs" "[ \"\$(q 'sorted(set(m[\"tipo\"] for m in d[\"projeto\"][\"conversa\"]))')\" = \"['execucao', 'orientacao']\" ]"
 unset OSFORGE_INBOX_DIR
 
+section "11. command centre actions on the Canvas server (P-06 §4–5)"
+if ! command -v bun >/dev/null 2>&1; then
+  echo "  ⟳  bun ausente — ações do servidor não testadas aqui"
+else
+  F="$WORK/fake"; mkdir -p "$F" "$WORK/apps/Cursor.app"
+  cat > "$F/open" <<'SH'
+#!/bin/bash
+printf '%s\n' "$@" > "$OPEN_LOG"
+SH
+  cat > "$F/claude" <<'SH'
+#!/bin/bash
+printf '%s\n' "$@" > "$CLAUDE_LOG"
+if [ "$1" = "-p" ]; then
+  echo '{"type":"system","subtype":"init"}'
+  echo '{"type":"result","subtype":"success","is_error":false,"result":"2 arquivos revisados","total_cost_usd":0.12}'
+fi
+SH
+  chmod +x "$F/open" "$F/claude"
+  export OPEN_LOG="$WORK/open.log" CLAUDE_LOG="$WORK/claude.log" OSFORGE_INBOX_DIR="$WORK/inbox2"
+  PORT2="$(python3 -c "import socket; s=socket.socket(); s.bind(('127.0.0.1',0)); print(s.getsockname()[1])")"
+  OSFORGE_OPEN_CMD="$F/open" OSFORGE_CLAUDE_CMD="$F/claude" OSFORGE_APPS_DIRS="$WORK/apps" CANVAS_PORT="$PORT2" \
+    bun "$REPO/scripts/canvas/server.ts" --dir="$WORK/canvas2" >"$WORK/server2.log" 2>&1 &
+  SPID2=$!
+  for _ in $(seq 50); do curl -sf "http://127.0.0.1:$PORT2/api/health" >/dev/null 2>&1 && break; sleep 0.1; done
+  U2="http://127.0.0.1:$PORT2"
+  post(){ curl -s -o "$WORK/resp" -w '%{http_code}' -X POST "$U2$1" -H 'Content-Type: application/json' --data "$2" "${@:3}"; }
+  check "tools: Cursor found, claude found, Terminal available" "curl -s \"$U2/api/tools\" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert [i[\"id\"] for i in d[\"ides\"]]==[\"cursor\"] and d[\"claude\"] and d[\"terminal\"], d'"
+  check "POST without JSON content-type → 415" "[ \"\$(curl -s -o /dev/null -w '%{http_code}' -X POST \"$U2/api/inbox\" --data '{}')\" = 415 ]"
+  check "POST from a foreign Origin → 403" "[ \"\$(post /api/inbox '{\"project\":\"alpha\",\"text\":\"x\"}' -H 'Origin: https://evil.example')\" = 403 ]"
+  check "GET on an action route → 404 (only POST acts)" "[ \"\$(curl -s -o /dev/null -w '%{http_code}' \"$U2/api/launch\")\" = 404 ]"
+  check "inbox: message starting with -- stored literally (201)" "[ \"\$(post /api/inbox '{\"project\":\"alpha\",\"text\":\"--json nao e flag\"}')\" = 201 ] && db --json inbox alpha | grep -q -- '--json nao e flag' && [ -f \"$OSFORGE_INBOX_DIR/alpha\" ]"
+  check "inbox: unknown project → 404; empty text → 400" "[ \"\$(post /api/inbox '{\"project\":\"ghost\",\"text\":\"x\"}')\" = 404 ] && [ \"\$(post /api/inbox '{\"project\":\"alpha\",\"text\":\" \"}')\" = 400 ]"
+  check "launch on a project without a folder → 409" "[ \"\$(post /api/launch '{\"project\":\"empty\",\"mode\":\"ide\",\"ide\":\"cursor\"}')\" = 409 ]"
+  check "launch IDE: open -a <Cursor.app> <root from the database>" "[ \"\$(post /api/launch '{\"project\":\"alpha\",\"mode\":\"ide\",\"ide\":\"cursor\"}')\" = 201 ] && [ \"\$(cat \"$OPEN_LOG\" | tr '\\n' '|')\" = \"-a|$WORK/apps/Cursor.app|$A|\" ]"
+  check "launch IDE not installed → 400; a client-sent folder is ignored" "[ \"\$(post /api/launch '{\"project\":\"alpha\",\"mode\":\"ide\",\"ide\":\"zed\",\"root\":\"/etc\"}')\" = 400 ]"
+  TXT='Revise o checkout; use '"'"'aspas'"'"', $(rm -rf ~) e `whoami` sem executar'
+  BODY="$(python3 -c 'import json,sys; print(json.dumps({"project":"alpha","mode":"terminal","text":sys.argv[1]}))' "$TXT")"
+  check "launch Terminal: .command opened in Terminal" "[ \"\$(post /api/launch \"\$BODY\")\" = 201 ] && sed -n 1,2p \"$OPEN_LOG\" | tr '\\n' '|' | grep -q '^-a|Terminal|'"
+  CMDF="$(sed -n 3p "$OPEN_LOG")"
+  check ".command is 0700 and only cds into the project" "[ \"\$(python3 -c 'import os,stat,sys; print(oct(stat.S_IMODE(os.stat(sys.argv[1]).st_mode)))' \"$CMDF\")\" = 0o700 ] && grep -q \"^cd '$A' || exit 1\" \"$CMDF\""
+  bash "$CMDF" >/dev/null 2>&1
+  check "the instruction reaches claude as ONE argument, byte for byte (quotes, \$( ), backticks inert)" "[ \"\$(cat \"$CLAUDE_LOG\")\" = \"\$TXT\" ]"
+  check "background without an instruction → 400" "[ \"\$(post /api/launch '{\"project\":\"alpha\",\"mode\":\"background\"}')\" = 400 ]"
+  check "background: 201 with a run id" "[ \"\$(post /api/launch '{\"project\":\"alpha\",\"mode\":\"background\",\"text\":\"revise os testes\",\"acceptEdits\":true}')\" = 201 ]"
+  for _ in $(seq 40); do db --json runs alpha | grep -q '"concluida".*"tipo": "background"\|"tipo": "background".*"concluida"' && break; sleep 0.1; done
+  check "background: claude -p with stream-json and acceptEdits, run closed with result and cost" "db --json runs alpha | python3 -c 'import json,sys; r=[x for x in json.load(sys.stdin) if x[\"tipo\"]==\"background\"][0]; assert (r[\"status\"], r[\"resultado\"], r[\"custo\"])==(\"concluida\",\"2 arquivos revisados\",0.12), r' && head -1 \"$CLAUDE_LOG\" | grep -qx -- -p && grep -qx acceptEdits \"$CLAUDE_LOG\""
+  check "status: segurar → historico" "[ \"\$(post /api/project/status '{\"project\":\"w1\",\"status\":\"paused\"}')\" = 200 ] && db monitor | python3 -c 'import json,sys; d=json.load(sys.stdin); assert [p[\"grupo_base\"] for p in d[\"projetos\"] if p[\"slug\"]==\"w1\"]==[\"historico\"]'"
+  check "status: invalid value → 400" "[ \"\$(post /api/project/status '{\"project\":\"w1\",\"status\":\"deleted\"}')\" = 400 ]"
+  check "bind: suggested root from discovery (beta)" "[ \"\$(post /api/project/bind '{\"project\":\"beta\"}')\" = 200 ] && db --json list-projects --status=all | grep -q \"$(cd "$Bdir" && pwd -P)\""
+  check "register: only a discovered folder; then it is a project" "[ \"\$(post /api/project/register '{\"pasta\":\"/etc\"}')\" = 404 ] && [ \"\$(post /api/project/register \"{\\\"pasta\\\":\\\"$(cd "$N" && pwd -P)\\\"}\")\" = 201 ] && db --json list-projects --status=all | grep -q '\"novo-app\"'"
+  kill "$SPID2" 2>/dev/null; wait "$SPID2" 2>/dev/null
+  unset OSFORGE_INBOX_DIR
+fi
+
 section "7. budget: 50,000 calls"
 python3 - "$OSFORGE_DB" <<'EOF'
 import sqlite3, sys, random
