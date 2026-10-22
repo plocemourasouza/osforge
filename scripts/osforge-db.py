@@ -2457,7 +2457,7 @@ def _project_detail(conn, p, summary, per_model, sessions, split, priceless, key
                           "WHERE project_id=? AND resolved_at IS NULL ORDER BY created_at", (pid,)):
         c = _parse_iso(b["created_at"])
         blockers.append({"id": b["id"], "descricao": b["description"], "aguardando": b["waiting_for"],
-                         "desde": b["created_at"], "idade_dias": (now - c).days if c else None})
+                         "desde": b["created_at"], "idade_dias": max(0, (now - c).days) if c else None})
     decisions = [{"id": d["id"], "texto": textwrap.shorten(d["content"], width=280, placeholder="…"),
                   "categoria": d["category"], "em": d["created_at"]} for d in conn.execute(
         "SELECT id, content, category, created_at FROM decisions WHERE project_id=? "
@@ -2585,7 +2585,7 @@ def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False
             continue
         c = _parse_iso(b["created_at"])
         blk.append({"projeto": b["slug"], "id": b["id"], "descricao": b["description"], "aguardando": b["waiting_for"],
-                    "desde": b["created_at"], "idade_dias": (now - c).days if c else None})
+                    "desde": b["created_at"], "idade_dias": max(0, (now - c).days) if c else None})
     out["bloqueios"] = blk
     out["sem_projeto"] = {"serie": _series(per.get(None) or {}, keys_series)}
     if discover:

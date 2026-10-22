@@ -225,6 +225,8 @@ else
   check "discover=1 → sem_cadastro block" "[ \"\$(code \"$U/api/monitor?discover=1\")\" = 200 ] && grep -q '\"sem_cadastro\"' \"$WORK/resp\""
   # Optional browser smoke test (Playwright for Python + a Chromium): both views render with no
   # page error. Skipped where no browser is installed.
+  # A long blocker without spaces to break on is what pushed the left column under the map.
+  python3 -c "import sqlite3,sys; c=sqlite3.connect(sys.argv[1]); c.execute(\"INSERT INTO blockers (project_id, description) VALUES ((SELECT id FROM projects WHERE slug='beta'), 'Aguardando_a_validacao_do_relatorio_de_auditoria_da_integracao_de_pagamentos_antes_da_migracao_do_schema ' || 'e do deploy em producao do modulo financeiro inteiro, com todos os ambientes e todas as filas de reprocessamento')\"); c.commit()" "$OSFORGE_DB"
   if python3 -c "import playwright" >/dev/null 2>&1; then
     SMOKE="$(python3 - "$U" <<'EOF' 2>&1
 import asyncio, sys
@@ -242,6 +244,19 @@ async def main(u):
             await pg.goto(u + "/monitor" + frag); await pg.wait_for_timeout(1200)
             if needle not in await pg.inner_text("main"):
                 errs.append("missing " + needle)
+        # Layout: the activity map never overlaps the cards beside it, at any width, and the
+        # page never scrolls sideways (tables scroll inside their own box).
+        for w in (2133, 1440, 1100, 390):
+            await pg.set_viewport_size({"width": w, "height": 900})
+            await pg.goto(u + "/monitor"); await pg.wait_for_timeout(1200)
+            bad = await pg.evaluate("""() => { const hm = document.querySelector('.heat'), st = document.querySelector('.stack');
+              if (!hm || !st) return 'missing activity/stack';
+              const a = hm.getBoundingClientRect(), b = st.getBoundingClientRect();
+              if (!(b.right <= a.left + 1 || a.right <= b.left + 1 || b.bottom <= a.top + 1 || a.bottom <= b.top + 1)) return 'overlap';
+              if (document.documentElement.scrollWidth > innerWidth + 1) return 'page scrolls sideways';
+              return '' }""")
+            if bad:
+                errs.append(f"{w}px: {bad}")
         await b.close()
     print("OK" if not errs else "ERR " + "; ".join(errs))
 asyncio.run(main(sys.argv[1]))
@@ -249,7 +264,7 @@ EOF
 )"
     case "$SMOKE" in
       SKIP*) echo "  ⟳  sem Chromium para o Playwright — smoke do navegador pulado" ;;
-      *) check "browser: portfolio and project views render without page errors" "[ \"\$SMOKE\" = OK ] || { echo \"     \$SMOKE\"; false; }" ;;
+      *) check "browser: both views render without page errors; no overlap or sideways scroll at 2133/1440/1100/390 px" "[ \"\$SMOKE\" = OK ] || { echo \"     \$SMOKE\"; false; }" ;;
     esac
   else
     echo "  ⟳  Playwright ausente — smoke do navegador pulado"

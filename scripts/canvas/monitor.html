@@ -85,6 +85,9 @@ h1{margin:2px 0 0;font-size:26px;font-weight:650;letter-spacing:-.02em;display:f
 .chip .x{color:var(--faint)}.chip[aria-pressed=false]{opacity:.45}
 .grid2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;align-items:start;margin-bottom:14px}
 .grid2.even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.grid2>*,.stack>*{min-width:0}.stack{display:grid;gap:14px;align-content:start;min-width:0}
+.line{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap}.line>span{min-width:0;overflow-wrap:anywhere}
+.health{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.health .fact{border:1px solid var(--line);border-radius:12px;padding:10px 12px;flex-direction:column;gap:2px}.health .fact .num{text-align:left;font-size:18px}
 .list{padding:20px 0 6px}
 .list-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 22px 14px}
 h3{margin:0;font-size:15px;font-weight:600}h3 .n{color:var(--faint);font-weight:400;margin-left:4px}
@@ -139,6 +142,9 @@ footer{color:var(--faint);font-size:12px;margin-top:22px}
 @media (max-width:1100px){.grid2,.grid2.even{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:860px){.app{grid-template-columns:minmax(0,1fr)}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);max-height:46vh}
 main{padding:16px}.search{width:160px}.big{font-size:32px}}
+.card-head{flex-wrap:wrap}.card-head .pill{white-space:normal}.composer,.live-card,.composer-bar{min-width:0}
+.chart-head .seg{max-width:100%;overflow-x:auto}
+@media (max-width:640px){.composer-row{flex-direction:column}.composer-row .select{max-width:none}.health{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:520px){.kpis,.board{grid-template-columns:minmax(0,1fr)}.top .actions{width:100%;justify-content:space-between}.list-head{flex-wrap:wrap}.search{width:100%}}
 </style>
 </head>
@@ -376,9 +382,11 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     a.appendChild(h('div', 'hero-label', 'Dias ativos')); a.appendChild(h('div', 'hero-value num', String(active))); a.appendChild(h('div', 'hero-sub', Math.round(active / Math.max(1, vals.length) * 100) + '% dos últimos ' + vals.length + ' dias'))
     b.appendChild(h('div', 'hero-label', 'Sequência')); b.appendChild(h('div', 'hero-value num', plural(streak, 'dia', 'dias'))); b.appendChild(h('div', 'hero-sub', 'maior: ' + plural(longest, 'dia', 'dias')))
     heroes.appendChild(a); heroes.appendChild(b); card.appendChild(heroes)
-    var fx = h('div', 'facts')
-    facts.forEach(function (f) { var r2 = h('div', 'fact'); r2.appendChild(h('span', '', f[0])); r2.appendChild(h('span', 'num', f[1])); fx.appendChild(r2) })
-    card.appendChild(fx)
+    if (facts && facts.length) {
+      var fx = h('div', 'facts')
+      facts.forEach(function (f) { var r2 = h('div', 'fact'); r2.appendChild(h('span', '', f[0])); r2.appendChild(h('span', 'num', f[1])); fx.appendChild(r2) })
+      card.appendChild(fx)
+    }
     return card
   }
 
@@ -700,21 +708,23 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     blh.appendChild(h('h3', '', 'Bloqueios abertos')); blh.appendChild(h('span', 'sub', String(blk.length))); bl.appendChild(blh)
     if (!blk.length) bl.appendChild(h('div', 'empty', 'Nada parado por bloqueio.'))
     blk.slice().sort(function (a, b) { return (b.idade_dias || 0) - (a.idade_dias || 0) }).forEach(function (b) {
-      var it = h('div', 'item'), top = h('div', 'task'), d = h('span', 'dot'); d.style.setProperty('--c', colorOf(b.projeto))
-      top.appendChild(pill(b.idade_dias == null ? '?' : plural(b.idade_dias, 'dia', 'dias'), b.idade_dias >= 3 ? 'bad' : 'warn')); top.appendChild(h('span', '', b.descricao))
+      var it = h('div', 'item'), top = h('div', 'line'), d = h('span', 'dot'); d.style.setProperty('--c', colorOf(b.projeto))
+      top.appendChild(pill(b.idade_dias == null ? '?' : b.idade_dias === 0 ? 'hoje' : plural(b.idade_dias, 'dia', 'dias'), b.idade_dias >= 3 ? 'bad' : 'warn')); top.appendChild(h('span', '', b.descricao))
       it.appendChild(top)
-      var meta = h('div', 'sub task'); meta.appendChild(d); meta.appendChild(document.createTextNode(b.projeto + (b.aguardando ? ' · aguardando: ' + b.aguardando : '')))
+      var meta = h('div', 'sub line'); meta.style.alignItems = 'center'; meta.appendChild(d); meta.appendChild(document.createTextNode(b.projeto + (b.aguardando ? ' · aguardando: ' + b.aguardando : '')))
       it.appendChild(meta); it.style.cursor = 'pointer'; it.addEventListener('click', function () { select(b.projeto) })
       bl.appendChild(it)
     })
-    var leftCol = h('div'); leftCol.style.display = 'grid'; leftCol.style.gap = '14px'; leftCol.appendChild(bl)
+    var leftCol = h('div', 'stack'); leftCol.appendChild(bl)
+    var hc = h('section', 'card pad'), hh = h('div', 'card-head'); hh.appendChild(h('h3', '', 'Saúde')); hh.appendChild(h('span', 'sub', 'últimos ' + n + ' dias')); hc.appendChild(hh)
+    var hg = h('div', 'health')
+    ;[['Janela de 5 h', windowFact(P.janela)], ['Custo no período', money(t.custo)],
+      ['Chamadas sem projeto', (health.chamadas_sem_projeto_pct || 0) + '%'], ['Projetos sem raiz', String((health.projetos_sem_raiz || []).length)]].forEach(function (f) {
+      var r2 = h('div', 'fact'); r2.appendChild(h('span', 'sub', f[0])); r2.appendChild(h('span', 'num', f[1])); hg.appendChild(r2)
+    })
+    hc.appendChild(hg); leftCol.appendChild(hc)
     grid.appendChild(leftCol)
-    grid.appendChild(heat(lastN(all, 84), [
-      ['Janela de 5 h', windowFact(P.janela)],
-      ['Chamadas sem projeto', (health.chamadas_sem_projeto_pct || 0) + '%'],
-      ['Projetos sem raiz', String((health.projetos_sem_raiz || []).length)],
-      ['Custo no período', money(t.custo)]
-    ]))
+    grid.appendChild(heat(lastN(all, 84), []))
     view.appendChild(grid)
 
     var un = P.sem_cadastro || [], noRoot = list.filter(function (p) { return p.acesso && p.acesso.comando })
@@ -734,7 +744,7 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
         reg.addEventListener('click', function () { act(postJSON('/api/project/register', { pasta: u.pasta }), u.nome + ' cadastrado') })
         it.appendChild(reg); it.appendChild(cmdRow(u.comando)); c.appendChild(it)
       })
-      leftCol.appendChild(c)
+      view.appendChild(c)
     }
   }
 
@@ -824,7 +834,7 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     var bl = h('section', 'card pad'), blh = h('div', 'card-head'); blh.appendChild(h('h3', '', 'Bloqueios')); blh.appendChild(h('span', 'sub', String(D.bloqueios.length))); bl.appendChild(blh)
     if (!D.bloqueios.length) bl.appendChild(h('div', 'empty', 'Nenhum bloqueio aberto.'))
     D.bloqueios.forEach(function (b) {
-      var it = h('div', 'item'), top = h('div', 'task'); top.appendChild(pill(b.idade_dias == null ? '?' : plural(b.idade_dias, 'dia', 'dias'), b.idade_dias >= 3 ? 'bad' : 'warn')); top.appendChild(h('span', '', b.descricao))
+      var it = h('div', 'item'), top = h('div', 'line'); top.appendChild(pill(b.idade_dias == null ? '?' : b.idade_dias === 0 ? 'hoje' : plural(b.idade_dias, 'dia', 'dias'), b.idade_dias >= 3 ? 'bad' : 'warn')); top.appendChild(h('span', '', b.descricao))
       it.appendChild(top); if (b.aguardando) it.appendChild(h('div', 'sub', 'aguardando: ' + b.aguardando)); bl.appendChild(it)
     })
     var dc = h('section', 'card pad'), dch = h('div', 'card-head'); dch.appendChild(h('h3', '', 'Decisões recentes')); dc.appendChild(dch)
