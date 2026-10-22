@@ -30,7 +30,8 @@ Q="$WORK/outro"; mkdir -p "$Q" && (cd "$Q" && $GIT init -q && echo x > a && $GIT
 db upsert-project loja "Loja" standard active --root="$P" >/dev/null 2>&1
 db upsert-project outro "Outro" standard active --root="$Q" >/dev/null 2>&1
 pay(){  # event cwd [extra json fields]
-  python3 -c "import json,sys; d={'hook_event_name': sys.argv[1], 'session_id': 'sessao-principal-1', 'cwd': sys.argv[2], 'tool_name': 'Read', 'tool_input': {}}; d.update(json.loads(sys.argv[3])); print(json.dumps(d))" "$1" "$2" "${3:-{\}}"
+  local extra="${3:-}"; [ -n "$extra" ] || extra='{}'     # bash 3.2: no braces inside ${:-}
+  python3 -c "import json,sys; d={'hook_event_name': sys.argv[1], 'session_id': 'sessao-principal-1', 'cwd': sys.argv[2], 'tool_name': 'Read', 'tool_input': {}}; d.update(json.loads(sys.argv[3])); print(json.dumps(d))" "$1" "$2" "$extra"
 }
 ctx(){ python3 -c "import json,sys; d=json.loads(sys.stdin.read()); h=d['hookSpecificOutput']; print(h['hookEventName']); print(h['additionalContext'])" 2>/dev/null; }
 

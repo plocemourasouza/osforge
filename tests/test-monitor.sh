@@ -360,6 +360,7 @@ SH
   SPID2=$!
   for _ in $(seq 50); do curl -sf "http://127.0.0.1:$PORT2/api/health" >/dev/null 2>&1 && break; sleep 0.1; done
   U2="http://127.0.0.1:$PORT2"
+  AR="$(cd "$A" && pwd -P)"     # macOS: /var/folders → /private/var/folders; the db keeps the real path
   post(){ curl -s -o "$WORK/resp" -w '%{http_code}' -X POST "$U2$1" -H 'Content-Type: application/json' --data "$2" "${@:3}"; }
   check "tools: Cursor found, claude found, Terminal available" "curl -s \"$U2/api/tools\" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert [i[\"id\"] for i in d[\"ides\"]]==[\"cursor\"] and d[\"claude\"] and d[\"terminal\"], d'"
   check "POST without JSON content-type → 415" "[ \"\$(curl -s -o /dev/null -w '%{http_code}' -X POST \"$U2/api/inbox\" --data '{}')\" = 415 ]"
@@ -368,13 +369,13 @@ SH
   check "inbox: message starting with -- stored literally (201)" "[ \"\$(post /api/inbox '{\"project\":\"alpha\",\"text\":\"--json nao e flag\"}')\" = 201 ] && db --json inbox alpha | grep -q -- '--json nao e flag' && [ -f \"$OSFORGE_INBOX_DIR/alpha\" ]"
   check "inbox: unknown project → 404; empty text → 400" "[ \"\$(post /api/inbox '{\"project\":\"ghost\",\"text\":\"x\"}')\" = 404 ] && [ \"\$(post /api/inbox '{\"project\":\"alpha\",\"text\":\" \"}')\" = 400 ]"
   check "launch on a project without a folder → 409" "[ \"\$(post /api/launch '{\"project\":\"empty\",\"mode\":\"ide\",\"ide\":\"cursor\"}')\" = 409 ]"
-  check "launch IDE: open -a <Cursor.app> <root from the database>" "[ \"\$(post /api/launch '{\"project\":\"alpha\",\"mode\":\"ide\",\"ide\":\"cursor\"}')\" = 201 ] && [ \"\$(cat \"$OPEN_LOG\" | tr '\\n' '|')\" = \"-a|$WORK/apps/Cursor.app|$A|\" ]"
+  check "launch IDE: open -a <Cursor.app> <root from the database>" "[ \"\$(post /api/launch '{\"project\":\"alpha\",\"mode\":\"ide\",\"ide\":\"cursor\"}')\" = 201 ] && [ \"\$(cat \"$OPEN_LOG\" | tr '\\n' '|')\" = \"-a|$WORK/apps/Cursor.app|$AR|\" ]"
   check "launch IDE not installed → 400; a client-sent folder is ignored" "[ \"\$(post /api/launch '{\"project\":\"alpha\",\"mode\":\"ide\",\"ide\":\"zed\",\"root\":\"/etc\"}')\" = 400 ]"
   TXT='Revise o checkout; use '"'"'aspas'"'"', $(rm -rf ~) e `whoami` sem executar'
   BODY="$(python3 -c 'import json,sys; print(json.dumps({"project":"alpha","mode":"terminal","text":sys.argv[1]}))' "$TXT")"
   check "launch Terminal: .command opened in Terminal" "[ \"\$(post /api/launch \"\$BODY\")\" = 201 ] && sed -n 1,2p \"$OPEN_LOG\" | tr '\\n' '|' | grep -q '^-a|Terminal|'"
   CMDF="$(sed -n 3p "$OPEN_LOG")"
-  check ".command is 0700 and only cds into the project" "[ \"\$(python3 -c 'import os,stat,sys; print(oct(stat.S_IMODE(os.stat(sys.argv[1]).st_mode)))' \"$CMDF\")\" = 0o700 ] && grep -q \"^cd '$A' || exit 1\" \"$CMDF\""
+  check ".command is 0700 and only cds into the project" "[ \"\$(python3 -c 'import os,stat,sys; print(oct(stat.S_IMODE(os.stat(sys.argv[1]).st_mode)))' \"$CMDF\")\" = 0o700 ] && grep -qF \"cd '$AR' || exit 1\" \"$CMDF\""
   bash "$CMDF" >/dev/null 2>&1
   check "the instruction reaches claude as ONE argument, byte for byte (quotes, \$( ), backticks inert)" "[ \"\$(cat \"$CLAUDE_LOG\")\" = \"\$TXT\" ]"
   BODY2="$(python3 -c 'import json; print(json.dumps({"project":"alpha","mode":"terminal","text":"--dangerously-skip-permissions"}))')"
