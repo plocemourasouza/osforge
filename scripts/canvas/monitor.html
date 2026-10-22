@@ -972,8 +972,8 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
   // Live activity (P-06 §2): processes on this Mac, every 10 s. Only the sidebar and the live
   // bits re-render when it changes, so a half-written message is never lost.
   var lastLive = ''
-  function pollLive() {
-    if (document.hidden) return
+  function pollLive(first) {
+    if (document.hidden && first !== true) return
     getJSON('/api/live').then(function (d) {
       var sig = JSON.stringify({ p: d.projetos, s: d.sem_cadastro })
       if (sig === lastLive) return
@@ -984,7 +984,8 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
   }
   setInterval(pollLive, 10000)
   getJSON('/api/tools').then(function (t) { state.tools = t; render() }, function () {})
-  pollLive()
+  pollLive(true)
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) pollLive() })
 
   readHash(); writeHash(); render(); load()
 })()
