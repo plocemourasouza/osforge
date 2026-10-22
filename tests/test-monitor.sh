@@ -385,7 +385,8 @@ SH
   check "background: claude -p with stream-json and acceptEdits, run closed with result and cost" "db --json runs alpha | python3 -c 'import json,sys; r=[x for x in json.load(sys.stdin) if x[\"tipo\"]==\"background\"][0]; assert (r[\"status\"], r[\"resultado\"], r[\"custo\"])==(\"concluida\",\"2 arquivos revisados\",0.12), r' && head -1 \"$CLAUDE_LOG\" | grep -qx -- -p && grep -qx acceptEdits \"$CLAUDE_LOG\""
   check "status: segurar → historico" "[ \"\$(post /api/project/status '{\"project\":\"w1\",\"status\":\"paused\"}')\" = 200 ] && db monitor | python3 -c 'import json,sys; d=json.load(sys.stdin); assert [p[\"grupo_base\"] for p in d[\"projetos\"] if p[\"slug\"]==\"w1\"]==[\"historico\"]'"
   check "status: invalid value → 400" "[ \"\$(post /api/project/status '{\"project\":\"w1\",\"status\":\"deleted\"}')\" = 400 ]"
-  check "bind: suggested root from discovery (beta)" "[ \"\$(post /api/project/bind '{\"project\":\"beta\"}')\" = 200 ] && db --json list-projects --status=all | grep -q \"$(cd "$Bdir" && pwd -P)\""
+  BDR="$(cd "$Bdir" && pwd -P)"
+  check "bind: suggested root from discovery (beta)" "[ \"\$(post /api/project/bind '{\"project\":\"beta\"}')\" = 200 ] && db --json list-projects --status=all | grep -qF \"\$BDR\""
   DUP="$WORK/dup/w1"; mkdir -p "$DUP" && (cd "$DUP" && $GIT init -q && echo x > a && $GIT add a && $GIT commit -qm i)
   mkdir -p "$HOME/.claude/projects/-dup"; python3 -c "import json,sys; print(json.dumps({'type':'user','cwd':sys.argv[1]}))" "$DUP" > "$HOME/.claude/projects/-dup/1.jsonl"
   DUPR="$(cd "$DUP" && pwd -P)"
