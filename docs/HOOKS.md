@@ -27,7 +27,7 @@ Rules that every hook follows, and that `tests/hooks/run-contracts.sh` enforces:
 5. **Every block message names the hook and its kill-switch** (`OSFORGE_GATEGUARD=off`,
    `OSFORGE_SCAN_SECRETS=off`, `OSFORGE_ROUTEGUARD=off`, `OSFORGE_OBSERVE_CAPTURE=0`,
    `OSFORGE_CANVAS_FEEDBACK=off`, `OSFORGE_CONTEXT_THRESHOLD=off`, `OSFORGE_QUOTA_THRESHOLD=off`,
-   `OSFORGE_QUALITY_GUARD=off`), so
+   `OSFORGE_QUALITY_GUARD=off`, `OSFORGE_INBOX=off`), so
    neither the agent nor the user gets stuck behind a false positive.
 6. **Fail open, except for the irreversible.** GateGuard denies a destructive Bash command
    when it cannot persist state; everything else allows and warns on stderr.
@@ -60,6 +60,16 @@ none. A summary with failures always wins over a zero exit.
 - **Precision is measured, not assumed:** regex definitions (`hooks/lib/defs.py`), TS/JS and
   Python only. `osforge-db signals --report` gives per-kind totals, how many resolved by
   themselves, and a fixed sample of 20 to label by hand.
+
+## inbox-deliver (B-041, SPEC-P06 §3) — the human's messages from the panel
+
+`hooks/inbox-deliver.py` runs on `PostToolUse` (`*`), `UserPromptSubmit` and `SessionStart`.
+Its fast path is a single `listdir` of `~/.osforge/inbox` (`OSFORGE_INBOX_DIR`): empty → exit,
+no git, no subprocess (~40 ms, all Python start-up). With a flag for the session's project it
+calls `osforge-db inbox-take` (atomic: two sessions, one gets the messages) and answers with
+`additionalContext` under the event's own `hookEventName`. Calls from a subagent (`agent_id`
+present) never take messages. The text is the user's own, sent from the local panel, and is
+labelled as such.
 
 ## Quota-window guard (B-027, SPEC-L01 Parte A) — not a lifecycle hook
 

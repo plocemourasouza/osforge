@@ -36,6 +36,10 @@ CC-23	claude-code	PostToolUse	observe-capture	claude-code/posttooluse-read-skill
 CC-24	claude-code	PostToolUse	quality-guard	claude-code/posttooluse-edit-src.json	silent
 CC-25	claude-code	PostToolUse	quality-guard	claude-code/posttooluse-edit-src.json	silent	OSFORGE_QUALITY_GUARD=on
 CC-26	claude-code	PostToolUseFailure	quality-guard	claude-code/posttoolusefailure-bash-test.json	silent
+# inbox-deliver (B-041): nothing pending in the sandbox → silent on all three events
+CC-27	claude-code	PostToolUse	inbox-deliver	claude-code/posttooluse-edit-src.json	silent
+CC-28	claude-code	UserPromptSubmit	inbox-deliver	claude-code/userprompt-plain.json	silent
+CC-32	claude-code	SessionStart	inbox-deliver	claude-code/sessionstart.json	silent
 # ── SessionStart
 CC-30	claude-code	SessionStart	session-resume	claude-code/sessionstart.json	silent
 CC-31	claude-code	SessionStart	canvas-autostart	claude-code/sessionstart.json	any

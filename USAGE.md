@@ -137,7 +137,7 @@ selects the old copy/rsync path for one release.
 - Copies `CLAUDE.md` and `SKILLS.md`
 - Syncs 25 agents (orchestrator + 24 specialists) to `~/.claude/agents/`
 - Copies 9 `spec-*` commands to `~/.claude/commands/`
-- Installs 12 hooks to `~/.claude/hooks/` (plus the shared `hooks/lib/`)
+- Installs 13 hooks to `~/.claude/hooks/` (plus the shared `hooks/lib/`)
 - Merges the managed hook entries into `~/.claude/settings.json` by id (yours are preserved) and the MCP servers into `~/.claude.json` (non-destructive)
 
 **Cursor (`~/.cursor/`)**
@@ -503,7 +503,7 @@ cp hooks/*.py hooks/*.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*
 ```
 
-### What each hook does (12 hooks)
+### What each hook does (13 hooks)
 
 **`canvas-autostart.sh`** (SessionStart)
 - Inicia o OSForge Canvas em `localhost:4242` se ainda não estiver rodando
@@ -579,6 +579,12 @@ chmod +x ~/.claude/hooks/*
 - `OSFORGE_QUALITY_GUARD=shadow` (padrão: grava, não fala), `on` (avisa o modelo por `additionalContext`
   no G-1 e no G-2), `off`. Liga em `on` depois de duas semanas de sombra com alarme falso ≤ 10% (G-1) e
   ≤ 25% (G-2). p95 < 150 ms num Edit comum. Teste: `tests/test-quality-guard.sh`
+
+**`inbox-deliver.py`** (PostToolUse `*`, UserPromptSubmit, SessionStart)
+- Entrega ao agente as orientações escritas no painel `/monitor` (B-041): sem pendência, sai em ~40 ms sem
+  chamar nada; com pendência do projeto da sessão, pega todas de uma vez (`osforge-db inbox-take`) e as
+  devolve como `additionalContext` na próxima ferramenta ou mensagem. Subagentes não recebem.
+  Kill-switch: `OSFORGE_INBOX=off`. Teste: `tests/test-inbox.sh`
 
 **`canvas-feedback.py`** (Stop)
 - Se o usuário enviou feedback no Canvas para um artefato **deste projeto** (id prefixado com o
