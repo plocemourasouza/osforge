@@ -289,6 +289,7 @@ cat > "$WORK/ps.txt" <<EOF
   103 node /x/node_modules/.bin/next dev --turbo
   104 /Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Plugin).app/Contents/MacOS/Cursor Helper (Plugin): extension-host (user) alpha [1-1]
   105 /Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin): extension-host (user) outra-pasta [2-3]
+  111 /Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Plugin).app/Contents/MacOS/Cursor Helper (Plugin): extension-host (user) novo [3-1]
   106 /usr/bin/python3 /x/osforge-db.py live
   107 node server.js
   108 claude
@@ -301,7 +302,7 @@ OSFORGE_LIVE_PS_FILE="$WORK/ps.txt" OSFORGE_LIVE_CWD_FILE="$WORK/cwd.json" db li
 check "live: claude in alpha, working now (fresh transcript)" "[ \"\$(q '(d[\"projetos\"][\"alpha\"][\"claude\"], d[\"projetos\"][\"alpha\"][\"trabalhando\"])')\" = '(1, True)' ]"
 check "live: next dev in a subfolder maps to alpha, its sh wrapper is the same server, vite build and plain node are not servers" "[ \"\$(q 'len(d[\"projetos\"][\"alpha\"][\"servidores\"])')\" = 1 ]"
 check "live: Cursor window on alpha (IDE helper process title)" "[ \"\$(q 'd[\"projetos\"][\"alpha\"][\"ides\"]')\" = \"['Cursor']\" ]"
-check "live: unregistered folders listed (claude in novo, VS Code on outra-pasta)" "[ \"\$(q 'sorted((x[\"nome\"], x[\"claude\"], x[\"ides\"]) for x in d[\"sem_cadastro\"])')\" = \"[('novo', 1, []), ('outra-pasta', 0, ['VS Code'])]\" ]"
+check "live: unregistered folders listed once each (claude + Cursor in novo, VS Code on outra-pasta)" "[ \"\$(q 'sorted((x[\"nome\"], x[\"claude\"], x[\"ides\"]) for x in d[\"sem_cadastro\"])')\" = \"[('novo', 1, ['Cursor']), ('outra-pasta', 0, ['VS Code'])]\" ]"
 check "live: claude in / is ignored, osforge itself is not a server" "[ \"\$(q 'sum(v[\"claude\"] for v in d[\"projetos\"].values()) + sum(x[\"claude\"] for x in d[\"sem_cadastro\"])')\" = 2 ]"
 OSFORGE_LIVE_PS_FILE="$WORK/ps.txt" OSFORGE_LIVE_CWD_FILE="$WORK/cwd.json" db monitor --live > "$J"
 check "monitor --live embeds the live block" "[ \"\$(q 'd[\"ao_vivo\"][\"projetos\"][\"alpha\"][\"claude\"]')\" = 1 ]"

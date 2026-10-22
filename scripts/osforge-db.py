@@ -2935,7 +2935,10 @@ def live_state(conn):
             by_name.setdefault(os.path.basename(p["root_path"].rstrip("/")), p["id"])
     for app, name in ides:
         proj = by_name.get(name) or by_name.get(_slugify(name))
-        s = slot(proj, name, name)
+        # An unregistered folder already seen through a process (keyed by its path) is the same
+        # folder as the IDE window of the same name: one entry, not two.
+        same = next((k for k, v in loose.items() if v["nome"] == name), None) if proj is None else None
+        s = slot(proj, same or name, name)
         if app not in s["ides"]:
             s["ides"].append(app)
     return {"projetos": out, "sem_cadastro": list(loose.values())}
