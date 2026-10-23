@@ -240,10 +240,27 @@ async def main(u):
             print("SKIP", e.__class__.__name__); return
         pg = await b.new_page()
         pg.on("pageerror", lambda e: errs.append(str(e)))
-        for frag, needle in (("", "Projetos"), ("", "Ativo agora"), ("#p=alpha", "Quadro de tarefas"), ("#p=alpha", "Conversa com os agentes")):
+        for frag, needle in (("", "Projetos"), ("", "Situação"), ("#p=alpha", "Quadro de tarefas"), ("#p=alpha", "Conversa com os agentes")):
             await pg.goto(u + "/monitor" + frag); await pg.wait_for_timeout(1200)
             if needle not in await pg.inner_text("main"):
                 errs.append("missing " + needle)
+        await pg.goto(u + "/monitor"); await pg.wait_for_timeout(1200)
+        if await pg.locator(".live-card").count():
+            errs.append("the Ativo agora card is shown on the all-projects view")
+        # Filters: Backlog alone → only beta; add "Com bloqueio" → nothing; clear → all back.
+        total = await pg.locator("tbody tr.click").count()
+        await pg.get_by_role("button", name="Backlog").first.click(); await pg.wait_for_timeout(200)
+        slugs = await pg.locator("tbody tr.click td.name .task span:not(.dot)").all_inner_texts()
+        if slugs != ["beta"]:
+            errs.append(f"filter Backlog → {slugs}")
+        await pg.reload(); await pg.wait_for_timeout(1200)
+        if await pg.locator("tbody tr.click").count() != 1:
+            errs.append("filters not remembered after reload")
+        await pg.get_by_role("button", name="Limpar filtros").first.click(); await pg.wait_for_timeout(200)
+        if await pg.locator("tbody tr.click").count() != total:
+            errs.append("Limpar filtros did not bring every project back")
+        if await pg.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--faint').trim()") != "#8f8d86":
+            errs.append("dark --faint token is not the readable one")
         # Layout: the activity map never overlaps the cards beside it, at any width, and the
         # page never scrolls sideways (tables scroll inside their own box).
         for w in (2133, 1440, 1100, 390):
@@ -264,7 +281,7 @@ EOF
 )"
     case "$SMOKE" in
       SKIP*) echo "  ⟳  sem Chromium para o Playwright — smoke do navegador pulado" ;;
-      *) check "browser: both views render without page errors; no overlap or sideways scroll at 2133/1440/1100/390 px" "[ \"\$SMOKE\" = OK ] || { echo \"     \$SMOKE\"; false; }" ;;
+      *) check "browser: views render without errors; no Ativo agora card on all projects; filters work and persist; readable dark tokens; no overlap/sideways scroll at 4 widths" "[ \"\$SMOKE\" = OK ] || { echo \"     \$SMOKE\"; false; }" ;;
     esac
   else
     echo "  ⟳  Playwright ausente — smoke do navegador pulado"

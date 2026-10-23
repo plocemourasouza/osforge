@@ -28,9 +28,9 @@
 <title>OSForge Monitor</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23111'/%3E%3Cpath d='M9 20h14l-2 4H11zM12 9h8l3 7H9z' fill='%235fe08a'/%3E%3C/svg%3E">
 <style>
-:root{color-scheme:dark;--bg:#060606;--panel:#0c0c0c;--card:linear-gradient(180deg,#0f0f0f,#090909);--line:#1c1c1b;--line2:#262624;--text:#f3f2ee;--muted:#8d8b84;--faint:#5e5c55;--track:#141413;--segOn:#1f1f1d;--tip:#050505;--tipText:#f3f2ee;--ok:#5fe08a;--okbg:#122016;--bad:#ff6b5b;--badbg:#2a1210;--warn:#f1c96b;--warnbg:#2a2412;--info:#7c8cff;--infobg:#161a33;--nonebg:#161615;--empty:#151514;--tint:.2;--glow:1;--shadow:inset 0 1px 0 rgba(255,255,255,.035),0 20px 50px rgba(0,0,0,.35)}
-:root[data-theme=light]{color-scheme:light;--bg:#f5f5f3;--panel:#fff;--card:#fff;--line:#ebeae6;--line2:#dedcd6;--text:#1d1c1a;--muted:#77756f;--faint:#a9a7a0;--track:#f2f1ed;--segOn:#fff;--tip:#1d1c1a;--tipText:#fff;--ok:#2f7d3b;--okbg:#e8f5e9;--bad:#b4401b;--badbg:#fcebe4;--warn:#946200;--warnbg:#fbf2d7;--info:#3f4bb8;--infobg:#e9ebfb;--nonebg:#f2f1ed;--empty:#eeede9;--tint:.12;--glow:.45;--shadow:0 1px 2px rgba(25,25,15,.05)}
-@media (prefers-color-scheme:light){:root[data-theme=system]{color-scheme:light;--bg:#f5f5f3;--panel:#fff;--card:#fff;--line:#ebeae6;--line2:#dedcd6;--text:#1d1c1a;--muted:#77756f;--faint:#a9a7a0;--track:#f2f1ed;--segOn:#fff;--tip:#1d1c1a;--tipText:#fff;--ok:#2f7d3b;--okbg:#e8f5e9;--bad:#b4401b;--badbg:#fcebe4;--warn:#946200;--warnbg:#fbf2d7;--info:#3f4bb8;--infobg:#e9ebfb;--nonebg:#f2f1ed;--empty:#eeede9;--tint:.12;--glow:.45;--shadow:0 1px 2px rgba(25,25,15,.05)}}
+:root{color-scheme:dark;--bg:#060606;--panel:#0c0c0c;--card:linear-gradient(180deg,#0f0f0f,#090909);--line:#1c1c1b;--line2:#2c2c2a;--text:#f3f2ee;--muted:#b4b2aa;--faint:#8f8d86;--track:#141413;--segOn:#1f1f1d;--tip:#050505;--tipText:#f3f2ee;--ok:#5fe08a;--okbg:#122016;--bad:#ff6b5b;--badbg:#2a1210;--warn:#f1c96b;--warnbg:#2a2412;--info:#7c8cff;--infobg:#161a33;--nonebg:#161615;--empty:#151514;--tint:.2;--glow:1;--shadow:inset 0 1px 0 rgba(255,255,255,.035),0 20px 50px rgba(0,0,0,.35)}
+:root[data-theme=light]{color-scheme:light;--bg:#f5f5f3;--panel:#fff;--card:#fff;--line:#ebeae6;--line2:#dedcd6;--text:#1d1c1a;--muted:#5f5d57;--faint:#7d7b74;--track:#f2f1ed;--segOn:#fff;--tip:#1d1c1a;--tipText:#fff;--ok:#2f7d3b;--okbg:#e8f5e9;--bad:#b4401b;--badbg:#fcebe4;--warn:#946200;--warnbg:#fbf2d7;--info:#3f4bb8;--infobg:#e9ebfb;--nonebg:#f2f1ed;--empty:#eeede9;--tint:.12;--glow:.45;--shadow:0 1px 2px rgba(25,25,15,.05)}
+@media (prefers-color-scheme:light){:root[data-theme=system]{color-scheme:light;--bg:#f5f5f3;--panel:#fff;--card:#fff;--line:#ebeae6;--line2:#dedcd6;--text:#1d1c1a;--muted:#5f5d57;--faint:#7d7b74;--track:#f2f1ed;--segOn:#fff;--tip:#1d1c1a;--tipText:#fff;--ok:#2f7d3b;--okbg:#e8f5e9;--bad:#b4401b;--badbg:#fcebe4;--warn:#946200;--warnbg:#fbf2d7;--info:#3f4bb8;--infobg:#e9ebfb;--nonebg:#f2f1ed;--empty:#eeede9;--tint:.12;--glow:.45;--shadow:0 1px 2px rgba(25,25,15,.05)}}
 *{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;-webkit-font-smoothing:antialiased}
 .num{font-family:ui-monospace,SFMono-Regular,Menlo,"JetBrains Mono",monospace;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
 button{font:inherit}:focus-visible{outline:2px solid var(--info);outline-offset:2px}
@@ -138,6 +138,9 @@ footer{color:var(--faint);font-size:12px;margin-top:22px}
 .side-label.toggle{border:0;background:none;cursor:pointer;text-align:left;width:100%}.side-label.toggle:hover{color:var(--text)}
 @keyframes pulse{0%{box-shadow:0 0 0 0 var(--c,var(--ok))}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}.dot.pulse{animation:pulse 1.6s infinite}.dot.hollow.pulse{border-color:var(--ok);--c:var(--ok)}
 @media (prefers-reduced-motion:reduce){.dot.pulse{animation:none}}
+.filters{display:grid;gap:10px;padding:0 22px 14px}.frow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.frow .flabel{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);min-width:92px}
+.fchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line2);background:transparent;color:var(--muted);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}.fchip:hover{color:var(--text);border-color:var(--faint)}.fchip[aria-pressed=true]{background:var(--infobg);color:var(--text);border-color:var(--info)}.fchip .c{font:11px ui-monospace,Menlo,monospace;color:var(--faint)}.fchip[aria-pressed=true] .c{color:var(--muted)}.fchip:disabled{opacity:.4;cursor:default}
+.fsum{font-size:12px;color:var(--muted)}.linkbtn{border:0;background:none;color:var(--info);font:inherit;font-size:12px;cursor:pointer;padding:0}
 @media (max-width:1360px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:1100px){.grid2,.grid2.even{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:860px){.app{grid-template-columns:minmax(0,1fr)}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);max-height:46vh}
@@ -183,7 +186,7 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     chamadas: { label: 'Chamadas', fmt: function (n) { return Math.round(n).toLocaleString('pt-BR') } }
   }
   var KPI = [['sessoes', '#4cc3ff', '#7c8cff'], ['minutos', '#2fd4c0', '#5fe08a'], ['custo', '#ffd166', '#ff8a3d'], ['tokens', '#ff6fb5', '#b26bff']]
-  var state = { project: '', days: 30, metric: 'minutos', modelMetric: 'custo', q: '', hidden: {}, portfolio: null, detail: null, error: '', seq: 0, live: null, tools: { ides: [], claude: false }, drafts: {}, focus: '', composerProject: '', acceptEdits: false, showHistory: false }
+  var state = { project: '', days: 30, metric: 'minutos', modelMetric: 'custo', q: '', hidden: {}, portfolio: null, detail: null, error: '', seq: 0, live: null, tools: { ides: [], claude: false }, drafts: {}, focus: '', composerProject: '', acceptEdits: false, showHistory: false, filters: { grupo: {}, proc: {}, flag: {}, sort: 'situacao' } }
 
   // ── helpers ──────────────────────────────────────────────────────────────
   function byId(id) { return document.getElementById(id) }
@@ -564,32 +567,39 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     box.insertBefore(pill(({ ativo: 'Ativo agora', andamento: 'Em andamento', aguardando: 'Aguardando', backlog: 'Backlog', historico: 'Histórico' })[g] + (D.grupo_regra && g !== 'ativo' ? ' · ' + D.grupo_regra : ''), GROUP_PILL[g]), box.firstChild)
     return box
   }
-  function liveCard() {
-    var P = state.portfolio, list = (P.projetos || []).filter(function (p) { return groupOf(p) === 'ativo' })
-    var loose = ((state.live && state.live.sem_cadastro) || []).filter(isLive)
-    var c = h('section', 'card pad live-card'), head = h('div', 'card-head'); head.appendChild(h('h3', '', 'Ativo agora'))
-    head.appendChild(h('span', 'sub', state.live ? 'atualiza a cada 10 s' : 'lendo processos…')); c.appendChild(head)
-    if (!list.length && !loose.length) c.appendChild(h('div', 'sub', 'Nenhum projeto com Claude Code, IDE ou servidor rodando agora.'))
-    var grid = h('div', 'live-grid')
-    list.forEach(function (p) {
-      var l = liveOf(p.slug), it = h('button', 'live-item'); it.type = 'button'
-      var t = h('div', 'task'), d = h('span', 'dot pulse'); d.style.setProperty('--c', colorOf(p.slug)); t.appendChild(d); t.appendChild(h('b', '', p.slug))
-      if (l.trabalhando) t.appendChild(pill('trabalhando', 'ok'))
-      it.appendChild(t); it.appendChild(h('div', 'sub', liveText(l)))
-      if (p.inbox_pendentes) it.appendChild(h('div', 'sub', plural(p.inbox_pendentes, 'orientação pendente', 'orientações pendentes')))
-      it.addEventListener('click', function () { select(p.slug) })
-      grid.appendChild(it)
-    })
-    loose.forEach(function (u) {
-      var it = h('div', 'live-item muted'), t = h('div', 'task'), d = h('span', 'dot hollow'); t.appendChild(d); t.appendChild(h('b', '', u.nome)); t.appendChild(pill('sem cadastro', ''))
-      it.appendChild(t); it.appendChild(h('div', 'sub', liveText(u)))
-      grid.appendChild(it)
-    })
-    c.appendChild(grid)
-    c.appendChild(h('div', 'sep'))
-    c.appendChild(composer(''))
-    return c
+
+
+  // ── project filters (portfolio table) ───────────────────────────────────
+  // Within a category the options add up (OR); across categories they narrow (AND).
+  function has(p, cat, key) {
+    var l = liveOf(p.slug)
+    if (cat === 'grupo') return groupOf(p) === key
+    if (cat === 'proc') {
+      if (key === 'claude') return !!(l && l.claude)
+      if (key === 'ide') return !!(l && l.ides.length)
+      if (key === 'dev') return !!(l && l.servidores.length)
+      if (key === 'nada') return !isLive(l)
+    }
+    if (cat === 'flag') {
+      if (key === 'bloqueio') return p.bloqueios_abertos > 0
+      if (key === 'inbox') return p.inbox_pendentes > 0
+      if (key === 'sinais') return p.sinais_abertos > 0
+      if (key === 'tarefas') return p.tarefas_abertas > 0
+      if (key === 'sempasta') return !p.acesso.raiz_existe
+    }
+    return false
   }
+  function passes(p, F, skip) {
+    return ['grupo', 'proc', 'flag'].every(function (cat) {
+      if (cat === skip) return true
+      var keys = Object.keys(F[cat] || {}).filter(function (k) { return F[cat][k] })
+      return !keys.length || keys.some(function (k) { return has(p, cat, k) })
+    })
+  }
+  function activeFilters() { var F = state.filters; return ['grupo', 'proc', 'flag'].some(function (c) { return Object.keys(F[c] || {}).length }) }
+  function saveFilters() { try { localStorage.setItem('osforge-monitor-filters', JSON.stringify(state.filters)) } catch (e) {} }
+  function clearFilters() { state.filters = { grupo: {}, proc: {}, flag: {}, sort: state.filters.sort || 'situacao' }; saveFilters() }
+  try { var sf = JSON.parse(localStorage.getItem('osforge-monitor-filters') || 'null'); if (sf && typeof sf === 'object') state.filters = { grupo: sf.grupo || {}, proc: sf.proc || {}, flag: sf.flag || {}, sort: sf.sort || 'situacao' } } catch (e) {}
 
   // ── sidebar ──────────────────────────────────────────────────────────────
   function sidebar() {
@@ -647,7 +657,6 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     sub.appendChild(h('span', '', plural(t.projetos, 'projeto', 'projetos') + ' · ' + plural(t.tarefas_abertas, 'tarefa aberta', 'tarefas abertas') + ' · ' + plural(t.bloqueios_abertos, 'bloqueio', 'bloqueios')))
     var byG = {}; list.forEach(function (p) { var g = groupOf(p); byG[g] = (byG[g] || 0) + 1 })
     LIVE_GROUPS.forEach(function (g) { var c = byG[g[0]]; if (c) sub.appendChild(pill(c + ' ' + GROUP_ONE[g[0]], GROUP_PILL[g[0]])) })
-    view.appendChild(liveCard())
 
     var all = sumSeries(list.map(function (p) { return p.serie }).concat([P.sem_projeto.serie]))
     view.appendChild(kpis(all, t))
@@ -671,18 +680,33 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     var title = h('h3', '', 'Projetos'), count = h('span', 'n'); title.appendChild(count); lh.appendChild(title)
     var search = h('label', 'search'), input = h('input'); input.type = 'search'; input.placeholder = 'Buscar projeto'; input.setAttribute('aria-label', 'Buscar projeto'); input.value = state.q
     search.appendChild(input); lh.appendChild(search); tableCard.appendChild(lh)
+    var fbar = h('div', 'filters'); tableCard.appendChild(fbar)
     var wrap = h('div', 'table-wrap'), table = h('table'), thead = h('thead'), tr = h('tr')
     ;[['Projeto', ''], ['Situação', ''], ['Fase', ''], ['Progresso', ''], ['Abertas', 'r'], ['Bloq.', 'r'], ['Sinais', 'r'], ['Atividade', ''], ['Custo', 'r']].forEach(function (c) { tr.appendChild(h('th', c[1], c[0])) })
     thead.appendChild(tr); table.appendChild(thead)
     var body = h('tbody'); table.appendChild(body); wrap.appendChild(table); tableCard.appendChild(wrap)
     var fill = function () {
       body.textContent = ''
-      var q = state.q.trim().toLowerCase()
+      var q = state.q.trim().toLowerCase(), F = state.filters
       var GO = { ativo: 0, andamento: 1, aguardando: 2, backlog: 3, historico: 4 }
-      var rows = list.filter(function (p) { return !q || (p.slug + ' ' + (p.descricao || '') + ' ' + (p.fase_atual || '')).toLowerCase().indexOf(q) >= 0 })
-        .slice().sort(function (a, b) { return (GO[groupOf(a)] - GO[groupOf(b)]) || ((b.ultima_atividade || '').localeCompare(a.ultima_atividade || '')) })
-      count.textContent = String(rows.length)
-      if (!rows.length) { var e = h('tr'), td = h('td', 'empty', q ? 'Nenhum projeto encontrado.' : 'Nenhum projeto cadastrado.'); td.colSpan = 9; e.appendChild(td); body.appendChild(e); return }
+      var byText = list.filter(function (p) { return !q || (p.slug + ' ' + (p.descricao || '') + ' ' + (p.fase_atual || '')).toLowerCase().indexOf(q) >= 0 })
+      var rows = byText.filter(function (p) { return passes(p, F, null) })
+      var SORT = {
+        situacao: function (a, b) { return (GO[groupOf(a)] - GO[groupOf(b)]) || ((b.ultima_atividade || '').localeCompare(a.ultima_atividade || '')) },
+        atividade: function (a, b) { return (b.ultima_atividade || '').localeCompare(a.ultima_atividade || '') },
+        custo: function (a, b) { return (b.periodo.custo || 0) - (a.periodo.custo || 0) },
+        progresso: function (a, b) { return (b.pct == null ? -1 : b.pct) - (a.pct == null ? -1 : a.pct) },
+        abertas: function (a, b) { return b.tarefas_abertas - a.tarefas_abertas },
+        nome: function (a, b) { return a.slug.localeCompare(b.slug) }
+      }
+      rows.sort(SORT[F.sort] || SORT.situacao)
+      count.textContent = rows.length === list.length ? String(rows.length) : rows.length + ' de ' + list.length
+      filterBar(fbar, byText)
+      if (!rows.length) {
+        var e = h('tr'), td = h('td', 'empty', list.length ? 'Nenhum projeto com esses filtros. ' : 'Nenhum projeto cadastrado.'); td.colSpan = 9
+        if (list.length) { var clr = h('button', 'linkbtn', 'Limpar filtros'); clr.type = 'button'; clr.addEventListener('click', function () { clearFilters(); fill() }); td.appendChild(clr) }
+        e.appendChild(td); body.appendChild(e); return
+      }
       rows.forEach(function (p) {
         var r = h('tr', 'click'), name = h('td', 'name'), t1 = h('div', 'task'), d = h('span', 'dot'); d.style.setProperty('--c', colorOf(p.slug))
         r.tabIndex = 0; r.setAttribute('role', 'link'); r.setAttribute('aria-label', 'Abrir ' + p.slug)
@@ -700,6 +724,48 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
       })
     }
     input.addEventListener('input', function () { state.q = input.value; fill() })
+    // The bar re-renders the table itself; the chips call this.
+    function filterBar(box, base) {
+      box.textContent = ''
+      var F = state.filters
+      var defs = [
+        ['grupo', 'Situação', [['ativo', 'Ativo agora'], ['andamento', 'Em andamento'], ['aguardando', 'Aguardando'], ['backlog', 'Backlog'], ['historico', 'Histórico']]],
+        ['proc', 'Rodando', [['claude', 'Claude Code'], ['ide', 'IDE aberta'], ['dev', 'Servidor de dev'], ['nada', 'Nada rodando']]],
+        ['flag', 'Atenção', [['bloqueio', 'Com bloqueio'], ['inbox', 'Orientação pendente'], ['sinais', 'Sinais de qualidade'], ['tarefas', 'Tarefas abertas'], ['sempasta', 'Sem pasta']]]
+      ]
+      defs.forEach(function (d) {
+        var row = h('div', 'frow'); row.appendChild(h('span', 'flabel', d[1]))
+        d[2].forEach(function (o) {
+          var probe = {}; probe[d[0]] = {}; probe[d[0]][o[0]] = true
+          // Count = how many would show if this option were picked, the other categories kept.
+          var n = base.filter(function (p) { return passes(p, F, d[0]) && passes(p, probe, null) }).length
+          var on = !!(F[d[0]] && F[d[0]][o[0]])
+          var b = h('button', 'fchip'); b.type = 'button'; b.setAttribute('aria-pressed', String(on))
+          b.appendChild(document.createTextNode(o[1])); b.appendChild(h('span', 'c', String(n)))
+          if (!n && !on) b.disabled = true
+          b.addEventListener('click', function () {
+            F[d[0]] = F[d[0]] || {}; if (on) delete F[d[0]][o[0]]; else F[d[0]][o[0]] = true
+            saveFilters(); fill()
+          })
+          row.appendChild(b)
+        })
+        box.appendChild(row)
+      })
+      var last = h('div', 'frow'); last.appendChild(h('span', 'flabel', 'Ordenar'))
+      var sel = h('select', 'select'); sel.setAttribute('aria-label', 'Ordenar projetos')
+      ;[['situacao', 'Situação, depois atividade'], ['atividade', 'Última atividade'], ['custo', 'Custo no período'], ['progresso', 'Progresso'], ['abertas', 'Tarefas abertas'], ['nome', 'Nome']].forEach(function (o) {
+        var op = h('option', '', o[1]); op.value = o[0]; sel.appendChild(op)
+      })
+      sel.value = F.sort || 'situacao'
+      sel.addEventListener('change', function () { F.sort = sel.value; saveFilters(); fill() })
+      last.appendChild(sel)
+      if (activeFilters()) {
+        var clr = h('button', 'linkbtn', 'Limpar filtros'); clr.type = 'button'
+        clr.addEventListener('click', function () { clearFilters(); fill() })
+        last.appendChild(clr)
+      }
+      box.appendChild(last)
+    }
     fill()
     tableCard.style.marginBottom = '14px'
     view.appendChild(tableCard)
