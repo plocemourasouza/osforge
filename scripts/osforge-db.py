@@ -2332,6 +2332,19 @@ def _project_summary(conn, p, per_day, keys_period, keys_series):
     }
 
 
+def _is_scratch_dir(path):
+    """Temporary folders are never projects: eval runs, test sandboxes and installers live there
+    (seen 2026-10-23: a dev server left behind by a routing-eval run in /private/tmp showed up
+    as an unregistered "landing" project). OSFORGE_LIVE_ALLOW_TMP=1 turns this off (tests)."""
+    if os.environ.get("OSFORGE_LIVE_ALLOW_TMP") == "1":
+        return False
+    import tempfile
+    real = os.path.realpath(path or "/")
+    bases = {"/tmp", "/private/tmp", "/var/tmp", "/private/var/tmp", "/var/folders", "/private/var/folders",
+             os.path.realpath(tempfile.gettempdir())}
+    return any(real == b or real.startswith(b.rstrip("/") + os.sep) for b in bases)
+
+
 def _discover(conn, max_age_days=30):
     """Folders with a Claude Code session in the last `max_age_days` days, from the `cwd` field
     of the newest transcript per folder in ~/.claude/projects. Read-only: nothing is written;
@@ -2379,7 +2392,7 @@ def _discover(conn, max_age_days=30):
     for cwd, (mtime, nfiles) in sorted(cwds.items(), key=lambda kv: -kv[1][0]):
         top = _git_out(["rev-parse", "--show-toplevel"], cwd)
         root = os.path.realpath(top) if top else os.path.realpath(cwd)
-        if root == home or root in seen:
+        if root == home or root in seen or _is_scratch_dir(root):
             continue
         seen.add(root)
         pid = _resolve_project_id_for_cwd(conn, os.path.realpath(cwd), cache)
@@ -2907,7 +2920,14 @@ def live_state(conn):
     def slot(pid_, key, label):
         if pid_ is not None:
             return out.setdefault(projects[pid_]["slug"], {"claude": 0, "trabalhando": False, "ides": [], "servidores": [], "pastas": []})
-        return loose.setdefault(key, {"pasta": key, "nome": label, "claude": 0, "trabalhando": False, "ides": [], "servidores": []})
+        if key not in loose:
+            absolute = os.path.isabs(key)
+            slug = _slugify(label) or "projeto"
+            loose[key] = {"pasta": key if absolute else None, "nome": label, "claude": 0, "trabalhando": False,
+                          "ides": [], "servidores": [], "slug_sugerido": slug,
+                          "comando": (f"osforge-db upsert-project {shlex.quote(slug)} {shlex.quote(label)} standard active "
+                                      f"--root={shlex.quote(key)}") if absolute else None}
+        return loose[key]
 
     seen_server_cwd = set()
     for pid, cwd in sorted(cwds.items()):
@@ -2918,6 +2938,8 @@ def live_state(conn):
         root = roots[real]
         if root == os.path.realpath(os.path.expanduser("~")) or root == "/":
             continue
+        if _is_scratch_dir(root) and _resolve_project_id_for_cwd(conn, real, cache) is None:
+            continue                                   # a leftover in /tmp is not a project
         proj = _resolve_project_id_for_cwd(conn, real, cache)
         s = slot(proj, root, os.path.basename(root))
         if proj is not None and root not in s["pastas"]:

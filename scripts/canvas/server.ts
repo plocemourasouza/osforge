@@ -588,9 +588,14 @@ async function handleProjectRegister(request: Request): Promise<Response> {
   if (body instanceof Response) return body;
   const pasta = body["pasta"];
   if (typeof pasta !== "string") return jsonError("invalid folder", 400);
-  const r = await runDb(["monitor", "--days=7", "--discover"]);
+  // The folder must be one the server itself found: in recent Claude Code sessions, or running
+  // right now (a dev server or a session with no transcript yet). Never a path from the request.
+  const r = await runDb(["monitor", "--days=7", "--discover", "--live"]);
   if (r.code !== 0) return jsonError("monitor failed", 502);
-  const found = ((JSON.parse(r.out)["sem_cadastro"] as Array<Record<string, unknown>>) || []).find((u) => u["pasta"] === pasta);
+  const d = JSON.parse(r.out) as Record<string, unknown>;
+  const live = ((d["ao_vivo"] as Record<string, unknown> | undefined)?.["sem_cadastro"] as Array<Record<string, unknown>>) || [];
+  const found = [...(((d["sem_cadastro"] as Array<Record<string, unknown>>) || [])), ...live]
+    .find((u) => typeof u["pasta"] === "string" && u["pasta"] === pasta);
   if (!found) return jsonError("folder is not among the discovered ones", 404);
   const slug = String(found["slug_sugerido"] || "");
   if (!SLUG_PATTERN.test(slug)) return jsonError("cannot derive a slug", 409);

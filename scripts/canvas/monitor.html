@@ -141,6 +141,7 @@ footer{color:var(--faint);font-size:12px;margin-top:22px}
 .filters{display:grid;gap:10px;padding:0 22px 14px}.frow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.frow .flabel{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);min-width:92px}
 .fchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line2);background:transparent;color:var(--muted);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}.fchip:hover{color:var(--text);border-color:var(--faint)}.fchip[aria-pressed=true]{background:var(--infobg);color:var(--text);border-color:var(--info)}.fchip .c{font:11px ui-monospace,Menlo,monospace;color:var(--faint)}.fchip[aria-pressed=true] .c{color:var(--muted)}.fchip:disabled{opacity:.4;cursor:default}
 .fsum{font-size:12px;color:var(--muted)}.linkbtn{border:0;background:none;color:var(--info);font:inherit;font-size:12px;cursor:pointer;padding:0}
+.item.flash{animation:flash 1.6s ease-out}@keyframes flash{0%{background:var(--infobg)}100%{background:transparent}}
 @media (max-width:1360px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:1100px){.grid2,.grid2.even{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:860px){.app{grid-template-columns:minmax(0,1fr)}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);max-height:46vh}
@@ -628,7 +629,15 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
         var lv = ((state.live && state.live.sem_cadastro) || []).filter(function (x) { return x.nome === u.nome })[0]
         var b = h('button', 'nav-item'), d = h('span', 'dot hollow' + (isLive(lv) ? ' pulse' : '')); b.type = 'button'; b.title = u.pasta + (isLive(lv) ? ' — agora: ' + liveText(lv) : '')
         b.appendChild(d); b.appendChild(h('span', 'name', u.nome)); b.appendChild(h('span', 'n', isLive(lv) ? 'ativo' : ago(u.ultima_sessao)))
-        b.addEventListener('click', function () { select(''); setTimeout(function () { var el = byId('unregistered'); if (el) el.scrollIntoView({ behavior: 'smooth' }) }, 50) })
+        // Not a project yet: there is no detail page. The click goes to its card, where it can be registered.
+        b.addEventListener('click', function () {
+          select(''); setTimeout(function () {
+            var el = byId('unregistered'); if (!el) return
+            el.scrollIntoView({ behavior: 'smooth' })
+            var row = [].slice.call(el.querySelectorAll('.item')).filter(function (x) { return x.firstChild && x.firstChild.textContent.indexOf(u.nome) === 0 })[0]
+            if (row) { row.classList.add('flash'); setTimeout(function () { row.classList.remove('flash') }, 1600) }
+          }, 300)
+        })
         nav.appendChild(b)
       })
     }
@@ -793,11 +802,18 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     grid.appendChild(heat(lastN(all, 84), []))
     view.appendChild(grid)
 
-    var un = P.sem_cadastro || [], noRoot = list.filter(function (p) { return p.acesso && p.acesso.comando })
-    if (un.length || noRoot.length) {
+    var un = (P.sem_cadastro || []).slice(), known = {}
+    un.forEach(function (u) { known[u.pasta] = true })
+    // Folders seen only through what runs now (a dev server, a fresh session): listed too.
+    ;((state.live && state.live.sem_cadastro) || []).forEach(function (u) {
+      if (u.pasta && !known[u.pasta]) { known[u.pasta] = true; un.push({ pasta: u.pasta, nome: u.nome, comando: u.comando, ao_vivo: liveText(u) }) }
+    })
+    var ideOnly = ((state.live && state.live.sem_cadastro) || []).filter(function (u) { return !u.pasta })
+    var noRoot = list.filter(function (p) { return p.acesso && p.acesso.comando })
+    if (un.length || noRoot.length || ideOnly.length) {
       var c = h('section', 'card pad'); c.id = 'unregistered'; c.style.minWidth = '0'
       var ch = h('div', 'card-head'); ch.appendChild(h('h3', '', 'Pastas e raízes para cadastrar')); c.appendChild(ch)
-      c.appendChild(h('div', 'sub', 'Lidas do cwd das sessões do Claude Code nos últimos 30 dias. Cadastre aqui ou copie o comando.'))
+      c.appendChild(h('div', 'sub', 'Pastas com sessão do Claude Code nos últimos 30 dias, ou com algo rodando agora, que ainda não são projetos. Pastas temporárias (/tmp, testes) não entram. Cadastre aqui ou copie o comando.'))
       noRoot.forEach(function (p) {
         var it = h('div', 'item'); it.appendChild(h('div', '', p.slug + ' — raiz sugerida: ' + p.acesso.raiz_sugerida))
         var bb = h('button', 'btn small', 'Cadastrar raiz'); bb.type = 'button'
@@ -805,10 +821,16 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
         it.appendChild(bb); it.appendChild(cmdRow(p.acesso.comando)); c.appendChild(it)
       })
       un.forEach(function (u) {
-        var it = h('div', 'item'); it.appendChild(h('div', '', u.nome)); it.appendChild(h('div', 'sub', u.pasta + ' · ' + plural(u.sessoes_30d, 'sessão', 'sessões') + ' · última ' + ago(u.ultima_sessao)))
+        var it = h('div', 'item'); it.appendChild(h('div', '', u.nome))
+        it.appendChild(h('div', 'sub', u.pasta + (u.ao_vivo ? ' · rodando agora: ' + u.ao_vivo : ' · ' + plural(u.sessoes_30d, 'sessão', 'sessões') + ' · última ' + ago(u.ultima_sessao))))
         var reg = h('button', 'btn small', 'Cadastrar como projeto'); reg.type = 'button'
         reg.addEventListener('click', function () { act(postJSON('/api/project/register', { pasta: u.pasta }), u.nome + ' cadastrado') })
         it.appendChild(reg); it.appendChild(cmdRow(u.comando)); c.appendChild(it)
+      })
+      ideOnly.forEach(function (u) {
+        var it = h('div', 'item'); it.appendChild(h('div', '', u.nome + ' — ' + (u.ides.join(', ') || 'aberto')))
+        it.appendChild(h('div', 'sub', 'A IDE só informa o nome da pasta, não o caminho. Abra uma sessão do Claude Code nessa pasta (ou cadastre com osforge-db upsert-project … --root=<pasta>) e ela aparece aqui com o botão de cadastro.'))
+        c.appendChild(it)
       })
       view.appendChild(c)
     }

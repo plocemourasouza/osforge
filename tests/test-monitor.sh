@@ -28,6 +28,7 @@ section(){ echo ""; echo "── $1"; }
 export TZ=UTC HOME="$WORK/home"; mkdir -p "$HOME"
 export OSFORGE_DB="$WORK/db.sqlite" OSFORGE_QUOTA_FILE="$WORK/quota.json" OSFORGE_PRICING="$REPO/claude-code/pricing.json"
 unset OSFORGE_PROJECT OSFORGE_TRANSCRIPTS_DIR
+export OSFORGE_LIVE_ALLOW_TMP=1    # this suite's folders live under mktemp; section 10 checks the real rule
 db(){ python3 "$REPO/scripts/osforge-db.py" "$@"; }
 GIT="git -c user.name=t -c user.email=t@t -c init.defaultBranch=main -c commit.gpgsign=false"
 J="$WORK/out.json"
@@ -336,6 +337,12 @@ check "live: next dev in a subfolder maps to alpha, its sh wrapper is the same s
 check "live: Cursor window on alpha (IDE helper process title)" "[ \"\$(q 'd[\"projetos\"][\"alpha\"][\"ides\"]')\" = \"['Cursor']\" ]"
 check "live: unregistered folders listed once each (claude + Cursor in novo, VS Code on outra-pasta)" "[ \"\$(q 'sorted((x[\"nome\"], x[\"claude\"], x[\"ides\"]) for x in d[\"sem_cadastro\"])')\" = \"[('novo', 1, ['Cursor']), ('outra-pasta', 0, ['VS Code'])]\" ]"
 check "live: claude in / is ignored, osforge itself is not a server" "[ \"\$(q 'sum(v[\"claude\"] for v in d[\"projetos\"].values()) + sum(x[\"claude\"] for x in d[\"sem_cadastro\"])')\" = 2 ]"
+OSFORGE_LIVE_PS_FILE="$WORK/ps.txt" OSFORGE_LIVE_CWD_FILE="$WORK/cwd.json" OSFORGE_LIVE_ALLOW_TMP=0 db live > "$J"
+check "live: unregistered folders under a temp dir are not projects (a leftover eval dev server); registered ones still count" "[ \"\$(q '(sorted(x[\"nome\"] for x in d[\"sem_cadastro\"] if x[\"pasta\"]), d[\"projetos\"][\"alpha\"][\"claude\"])')\" = \"([], 1)\" ]"
+OSFORGE_LIVE_PS_FILE="$WORK/ps.txt" OSFORGE_LIVE_CWD_FILE="$WORK/cwd.json" OSFORGE_LIVE_ALLOW_TMP=0 db monitor --discover > "$J"
+check "discover: sessions in temp folders are not suggested either" "[ \"\$(q 'd[\"sem_cadastro\"]')\" = '[]' ]"
+OSFORGE_LIVE_PS_FILE="$WORK/ps.txt" OSFORGE_LIVE_CWD_FILE="$WORK/cwd.json" db live > "$J"
+check "live: an unregistered folder carries its slug and register command; an IDE-only one has no path" "[ \"\$(q 'sorted((x[\"nome\"], x[\"slug_sugerido\"], bool(x[\"pasta\"]), bool(x[\"comando\"])) for x in d[\"sem_cadastro\"])')\" = \"[('novo', 'novo', True, True), ('outra-pasta', 'outra-pasta', False, False)]\" ]"
 OSFORGE_LIVE_PS_FILE="$WORK/ps.txt" OSFORGE_LIVE_CWD_FILE="$WORK/cwd.json" db monitor --live > "$J"
 check "monitor --live embeds the live block" "[ \"\$(q 'd[\"ao_vivo\"][\"projetos\"][\"alpha\"][\"claude\"]')\" = 1 ]"
 
@@ -387,6 +394,7 @@ SH
   chmod +x "$F/open" "$F/claude"
   export OPEN_LOG="$WORK/open.log" CLAUDE_LOG="$WORK/claude.log" OSFORGE_INBOX_DIR="$WORK/inbox2"
   PORT2="$(python3 -c "import socket; s=socket.socket(); s.bind(('127.0.0.1',0)); print(s.getsockname()[1])")"
+  OSFORGE_LIVE_PS_FILE="$WORK/ps.txt" OSFORGE_LIVE_CWD_FILE="$WORK/cwd.json" \
   OSFORGE_OPEN_CMD="$F/open" OSFORGE_CLAUDE_CMD="$F/claude" OSFORGE_APPS_DIRS="$WORK/apps" CANVAS_PORT="$PORT2" \
     bun "$REPO/scripts/canvas/server.ts" --dir="$WORK/canvas2" >"$WORK/server2.log" 2>&1 &
   SPID2=$!
@@ -426,6 +434,8 @@ SH
   DUPR="$(cd "$DUP" && pwd -P)"
   check "register: a folder named like an existing project (w1) is that project, never re-registered; w1 untouched" "[ \"\$(post /api/project/register \"{\\\"pasta\\\":\\\"$DUPR\\\"}\")\" != 201 ] && db --json list-projects --status=all | python3 -c 'import json,sys; p=[x for x in json.load(sys.stdin) if x[\"slug\"]==\"w1\"][0]; assert p[\"root_path\"] is None and p[\"status\"]==\"paused\", p'"
   check "register: only a discovered folder; then it is a project" "[ \"\$(post /api/project/register '{\"pasta\":\"/etc\"}')\" = 404 ] && [ \"\$(post /api/project/register \"{\\\"pasta\\\":\\\"$(cd "$N" && pwd -P)\\\"}\")\" = 201 ] && db --json list-projects --status=all | grep -q '\"novo-app\"'"
+  LNR="$(cd "$L/novo" && pwd -P)"
+  check "register: a folder seen only running now (no transcript) can be registered too" "[ \"\$(post /api/project/register \"{\\\"pasta\\\":\\\"$LNR\\\"}\")\" = 201 ] && db --json list-projects --status=all | python3 -c 'import json,sys; p=[x for x in json.load(sys.stdin) if x[\"slug\"]==\"novo\"]; assert p and p[0][\"root_path\"]==sys.argv[1], p' \"$LNR\""
   kill "$SPID2" 2>/dev/null; wait "$SPID2" 2>/dev/null
   unset OSFORGE_INBOX_DIR
 fi
