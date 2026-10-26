@@ -187,7 +187,7 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     chamadas: { label: 'Chamadas', fmt: function (n) { return Math.round(n).toLocaleString('pt-BR') } }
   }
   var KPI = [['sessoes', '#4cc3ff', '#7c8cff'], ['minutos', '#2fd4c0', '#5fe08a'], ['custo', '#ffd166', '#ff8a3d'], ['tokens', '#ff6fb5', '#b26bff']]
-  var state = { project: '', days: 30, metric: 'minutos', modelMetric: 'custo', q: '', hidden: {}, portfolio: null, detail: null, error: '', seq: 0, live: null, tools: { ides: [], claude: false }, drafts: {}, focus: '', composerProject: '', acceptEdits: false, showHistory: false, filters: { grupo: {}, proc: {}, flag: {}, sort: 'situacao' } }
+  var state = { project: '', days: 30, metric: 'minutos', modelMetric: 'custo', q: '', hidden: {}, portfolio: null, detail: null, error: '', seq: 0, live: null, tools: { ides: [], claude: false }, drafts: {}, focus: '', composerProject: '', acceptEdits: false, showHistory: false, folder: '', filters: { grupo: {}, proc: {}, flag: {}, sort: 'situacao' } }
 
   // ── helpers ──────────────────────────────────────────────────────────────
   function byId(id) { return document.getElementById(id) }
@@ -423,9 +423,15 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().catch(function () { return {} }).then(function (b) { if (!r.ok) throw new Error(b.error || ('HTTP ' + r.status)); return b }) })
   }
-  var ERR = { 'project has no registered folder: bind it first': 'o projeto não tem pasta cadastrada — cadastre a raiz primeiro', 'IDE not installed': 'essa IDE não está instalada', 'claude not found': 'não encontrei o claude neste Mac', 'a background run needs an instruction': 'escreva a instrução para rodar em segundo plano' }
+  var ERR = { 'folder is not among the discovered ones': 'a pasta não aparece mais entre as encontradas (nada rodando nem sessão recente) — atualize a página', 'no suggested root for this project': 'o painel ainda não sabe a pasta deste projeto', 'project has no registered folder: bind it first': 'o projeto não tem pasta cadastrada — cadastre a raiz primeiro', 'IDE not installed': 'essa IDE não está instalada', 'claude not found': 'não encontrei o claude neste Mac', 'a background run needs an instruction': 'escreva a instrução para rodar em segundo plano' }
+  function errText(m) {
+    if (ERR[m]) return ERR[m]
+    var x = /^a project named (.+) already exists/.exec(m || '')
+    if (x) return 'já existe um projeto chamado ' + x[1] + ' — abra esse projeto e cadastre a pasta nele'
+    return m
+  }
   function act(promise, okText) {
-    return promise.then(function () { toast(okText); load(); return true }, function (e) { toast('Não deu: ' + (ERR[e.message] || e.message), true); return false })
+    return promise.then(function () { toast(okText); load(); return true }, function (e) { toast('Não deu: ' + errText(e.message), true); return false })
   }
   var STATUS_ACTIONS = { segurar: ['paused', 'Projeto segurado: foi para o histórico'], arquivar: ['archived', 'Projeto arquivado: está no histórico'], concluir: ['done', 'Projeto concluído: está no histórico'], backlog: ['backlog', 'Projeto no backlog'], reativar: ['active', 'Projeto reativado'] }
   function ideByWord(word) {
@@ -570,6 +576,56 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
   }
 
 
+  // ── unregistered folder view ───────────────────────────────────────────────
+  function findFolder(key) {
+    var P = state.portfolio || {}, live = (state.live && state.live.sem_cadastro) || []
+    var d = (P.sem_cadastro || []).filter(function (u) { return u.pasta === key || u.nome === key })[0]
+    var l = live.filter(function (u) { return (u.pasta && u.pasta === key) || u.nome === key })[0]
+    if (!d && !l) return null
+    return { nome: (d || l).nome, pasta: (d && d.pasta) || (l && l.pasta) || null, comando: (d && d.comando) || (l && l.comando) || null,
+             slug: (d && d.slug_sugerido) || (l && l.slug_sugerido) || '', live: l || null, ultima: d ? d.ultima_sessao : null, sessoes: d ? d.sessoes_30d : 0 }
+  }
+  function renderFolder(view) {
+    var f = findFolder(state.folder)
+    var crumb = byId('crumb'); crumb.textContent = ''
+    var back = h('button', '', 'Monitor'); back.type = 'button'; back.addEventListener('click', function () { select('') })
+    crumb.appendChild(back); crumb.appendChild(document.createTextNode(' / sem cadastro'))
+    byId('title').textContent = f ? f.nome : state.folder
+    var sub = byId('subtitle'); sub.textContent = ''
+    if (!f) {
+      sub.appendChild(h('span', 'sub', 'Esta pasta não aparece mais: nada rodando nela e nenhuma sessão recente.'))
+      return
+    }
+    sub.appendChild(pill('sem cadastro', ''))
+    if (isLive(f.live)) sub.appendChild(pill('agora: ' + liveText(f.live), 'ok'))
+    var c = h('section', 'card pad'), head = h('div', 'card-head'); head.appendChild(h('h3', '', 'Cadastrar como projeto')); c.appendChild(head)
+    if (!f.pasta) {
+      c.appendChild(h('div', '', 'A IDE informa só o nome da janela (' + f.nome + '), não o caminho da pasta, então o painel não sabe onde ela fica.'))
+      c.appendChild(h('div', 'sub', 'Abra uma sessão do Claude Code nessa pasta (ou rode o servidor de dev nela) e esta página passa a mostrar o botão de cadastro. Ou cadastre pelo terminal:'))
+      c.appendChild(cmdRow('osforge-db upsert-project ' + (f.slug || 'nome') + ' "' + f.nome + '" standard active --root=<caminho da pasta>'))
+      view.appendChild(c); return
+    }
+    var facts = h('div', 'facts')
+    ;[['Pasta', f.pasta], ['Nome do projeto', f.slug], ['Rodando agora', isLive(f.live) ? liveText(f.live) : 'nada'],
+      ['Sessões do Claude Code (30 dias)', f.sessoes ? String(f.sessoes) + (f.ultima ? ' · última ' + ago(f.ultima) : '') : '—']].forEach(function (x) {
+      var r = h('div', 'fact'); r.appendChild(h('span', '', x[0])); r.appendChild(h('span', 'num', x[1])); facts.appendChild(r)
+    })
+    c.appendChild(facts)
+    var row = h('div', 'composer-bar'); row.style.marginTop = '14px'
+    var st = h('select', 'select'); st.setAttribute('aria-label', 'Situação inicial')
+    ;[['active', 'Em andamento'], ['backlog', 'Backlog']].forEach(function (o) { var op = h('option', '', o[1]); op.value = o[0]; st.appendChild(op) })
+    var go = h('button', 'btn primary', 'Cadastrar ' + f.slug); go.type = 'button'
+    go.addEventListener('click', function () {
+      go.disabled = true; go.textContent = 'Cadastrando…'
+      postJSON('/api/project/register', { pasta: f.pasta, status: st.value }).then(function (r) {
+        toast(f.nome + ' cadastrado'); state.folder = ''; select(r.slug || f.slug)
+      }, function (e) { go.disabled = false; go.textContent = 'Cadastrar ' + f.slug; toast('Não deu: ' + errText(e.message), true) })
+    })
+    row.appendChild(st); row.appendChild(go); c.appendChild(row)
+    if (f.comando) { c.appendChild(h('div', 'sub', 'Ou pelo terminal:')); c.appendChild(cmdRow(f.comando)) }
+    view.appendChild(c)
+  }
+
   // ── project filters (portfolio table) ───────────────────────────────────
   // Within a category the options add up (OR); across categories they narrow (AND).
   function has(p, cat, key) {
@@ -629,15 +685,9 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
         var lv = ((state.live && state.live.sem_cadastro) || []).filter(function (x) { return x.nome === u.nome })[0]
         var b = h('button', 'nav-item'), d = h('span', 'dot hollow' + (isLive(lv) ? ' pulse' : '')); b.type = 'button'; b.title = u.pasta + (isLive(lv) ? ' — agora: ' + liveText(lv) : '')
         b.appendChild(d); b.appendChild(h('span', 'name', u.nome)); b.appendChild(h('span', 'n', isLive(lv) ? 'ativo' : ago(u.ultima_sessao)))
-        // Not a project yet: there is no detail page. The click goes to its card, where it can be registered.
-        b.addEventListener('click', function () {
-          select(''); setTimeout(function () {
-            var el = byId('unregistered'); if (!el) return
-            el.scrollIntoView({ behavior: 'smooth' })
-            var row = [].slice.call(el.querySelectorAll('.item')).filter(function (x) { return x.firstChild && x.firstChild.textContent.indexOf(u.nome) === 0 })[0]
-            if (row) { row.classList.add('flash'); setTimeout(function () { row.classList.remove('flash') }, 1600) }
-          }, 300)
-        })
+        // Not a project yet: its own page, where it can be registered in one click.
+        if (state.folder && (state.folder === u.pasta || state.folder === u.nome)) { b.className += ' on'; b.setAttribute('aria-current', 'page') }
+        b.addEventListener('click', function () { openFolder(u.pasta || u.nome) })
         nav.appendChild(b)
       })
     }
@@ -824,7 +874,11 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
         var it = h('div', 'item'); it.appendChild(h('div', '', u.nome))
         it.appendChild(h('div', 'sub', u.pasta + (u.ao_vivo ? ' · rodando agora: ' + u.ao_vivo : ' · ' + plural(u.sessoes_30d, 'sessão', 'sessões') + ' · última ' + ago(u.ultima_sessao))))
         var reg = h('button', 'btn small', 'Cadastrar como projeto'); reg.type = 'button'
-        reg.addEventListener('click', function () { act(postJSON('/api/project/register', { pasta: u.pasta }), u.nome + ' cadastrado') })
+        reg.addEventListener('click', function () {
+          reg.disabled = true
+          postJSON('/api/project/register', { pasta: u.pasta }).then(function (r) { toast(u.nome + ' cadastrado'); select(r.slug) },
+            function (e) { reg.disabled = false; toast('Não deu: ' + errText(e.message), true) })
+        })
         it.appendChild(reg); it.appendChild(cmdRow(u.comando)); c.appendChild(it)
       })
       ideOnly.forEach(function (u) {
@@ -875,7 +929,10 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
         var bind = h('button', 'btn small', 'Cadastrar ' + pp.acesso.raiz_sugerida); bind.type = 'button'
         bind.addEventListener('click', function () { act(postJSON('/api/project/bind', { project: D.slug }), 'Pasta cadastrada') })
         b.appendChild(document.createTextNode('Pasta encontrada nas sessões: ')); b.appendChild(bind)
-      } else b.appendChild(cmdRow('osforge-db bind-project ' + D.slug + ' --root=<pasta do projeto>'))
+      } else {
+        b.appendChild(document.createTextNode('Abra uma sessão do Claude Code (ou o servidor de dev) na pasta do projeto e o painel oferece o cadastro aqui. Ou pelo terminal: '))
+        b.appendChild(cmdRow('osforge-db bind-project ' + D.slug + ' --root=<pasta do projeto>'))
+      }
       b.appendChild(h('div', 'sub', 'Sem pasta, o painel também não abre Claude Code nem IDE neste projeto.'))
       view.appendChild(b)
     }
@@ -998,7 +1055,10 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
   var redrawers = []
   function render() {
     // While a message is being written (or dictated), refresh around it, not through it.
-    if (state.focus && byId(state.focus)) { state.renderPending = true; sidebar(); refreshConversation(); return }
+    // Only for the composer of the project on screen: a click elsewhere (another project, a
+    // folder, the portfolio) must always navigate.
+    if (state.focus && state.project && !state.folder && state.focus === 'composer-' + state.project &&
+        byId(state.focus) && document.activeElement === byId(state.focus)) { state.renderPending = true; sidebar(); refreshConversation(); return }
     state.renderPending = false
     redrawers = []
     sidebar()
@@ -1007,7 +1067,8 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     if (state.error) banner.appendChild(h('div', 'banner bad', state.error))
     document.querySelectorAll('#period button').forEach(function (b) { b.classList.toggle('on', +b.getAttribute('data-days') === state.days) })
     if (!state.portfolio) { view.appendChild(h('div', 'empty', state.error ? '' : 'Carregando…')); return }
-    if (state.project && state.detail && state.detail.slug === state.project) renderProject(view)
+    if (state.folder) renderFolder(view)
+    else if (state.project && state.detail && state.detail.slug === state.project) renderProject(view)
     else if (state.project) view.appendChild(h('div', 'empty', 'Carregando ' + state.project + '…'))
     else renderPortfolio(view)
     byId('stamp').textContent = 'gerado ' + ago(state.portfolio.gerado_em)
@@ -1031,13 +1092,19 @@ main{padding:16px}.search{width:160px}.big{font-size:32px}}
     })
   }
 
+  function openFolder(key) {
+    state.folder = key; state.project = ''
+    writeHash(); render(); window.scrollTo(0, 0)
+  }
   function select(slug) {
+    state.folder = ''
     state.project = slug; state.hidden = {}; state.q = ''; state.allSessions = false
     writeHash(); render(); load(); window.scrollTo(0, 0)
   }
   function readHash() {
     var m = /(?:^|[#&])p=([a-z0-9-]*)/.exec(location.hash), d = /(?:^|[#&])d=(\d+)/.exec(location.hash)
     state.project = m ? m[1] : ''
+    if (state.project) state.folder = ''
     state.days = d && [7, 30, 90].indexOf(+d[1]) >= 0 ? +d[1] : 30
   }
   function writeHash() { var hsh = '#' + (state.project ? 'p=' + state.project + '&' : '') + 'd=' + state.days; if (location.hash !== hsh) history.replaceState(null, '', hsh) }

@@ -607,7 +607,8 @@ async function handleProjectRegister(request: Request): Promise<Response> {
   } catch {
     return jsonError("could not list projects", 502);
   }
-  const add = await runDb(["upsert-project", slug, String(found["nome"] || slug), "standard", "active", `--root=${pasta}`]);
+  const status = body["status"] === "backlog" ? "backlog" : "active";
+  const add = await runDb(["upsert-project", slug, String(found["nome"] || slug), "standard", status, `--root=${pasta}`]);
   if (add.code !== 0) return jsonError("register failed", 502);
   invalidate();
   return jsonOk({ ok: true, slug }, 201);

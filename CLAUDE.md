@@ -31,7 +31,7 @@ python3 scripts/_generate_index_md.py   # → docs/INDICE-SKILLS.md (reads the J
 python3 scripts/_generate_manifest.py   # → MANIFEST block in claude-code/SKILLS.md (--check gates deploy)
 python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-cases.generated.tsv (240 cases)
 
-# Offline suites (1063 checks; none touches the live ~/.claude, none spends API):
+# Offline suites (1064 checks; none touches the live ~/.claude, none spends API):
 ./tests/test-assertions.sh              # Verdict logic of the eval harnesses (67)
 ./tests/hooks/run-contracts.sh          # Hook contracts: real commands × fixtures, both harnesses (77; deploy gate)
 ./tests/test-gateguard-grant.sh         # GateGuard grant lifecycle + denial attenuation (84)
@@ -44,7 +44,7 @@ python3 scripts/_generate_triggering_cases.py  # → scripts/skill-triggering-ca
 ./tests/test-installers.sh              # install-skill/install-mcp: the helpers that run on YOUR machine (22)
 ./tests/test-judge.sh                   # Isolated judge: argv/env/isolation/exit codes with a fake claude (81)
 ./tests/test-quality-guard.sh           # quality-guard (B-035): callers left open, duplicates, tests state, shadow/on/off, p95 budget, signals CLI (46)
-./tests/test-monitor.sh                 # Monitor (B-036): contract numbers vs hand count, --discover, quality block, read-only, budget; /monitor page + /api/monitor, Host/Origin, SSE without reload loop, optional browser smoke; command centre: groups, live detection, inbox, runs, server actions with fake open/claude, temp folders never projects (112; the server part needs bun)
+./tests/test-monitor.sh                 # Monitor (B-036): contract numbers vs hand count, --discover, quality block, read-only, budget; /monitor page + /api/monitor, Host/Origin, SSE without reload loop, optional browser smoke; command centre: groups, live detection, inbox, runs, server actions with fake open/claude, temp folders never projects, register from the folder page (113; the server part needs bun)
 ./tests/test-inbox.sh                   # inbox-deliver (B-041): panel messages reach the running agent once, subagents skipped, fast path even with messages pending elsewhere, 8k cap, gateguard blocks agents writing to it (26)
 ./tests/test-outcome-r3.sh              # Outcome eval r3 (Pacote 02): builds offline, --dry plans 396/288 calls, r1/r2 byte-identical (35)
 ./tests/test-eval-cases.sh              # Eval cases v2: category, criticals, orphans fail --dry (42)

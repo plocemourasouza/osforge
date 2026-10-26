@@ -2398,7 +2398,7 @@ def _discover(conn, max_age_days=30):
         pid = _resolve_project_id_for_cwd(conn, os.path.realpath(cwd), cache)
         if pid is not None:
             row = conn.execute("SELECT root_path FROM projects WHERE id=?", (pid,)).fetchone()
-            if not (row and row["root_path"]) and top:
+            if not (row and row["root_path"]):        # git or not: the folder the sessions run in
                 suggested.setdefault(pid, root)
             continue
         slug = _slugify(os.path.basename(root)) or "projeto"
@@ -2551,11 +2551,19 @@ def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False
     projects = [_project_summary(conn, p, per.get(p["id"], {}), keys_period, keys_series)
                 for p in conn.execute(q + " ORDER BY slug").fetchall()]
     suggested, unregistered = {}, []
+    live_now = None
     if discover:
         unregistered, suggested = _discover(conn)
+        # What runs right now also tells where a project lives (a session with no transcript yet,
+        # a dev server, an IDE window on a registered project).
+        live_now = live_state(conn)
         by_id = {r["slug"]: r["id"] for r in conn.execute("SELECT id, slug FROM projects")}
         for pr in projects:
             sug = suggested.get(by_id.get(pr["slug"]))
+            if not sug and not pr["acesso"]["raiz_existe"]:
+                folders = [f for f in ((live_now["projetos"].get(pr["slug"]) or {}).get("pastas") or [])
+                           if os.path.isdir(f) and not _is_scratch_dir(f)]
+                sug = folders[0] if folders else None
             if sug:
                 pr["acesso"]["raiz_sugerida"] = sug
                 pr["acesso"]["comando"] = f"osforge-db bind-project {pr['slug']} --root={shlex.quote(sug)}"
@@ -2588,7 +2596,7 @@ def cmd_monitor(conn, slug=None, days=30, discover=False, include_archived=False
     out["projetos"] = projects
     out["regras_grupo"] = {"aguardando_apos_h": GROUP_WAITING_AFTER_H, "historico_apos_dias": GROUP_HISTORY_AFTER_D}
     if live:
-        out["ao_vivo"] = live_state(conn)
+        out["ao_vivo"] = live_now if live_now is not None else live_state(conn)
     now = datetime.now(timezone.utc)
     shown = {p["slug"] for p in projects}
     blk = []

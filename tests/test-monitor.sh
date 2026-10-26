@@ -165,6 +165,9 @@ check "suggested command survives quotes and \$( ) in the folder name (shlex rou
 check "unregistered git folder listed by its root, with the command" "[ \"\$(q '[(x[\"nome\"], x[\"git\"], \"upsert-project novo-app\" in x[\"comando\"]) for x in d[\"sem_cadastro\"] if x[\"nome\"]==\"novo-app\"]')\" = \"[('novo-app', True, True)]\" ]"
 check "registered project without root → suggested root and bind command" "[ \"\$(q '[p[\"acesso\"].get(\"raiz_sugerida\") for p in d[\"projetos\"] if p[\"slug\"]==\"beta\"][0]')\" = \"$(cd "$Bdir" && pwd -P)\" ]"
 check "registered project with a root → no suggestion" "[ \"\$(q '[\"raiz_sugerida\" in p[\"acesso\"] for p in d[\"projetos\"] if p[\"slug\"]==\"alpha\"][0]')\" = False ]"
+NG="$WORK/ng/empty"; mkdir -p "$NG" "$T/-ng"; python3 -c "import json,sys; print(json.dumps({'type':'user','cwd':sys.argv[1]}))" "$NG" > "$T/-ng/1.jsonl"
+db monitor --discover > "$J"
+check "a registered project whose folder is not a git repo still gets its suggested root" "[ \"\$(q '[p[\"acesso\"].get(\"raiz_sugerida\") for p in d[\"projetos\"] if p[\"slug\"]==\"empty\"][0]')\" = \"$(cd "$NG" && pwd -P)\" ]"
 db monitor > "$J"
 check "without --discover → no sem_cadastro block" "[ \"\$(q '\"sem_cadastro\" in d')\" = False ]"
 
@@ -187,6 +190,8 @@ db monitor > "$J"
 check "last activity clamped to now (datetime('now','utc') shifts by the local offset)" "python3 -c 'import json,sys; from datetime import datetime,timezone; d=json.load(open(sys.argv[1])); now=datetime.now(timezone.utc).strftime(\"%Y-%m-%dT%H:%M:%SZ\"); assert all((p[\"ultima_atividade\"] or \"\") <= now for p in d[\"projetos\"])' \"$J\""
 
 section "9. Canvas: /monitor page and /api/monitor"
+PA="$WORK/painel-app"; mkdir -p "$PA" "$HOME/.claude/projects/-painel" && (cd "$PA" && $GIT init -q && echo x > a && $GIT add a && $GIT commit -qm i)
+python3 -c "import json,sys; print(json.dumps({'type':'user','cwd':sys.argv[1]}))" "$PA" > "$HOME/.claude/projects/-painel/1.jsonl"
 H="$REPO/scripts/canvas/monitor.html"
 check "page loads nothing external (no script src, stylesheet link, http(s) src/href/url, @import)" "! grep -Eq '<script[^>]+src=|<link[^>]+stylesheet|(src|href)=\"https?:|url\\(https?:|@import' \"$H\""
 check "page never writes data as HTML (no .innerHTML / insertAdjacentHTML / document.write)" "! grep -Eq '\\.innerHTML|insertAdjacentHTML|document\\.write' \"$H\""
@@ -245,6 +250,14 @@ async def main(u):
             await pg.goto(u + "/monitor" + frag); await pg.wait_for_timeout(1200)
             if needle not in await pg.inner_text("main"):
                 errs.append("missing " + needle)
+        # An unregistered folder: the sidebar opens its page, one click registers it and opens the project.
+        await pg.goto(u + "/monitor"); await pg.wait_for_timeout(1500)
+        await pg.locator("#projects .nav-item", has_text="painel-app").first.click(); await pg.wait_for_timeout(500)
+        if (await pg.inner_text("#title")).strip() != "painel-app":
+            errs.append("clicking an unregistered folder did not open its page")
+        await pg.get_by_role("button", name="Cadastrar painel-app").click(); await pg.wait_for_timeout(2500)
+        if "p=painel-app" not in pg.url or "Quadro de tarefas" not in await pg.inner_text("main"):
+            errs.append("registering from the folder page did not open the new project: " + pg.url)
         await pg.goto(u + "/monitor"); await pg.wait_for_timeout(1200)
         if await pg.locator(".live-card").count():
             errs.append("the Ativo agora card is shown on the all-projects view")
